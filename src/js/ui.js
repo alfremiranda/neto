@@ -115,6 +115,10 @@ function recalc() {
   const ibc = calcIBC(incomes, trm, d.smmlv);
   const ss  = calcSS(ibc, d.pv);
 
+  const ibcEsMinimo = ibc <= d.smmlv;
+  set('o-ibc', COP(ibc));
+  set('o-ibc-lbl', ibcEsMinimo ? 'mínimo SMMLV' : '40% ingreso ARQ');
+
   set('o-salud', COP(ss.salud)); set('o-salud-u', USD(ss.salud / trm));
   set('o-pens',  COP(ss.pens));  set('o-pens-u',  USD(ss.pens / trm));
   set('o-arl',   COP(ss.arl));   set('o-arl-u',   USD(ss.arl / trm));
