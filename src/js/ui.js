@@ -40,22 +40,42 @@ function renderTabs() {
 
 const _hintUpdaters = [];
 
+function _addHint(el, updateFn) {
+  const hint = document.createElement('div');
+  hint.className = 'num-hint';
+  el.parentNode.appendChild(hint);
+  const update = () => { hint.textContent = updateFn(parseFloat(el.value) || 0); };
+  el.addEventListener('input', update);
+  _hintUpdaters.push(update);
+  update();
+  return update;
+}
+
 function initNumberHints() {
-  const ids = [...GASTOS_KEYS.map(k => 'g-' + k), 'p-pv', 'p-smmlv'];
-  ids.forEach(id => {
+  [...GASTOS_KEYS.map(k => 'g-' + k), 'p-pv', 'p-smmlv', 'extra-amt'].forEach(id => {
     const el = $(id);
     if (!el) return;
+    _addHint(el, v => v > 999 ? COP(v) : '');
+  });
+
+  const trmEl = $('p-trm');
+  if (trmEl) _addHint(trmEl, v => v > 0 ? v.toLocaleString('es-CO', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' COP/USD' : '');
+
+  const amtEl = $('i-amt'), curEl = $('i-cur');
+  if (amtEl && curEl) {
     const hint = document.createElement('div');
     hint.className = 'num-hint';
-    el.parentNode.appendChild(hint);
+    amtEl.parentNode.appendChild(hint);
     const update = () => {
-      const v = parseFloat(el.value);
-      hint.textContent = v > 999 ? COP(v) : '';
+      const v = parseFloat(amtEl.value) || 0;
+      if (!v) { hint.textContent = ''; return; }
+      hint.textContent = curEl.value === 'USD' ? USD(v) : (v > 999 ? COP(v) : '');
     };
-    el.addEventListener('input', update);
+    amtEl.addEventListener('input', update);
+    curEl.addEventListener('change', update);
     _hintUpdaters.push(update);
     update();
-  });
+  }
 }
 
 function updateNumberHints() {
