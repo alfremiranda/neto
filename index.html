@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#ffffff">
+<title>Finanzas AMD</title>
+<link rel="manifest" href="manifest.json">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;--bg2:#f7f7f5;--bg3:#f0ede8;
+  --txt:#1a1a1a;--txt2:#666;--txt3:#999;
+  --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.2);
+  --blue:#378ADD;--blue-bg:#E6F1FB;--blue-txt:#0C447C;
+  --green:#1D9E75;--green-bg:#EAF3DE;--green-txt:#27500A;
+  --purple-bg:#EEEDFE;--purple-txt:#3C3489;
+  --gray-bg:#F1EFE8;--gray-txt:#444441;
+  --amber:#EF9F27;--pink:#D4537E;--danger:#E24B4A;--danger-bg:#FCEBEB;--danger-txt:#791F1F;
+  --radius:8px;--radius-lg:12px;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#1c1c1e;--bg2:#2c2c2e;--bg3:#3a3a3c;
+    --txt:#f2f2f7;--txt2:#aeaeb2;--txt3:#636366;
+    --border:rgba(255,255,255,0.12);--border2:rgba(255,255,255,0.22);
+    --blue-bg:#0c2a4a;--blue-txt:#85B7EB;
+    --green-bg:#0a2a1a;--green-txt:#97C459;
+    --purple-bg:#1e1b3a;--purple-txt:#AFA9EC;
+    --gray-bg:#2a2a28;--gray-txt:#D3D1C7;
+    --danger-bg:#2a1010;--danger-txt:#F09595;
+  }
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg3);color:var(--txt);font-size:14px;min-height:100vh}
+.app{max-width:720px;margin:0 auto;padding:12px}
+header{display:flex;justify-content:space-between;align-items:center;padding:12px 0 16px}
+header h1{font-size:17px;font-weight:600}
+header span{font-size:12px;color:var(--txt3)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tab{border:0.5px solid var(--border);border-radius:20px;padding:5px 13px;font-size:12px;cursor:pointer;background:transparent;color:var(--txt2);font-family:inherit;transition:all .15s}
+.tab.active{background:var(--txt);color:var(--bg);border-color:var(--txt)}
+.card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:10px}
+.sec{font-size:12px;font-weight:500;color:var(--txt2);margin-bottom:10px;display:flex;align-items:center;gap:5px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.metric-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px}
+.metric{background:var(--bg2);border-radius:var(--radius);padding:12px}
+.ml{font-size:11px;color:var(--txt3);margin-bottom:2px}
+.mv{font-size:17px;font-weight:600}
+.ms{font-size:11px;color:var(--txt3);margin-top:2px}
+.flbl{font-size:11px;color:var(--txt3);margin-bottom:3px}
+input,select{width:100%;border:0.5px solid var(--border2);border-radius:var(--radius);padding:8px 10px;font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;appearance:none;-webkit-appearance:none}
+input:focus,select:focus{outline:2px solid var(--blue);outline-offset:-1px}
+.btn{border:0.5px solid var(--border2);border-radius:var(--radius);padding:8px 16px;font-size:13px;background:transparent;color:var(--txt);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
+.btn:hover{background:var(--bg2)}
+.btn:active{transform:scale(.97)}
+.btn-p{background:var(--txt);color:var(--bg);border-color:var(--txt)}
+.btn-p:hover{opacity:.85}
+.btn-d{border-color:var(--danger);color:var(--danger)}
+.btn-d:hover{background:var(--danger-bg)}
+.row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:13px}
+.row:last-child{border-bottom:none}
+.rl{color:var(--txt2)}
+.rv{font-weight:500}
+.badge{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500;white-space:nowrap;display:inline-block}
+.b-usd{background:var(--blue-bg);color:var(--blue-txt)}
+.b-cop{background:var(--green-bg);color:var(--green-txt)}
+.b-arq{background:var(--blue-bg);color:var(--blue-txt)}
+.b-toptal{background:var(--purple-bg);color:var(--purple-txt)}
+.b-bancol{background:var(--green-bg);color:var(--green-txt)}
+.b-otro{background:var(--gray-bg);color:var(--gray-txt)}
+.neto{background:var(--bg2);border-radius:var(--radius);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.bar-w{margin-bottom:7px}
+.bar-lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--txt2);margin-bottom:3px}
+.bar-track{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.bar-fill{height:5px;border-radius:3px;transition:width .4s}
+.income-item{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:0.5px solid var(--border)}
+.income-item:last-child{border-bottom:none}
+.ii-l{flex:1;min-width:0}
+.ii-d{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ii-m{font-size:11px;color:var(--txt3);margin-top:2px}
+.ii-r{text-align:right;flex-shrink:0}
+.ii-a{font-size:13px;font-weight:500}
+.ii-s{font-size:11px;color:var(--txt3)}
+.flow{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:0.5px solid var(--border)}
+.flow:last-child{border-bottom:none}
+.fnum{width:20px;height:20px;border-radius:50%;background:var(--blue-bg);color:var(--blue-txt);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.fbody{flex:1}
+.ft{font-size:13px;font-weight:500}
+.fd{font-size:11px;color:var(--txt2);margin-top:1px}
+.fa{font-size:13px;font-weight:600;flex-shrink:0}
+.empty{text-align:center;padding:20px;color:var(--txt3);font-size:13px}
+.divider{height:0.5px;background:var(--border);margin:10px 0}
+.green{color:var(--green)}
+.danger{color:var(--danger)}
+.section-group{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:600px){.section-group,.g2,.g3,.metric-grid{grid-template-columns:1fr}.app{padding:8px}}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--txt);color:var(--bg);padding:10px 20px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:99}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>Finanzas AMD</h1>
+    <span id="trm-hdr">TRM 3.567,11</span>
+  </header>
+
+  <div class="tabs" id="month-tabs"></div>
+
+  <div class="section-group">
+    <div>
+      <div class="card">
+        <div class="sec">⚙️ Parámetros del mes</div>
+        <div class="g2" style="margin-bottom:8px">
+          <div><div class="flbl">Mes</div>
+            <select id="sel-m">
+              <option value="0">Enero</option><option value="1">Febrero</option><option value="2">Marzo</option>
+              <option value="3">Abril</option><option value="4">Mayo</option><option value="5">Junio</option>
+              <option value="6">Julio</option><option value="7">Agosto</option><option value="8">Septiembre</option>
+              <option value="9">Octubre</option><option value="10">Noviembre</option><option value="11">Diciembre</option>
+            </select>
+          </div>
+          <div><div class="flbl">Año</div><input type="number" id="sel-y" value="2026"></div>
+        </div>
+        <div class="g2">
+          <div><div class="flbl">TRM (COP/USD)</div><input type="number" id="p-trm" value="3567.11" step="0.01"></div>
+          <div><div class="flbl">Pensión vol. (COP)</div><input type="number" id="p-pv" value="2000000"></div>
+        </div>
+        <div style="margin-top:8px"><div class="flbl">SMMLV 2026 (COP)</div><input type="number" id="p-smmlv" value="1750905"></div>
+        <div style="margin-top:10px;text-align:right"><button class="btn btn-p" onclick="saveMonth()">Guardar mes</button></div>
+      </div>
+
+      <div class="card">
+        <div class="sec">➕ Registrar ingreso</div>
+        <div style="margin-bottom:8px"><div class="flbl">Descripción</div>
+          <input type="text" id="i-desc" placeholder="Ej: Contrato fijo mayo, Proyecto Toptal X...">
+        </div>
+        <div class="g3">
+          <div><div class="flbl">Monto</div><input type="number" id="i-amt" placeholder="0"></div>
+          <div><div class="flbl">Moneda</div>
+            <select id="i-cur"><option value="USD">USD</option><option value="COP">COP</option></select>
+          </div>
+          <div><div class="flbl">Cuenta</div>
+            <select id="i-acc"><option value="ARQ">ARQ</option><option value="Toptal">Toptal</option><option value="Bancolombia">Bancolombia</option><option value="Otro">Otro</option></select>
+          </div>
+        </div>
+        <div style="margin-top:10px;text-align:right"><button class="btn btn-p" onclick="addIncome()">Agregar</button></div>
+      </div>
+
+      <div class="card">
+        <div class="sec">🏠 Gastos manutención (COP)</div>
+        <div class="g2">
+          <div><div class="flbl">Arriendo</div><input type="number" id="g-arriendo" value="0"></div>
+          <div><div class="flbl">Servicios</div><input type="number" id="g-servicios" value="0"></div>
+          <div><div class="flbl">Internet/cel</div><input type="number" id="g-internet" value="0"></div>
+          <div><div class="flbl">Mercado</div><input type="number" id="g-mercado" value="0"></div>
+          <div><div class="flbl">Tarjetas</div><input type="number" id="g-tarjetas" value="0"></div>
+          <div><div class="flbl">Transporte</div><input type="number" id="g-transporte" value="0"></div>
+          <div><div class="flbl">Streaming</div><input type="number" id="g-streaming" value="0"></div>
+          <div><div class="flbl">Salud prepagada</div><input type="number" id="g-salud" value="2000000"></div>
+          <div><div class="flbl">Otros</div><input type="number" id="g-otros" value="0"></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="sec">💵 Ingresos del mes</div>
+        <div id="income-list"><div class="empty">Sin ingresos registrados</div></div>
+        <div class="divider"></div>
+        <div class="g2">
+          <div class="metric"><div class="ml">USD <span class="badge b-usd">ARQ + Toptal</span></div><div class="mv" id="tot-usd">USD 0</div></div>
+          <div class="metric"><div class="ml">COP <span class="badge b-bancol">Bancolombia</span></div><div class="mv" id="tot-cop">$ 0</div></div>
+        </div>
+        <div class="metric" style="margin-top:8px"><div class="ml">Total bruto equiv. COP</div><div class="mv" id="tot-bruto">$ 0</div><div class="ms" id="tot-bruto-u"></div></div>
+      </div>
+
+      <div class="card">
+        <div class="sec">🏛️ Obligaciones legales</div>
+        <div class="row"><span class="rl">Salud (EPS)</span><span><span class="rv" id="o-salud">-</span> <span style="font-size:11px;color:var(--txt3)" id="o-salud-u"></span></span></div>
+        <div class="row"><span class="rl">Pensión obligatoria</span><span><span class="rv" id="o-pens">-</span> <span style="font-size:11px;color:var(--txt3)" id="o-pens-u"></span></span></div>
+        <div class="row"><span class="rl">ARL riesgo I</span><span><span class="rv" id="o-arl">-</span> <span style="font-size:11px;color:var(--txt3)" id="o-arl-u"></span></span></div>
+        <div class="row"><span class="rl">Pensión voluntaria</span><span><span class="rv" id="o-pv">-</span> <span style="font-size:11px;color:var(--txt3)" id="o-pv-u"></span></span></div>
+        <div class="neto"><span style="font-size:13px;color:var(--txt2)">Total SS</span><span class="rv" id="o-total">-</span></div>
+      </div>
+
+      <div class="card">
+        <div class="sec">📊 Distribución del ingreso</div>
+        <div class="bar-w"><div class="bar-lbl"><span>Obligaciones SS</span><span id="pss">-</span></div><div class="bar-track"><div class="bar-fill" id="bss" style="background:#378ADD;width:0"></div></div></div>
+        <div class="bar-w"><div class="bar-lbl"><span>Manutención</span><span id="pgst">-</span></div><div class="bar-track"><div class="bar-fill" id="bgst" style="background:#1D9E75;width:0"></div></div></div>
+        <div class="bar-w"><div class="bar-lbl"><span>Prov. retención</span><span id="pret">-</span></div><div class="bar-track"><div class="bar-fill" id="bret" style="background:#EF9F27;width:0"></div></div></div>
+        <div class="bar-w"><div class="bar-lbl"><span>Prov. primas</span><span id="pprim">-</span></div><div class="bar-track"><div class="bar-fill" id="bprim" style="background:#D4537E;width:0"></div></div></div>
+        <div class="bar-w"><div class="bar-lbl"><span>Neto libre</span><span id="pnet">-</span></div><div class="bar-track"><div class="bar-fill" id="bnet" style="background:#639922;width:0"></div></div></div>
+      </div>
+
+      <div class="card">
+        <div class="sec">🔄 Flujo recomendado</div>
+        <div class="flow"><div class="fnum">1</div><div class="fbody"><div class="ft">Bancolombia <span class="badge b-bancol">COP</span></div><div class="fd">SS + pensión vol. + manutención</div></div><div class="fa" id="f-bancol">-</div></div>
+        <div class="flow"><div class="fnum">2</div><div class="fbody"><div class="ft">ARQ Savings <span class="badge b-arq">3.5% USD</span></div><div class="fd">Prov. retención + primas</div></div><div class="fa" id="f-arq">-</div></div>
+        <div class="flow"><div class="fnum">3</div><div class="fbody"><div class="ft">Neto libre</div><div class="fd">Libre disponibilidad</div></div><div class="fa green" id="f-neto">-</div></div>
+        <div class="divider"></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--txt2)">
+          <span>Interés ARQ Savings/mes (est.)</span>
+          <span class="green" style="font-weight:500" id="f-int">-</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const MONTHS=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const COP=n=>'$'+Math.round(n).toLocaleString('es-CO');
+const USD=n=>'USD '+(Math.round(n*100)/100).toLocaleString('es-CO',{minimumFractionDigits:2,maximumFractionDigits:2});
+const pct=(a,b)=>b>0?Math.round(a/b*100)+'%':'0%';
+const bar=(id,a,b)=>{const p=b>0?Math.min(Math.round(a/b*100),100):0;document.getElementById(id).style.width=p+'%'};
+const $=id=>document.getElementById(id);
+const set=(id,v)=>{const el=$(id);if(el)el.textContent=v};
+
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000)}
+
+let db={},curKey='';
+
+function load(){try{const r=localStorage.getItem('amd-finance');if(r)db=JSON.parse(r)}catch(e){db={}}}
+function save(){try{localStorage.setItem('amd-finance',JSON.stringify(db))}catch(e){}}
+
+function monthKey(m,y){return y+'-'+String(m).padStart(2,'0')}
+function getMonth(k){return db[k]||{trm:3567.11,pv:2000000,smmlv:1750905,incomes:[],gastos:{arriendo:0,servicios:0,internet:0,mercado:0,tarjetas:0,transporte:0,streaming:0,salud:2000000,otros:0}}}
+
+function renderTabs(){
+  const wrap=$('month-tabs');
+  const keys=[...new Set([curKey,...Object.keys(db).sort().reverse().slice(0,11)])];
+  wrap.innerHTML=keys.map(k=>{const[y,m]=k.split('-');return`<button class="tab${k===curKey?' active':''}" onclick="switchMonth('${k}')">${MONTHS[parseInt(m)]} ${y}</button>`}).join('');
+}
+
+function loadForm(key){
+  const d=getMonth(key);const[y,m]=key.split('-');
+  $('sel-m').value=parseInt(m);$('sel-y').value=y;
+  $('p-trm').value=d.trm;$('p-pv').value=d.pv;$('p-smmlv').value=d.smmlv;
+  ['arriendo','servicios','internet','mercado','tarjetas','transporte','streaming','salud','otros'].forEach(k=>{const el=$('g-'+k);if(el)el.value=d.gastos[k]||0});
+}
+
+function switchMonth(key){curKey=key;loadForm(key);renderTabs();recalc()}
+
+function addIncome(){
+  const desc=$('i-desc').value.trim(),amount=parseFloat($('i-amt').value)||0;
+  const currency=$('i-cur').value,account=$('i-acc').value;
+  if(!desc||!amount){toast('Ingresa descripción y monto');return}
+  const d=getMonth(curKey);
+  d.incomes.push({id:Date.now(),desc,amount,currency,account});
+  db[curKey]=d;save();$('i-desc').value='';$('i-amt').value='';
+  toast('Ingreso agregado');recalc();
+}
+
+function deleteIncome(id){
+  const d=getMonth(curKey);
+  d.incomes=d.incomes.filter(i=>i.id!==id);
+  db[curKey]=d;save();toast('Eliminado');recalc();
+}
+
+function saveMonth(){
+  const m=parseInt($('sel-m').value),y=parseInt($('sel-y').value);
+  const newKey=monthKey(m,y);
+  const d=getMonth(newKey);
+  d.trm=parseFloat($('p-trm').value)||3567.11;
+  d.pv=parseFloat($('p-pv').value)||0;
+  d.smmlv=parseFloat($('p-smmlv').value)||1750905;
+  ['arriendo','servicios','internet','mercado','tarjetas','transporte','streaming','salud','otros'].forEach(k=>{d.gastos[k]=parseFloat($('g-'+k).value)||0});
+  db[newKey]=d;curKey=newKey;save();renderTabs();toast('Mes guardado');recalc();
+}
+
+function recalc(){
+  const d=getMonth(curKey);const trm=d.trm;
+  $('trm-hdr').textContent='TRM '+trm.toLocaleString('es-CO',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+  const incomes=d.incomes||[];
+  let totUSD=0,totCOP=0;
+  incomes.forEach(i=>{if(i.currency==='USD')totUSD+=i.amount;else totCOP+=i.amount});
+  const bruto=totUSD*trm+totCOP;
+
+  set('tot-usd',USD(totUSD));set('tot-cop',COP(totCOP));
+  set('tot-bruto',COP(bruto));set('tot-bruto-u',USD(bruto/trm)+' equiv.');
+
+  const accBadge=a=>({'ARQ':'b-arq','Toptal':'b-toptal','Bancolombia':'b-bancol','Otro':'b-otro'}[a]||'b-otro');
+  const il=$('income-list');
+  if(!incomes.length){il.innerHTML='<div class="empty">Sin ingresos registrados</div>'}
+  else{
+    il.innerHTML=incomes.map(i=>`
+      <div class="income-item">
+        <div class="ii-l">
+          <div class="ii-d">${i.desc}</div>
+          <div class="ii-m"><span class="badge ${i.currency==='USD'?'b-usd':'b-cop'}">${i.currency}</span> <span class="badge ${accBadge(i.account)}">${i.account}</span></div>
+        </div>
+        <div class="ii-r">
+          <div class="ii-a">${i.currency==='USD'?USD(i.amount):COP(i.amount)}</div>
+          <div class="ii-s">${i.currency==='USD'?COP(i.amount*trm):USD(i.amount/trm)}</div>
+        </div>
+        <button class="btn btn-d" style="padding:5px 8px" onclick="deleteIncome(${i.id})">✕</button>
+      </div>`).join('');
+  }
+
+  const smmlv=d.smmlv;
+  const fixedUSD=incomes.filter(i=>i.account==='ARQ'&&i.currency==='USD').reduce((a,i)=>a+i.amount,0);
+  const ibc=Math.max(fixedUSD*trm*0.40,smmlv);
+
+  const salud=ibc*0.125,pens=ibc*0.16,arl=ibc*0.00522,pv=d.pv;
+  const ssTot=salud+pens+arl+pv;
+
+  set('o-salud',COP(salud));set('o-salud-u',USD(salud/trm));
+  set('o-pens',COP(pens));set('o-pens-u',USD(pens/trm));
+  set('o-arl',COP(arl));set('o-arl-u',USD(arl/trm));
+  set('o-pv',COP(pv));set('o-pv-u',USD(pv/trm));
+  set('o-total',COP(ssTot)+' / '+USD(ssTot/trm));
+
+  const g=d.gastos;
+  const gast=['arriendo','servicios','internet','mercado','tarjetas','transporte','streaming','salud','otros'].reduce((a,k)=>a+(g[k]||0),0);
+  const ret=bruto*0.20,prim=bruto*0.0833;
+  const netoLibre=bruto-ssTot-gast-ret-prim;
+  const aBancol=(ssTot+gast)/trm,aARQ=(ret+prim)/trm,netoU=totUSD-aBancol-aARQ;
+
+  bar('bss',ssTot,bruto);set('pss',pct(ssTot,bruto));
+  bar('bgst',gast,bruto);set('pgst',pct(gast,bruto));
+  bar('bret',ret,bruto);set('pret',pct(ret,bruto));
+  bar('bprim',prim,bruto);set('pprim',pct(prim,bruto));
+  bar('bnet',Math.max(netoLibre,0),bruto);set('pnet',pct(Math.max(netoLibre,0),bruto));
+
+  set('f-bancol',USD(aBancol));
+  set('f-arq',USD(aARQ));
+  set('f-neto',USD(netoU));
+  set('f-int','≈ '+USD(aARQ*(0.035/12))+'/mes');
+}
+
+// Init
+load();
+const now=new Date();
+curKey=monthKey(now.getMonth(),now.getFullYear());
+loadForm(curKey);renderTabs();recalc();
+
+// Auto-recalc gastos on change
+['arriendo','servicios','internet','mercado','tarjetas','transporte','streaming','salud','otros'].forEach(k=>{
+  const el=$('g-'+k);if(el)el.addEventListener('input',recalc);
+});
+['p-trm','p-pv','p-smmlv'].forEach(id=>{const el=$(id);if(el)el.addEventListener('input',recalc)});
+</script>
+</body>
+</html>
