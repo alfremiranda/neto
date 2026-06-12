@@ -1,0 +1,80 @@
+function switchMonth(key) {
+  curKey = key;
+  loadForm(key);
+  renderTabs();
+  recalc();
+}
+
+function addIncome() {
+  const desc = $('i-desc').value.trim();
+  const amount = parseFloat($('i-amt').value) || 0;
+  const currency = $('i-cur').value;
+  const account  = $('i-acc').value;
+  if (!desc || !amount) { toast('Ingresa descripción y monto'); return; }
+  const d = getMonth(curKey);
+  d.incomes.push({ id: Date.now(), desc, amount, currency, account });
+  db[curKey] = d;
+  save();
+  $('i-desc').value = '';
+  $('i-amt').value  = '';
+  toast('Ingreso agregado');
+  recalc();
+}
+
+function deleteIncome(id) {
+  const d = getMonth(curKey);
+  d.incomes = d.incomes.filter(i => i.id !== id);
+  db[curKey] = d;
+  save();
+  toast('Eliminado');
+  recalc();
+}
+
+function saveMonth() {
+  const m = parseInt($('sel-m').value);
+  const y = parseInt($('sel-y').value);
+  const newKey = monthKey(m, y);
+  const d = getMonth(newKey);
+  d.trm   = parseFloat($('p-trm').value)   || DEFAULTS.trm;
+  d.pv    = parseFloat($('p-pv').value)    || 0;
+  d.smmlv = parseFloat($('p-smmlv').value) || DEFAULTS.smmlv;
+  GASTOS_KEYS.forEach(k => { d.gastos[k] = parseFloat($('g-' + k).value) || 0; });
+  db[newKey] = d;
+  curKey = newKey;
+  save();
+  renderTabs();
+  toast('Mes guardado');
+  recalc();
+}
+
+// Init
+load();
+const now = new Date();
+curKey = monthKey(now.getMonth(), now.getFullYear());
+loadForm(curKey);
+renderTabs();
+recalc();
+initChart();
+initAnnual();
+
+// Auto-recalc on input change
+GASTOS_KEYS.forEach(k => { const el = $('g-' + k); if (el) el.addEventListener('input', recalc); });
+['p-trm','p-pv','p-smmlv'].forEach(id => { const el = $(id); if (el) el.addEventListener('input', recalc); });
+
+// Auth + cloud sync
+if (sbReady()) {
+  setSyncStatus('offline');
+  sbGetUser().then(user => renderAuthState(user));
+  sbOnAuthChange(async (event, user) => {
+    renderAuthState(user);
+    if (event === 'SIGNED_IN') {
+      await syncFromCloud();
+      renderTabs();
+      loadForm(curKey);
+      recalc();
+    }
+    if (event === 'SIGNED_OUT') {
+      setSyncStatus('offline');
+    }
+  });
+}
