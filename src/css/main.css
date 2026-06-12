@@ -49,6 +49,7 @@ input:focus,select:focus{outline:2px solid var(--blue);outline-offset:-1px}
 .btn-p:hover{opacity:.85}
 .btn-d{border-color:var(--danger);color:var(--danger)}
 .btn-d:hover{background:var(--danger-bg)}
+.btn-icon{padding:6px 12px;min-width:36px;line-height:1;display:flex;align-items:center;justify-content:center}
 .row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:13px}
 .row:last-child{border-bottom:none}
 .rl{color:var(--txt2)}
@@ -91,6 +92,9 @@ input:focus,select:focus{outline:2px solid var(--blue);outline-offset:-1px}
   .section-group>div:first-child{order:2}
   .section-group>div:last-child{order:1}
   .app{padding:8px}
+  .btn{min-height:40px}
+  .tab{padding:7px 15px;min-height:36px}
+  .btn-icon{min-height:40px;min-width:44px}
 }
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--txt);color:var(--bg);padding:10px 20px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:99}
 .toast.show{opacity:1}

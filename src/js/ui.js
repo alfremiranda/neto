@@ -24,7 +24,7 @@ function renderExtras() {
     <div class="income-item" style="padding:6px 0">
       <div class="ii-l"><div class="ii-d" style="font-size:12px">${e.desc}</div></div>
       <div class="ii-r"><div class="ii-a" style="font-size:13px">${COP(e.amount)}</div></div>
-      <button class="btn btn-d" style="padding:4px 10px;min-width:36px" onclick="deleteExtra(${e.id})">✕</button>
+      <button class="btn btn-d btn-icon" onclick="deleteExtra(${e.id})">✕</button>
     </div>`).join('');
 }
 
@@ -79,10 +79,10 @@ function recalc() {
         </div>
         ${pendingDeleteId === i.id
           ? `<div style="display:flex;gap:5px;flex-shrink:0">
-               <button class="btn btn-d" style="padding:5px 12px;font-size:12px" onclick="deleteIncome(${i.id})">Eliminar</button>
-               <button class="btn" style="padding:5px 10px;font-size:12px" onclick="setPendingDelete(null)">No</button>
+               <button class="btn btn-d btn-icon" onclick="deleteIncome(${i.id})">Eliminar</button>
+               <button class="btn btn-icon" onclick="setPendingDelete(null)">No</button>
              </div>`
-          : `<button class="btn btn-d" style="padding:5px 10px;min-width:36px" onclick="setPendingDelete(${i.id})">✕</button>`
+          : `<button class="btn btn-d btn-icon" onclick="setPendingDelete(${i.id})">✕</button>`
         }
       </div>`).join('');
   }
