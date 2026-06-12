@@ -115,6 +115,7 @@ renderTabs();
 recalc();
 initChart();
 initAnnual();
+initNumberHints();
 
 // Gastos: auto-guardar + recalc al cambiar cualquier campo
 GASTOS_KEYS.forEach(k => {

@@ -38,6 +38,30 @@ function renderTabs() {
   }).join('');
 }
 
+const _hintUpdaters = [];
+
+function initNumberHints() {
+  const ids = [...GASTOS_KEYS.map(k => 'g-' + k), 'p-pv', 'p-smmlv'];
+  ids.forEach(id => {
+    const el = $(id);
+    if (!el) return;
+    const hint = document.createElement('div');
+    hint.className = 'num-hint';
+    el.parentNode.appendChild(hint);
+    const update = () => {
+      const v = parseFloat(el.value);
+      hint.textContent = v > 999 ? COP(v) : '';
+    };
+    el.addEventListener('input', update);
+    _hintUpdaters.push(update);
+    update();
+  });
+}
+
+function updateNumberHints() {
+  _hintUpdaters.forEach(fn => fn());
+}
+
 function loadForm(key) {
   const d = getMonth(key);
   const [y, m] = key.split('-');
@@ -47,6 +71,7 @@ function loadForm(key) {
   $('p-pv').value = d.pv;
   $('p-smmlv').value = d.smmlv;
   GASTOS_KEYS.forEach(k => { const el = $('g-' + k); if (el) el.value = d.gastos[k] || 0; });
+  updateNumberHints();
 }
 
 function recalc() {
