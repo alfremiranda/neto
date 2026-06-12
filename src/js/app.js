@@ -38,7 +38,6 @@ function saveMonth() {
   d.trm   = parseFloat($('p-trm').value)   || DEFAULTS.trm;
   d.pv    = parseFloat($('p-pv').value)    || 0;
   d.smmlv = parseFloat($('p-smmlv').value) || DEFAULTS.smmlv;
-  GASTOS_KEYS.forEach(k => { d.gastos[k] = parseFloat($('g-' + k).value) || 0; });
   db[newKey] = d;
   curKey = newKey;
   save();
@@ -57,8 +56,20 @@ recalc();
 initChart();
 initAnnual();
 
-// Auto-recalc on input change
-GASTOS_KEYS.forEach(k => { const el = $('g-' + k); if (el) el.addEventListener('input', recalc); });
+// Gastos: auto-guardar + recalc al cambiar cualquier campo
+GASTOS_KEYS.forEach(k => {
+  const el = $('g-' + k);
+  if (!el) return;
+  el.addEventListener('input', () => {
+    const d = getMonth(curKey);
+    d.gastos[k] = parseFloat(el.value) || 0;
+    db[curKey] = d;
+    save();
+    recalc();
+  });
+});
+
+// Parámetros: solo recalc (se guardan con el botón)
 ['p-trm','p-pv','p-smmlv'].forEach(id => { const el = $(id); if (el) el.addEventListener('input', recalc); });
 
 // Service worker (PWA offline)
