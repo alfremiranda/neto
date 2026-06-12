@@ -30,20 +30,52 @@ function deleteIncome(id) {
   recalc();
 }
 
+function showNewMonth() {
+  const form = $('new-month-form');
+  if (form) form.style.display = 'block';
+  // Pre-seleccionar el mes siguiente al actual
+  const [y, m] = curKey.split('-');
+  const next = new Date(parseInt(y), parseInt(m), 1);
+  const sel = $('sel-m'); if (sel) sel.value = next.getMonth();
+  const iny = $('sel-y'); if (iny) iny.value = next.getFullYear();
+}
+
+function hideNewMonth() {
+  const form = $('new-month-form');
+  if (form) form.style.display = 'none';
+}
+
 function saveMonth() {
-  const m = parseInt($('sel-m').value);
-  const y = parseInt($('sel-y').value);
-  const newKey = monthKey(m, y);
-  const d = getMonth(newKey);
-  d.trm   = parseFloat($('p-trm').value)   || DEFAULTS.trm;
-  d.pv    = parseFloat($('p-pv').value)    || 0;
-  d.smmlv = parseFloat($('p-smmlv').value) || DEFAULTS.smmlv;
-  db[newKey] = d;
-  curKey = newKey;
-  save();
-  renderTabs();
-  toast('Mes guardado');
-  recalc();
+  const formVisible = $('new-month-form')?.style.display !== 'none';
+
+  if (formVisible) {
+    // Crear mes nuevo con los parámetros actuales como punto de partida
+    const m = parseInt($('sel-m').value);
+    const y = parseInt($('sel-y').value);
+    const newKey = monthKey(m, y);
+    const d = getMonth(newKey);
+    d.trm   = parseFloat($('p-trm').value)   || DEFAULTS.trm;
+    d.pv    = parseFloat($('p-pv').value)    || 0;
+    d.smmlv = parseFloat($('p-smmlv').value) || DEFAULTS.smmlv;
+    db[newKey] = d;
+    curKey = newKey;
+    save();
+    hideNewMonth();
+    renderTabs();
+    loadForm(curKey);
+    toast('Mes creado');
+    recalc();
+  } else {
+    // Guardar parámetros del mes actual
+    const d = getMonth(curKey);
+    d.trm   = parseFloat($('p-trm').value)   || DEFAULTS.trm;
+    d.pv    = parseFloat($('p-pv').value)    || 0;
+    d.smmlv = parseFloat($('p-smmlv').value) || DEFAULTS.smmlv;
+    db[curKey] = d;
+    save();
+    toast('Parámetros guardados');
+    recalc();
+  }
 }
 
 // Init

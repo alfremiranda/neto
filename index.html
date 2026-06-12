@@ -20,24 +20,32 @@
   <div class="section-group">
     <div>
       <div class="card">
-        <div class="sec">⚙️ Parámetros del mes</div>
-        <div class="g2" style="margin-bottom:8px">
-          <div><div class="flbl">Mes</div>
+        <div class="sec" style="justify-content:space-between">
+          <span>⚙️ Parámetros del mes</span>
+          <button class="btn" style="font-size:11px;padding:3px 10px" onclick="showNewMonth()">+ Nuevo mes</button>
+        </div>
+        <div id="new-month-form" style="display:none;margin-bottom:10px;padding-bottom:10px;border-bottom:0.5px solid var(--border)">
+          <div class="flbl" style="margin-bottom:6px">Crear mes</div>
+          <div class="g2">
             <select id="sel-m">
               <option value="0">Enero</option><option value="1">Febrero</option><option value="2">Marzo</option>
               <option value="3">Abril</option><option value="4">Mayo</option><option value="5">Junio</option>
               <option value="6">Julio</option><option value="7">Agosto</option><option value="8">Septiembre</option>
               <option value="9">Octubre</option><option value="10">Noviembre</option><option value="11">Diciembre</option>
             </select>
+            <input type="number" id="sel-y" value="2026">
           </div>
-          <div><div class="flbl">Año</div><input type="number" id="sel-y" value="2026"></div>
+          <div style="text-align:right;margin-top:8px">
+            <button class="btn" style="font-size:12px;margin-right:6px" onclick="hideNewMonth()">Cancelar</button>
+            <button class="btn btn-p" style="font-size:12px" onclick="saveMonth()">Crear</button>
+          </div>
         </div>
         <div class="g2">
           <div><div class="flbl">TRM (COP/USD)</div><input type="number" id="p-trm" value="3567.11" step="0.01"></div>
           <div><div class="flbl">Pensión vol. (COP)</div><input type="number" id="p-pv" value="2000000"></div>
         </div>
         <div style="margin-top:8px"><div class="flbl">SMMLV 2026 (COP)</div><input type="number" id="p-smmlv" value="1750905"></div>
-        <div style="margin-top:10px;text-align:right"><button class="btn btn-p" onclick="saveMonth()">Guardar mes</button></div>
+        <div style="margin-top:10px;text-align:right"><button class="btn btn-p" onclick="saveMonth()">Guardar</button></div>
       </div>
 
       <div class="card">
