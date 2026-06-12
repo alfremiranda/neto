@@ -23,7 +23,9 @@ function calcSS(ibc, pv) {
 }
 
 function calcGastos(g) {
-  return GASTOS_KEYS.reduce((a, k) => a + (g[k] || 0), 0);
+  const fijos  = GASTOS_KEYS.reduce((a, k) => a + (g[k] || 0), 0);
+  const extras = (g.extras || []).reduce((a, e) => a + (e.amount || 0), 0);
+  return fijos + extras;
 }
 
 function calcDistribucion(bruto, ssTot, gast) {

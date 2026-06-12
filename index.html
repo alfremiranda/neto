@@ -78,6 +78,14 @@
           <div><div class="flbl">Salud prepagada</div><input type="number" id="g-salud" value="2000000"></div>
           <div><div class="flbl">Otros</div><input type="number" id="g-otros" value="0"></div>
         </div>
+        <div class="divider" style="margin-top:12px"></div>
+        <div class="flbl" style="margin-bottom:8px">Gastos adicionales</div>
+        <div id="extras-list"></div>
+        <div style="display:flex;gap:6px;margin-top:6px">
+          <input type="text" id="extra-desc" placeholder="Descripción" style="flex:2">
+          <input type="number" id="extra-amt" placeholder="0" style="flex:1">
+          <button class="btn btn-p" onclick="addExtra()" style="flex-shrink:0;padding:8px 12px">+</button>
+        </div>
       </div>
     </div>
 

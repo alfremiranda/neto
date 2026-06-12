@@ -15,6 +15,19 @@ function accBadge(a) {
 
 let pendingDeleteId = null;
 
+function renderExtras() {
+  const el = $('extras-list');
+  if (!el) return;
+  const extras = getMonth(curKey).gastos.extras || [];
+  if (!extras.length) { el.innerHTML = ''; return; }
+  el.innerHTML = extras.map(e => `
+    <div class="income-item" style="padding:6px 0">
+      <div class="ii-l"><div class="ii-d" style="font-size:12px">${e.desc}</div></div>
+      <div class="ii-r"><div class="ii-a" style="font-size:13px">${COP(e.amount)}</div></div>
+      <button class="btn btn-d" style="padding:4px 10px;min-width:36px" onclick="deleteExtra(${e.id})">✕</button>
+    </div>`).join('');
+}
+
 
 function renderTabs() {
   const wrap = $('month-tabs');
@@ -98,6 +111,7 @@ function recalc() {
   set('f-neto',   USD(flujo.netoU));
   set('f-int',    '≈ ' + USD(flujo.interest) + '/mes');
 
+  renderExtras();
   updateChart();
   updateAnnual();
 }

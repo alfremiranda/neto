@@ -21,6 +21,28 @@ function addIncome() {
   recalc();
 }
 
+function addExtra() {
+  const desc   = $('extra-desc').value.trim();
+  const amount = parseFloat($('extra-amt').value) || 0;
+  if (!desc || !amount) { toast('Ingresa descripción y monto'); return; }
+  const d = getMonth(curKey);
+  if (!d.gastos.extras) d.gastos.extras = [];
+  d.gastos.extras.push({ id: Date.now(), desc, amount });
+  db[curKey] = d;
+  save();
+  $('extra-desc').value = '';
+  $('extra-amt').value  = '';
+  recalc();
+}
+
+function deleteExtra(id) {
+  const d = getMonth(curKey);
+  d.gastos.extras = (d.gastos.extras || []).filter(e => e.id !== id);
+  db[curKey] = d;
+  save();
+  recalc();
+}
+
 function setPendingDelete(id) {
   pendingDeleteId = id;
   recalc();

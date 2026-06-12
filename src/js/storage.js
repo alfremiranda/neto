@@ -10,7 +10,7 @@ function getMonth(k) {
     pv: DEFAULTS.pv,
     smmlv: DEFAULTS.smmlv,
     incomes: [],
-    gastos: { arriendo:0, servicios:0, internet:0, mercado:0, tarjetas:0, transporte:0, streaming:0, salud: DEFAULTS.salud_prepagada, otros:0 },
+    gastos: { arriendo:0, servicios:0, internet:0, mercado:0, tarjetas:0, transporte:0, streaming:0, salud: DEFAULTS.salud_prepagada, otros:0, extras: [] },
   };
 }
 
