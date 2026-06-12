@@ -2,9 +2,11 @@
   "name": "Finanzas AMD",
   "short_name": "FinanzasAMD",
   "description": "Planeador financiero mensual",
-  "start_url": "/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "orientation": "portrait",
+  "background_color": "#f0ede8",
   "theme_color": "#1a1a1a",
   "icons": [
     {"src": "icon.png", "sizes": "192x192", "type": "image/png"},

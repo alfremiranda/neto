@@ -61,6 +61,11 @@ initAnnual();
 GASTOS_KEYS.forEach(k => { const el = $('g-' + k); if (el) el.addEventListener('input', recalc); });
 ['p-trm','p-pv','p-smmlv'].forEach(id => { const el = $(id); if (el) el.addEventListener('input', recalc); });
 
+// Service worker (PWA offline)
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+
 // Sync con Supabase al arrancar (si está configurado)
 if (sbReady()) {
   syncFromCloud().then(() => {
