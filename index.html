@@ -53,13 +53,28 @@
         <div style="margin-bottom:8px"><div class="flbl">Descripción</div>
           <input type="text" id="i-desc" placeholder="Ej: Contrato fijo mayo, Proyecto Toptal X...">
         </div>
-        <div class="g3">
+        <datalist id="cuentas-list">
+          <option value="ARQ (Observer Hub LLC)">
+          <option value="Toptal">
+          <option value="Bancolombia">
+          <option value="Nequi">
+          <option value="Otro">
+        </datalist>
+        <div class="g2" style="margin-bottom:8px">
           <div><div class="flbl">Monto</div><input type="number" id="i-amt" placeholder="0"></div>
           <div><div class="flbl">Moneda</div>
             <select id="i-cur"><option value="USD">USD</option><option value="COP">COP</option></select>
           </div>
-          <div><div class="flbl">Cuenta</div>
-            <select id="i-acc"><option value="ARQ">ARQ</option><option value="Toptal">Toptal</option><option value="Bancolombia">Bancolombia</option><option value="Otro">Otro</option></select>
+        </div>
+        <div class="g2">
+          <div><div class="flbl">Cuenta / Fuente</div>
+            <input type="text" id="i-acc" list="cuentas-list" placeholder="ARQ, Toptal...">
+          </div>
+          <div><div class="flbl">Tipo</div>
+            <select id="i-tipo">
+              <option value="servicios">Servicios</option>
+              <option value="otro">Otro</option>
+            </select>
           </div>
         </div>
         <div style="margin-top:10px;text-align:right"><button class="btn btn-p" onclick="addIncome()">Agregar</button></div>

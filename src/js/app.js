@@ -6,13 +6,14 @@ function switchMonth(key) {
 }
 
 function addIncome() {
-  const desc = $('i-desc').value.trim();
-  const amount = parseFloat($('i-amt').value) || 0;
+  const desc     = $('i-desc').value.trim();
+  const amount   = parseFloat($('i-amt').value) || 0;
   const currency = $('i-cur').value;
-  const account  = $('i-acc').value;
+  const account  = $('i-acc').value.trim() || 'Otro';
+  const tipo     = $('i-tipo').value;
   if (!desc || !amount) { toast('Ingresa descripción y monto'); return; }
   const d = getMonth(curKey);
-  d.incomes.push({ id: Date.now(), desc, amount, currency, account });
+  d.incomes.push({ id: Date.now(), desc, amount, currency, account, tipo });
   db[curKey] = d;
   save();
   $('i-desc').value = '';

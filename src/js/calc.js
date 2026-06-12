@@ -9,10 +9,10 @@ function calcTotales(incomes, trm) {
 }
 
 function calcIBC(incomes, trm, smmlv) {
-  const fixedUSD = incomes
-    .filter(i => i.account === 'ARQ' && i.currency === 'USD')
-    .reduce((a, i) => a + i.amount, 0);
-  return Math.max(fixedUSD * trm * DEFAULTS.ibc_factor, smmlv);
+  const totalServicios = incomes
+    .filter(i => (i.tipo || 'servicios') === 'servicios')
+    .reduce((a, i) => a + (i.currency === 'USD' ? i.amount * trm : i.amount), 0);
+  return Math.max(totalServicios * DEFAULTS.ibc_factor, smmlv);
 }
 
 function calcSS(ibc, pv) {

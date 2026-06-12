@@ -62,6 +62,7 @@ input:focus,select:focus{outline:2px solid var(--blue);outline-offset:-1px}
 .b-toptal{background:var(--purple-bg);color:var(--purple-txt)}
 .b-bancol{background:var(--green-bg);color:var(--green-txt)}
 .b-otro{background:var(--gray-bg);color:var(--gray-txt)}
+.b-ss{background:var(--blue-bg);color:var(--blue-txt)}
 .neto{background:var(--bg2);border-radius:var(--radius);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-top:8px}
 .bar-w{margin-bottom:7px}
 .bar-lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--txt2);margin-bottom:3px}

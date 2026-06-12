@@ -12,9 +12,10 @@ y obligaciones en COP (seguridad social colombiana, gastos de manutención).
 - Deploy: GitHub Pages → alfremiranda.github.io/finanzas-amd
 
 ## Reglas del negocio
-- Salario fijo: $8,800 USD/mes (contrato Net 30, llega semana 1-2 del mes siguiente)
+- Salario fijo: $8,800 USD/mes — contrato con Observer Hub LLC (Net 30, llega semana 1-2 del mes siguiente), pagos recibidos en cuenta ARQ (Dollar App)
 - Freelance Toptal: variable, se registra manualmente cada mes
-- IBC = max(40% del ingreso ARQ en COP, SMMLV 2026 = $1,750,905)
+- IBC = max(40% × suma de TODOS los ingresos tipo "Servicios" del mes en COP, SMMLV 2026 = $1,750,905)
+- Aplica sobre todos los ingresos por prestación de servicios independientemente de cuenta o moneda
 - SS mensual: Salud 12.5% + Pensión 16% + ARL 0.522% sobre IBC
 - Provisiones bimestrales: Retención 20% sobre ingreso bruto
 - Provisiones Jun/Dic: Primas 8.33% sobre ingreso bruto
@@ -26,7 +27,7 @@ y obligaciones en COP (seguridad social colombiana, gastos de manutención).
     "trm": 3567.11,
     "pv": 2000000,
     "smmlv": 1750905,
-    "incomes": [{ "id": 1234, "desc": "...", "amount": 8800, "currency": "USD", "account": "ARQ" }],
+    "incomes": [{ "id": 1234, "desc": "...", "amount": 8800, "currency": "USD", "account": "ARQ", "tipo": "servicios" }],
     "gastos": { "arriendo": 0, "servicios": 0, ... }
   }
 }

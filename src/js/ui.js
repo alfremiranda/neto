@@ -96,7 +96,7 @@ function recalc() {
       <div class="income-item">
         <div class="ii-l">
           <div class="ii-d">${i.desc}</div>
-          <div class="ii-m"><span class="badge ${i.currency === 'USD' ? 'b-usd' : 'b-cop'}">${i.currency}</span> <span class="badge ${accBadge(i.account)}">${i.account}</span></div>
+          <div class="ii-m"><span class="badge ${i.currency === 'USD' ? 'b-usd' : 'b-cop'}">${i.currency}</span> <span class="badge b-otro">${i.account}</span> <span class="badge ${(i.tipo||'servicios')==='servicios' ? 'b-ss' : 'b-otro'}">${(i.tipo||'servicios')==='servicios' ? 'SS' : 'No SS'}</span></div>
         </div>
         <div class="ii-r">
           <div class="ii-a">${i.currency === 'USD' ? USD(i.amount) : COP(i.amount)}</div>
@@ -117,7 +117,7 @@ function recalc() {
 
   const ibcEsMinimo = ibc <= d.smmlv;
   set('o-ibc', COP(ibc));
-  set('o-ibc-lbl', ibcEsMinimo ? 'mínimo SMMLV' : '40% ingreso ARQ');
+  set('o-ibc-lbl', ibcEsMinimo ? 'mínimo SMMLV' : '40% ingresos servicios');
 
   set('o-salud', COP(ss.salud)); set('o-salud-u', USD(ss.salud / trm));
   set('o-pens',  COP(ss.pens));  set('o-pens-u',  USD(ss.pens / trm));
