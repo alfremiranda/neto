@@ -21,12 +21,18 @@ function addIncome() {
   recalc();
 }
 
+function setPendingDelete(id) {
+  pendingDeleteId = id;
+  recalc();
+}
+
 function deleteIncome(id) {
+  pendingDeleteId = null;
   const d = getMonth(curKey);
   d.incomes = d.incomes.filter(i => i.id !== id);
   db[curKey] = d;
   save();
-  toast('Eliminado');
+  toast('Ingreso eliminado');
   recalc();
 }
 

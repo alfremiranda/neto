@@ -13,6 +13,8 @@ function accBadge(a) {
   return ({ ARQ:'b-arq', Toptal:'b-toptal', Bancolombia:'b-bancol', Otro:'b-otro' }[a] || 'b-otro');
 }
 
+let pendingDeleteId = null;
+
 
 function renderTabs() {
   const wrap = $('month-tabs');
@@ -62,7 +64,13 @@ function recalc() {
           <div class="ii-a">${i.currency === 'USD' ? USD(i.amount) : COP(i.amount)}</div>
           <div class="ii-s">${i.currency === 'USD' ? COP(i.amount * trm) : USD(i.amount / trm)}</div>
         </div>
-        <button class="btn btn-d" style="padding:5px 8px" onclick="deleteIncome(${i.id})">✕</button>
+        ${pendingDeleteId === i.id
+          ? `<div style="display:flex;gap:5px;flex-shrink:0">
+               <button class="btn btn-d" style="padding:5px 12px;font-size:12px" onclick="deleteIncome(${i.id})">Eliminar</button>
+               <button class="btn" style="padding:5px 10px;font-size:12px" onclick="setPendingDelete(null)">No</button>
+             </div>`
+          : `<button class="btn btn-d" style="padding:5px 10px;min-width:36px" onclick="setPendingDelete(${i.id})">✕</button>`
+        }
       </div>`).join('');
   }
 
