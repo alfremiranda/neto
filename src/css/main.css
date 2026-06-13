@@ -85,7 +85,9 @@ input:focus,select:focus{outline:2px solid var(--blue);outline-offset:-1px}
 .fbody{flex:1}
 .ft{font-size:13px;font-weight:500}
 .fd{font-size:11px;color:var(--txt2);margin-top:1px}
-.fa{font-size:13px;font-weight:600;flex-shrink:0}
+.fa-col{text-align:right;flex-shrink:0}
+.fa{font-size:13px;font-weight:600}
+.fa-sub{font-size:11px;color:var(--txt3);margin-top:1px}
 .empty{text-align:center;padding:20px;color:var(--txt3);font-size:13px}
 .divider{height:0.5px;background:var(--border);margin:10px 0}
 .green{color:var(--green)}

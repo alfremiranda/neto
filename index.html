@@ -170,9 +170,29 @@
 
       <div class="card">
         <div class="sec">🔄 Flujo recomendado</div>
-        <div class="flow"><div class="fnum">1</div><div class="fbody"><div class="ft">Bancolombia <span class="badge b-cop">COP</span></div><div class="fd">SS + pensión vol. + manutención</div></div><div class="fa" id="f-bancol">-</div></div>
-        <div class="flow"><div class="fnum">2</div><div class="fbody"><div class="ft">ARQ Savings <span class="badge b-usd">3.5% USD</span></div><div class="fd">Prov. retención + primas</div></div><div class="fa" id="f-arq">-</div></div>
-        <div class="flow"><div class="fnum">3</div><div class="fbody"><div class="ft">Neto libre</div><div class="fd">Libre disponibilidad</div></div><div class="fa green" id="f-neto">-</div></div>
+        <div class="flow">
+          <div class="fnum">1</div>
+          <div class="fbody"><div class="ft">Bancolombia <span class="badge b-cop">COP</span></div><div class="fd">SS + pensión vol. + manutención</div></div>
+          <div class="fa-col">
+            <div class="fa" id="f-bancol-cop">-</div>
+            <div class="fa-sub" id="f-bancol">-</div>
+          </div>
+        </div>
+        <div class="flow">
+          <div class="fnum">2</div>
+          <div class="fbody"><div class="ft">ARQ Savings <span class="badge b-usd">3.5% USD</span></div><div class="fd">Prov. retención + primas</div></div>
+          <div class="fa-col">
+            <div class="fa" id="f-arq">-</div>
+            <div class="fa-sub" id="f-arq-cop">-</div>
+          </div>
+        </div>
+        <div class="flow">
+          <div class="fnum">3</div>
+          <div class="fbody"><div class="ft">Neto libre</div><div class="fd">Libre disponibilidad</div></div>
+          <div class="fa-col">
+            <div class="fa green" id="f-neto">-</div>
+          </div>
+        </div>
         <div class="divider"></div>
         <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--txt2)">
           <span>Interés ARQ Savings/mes (est.)</span>

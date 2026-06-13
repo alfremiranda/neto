@@ -178,10 +178,12 @@ function recalc() {
   bar('bnet', Math.max(netoLibre,0),bruto); set('pnet', pct(Math.max(netoLibre,0), bruto)); set('vnet', COP(Math.max(netoLibre, 0)));
 
   const flujo = calcFlujo(ss.total, gast, ret, prim, trm, totUSD);
-  set('f-bancol', USD(flujo.aBancol));
-  set('f-arq',    USD(flujo.aARQ));
-  set('f-neto',   USD(flujo.netoU));
-  set('f-int',    '≈ ' + USD(flujo.interest) + '/mes');
+  set('f-bancol-cop', COP(ss.total + gast));
+  set('f-bancol',     USD(flujo.aBancol) + ' equiv.');
+  set('f-arq',        USD(flujo.aARQ));
+  set('f-arq-cop',    COP(ret + prim) + ' equiv.');
+  set('f-neto',       USD(flujo.netoU));
+  set('f-int',        '≈ ' + USD(flujo.interest) + '/mes');
 
   renderExtras();
   updateChart();
