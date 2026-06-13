@@ -9,10 +9,6 @@ function toast(msg) {
   setTimeout(() => t.classList.remove('show'), 2000);
 }
 
-function accBadge(a) {
-  return ({ ARQ:'b-arq', Toptal:'b-toptal', Bancolombia:'b-bancol', Otro:'b-otro' }[a] || 'b-otro');
-}
-
 let pendingDeleteId = null;
 
 function renderExtras() {
@@ -28,14 +24,13 @@ function renderExtras() {
     </div>`).join('');
 }
 
-
-function renderTabs() {
-  const wrap = $('month-tabs');
-  const keys = [...new Set([curKey, ...Object.keys(db).sort().reverse().slice(0, 11)])];
-  wrap.innerHTML = keys.map(k => {
-    const [y, m] = k.split('-');
-    return `<button class="tab${k === curKey ? ' active' : ''}" onclick="switchMonth('${k}')">${MONTHS[parseInt(m)]} ${y}</button>`;
-  }).join('');
+function renderMonthNav() {
+  const [y, m] = curKey.split('-');
+  $('month-title').textContent = MONTHS[parseInt(m)] + ' ' + y;
+  const keys = Object.keys(db).filter(k => k !== '_settings').sort();
+  const idx = keys.indexOf(curKey);
+  const prevBtn = $('btn-prev');
+  if (prevBtn) prevBtn.disabled = idx <= 0;
 }
 
 const _hintUpdaters = [];
@@ -52,7 +47,7 @@ function _addHint(el, updateFn) {
 }
 
 function initNumberHints() {
-  [...GASTOS_KEYS.map(k => 'g-' + k), 'p-pv', 'p-smmlv', 'extra-amt'].forEach(id => {
+  [...GASTOS_KEYS.map(k => 'g-' + k), 'p-pv', 'extra-amt', 's-smmlv'].forEach(id => {
     const el = $(id);
     if (!el) return;
     _addHint(el, v => v > 999 ? COP(v) : '');
@@ -84,21 +79,30 @@ function updateNumberHints() {
 
 function loadForm(key) {
   const d = getMonth(key);
-  const [y, m] = key.split('-');
-  $('sel-m').value = parseInt(m);
-  $('sel-y').value = y;
   $('p-trm').value = d.trm;
-  $('p-pv').value = d.pv;
-  $('p-smmlv').value = d.smmlv;
+  $('p-transfer-date').value = d.transfer_date || '';
+  $('p-pv').value = d.pv || 0;
   GASTOS_KEYS.forEach(k => { const el = $('g-' + k); if (el) el.value = d.gastos[k] || 0; });
+
+  const [y] = key.split('-');
+  const smmlvEl = $('s-smmlv');
+  if (smmlvEl) smmlvEl.value = getSMMLV(y);
+  const lblY = $('s-smmlv-year');
+  if (lblY) lblY.textContent = y;
+
   updateNumberHints();
 }
 
 function recalc() {
   const d = getMonth(curKey);
   const trm = d.trm;
+  const [year] = curKey.split('-');
+  const smmlv = getSMMLV(year);
 
-  $('trm-hdr').textContent = 'TRM ' + trm.toLocaleString('es-CO', { minimumFractionDigits:2, maximumFractionDigits:2 });
+  const transferDate = d.transfer_date
+    ? ' · ' + new Date(d.transfer_date + 'T12:00:00').toLocaleDateString('es-CO', {day:'numeric', month:'short'})
+    : '';
+  set('trm-hdr', 'TRM ' + trm.toLocaleString('es-CO', {minimumFractionDigits:2, maximumFractionDigits:2}) + transferDate);
 
   const incomes = d.incomes || [];
   const { totUSD, totCOP, bruto } = calcTotales(incomes, trm);
@@ -116,7 +120,11 @@ function recalc() {
       <div class="income-item">
         <div class="ii-l">
           <div class="ii-d">${i.desc}</div>
-          <div class="ii-m"><span class="badge ${i.currency === 'USD' ? 'b-usd' : 'b-cop'}">${i.currency}</span> <span class="badge b-otro">${i.account}</span> <span class="badge ${(i.tipo||'servicios')==='servicios' ? 'b-ss' : 'b-otro'}">${(i.tipo||'servicios')==='servicios' ? 'SS' : 'No SS'}</span></div>
+          <div class="ii-m">
+            <span class="badge ${i.currency === 'USD' ? 'b-usd' : 'b-cop'}">${i.currency}</span>
+            <span class="badge b-otro">${i.account}</span>
+            <span class="badge ${(i.tipo||'servicios')==='servicios' ? 'b-ss' : 'b-otro'}">${(i.tipo||'servicios')==='servicios' ? 'SS' : 'No SS'}</span>
+          </div>
         </div>
         <div class="ii-r">
           <div class="ii-a">${i.currency === 'USD' ? USD(i.amount) : COP(i.amount)}</div>
@@ -132,10 +140,10 @@ function recalc() {
       </div>`).join('');
   }
 
-  const ibc = calcIBC(incomes, trm, d.smmlv);
+  const ibc = calcIBC(incomes, trm, smmlv);
   const ss  = calcSS(ibc, d.pv);
 
-  const ibcEsMinimo = ibc <= d.smmlv;
+  const ibcEsMinimo = ibc <= smmlv;
   set('o-ibc', COP(ibc));
   set('o-ibc-lbl', ibcEsMinimo ? 'mínimo SMMLV' : '40% ingresos servicios');
 

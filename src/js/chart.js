@@ -12,7 +12,7 @@ function chartColors() {
 }
 
 function buildChartData() {
-  const allKeys = [...new Set([...Object.keys(db).sort(), curKey])];
+  const allKeys = [...new Set([...Object.keys(db).filter(k => k !== '_settings').sort(), curKey])];
   const keys = allKeys.slice(-8);
 
   const labels = [], dSS = [], dGast = [], dRet = [], dPrim = [], dNeto = [];
@@ -26,7 +26,7 @@ function buildChartData() {
     const trm      = d.trm;
     const incomes  = d.incomes || [];
     const { bruto }          = calcTotales(incomes, trm);
-    const ibc                = calcIBC(incomes, trm, d.smmlv);
+    const ibc                = calcIBC(incomes, trm, getSMMLV(k.split('-')[0]));
     const ss                 = calcSS(ibc, d.pv);
     const gastTotal          = calcGastos(d.gastos);
     const { ret, prim, netoLibre } = calcDistribucion(bruto, ss.total, gastTotal);

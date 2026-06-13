@@ -11,7 +11,7 @@ function buildAnnualData(year) {
     const trm     = d.trm;
     const incomes = d.incomes || [];
     const { totUSD: mUSD, totCOP: mCOP, bruto } = calcTotales(incomes, trm);
-    const ibc     = calcIBC(incomes, trm, d.smmlv);
+    const ibc     = calcIBC(incomes, trm, getSMMLV(k.split('-')[0]));
     const ss      = calcSS(ibc, d.pv);
     const gast    = calcGastos(d.gastos);
     const { ret, prim, netoLibre } = calcDistribucion(bruto, ss.total, gast);
@@ -101,7 +101,7 @@ function initAnnual() {
   if (!sel) return;
 
   const years = [...new Set([
-    ...Object.keys(db).map(k => k.split('-')[0]),
+    ...Object.keys(db).filter(k => k !== '_settings').map(k => k.split('-')[0]),
     String(new Date().getFullYear()),
   ])].sort().reverse();
 

@@ -12,46 +12,39 @@
 <div class="app">
   <header>
     <h1>Finanzas AMD</h1>
-    <span id="trm-hdr">TRM 3.567,11</span>
+    <div class="month-nav">
+      <button class="btn btn-icon" id="btn-prev" onclick="prevMonth()">←</button>
+      <span id="month-title" class="month-title">—</span>
+      <button class="btn btn-icon" id="btn-next" onclick="nextMonth()">→</button>
+    </div>
+    <span id="trm-hdr" class="trm-hdr"></span>
   </header>
-
-  <div class="tabs" id="month-tabs"></div>
 
   <div class="section-group">
     <div>
+
       <div class="card">
-        <div class="sec" style="justify-content:space-between">
-          <span>⚙️ Parámetros del mes</span>
-          <button class="btn btn-icon" style="font-size:11px" onclick="showNewMonth()">+ Nuevo mes</button>
-        </div>
-        <div id="new-month-form" style="display:none;margin-bottom:10px;padding-bottom:10px;border-bottom:0.5px solid var(--border)">
-          <div class="flbl" style="margin-bottom:6px">Crear mes</div>
-          <div class="g2">
-            <select id="sel-m">
-              <option value="0">Enero</option><option value="1">Febrero</option><option value="2">Marzo</option>
-              <option value="3">Abril</option><option value="4">Mayo</option><option value="5">Junio</option>
-              <option value="6">Julio</option><option value="7">Agosto</option><option value="8">Septiembre</option>
-              <option value="9">Octubre</option><option value="10">Noviembre</option><option value="11">Diciembre</option>
-            </select>
-            <input type="number" id="sel-y" value="2026">
-          </div>
-          <div style="text-align:right;margin-top:8px">
-            <button class="btn btn-icon" style="font-size:12px;margin-right:6px" onclick="hideNewMonth()">Cancelar</button>
-            <button class="btn btn-p btn-icon" style="font-size:12px" onclick="saveMonth()">Crear</button>
-          </div>
-        </div>
+        <div class="sec">💸 Transferencia del mes</div>
         <div class="g2">
-          <div><div class="flbl">TRM (COP/USD)</div><input type="number" id="p-trm" value="3567.11" step="0.01"></div>
-          <div><div class="flbl">Pensión vol. (COP)</div><input type="number" id="p-pv" value="2000000"></div>
+          <div>
+            <div class="flbl">TRM (COP/USD)</div>
+            <input type="number" id="p-trm" value="3567.11" step="0.01">
+          </div>
+          <div>
+            <div class="flbl">Fecha de transferencia</div>
+            <input type="date" id="p-transfer-date">
+          </div>
         </div>
-        <div style="margin-top:8px"><div class="flbl">SMMLV 2026 (COP)</div><input type="number" id="p-smmlv" value="1750905"></div>
-        <div style="margin-top:10px;text-align:right"><button class="btn btn-p" onclick="saveMonth()">Guardar</button></div>
+        <div style="margin-top:10px;text-align:right">
+          <button class="btn btn-p" onclick="saveMonth()">Guardar</button>
+        </div>
       </div>
 
       <div class="card">
         <div class="sec">➕ Registrar ingreso</div>
-        <div style="margin-bottom:8px"><div class="flbl">Descripción</div>
-          <input type="text" id="i-desc" placeholder="Ej: Contrato fijo mayo, Proyecto Toptal X...">
+        <div style="margin-bottom:8px">
+          <div class="flbl">Descripción</div>
+          <input type="text" id="i-desc" placeholder="Ej: Contrato fijo junio, Proyecto Toptal X...">
         </div>
         <datalist id="cuentas-list">
           <option value="ARQ (Observer Hub LLC)">
@@ -67,17 +60,21 @@
           </div>
         </div>
         <div class="g2">
-          <div><div class="flbl">Cuenta / Fuente</div>
+          <div>
+            <div class="flbl">Cuenta / Fuente</div>
             <input type="text" id="i-acc" list="cuentas-list" placeholder="ARQ, Toptal...">
           </div>
-          <div><div class="flbl">Tipo</div>
+          <div>
+            <div class="flbl">Tipo</div>
             <select id="i-tipo">
               <option value="servicios">Servicios</option>
               <option value="otro">Otro</option>
             </select>
           </div>
         </div>
-        <div style="margin-top:10px;text-align:right"><button class="btn btn-p" onclick="addIncome()">Agregar</button></div>
+        <div style="margin-top:10px;text-align:right">
+          <button class="btn btn-p" onclick="addIncome()">Agregar</button>
+        </div>
       </div>
 
       <div class="card">
@@ -85,13 +82,14 @@
         <div class="g2">
           <div><div class="flbl">Arriendo</div><input type="number" id="g-arriendo" value="0"></div>
           <div><div class="flbl">Servicios</div><input type="number" id="g-servicios" value="0"></div>
-          <div><div class="flbl">Internet/cel</div><input type="number" id="g-internet" value="0"></div>
+          <div><div class="flbl">Internet / cel</div><input type="number" id="g-internet" value="0"></div>
           <div><div class="flbl">Mercado</div><input type="number" id="g-mercado" value="0"></div>
           <div><div class="flbl">Tarjetas</div><input type="number" id="g-tarjetas" value="0"></div>
           <div><div class="flbl">Transporte</div><input type="number" id="g-transporte" value="0"></div>
           <div><div class="flbl">Streaming</div><input type="number" id="g-streaming" value="0"></div>
-          <div><div class="flbl">Salud prepagada</div><input type="number" id="g-salud" value="2000000"></div>
+          <div><div class="flbl">Salud prepagada</div><input type="number" id="g-salud" value="0"></div>
           <div><div class="flbl">Otros</div><input type="number" id="g-otros" value="0"></div>
+          <div><div class="flbl">Pensión voluntaria</div><input type="number" id="p-pv" value="0"></div>
         </div>
         <div class="divider" style="margin-top:12px"></div>
         <div class="flbl" style="margin-bottom:8px">Gastos adicionales</div>
@@ -102,18 +100,30 @@
           <button class="btn btn-p" onclick="addExtra()" style="flex-shrink:0;padding:8px 12px">+</button>
         </div>
       </div>
+
     </div>
 
     <div>
+
       <div class="card">
         <div class="sec">💵 Ingresos del mes</div>
         <div id="income-list"><div class="empty">Sin ingresos registrados</div></div>
         <div class="divider"></div>
         <div class="g2">
-          <div class="metric"><div class="ml">USD <span class="badge b-usd">ARQ + Toptal</span></div><div class="mv" id="tot-usd">USD 0</div></div>
-          <div class="metric"><div class="ml">COP <span class="badge b-bancol">Bancolombia</span></div><div class="mv" id="tot-cop">$ 0</div></div>
+          <div class="metric">
+            <div class="ml">USD <span class="badge b-usd">ARQ + Toptal</span></div>
+            <div class="mv" id="tot-usd">USD 0</div>
+          </div>
+          <div class="metric">
+            <div class="ml">COP <span class="badge b-cop">Bancolombia</span></div>
+            <div class="mv" id="tot-cop">$ 0</div>
+          </div>
         </div>
-        <div class="metric" style="margin-top:8px"><div class="ml">Total bruto equiv. COP</div><div class="mv" id="tot-bruto">$ 0</div><div class="ms" id="tot-bruto-u"></div></div>
+        <div class="metric" style="margin-top:8px">
+          <div class="ml">Total bruto equiv. COP</div>
+          <div class="mv" id="tot-bruto">$ 0</div>
+          <div class="ms" id="tot-bruto-u"></div>
+        </div>
       </div>
 
       <div class="card">
@@ -140,8 +150,8 @@
 
       <div class="card">
         <div class="sec">🔄 Flujo recomendado</div>
-        <div class="flow"><div class="fnum">1</div><div class="fbody"><div class="ft">Bancolombia <span class="badge b-bancol">COP</span></div><div class="fd">SS + pensión vol. + manutención</div></div><div class="fa" id="f-bancol">-</div></div>
-        <div class="flow"><div class="fnum">2</div><div class="fbody"><div class="ft">ARQ Savings <span class="badge b-arq">3.5% USD</span></div><div class="fd">Prov. retención + primas</div></div><div class="fa" id="f-arq">-</div></div>
+        <div class="flow"><div class="fnum">1</div><div class="fbody"><div class="ft">Bancolombia <span class="badge b-cop">COP</span></div><div class="fd">SS + pensión vol. + manutención</div></div><div class="fa" id="f-bancol">-</div></div>
+        <div class="flow"><div class="fnum">2</div><div class="fbody"><div class="ft">ARQ Savings <span class="badge b-usd">3.5% USD</span></div><div class="fd">Prov. retención + primas</div></div><div class="fa" id="f-arq">-</div></div>
         <div class="flow"><div class="fnum">3</div><div class="fbody"><div class="ft">Neto libre</div><div class="fd">Libre disponibilidad</div></div><div class="fa green" id="f-neto">-</div></div>
         <div class="divider"></div>
         <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--txt2)">
@@ -149,6 +159,7 @@
           <span class="green" style="font-weight:500" id="f-int">-</span>
         </div>
       </div>
+
     </div>
   </div>
 
@@ -166,6 +177,19 @@
     </div>
     <div id="annual-body"></div>
   </div>
+
+  <div class="card" style="margin-top:0">
+    <div class="sec">⚙️ Configuración anual</div>
+    <div>
+      <div class="flbl">SMMLV <span id="s-smmlv-year">2026</span> (COP)</div>
+      <input type="number" id="s-smmlv" value="1750905">
+      <div style="font-size:11px;color:var(--txt3);margin-top:4px">Aplica a todos los meses de ese año · cambia el 1 de enero</div>
+    </div>
+    <div style="margin-top:10px;text-align:right">
+      <button class="btn btn-p" onclick="saveSettings()">Guardar</button>
+    </div>
+  </div>
+
 </div>
 
 <div class="toast" id="toast"></div>

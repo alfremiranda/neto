@@ -1,8 +1,38 @@
 function switchMonth(key) {
   curKey = key;
   loadForm(key);
-  renderTabs();
+  renderMonthNav();
   recalc();
+}
+
+function prevMonth() {
+  const keys = Object.keys(db).filter(k => k !== '_settings').sort();
+  const idx = keys.indexOf(curKey);
+  if (idx > 0) switchMonth(keys[idx - 1]);
+}
+
+function nextMonth() {
+  const keys = Object.keys(db).filter(k => k !== '_settings').sort();
+  const idx = keys.indexOf(curKey);
+  if (idx < keys.length - 1) {
+    switchMonth(keys[idx + 1]);
+    return;
+  }
+  const [y, m] = curKey.split('-').map(Number);
+  const nextM = m + 1 > 11 ? 0 : m + 1;
+  const nextY = m + 1 > 11 ? y + 1 : y;
+  const newKey = monthKey(nextM, nextY);
+  const prev = getMonth(curKey);
+  db[newKey] = {
+    trm: prev.trm,
+    transfer_date: '',
+    pv: prev.pv,
+    incomes: [],
+    gastos: { ...prev.gastos, extras: [] },
+  };
+  save();
+  switchMonth(newKey);
+  toast('Mes creado');
 }
 
 function addIncome() {
@@ -59,66 +89,47 @@ function deleteIncome(id) {
   recalc();
 }
 
-function showNewMonth() {
-  const form = $('new-month-form');
-  if (form) form.style.display = 'block';
-  // Pre-seleccionar el mes siguiente al actual
-  const [y, m] = curKey.split('-');
-  const next = new Date(parseInt(y), parseInt(m), 1);
-  const sel = $('sel-m'); if (sel) sel.value = next.getMonth();
-  const iny = $('sel-y'); if (iny) iny.value = next.getFullYear();
-}
-
-function hideNewMonth() {
-  const form = $('new-month-form');
-  if (form) form.style.display = 'none';
-}
-
 function saveMonth() {
-  const formVisible = $('new-month-form')?.style.display !== 'none';
+  const d = getMonth(curKey);
+  d.trm = parseFloat($('p-trm').value) || DEFAULTS.trm;
+  d.transfer_date = $('p-transfer-date').value || '';
+  db[curKey] = d;
+  save();
+  toast('Transferencia guardada');
+  recalc();
+}
 
-  if (formVisible) {
-    // Crear mes nuevo con los parámetros actuales como punto de partida
-    const m = parseInt($('sel-m').value);
-    const y = parseInt($('sel-y').value);
-    const newKey = monthKey(m, y);
-    const d = getMonth(newKey);
-    d.trm   = parseFloat($('p-trm').value)   || DEFAULTS.trm;
-    d.pv    = parseFloat($('p-pv').value)    || 0;
-    d.smmlv = parseFloat($('p-smmlv').value) || DEFAULTS.smmlv;
-    db[newKey] = d;
-    curKey = newKey;
-    save();
-    hideNewMonth();
-    renderTabs();
-    loadForm(curKey);
-    toast('Mes creado');
-    recalc();
-  } else {
-    // Guardar parámetros del mes actual
-    const d = getMonth(curKey);
-    d.trm   = parseFloat($('p-trm').value)   || DEFAULTS.trm;
-    d.pv    = parseFloat($('p-pv').value)    || 0;
-    d.smmlv = parseFloat($('p-smmlv').value) || DEFAULTS.smmlv;
-    db[curKey] = d;
-    save();
-    toast('Parámetros guardados');
-    recalc();
-  }
+function saveSettings() {
+  const [y] = curKey.split('-');
+  const v = parseFloat($('s-smmlv').value) || DEFAULTS.smmlv;
+  if (!db._settings) db._settings = { smmlv: {} };
+  if (!db._settings.smmlv) db._settings.smmlv = {};
+  db._settings.smmlv[y] = v;
+  saveLocal();
+  sbPush('_settings', db._settings).catch(() => {});
+  toast('SMMLV ' + y + ' guardado');
+  recalc();
 }
 
 // Init
 load();
 const now = new Date();
 curKey = monthKey(now.getMonth(), now.getFullYear());
+if (!db[curKey]) {
+  const existingKeys = Object.keys(db).filter(k => k !== '_settings').sort();
+  if (existingKeys.length > 0) {
+    const prev = getMonth(existingKeys[existingKeys.length - 1]);
+    db[curKey] = { trm: prev.trm, transfer_date: '', pv: prev.pv, incomes: [], gastos: { ...prev.gastos, extras: [] } };
+  }
+}
 loadForm(curKey);
-renderTabs();
+renderMonthNav();
 recalc();
 initChart();
 initAnnual();
 initNumberHints();
 
-// Gastos: auto-guardar + recalc al cambiar cualquier campo
+// Gastos auto-save
 GASTOS_KEYS.forEach(k => {
   const el = $('g-' + k);
   if (!el) return;
@@ -131,18 +142,31 @@ GASTOS_KEYS.forEach(k => {
   });
 });
 
-// Parámetros: solo recalc (se guardan con el botón)
-['p-trm','p-pv','p-smmlv'].forEach(id => { const el = $(id); if (el) el.addEventListener('input', recalc); });
+// Pensión voluntaria auto-save
+const pvEl = $('p-pv');
+if (pvEl) {
+  pvEl.addEventListener('input', () => {
+    const d = getMonth(curKey);
+    d.pv = parseFloat(pvEl.value) || 0;
+    db[curKey] = d;
+    save();
+    recalc();
+  });
+}
 
-// Service worker (PWA offline)
+// TRM: recalc en vivo, se guarda con el botón
+const trmEl = $('p-trm');
+if (trmEl) trmEl.addEventListener('input', recalc);
+
+// Service worker
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').catch(() => {});
 }
 
-// Sync con Supabase al arrancar (si está configurado)
+// Sync Supabase
 if (sbReady()) {
   syncFromCloud().then(() => {
-    renderTabs();
+    renderMonthNav();
     loadForm(curKey);
     recalc();
   });
