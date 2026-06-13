@@ -19,7 +19,8 @@ y obligaciones en COP (seguridad social colombiana, gastos de manutención).
 - SS mensual: Salud 12.5% + Pensión 16% + ARL 0.522% sobre IBC
 - Provisiones bimestrales: Retención 20% sobre ingreso bruto
 - Provisiones Jun/Dic: Primas 8.33% sobre ingreso bruto
-- TRM se actualiza manualmente al inicio de cada mes
+- Retención se acumula en ARQ Savings (genera 3.5% anual) y se paga año vencido a la DIAN
+- TRM corresponde a la fecha de transferencia de ARQ/Toptal → Bancolombia; se actualiza manualmente
 
 ## Estructura de datos (localStorage key: 'amd-finance')
 {
