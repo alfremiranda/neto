@@ -42,17 +42,36 @@ function toast(msg) {
 
 let pendingDeleteId = null;
 
-function renderExtras() {
-  const el = $('extras-list');
+function renderEgresos() {
+  const el = $('egresos-list');
   if (!el) return;
-  const extras = getMonth(curKey).gastos.extras || [];
-  if (!extras.length) { el.innerHTML = ''; return; }
-  el.innerHTML = extras.map(e => `
-    <div class="income-item" style="padding:6px 0">
-      <div class="ii-l"><div class="ii-d" style="font-size:12px">${e.desc}</div></div>
-      <div class="ii-r"><div class="ii-a" style="font-size:13px">${COP(e.amount)}</div></div>
-      <button class="btn btn-d btn-icon" onclick="deleteExtra(${e.id})">✕</button>
-    </div>`).join('');
+  const egresos = getMonth(curKey).egresos || [];
+  const trm     = getMonth(curKey).trm;
+  if (!egresos.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">📤</div><p>Sin egresos este mes</p><button class="btn btn-p btn-sm" onclick="openSheet('sheet-egreso')">＋ Agregar egreso</button></div>`;
+    return;
+  }
+  el.innerHTML = egresos.map(e => {
+    const tipo   = EGRESO_TIPOS.find(t => t.id === e.tipo) || { label: e.tipo };
+    const amtStr = e.currency === 'USD' ? USD(e.amount) : COP(e.amount);
+    const subStr = e.currency === 'USD' ? COP(e.amount * trm) : '';
+    const dateStr = e.date ? e.date.slice(5).replace('-', '/') : '';
+    return `
+      <div class="income-item">
+        <div class="ii-l">
+          <div class="ii-d">${tipo.label}</div>
+          <div class="ii-m">
+            <span class="badge b-otro">${e.tipo}</span>
+            ${dateStr ? `<span style="color:var(--txt3)">· ${dateStr}</span>` : ''}
+          </div>
+        </div>
+        <div class="ii-r">
+          <div class="ii-a">${amtStr}</div>
+          ${subStr ? `<div class="ii-s">${subStr}</div>` : ''}
+        </div>
+        <button class="btn btn-d btn-icon" onclick="deleteEgreso(${e.id})">✕</button>
+      </div>`;
+  }).join('');
 }
 
 function renderMonthNav() {
@@ -77,8 +96,7 @@ function _addHint(el, updateFn) {
 }
 
 function initNumberHints() {
-  // Campos COP enteros: formato inline mientras se escribe
-  [...GASTOS_KEYS.map(k => 'g-' + k), 'p-pv', 'extra-amt', 's-smmlv'].forEach(id => {
+  ['s-smmlv'].forEach(id => {
     const el = $(id);
     if (el) initCOPInput(el);
   });
@@ -111,9 +129,6 @@ function updateNumberHints() {
 
 function loadForm(key) {
   const d = getMonth(key);
-  $('p-pv').value = copFormat(d.pv || 0);
-  GASTOS_KEYS.forEach(k => { const el = $('g-' + k); if (el) el.value = copFormat(d.gastos[k] || 0); });
-
   const [y] = key.split('-');
   const smmlvEl = $('s-smmlv');
   if (smmlvEl) smmlvEl.value = copFormat(getSMMLV(y));
@@ -132,6 +147,7 @@ function recalc() {
   const smmlv = getSMMLV(year);
 
   const incomes = d.incomes || [];
+  const egresos = d.egresos || [];
   const { totUSD, totCOP, bruto } = calcTotales(incomes, trm);
 
   const totalsEl = $('income-totals');
@@ -169,7 +185,7 @@ function recalc() {
   }
 
   const ibc = calcIBC(incomes, trm, smmlv);
-  const ss  = calcSS(ibc, d.pv);
+  const ss  = calcSS(ibc, calcPV(egresos, trm));
 
   const ibcEsMinimo = ibc <= smmlv;
   set('o-ibc', COP(ibc));
@@ -181,7 +197,7 @@ function recalc() {
   set('o-pv',    COP(ss.pv));    set('o-pv-u',    USD(ss.pv / trm));
   set('o-total', COP(ss.total) + ' / ' + USD(ss.total / trm));
 
-  const gast = calcGastos(d.gastos);
+  const gast = calcGastos(egresos, trm);
   const { ret, prim, netoLibre } = calcDistribucion(bruto, ss.total, gast);
 
   bar('bss',  ss.total,             bruto); set('pss',  pct(ss.total, bruto)); set('vss',  COP(ss.total));
@@ -198,7 +214,7 @@ function recalc() {
   set('f-neto',       USD(flujo.netoU));
   set('f-int',        '≈ ' + USD(flujo.interest) + '/mes');
 
-  renderExtras();
+  renderEgresos();
   renderTransfers();
   updateChart();
   updateAnnual();

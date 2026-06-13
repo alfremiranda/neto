@@ -27,8 +27,9 @@ function buildChartData() {
     const incomes  = d.incomes || [];
     const { bruto }          = calcTotales(incomes, trm);
     const ibc                = calcIBC(incomes, trm, getSMMLV(k.split('-')[0]));
-    const ss                 = calcSS(ibc, d.pv);
-    const gastTotal          = calcGastos(d.gastos);
+    const egresos            = d.egresos || [];
+    const ss                 = calcSS(ibc, calcPV(egresos, trm));
+    const gastTotal          = calcGastos(egresos, trm);
     const { ret, prim, netoLibre } = calcDistribucion(bruto, ss.total, gastTotal);
 
     dSS.push(  +(ss.total          / M).toFixed(3));

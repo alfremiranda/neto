@@ -10,14 +10,7 @@ function getSMMLV(year) {
 }
 
 function getMonth(k) {
-  return db[k] || {
-    trm: DEFAULTS.trm,
-    transfer_date: '',
-    pv: DEFAULTS.pv,
-    incomes: [],
-    transfers: [],
-    gastos: { arriendo:0, servicios:0, internet:0, mercado:0, tarjetas:0, transporte:0, streaming:0, salud: DEFAULTS.salud_prepagada, otros:0, extras: [] },
-  };
+  return db[k] || { trm: DEFAULTS.trm, incomes: [], transfers: [], egresos: [] };
 }
 
 function load() {
@@ -26,17 +19,43 @@ function load() {
 }
 
 function migrateIfNeeded() {
-  if (db._settings && db._settings.smmlv) return;
-  const byYear = {};
-  Object.keys(db).filter(k => k !== '_settings' && db[k] && db[k].smmlv).forEach(k => {
-    const y = k.split('-')[0];
-    if (!byYear[y]) byYear[y] = db[k].smmlv;
-  });
-  if (Object.keys(byYear).length) {
-    if (!db._settings) db._settings = {};
-    db._settings.smmlv = byYear;
-    saveLocal();
+  let changed = false;
+
+  // Migrate SMMLV from per-month to _settings
+  if (!db._settings || !db._settings.smmlv) {
+    const byYear = {};
+    Object.keys(db).filter(k => k !== '_settings' && db[k] && db[k].smmlv).forEach(k => {
+      const y = k.split('-')[0];
+      if (!byYear[y]) byYear[y] = db[k].smmlv;
+    });
+    if (Object.keys(byYear).length) {
+      if (!db._settings) db._settings = {};
+      db._settings.smmlv = byYear;
+      changed = true;
+    }
   }
+
+  // Migrate gastos object + extras + pv → egresos array
+  Object.keys(db).filter(k => k !== '_settings').forEach(k => {
+    const m = db[k];
+    if (!m || m.egresos) return;
+    m.egresos = [];
+    let id = Date.now();
+    if (m.gastos) {
+      GASTOS_KEYS.forEach(tipo => {
+        if ((m.gastos[tipo] || 0) > 0)
+          m.egresos.push({ id: id++, amount: m.gastos[tipo], currency: 'COP', date: '', tipo });
+      });
+      (m.gastos.extras || []).forEach(e => {
+        m.egresos.push({ id: e.id || id++, amount: e.amount, currency: 'COP', date: '', tipo: 'otro' });
+      });
+    }
+    if ((m.pv || 0) > 0)
+      m.egresos.push({ id: id++, amount: m.pv, currency: 'COP', date: '', tipo: 'pension_vol' });
+    changed = true;
+  });
+
+  if (changed) saveLocal();
 }
 
 function saveLocal() {

@@ -11,7 +11,7 @@ function prevMonth() {
   const prevKey = monthKey(m - 1, y);
   if (!db[prevKey]) {
     const current = getMonth(curKey);
-    db[prevKey] = { trm: current.trm, transfer_date: '', pv: current.pv, incomes: [], transfers: [], gastos: { ...current.gastos, extras: [] } };
+    db[prevKey] = { trm: current.trm, incomes: [], transfers: [], egresos: [] };
     save();
     toast('Mes creado');
   }
@@ -24,7 +24,7 @@ function nextMonth() {
   const nextKey = monthKey(m + 1, y);
   if (!db[nextKey]) {
     const current = getMonth(curKey);
-    db[nextKey] = { trm: current.trm, transfer_date: '', pv: current.pv, incomes: [], transfers: [], gastos: { ...current.gastos, extras: [] } };
+    db[nextKey] = { trm: current.trm, incomes: [], transfers: [], egresos: [] };
     save();
     toast('Mes creado');
   }
@@ -49,26 +49,36 @@ function addIncome() {
   recalc();
 }
 
-function addExtra() {
-  const desc   = $('extra-desc').value.trim();
-  const amount = parseCOP($('extra-amt').value);
-  if (!desc || !amount) { toast('Ingresa descripción y monto'); return; }
+function addEgreso() {
+  const tipo   = $('e-tipo').value;
+  const amount = parseFloat($('e-amt').value) || 0;
+  const cur    = $('e-cur').value;
+  const date   = $('e-date').value;
+  if (!amount) { toast('Ingresa el valor'); return; }
   const d = getMonth(curKey);
-  if (!d.gastos.extras) d.gastos.extras = [];
-  d.gastos.extras.push({ id: Date.now(), desc, amount });
+  if (!d.egresos) d.egresos = [];
+  d.egresos.push({ id: Date.now(), tipo, amount, currency: cur, date: date || new Date().toISOString().slice(0, 10) });
   db[curKey] = d;
   save();
-  $('extra-desc').value = '';
-  $('extra-amt').value  = '';
+  $('e-amt').value = '';
+  toast('Egreso registrado');
+  closeSheet();
   recalc();
 }
 
-function deleteExtra(id) {
+function deleteEgreso(id) {
   const d = getMonth(curKey);
-  d.gastos.extras = (d.gastos.extras || []).filter(e => e.id !== id);
+  d.egresos = (d.egresos || []).filter(e => e.id !== id);
   db[curKey] = d;
   save();
   recalc();
+}
+
+function initEgresos() {
+  const sel = $('e-tipo');
+  if (sel) sel.innerHTML = EGRESO_TIPOS.map(t => `<option value="${t.id}">${t.label}</option>`).join('');
+  const dateEl = $('e-date');
+  if (dateEl) dateEl.value = new Date().toISOString().slice(0, 10);
 }
 
 function setPendingDelete(id) {
@@ -191,7 +201,7 @@ if (!db[curKey]) {
   const existingKeys = Object.keys(db).filter(k => k !== '_settings').sort();
   if (existingKeys.length > 0) {
     const prev = getMonth(existingKeys[existingKeys.length - 1]);
-    db[curKey] = { trm: prev.trm, transfer_date: '', pv: prev.pv, incomes: [], transfers: [], gastos: { ...prev.gastos, extras: [] } };
+    db[curKey] = { trm: prev.trm, incomes: [], transfers: [], egresos: [] };
   }
 }
 loadForm(curKey);
@@ -201,31 +211,7 @@ initChart();
 initAnnual();
 initNumberHints();
 initTransfers();
-
-// Gastos auto-save
-GASTOS_KEYS.forEach(k => {
-  const el = $('g-' + k);
-  if (!el) return;
-  el.addEventListener('input', () => {
-    const d = getMonth(curKey);
-    d.gastos[k] = parseCOP(el.value);
-    db[curKey] = d;
-    save();
-    recalc();
-  });
-});
-
-// Pensión voluntaria auto-save
-const pvEl = $('p-pv');
-if (pvEl) {
-  pvEl.addEventListener('input', () => {
-    const d = getMonth(curKey);
-    d.pv = parseCOP(pvEl.value);
-    db[curKey] = d;
-    save();
-    recalc();
-  });
-}
+initEgresos();
 
 // TRM en vivo
 initLiveTRM();

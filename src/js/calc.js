@@ -22,10 +22,16 @@ function calcSS(ibc, pv) {
   return { salud, pens, arl, pv, total: salud + pens + arl + pv };
 }
 
-function calcGastos(g) {
-  const fijos  = GASTOS_KEYS.reduce((a, k) => a + (g[k] || 0), 0);
-  const extras = (g.extras || []).reduce((a, e) => a + (e.amount || 0), 0);
-  return fijos + extras;
+function calcGastos(egresos, trm) {
+  return (egresos || [])
+    .filter(e => e.tipo !== 'pension_vol')
+    .reduce((a, e) => a + (e.currency === 'USD' ? e.amount * (trm || DEFAULTS.trm) : e.amount), 0);
+}
+
+function calcPV(egresos, trm) {
+  return (egresos || [])
+    .filter(e => e.tipo === 'pension_vol')
+    .reduce((a, e) => a + (e.currency === 'USD' ? e.amount * (trm || DEFAULTS.trm) : e.amount), 0);
 }
 
 function calcDistribucion(bruto, ssTot, gast) {
