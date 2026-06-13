@@ -114,11 +114,6 @@ function recalc() {
   const [year] = curKey.split('-');
   const smmlv = getSMMLV(year);
 
-  const transferDate = d.transfer_date
-    ? ' · ' + new Date(d.transfer_date + 'T12:00:00').toLocaleDateString('es-CO', {day:'numeric', month:'short'})
-    : '';
-  set('trm-hdr', 'TRM ' + trm.toLocaleString('es-CO', {minimumFractionDigits:2, maximumFractionDigits:2}) + transferDate);
-
   const incomes = d.incomes || [];
   const { totUSD, totCOP, bruto } = calcTotales(incomes, trm);
 

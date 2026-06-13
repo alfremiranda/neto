@@ -17,7 +17,7 @@
       <span id="month-title" class="month-title">—</span>
       <button class="btn btn-icon" id="btn-next" onclick="nextMonth()">→</button>
     </div>
-    <span id="trm-hdr" class="trm-hdr"></span>
+    <span id="trm-live-hdr" class="trm-hdr">—</span>
   </header>
 
   <div class="section-group">
@@ -27,7 +27,10 @@
         <div class="sec">💸 Transferencia del mes</div>
         <div class="g2">
           <div>
-            <div class="flbl">TRM (COP/USD)</div>
+            <div class="flbl" style="display:flex;justify-content:space-between;align-items:center">
+              <span>TRM transferencia</span>
+              <button id="btn-use-live-trm" class="btn trm-use-btn" title="Usar TRM de hoy">—</button>
+            </div>
             <input type="number" id="p-trm" value="3567.11" step="0.01">
           </div>
           <div>
@@ -241,6 +244,7 @@
 <script src="src/js/supabase.js"></script>
 <script src="src/js/storage.js"></script>
 <script src="src/js/calc.js"></script>
+<script src="src/js/trm-live.js"></script>
 <script src="src/js/ui.js"></script>
 <script src="src/js/chart.js"></script>
 <script src="src/js/annual.js"></script>

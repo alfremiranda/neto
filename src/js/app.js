@@ -154,6 +154,9 @@ if (pvEl) {
 const trmEl = $('p-trm');
 if (trmEl) trmEl.addEventListener('input', recalc);
 
+// TRM en vivo
+initLiveTRM();
+
 // Service worker
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').catch(() => {});

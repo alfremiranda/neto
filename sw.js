@@ -1,4 +1,4 @@
-const CACHE = 'finanzas-amd-v1';
+const CACHE = 'neto-v2';
 
 const ASSETS = [
   './',
@@ -10,6 +10,7 @@ const ASSETS = [
   './src/js/supabase.js',
   './src/js/storage.js',
   './src/js/calc.js',
+  './src/js/trm-live.js',
   './src/js/ui.js',
   './src/js/chart.js',
   './src/js/annual.js',
@@ -36,9 +37,10 @@ self.addEventListener('activate', e => {
   );
 });
 
-// Fetch: Supabase siempre va a la red; el resto sale del cache
+// Fetch: APIs externas siempre van a la red; el resto sale del cache
+const NETWORK_ONLY = ['supabase.co', 'datos.gov.co', 'open.er-api.com'];
 self.addEventListener('fetch', e => {
-  if (e.request.url.includes('supabase.co')) return;
+  if (NETWORK_ONLY.some(h => e.request.url.includes(h))) return;
   e.respondWith(
     caches.match(e.request).then(cached => cached || fetch(e.request))
   );
