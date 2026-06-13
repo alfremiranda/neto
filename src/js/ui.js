@@ -2,6 +2,20 @@ const $ = id => document.getElementById(id);
 const set = (id, v) => { const el = $(id); if (el) el.textContent = v; };
 const bar = (id, a, b) => { const p = b > 0 ? Math.min(Math.round(a / b * 100), 100) : 0; $(id).style.width = p + '%'; };
 
+const parseCOP = str => parseInt(String(str).replace(/\D/g, '')) || 0;
+const copFormat = n => n > 0 ? Math.round(n).toLocaleString('es-CO') : '';
+
+function initCOPInput(el) {
+  el.type = 'text';
+  el.setAttribute('inputmode', 'numeric');
+  el.addEventListener('input', function() {
+    const raw = this.value.replace(/\D/g, '');
+    const num = parseInt(raw) || 0;
+    const formatted = num > 0 ? num.toLocaleString('es-CO') : '';
+    if (this.value !== formatted) this.value = formatted;
+  });
+}
+
 function toast(msg) {
   const t = $('toast');
   t.textContent = msg;
@@ -46,15 +60,17 @@ function _addHint(el, updateFn) {
 }
 
 function initNumberHints() {
+  // Campos COP enteros: formato inline mientras se escribe
   [...GASTOS_KEYS.map(k => 'g-' + k), 'p-pv', 'extra-amt', 's-smmlv'].forEach(id => {
     const el = $(id);
-    if (!el) return;
-    _addHint(el, v => v > 999 ? COP(v) : '');
+    if (el) initCOPInput(el);
   });
 
+  // TRM: hint debajo con formato + unidad
   const trmEl = $('p-trm');
   if (trmEl) _addHint(trmEl, v => v > 0 ? v.toLocaleString('es-CO', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' COP/USD' : '');
 
+  // Monto ingreso: hint muestra equivalente con moneda
   const amtEl = $('i-amt'), curEl = $('i-cur');
   if (amtEl && curEl) {
     const hint = document.createElement('div');
@@ -80,12 +96,12 @@ function loadForm(key) {
   const d = getMonth(key);
   $('p-trm').value = d.trm;
   $('p-transfer-date').value = d.transfer_date || '';
-  $('p-pv').value = d.pv || 0;
-  GASTOS_KEYS.forEach(k => { const el = $('g-' + k); if (el) el.value = d.gastos[k] || 0; });
+  $('p-pv').value = copFormat(d.pv || 0);
+  GASTOS_KEYS.forEach(k => { const el = $('g-' + k); if (el) el.value = copFormat(d.gastos[k] || 0); });
 
   const [y] = key.split('-');
   const smmlvEl = $('s-smmlv');
-  if (smmlvEl) smmlvEl.value = getSMMLV(y);
+  if (smmlvEl) smmlvEl.value = copFormat(getSMMLV(y));
   const lblY = $('s-smmlv-year');
   if (lblY) lblY.textContent = y;
 

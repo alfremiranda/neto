@@ -50,7 +50,7 @@ function addIncome() {
 
 function addExtra() {
   const desc   = $('extra-desc').value.trim();
-  const amount = parseFloat($('extra-amt').value) || 0;
+  const amount = parseCOP($('extra-amt').value);
   if (!desc || !amount) { toast('Ingresa descripción y monto'); return; }
   const d = getMonth(curKey);
   if (!d.gastos.extras) d.gastos.extras = [];
@@ -97,7 +97,7 @@ function saveMonth() {
 
 function saveSettings() {
   const [y] = curKey.split('-');
-  const v = parseFloat($('s-smmlv').value) || DEFAULTS.smmlv;
+  const v = parseCOP($('s-smmlv').value) || DEFAULTS.smmlv;
   if (!db._settings) db._settings = { smmlv: {} };
   if (!db._settings.smmlv) db._settings.smmlv = {};
   db._settings.smmlv[y] = v;
@@ -131,7 +131,7 @@ GASTOS_KEYS.forEach(k => {
   if (!el) return;
   el.addEventListener('input', () => {
     const d = getMonth(curKey);
-    d.gastos[k] = parseFloat(el.value) || 0;
+    d.gastos[k] = parseCOP(el.value);
     db[curKey] = d;
     save();
     recalc();
@@ -143,7 +143,7 @@ const pvEl = $('p-pv');
 if (pvEl) {
   pvEl.addEventListener('input', () => {
     const d = getMonth(curKey);
-    d.pv = parseFloat(pvEl.value) || 0;
+    d.pv = parseCOP(pvEl.value);
     db[curKey] = d;
     save();
     recalc();
