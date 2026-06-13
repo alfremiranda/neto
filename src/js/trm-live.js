@@ -55,20 +55,23 @@ async function fetchLiveTRM() {
 }
 
 function renderLiveTRM(trm, fresh) {
-  const el = $('trm-live-hdr');
-  if (!el || !trm) return;
+  if (!trm) return;
+  const formatted = trm.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const dot = fresh ? '●' : '○';
+  const dotClass = fresh ? 'trm-live-fresh' : 'trm-live-cache';
   const title = fresh ? 'Actualizado ahora' : 'Desde caché (< 8h)';
-  el.innerHTML = `<span class="trm-live-dot ${fresh ? 'trm-live-fresh' : 'trm-live-cache'}" title="${title}">${dot}</span> TRM&nbsp;${trm.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  updateUseLiveTRMBtn(trm);
-}
 
-function updateUseLiveTRMBtn(trm) {
+  // Header
+  const hdr = $('trm-live-hdr');
+  if (hdr) hdr.innerHTML = `<span class="trm-live-dot ${dotClass}" title="${title}">${dot}</span> TRM&nbsp;${formatted}`;
+
+  // Card strip
+  const val = $('trm-live-val');
+  if (val) val.innerHTML = `${formatted} <span class="trm-live-dot ${dotClass}" title="${title}">${dot}</span>`;
+
+  // Botón Usar
   const btn = $('btn-use-live-trm');
-  if (!btn || !trm) return;
-  btn.textContent = trm.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  btn.title = 'Usar TRM de hoy';
-  btn.onclick = () => {
+  if (btn) btn.onclick = () => {
     const el = $('p-trm');
     el.value = trm;
     el.dispatchEvent(new Event('input'));
@@ -77,11 +80,8 @@ function updateUseLiveTRMBtn(trm) {
 }
 
 async function initLiveTRM() {
-  // Mostrar caché inmediatamente si existe
   const cached = getCachedLiveTRM();
   if (cached) renderLiveTRM(cached.trm, false);
-
-  // Refrescar en background
   const result = await fetchLiveTRM();
   if (result) renderLiveTRM(result.trm, true);
 }

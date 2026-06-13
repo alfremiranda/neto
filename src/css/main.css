@@ -32,7 +32,8 @@ header h1{font-size:14px;font-weight:600;color:var(--txt2)}
 .trm-live-dot{font-size:8px;vertical-align:middle}
 .trm-live-fresh{color:var(--green)}
 .trm-live-cache{color:var(--amber)}
-.trm-use-btn{font-size:10px;padding:1px 7px;min-height:unset;height:auto;color:var(--blue);border-color:var(--blue)}
+.live-trm-strip{display:flex;justify-content:space-between;align-items:center;background:var(--bg2);border-radius:var(--radius);padding:10px 12px;margin-bottom:2px}
+.live-trm-val{font-size:17px;font-weight:600;margin-top:2px}
 .card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:10px}
 .sec{font-size:12px;font-weight:500;color:var(--txt2);margin-bottom:10px;display:flex;align-items:center;gap:5px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}

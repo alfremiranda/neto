@@ -25,12 +25,18 @@
 
       <div class="card">
         <div class="sec">💸 Transferencia del mes</div>
-        <div class="g2">
+
+        <div class="live-trm-strip">
           <div>
-            <div class="flbl" style="display:flex;justify-content:space-between;align-items:center">
-              <span>TRM transferencia</span>
-              <button id="btn-use-live-trm" class="btn trm-use-btn" title="Usar TRM de hoy">—</button>
-            </div>
+            <div class="flbl">TRM de hoy</div>
+            <div class="live-trm-val" id="trm-live-val">—</div>
+          </div>
+          <button id="btn-use-live-trm" class="btn btn-p" style="font-size:12px">Usar →</button>
+        </div>
+
+        <div class="g2" style="margin-top:10px">
+          <div>
+            <div class="flbl">TRM transferencia</div>
             <input type="number" id="p-trm" value="3567.11" step="0.01">
           </div>
           <div>
