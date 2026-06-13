@@ -2,6 +2,14 @@ const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto
 
 const GASTOS_KEYS = ['arriendo','servicios','internet','mercado','tarjetas','transporte','streaming','salud','otros'];
 
+const TRANSFER_ACCOUNTS = [
+  { id: 'ARQ',         label: 'ARQ (Observer Hub)', currency: 'USD' },
+  { id: 'Toptal',      label: 'Toptal',              currency: 'USD' },
+  { id: 'Bancolombia', label: 'Bancolombia',          currency: 'COP' },
+  { id: 'NU',          label: 'NU',                   currency: 'COP' },
+  { id: 'Nequi',       label: 'Nequi',                currency: 'COP' },
+];
+
 const DEFAULTS = {
   trm: 3567.11,
   pv: 2000000,

@@ -114,6 +114,12 @@ input:focus,select:focus{outline:2px solid var(--blue);outline-offset:-1px}
 }
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--txt);color:var(--bg);padding:10px 20px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:99}
 .toast.show{opacity:1}
+.transfer-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:0.5px solid var(--border)}
+.transfer-item:last-child{border-bottom:none}
+.ti-l{flex:1;min-width:0}
+.ti-route{font-size:12px;font-weight:500;display:flex;justify-content:space-between;align-items:center}
+.ti-date{font-size:11px;font-weight:400;color:var(--txt3)}
+.ti-detail{font-size:11px;color:var(--txt3);margin-top:2px}
 .annual-tbl{width:100%;border-collapse:collapse;font-size:12px}
 .annual-tbl thead tr{border-bottom:0.5px solid var(--border2)}
 .annual-tbl th{padding:6px 6px;color:var(--txt3);font-weight:500}

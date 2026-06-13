@@ -15,6 +15,7 @@ function getMonth(k) {
     transfer_date: '',
     pv: DEFAULTS.pv,
     incomes: [],
+    transfers: [],
     gastos: { arriendo:0, servicios:0, internet:0, mercado:0, tarjetas:0, transporte:0, streaming:0, salud: DEFAULTS.salud_prepagada, otros:0, extras: [] },
   };
 }

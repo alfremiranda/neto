@@ -105,6 +105,8 @@ function loadForm(key) {
   const lblY = $('s-smmlv-year');
   if (lblY) lblY.textContent = y;
 
+  const tTransferTrm = $('t-trm');
+  if (tTransferTrm) tTransferTrm.value = d.trm;
   updateNumberHints();
 }
 
@@ -180,6 +182,30 @@ function recalc() {
   set('f-int',        '≈ ' + USD(flujo.interest) + '/mes');
 
   renderExtras();
+  renderTransfers();
   updateChart();
   updateAnnual();
+}
+
+function renderTransfers() {
+  const el = $('transfers-list');
+  if (!el) return;
+  const transfers = (getMonth(curKey).transfers || []);
+  if (!transfers.length) { el.innerHTML = ''; return; }
+  el.innerHTML = '<div class="divider" style="margin:10px 0"></div>' + transfers.map(t => {
+    const fromAcc = TRANSFER_ACCOUNTS.find(a => a.id === t.from) || { label: t.from };
+    const toAcc   = TRANSFER_ACCOUNTS.find(a => a.id === t.to)   || { label: t.to };
+    const fromStr = t.fromCurrency === 'USD' ? USD(t.amount) : COP(t.amount);
+    const toStr   = t.toCurrency   === 'USD' ? USD(t.toAmount) : COP(t.toAmount);
+    const trmStr  = t.trm ? ' @' + t.trm.toLocaleString('es-CO', {minimumFractionDigits:2,maximumFractionDigits:2}) : '';
+    const dateStr = t.date ? t.date.slice(5).replace('-', '/') : '';
+    return `
+      <div class="transfer-item">
+        <div class="ti-l">
+          <div class="ti-route">${fromAcc.label} → ${toAcc.label}${dateStr ? '<span class="ti-date">' + dateStr + '</span>' : ''}</div>
+          <div class="ti-detail">${fromStr} → ${toStr}${trmStr}</div>
+        </div>
+        <button class="btn btn-d btn-icon" onclick="deleteTransfer(${t.id})">✕</button>
+      </div>`;
+  }).join('');
 }

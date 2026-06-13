@@ -11,7 +11,7 @@ function prevMonth() {
   const prevKey = monthKey(m - 1, y);
   if (!db[prevKey]) {
     const current = getMonth(curKey);
-    db[prevKey] = { trm: current.trm, transfer_date: '', pv: current.pv, incomes: [], gastos: { ...current.gastos, extras: [] } };
+    db[prevKey] = { trm: current.trm, transfer_date: '', pv: current.pv, incomes: [], transfers: [], gastos: { ...current.gastos, extras: [] } };
     save();
     toast('Mes creado');
   }
@@ -24,7 +24,7 @@ function nextMonth() {
   const nextKey = monthKey(m + 1, y);
   if (!db[nextKey]) {
     const current = getMonth(curKey);
-    db[nextKey] = { trm: current.trm, transfer_date: '', pv: current.pv, incomes: [], gastos: { ...current.gastos, extras: [] } };
+    db[nextKey] = { trm: current.trm, transfer_date: '', pv: current.pv, incomes: [], transfers: [], gastos: { ...current.gastos, extras: [] } };
     save();
     toast('Mes creado');
   }
@@ -95,6 +95,89 @@ function saveMonth() {
   recalc();
 }
 
+function onTransferAccountChange() {
+  const fromId = $('t-from') && $('t-from').value;
+  const toId   = $('t-to')   && $('t-to').value;
+  const from   = TRANSFER_ACCOUNTS.find(a => a.id === fromId);
+  const to     = TRANSFER_ACCOUNTS.find(a => a.id === toId);
+  const cross  = from && to && from.currency !== to.currency;
+  const row    = $('t-trm-row');
+  if (row) row.style.display = cross ? '' : 'none';
+  const lbl = $('t-amt-lbl');
+  if (lbl) lbl.textContent = 'Monto' + (from ? ' (' + from.currency + ')' : '');
+  updateTransferResult();
+}
+
+function updateTransferResult() {
+  const fromId = $('t-from') && $('t-from').value;
+  const toId   = $('t-to')   && $('t-to').value;
+  const from   = TRANSFER_ACCOUNTS.find(a => a.id === fromId);
+  const to     = TRANSFER_ACCOUNTS.find(a => a.id === toId);
+  const amount = parseFloat($('t-amt') && $('t-amt').value) || 0;
+  const trmEl  = $('t-trm');
+  const trm    = (trmEl && parseFloat(trmEl.value)) || getMonth(curKey).trm;
+  const el     = $('t-result');
+  if (!el) return;
+  if (!from || !to || !amount) { el.textContent = ''; return; }
+  if (from.currency === 'USD' && to.currency === 'COP') {
+    el.textContent = '→ ' + COP(amount * trm);
+  } else if (from.currency === 'COP' && to.currency === 'USD') {
+    el.textContent = '→ ' + USD(amount / trm);
+  } else {
+    el.textContent = from.currency === 'USD' ? '→ ' + USD(amount) : '→ ' + COP(amount);
+  }
+}
+
+function addTransfer() {
+  const fromId = $('t-from').value;
+  const toId   = $('t-to').value;
+  const amount = parseFloat($('t-amt').value) || 0;
+  const date   = $('t-date').value;
+  if (!amount) { toast('Ingresa el monto'); return; }
+  if (fromId === toId) { toast('Las cuentas deben ser distintas'); return; }
+  const from  = TRANSFER_ACCOUNTS.find(a => a.id === fromId);
+  const to    = TRANSFER_ACCOUNTS.find(a => a.id === toId);
+  const cross = from && to && from.currency !== to.currency;
+  const trm   = cross ? (parseFloat($('t-trm').value) || getMonth(curKey).trm) : null;
+  let toAmount = amount;
+  if (from.currency === 'USD' && to.currency === 'COP') toAmount = amount * trm;
+  else if (from.currency === 'COP' && to.currency === 'USD') toAmount = amount / trm;
+  const d = getMonth(curKey);
+  if (!d.transfers) d.transfers = [];
+  d.transfers.push({ id: Date.now(), date: date || new Date().toISOString().slice(0, 10), from: fromId, to: toId, amount, fromCurrency: from.currency, toCurrency: to.currency, trm, toAmount });
+  db[curKey] = d;
+  save();
+  $('t-amt').value = '';
+  $('t-result').textContent = '';
+  toast('Movimiento registrado');
+  renderTransfers();
+}
+
+function deleteTransfer(id) {
+  const d = getMonth(curKey);
+  d.transfers = (d.transfers || []).filter(t => t.id !== id);
+  db[curKey] = d;
+  save();
+  renderTransfers();
+}
+
+function initTransfers() {
+  const opts = TRANSFER_ACCOUNTS.map(a => `<option value="${a.id}">${a.label} (${a.currency})</option>`).join('');
+  const fromSel = $('t-from'), toSel = $('t-to');
+  if (fromSel) { fromSel.innerHTML = opts; fromSel.value = 'ARQ'; }
+  if (toSel)   { toSel.innerHTML   = opts; toSel.value   = 'Bancolombia'; }
+  const dateEl = $('t-date');
+  if (dateEl) dateEl.value = new Date().toISOString().slice(0, 10);
+  const trmEl = $('t-trm');
+  if (trmEl) trmEl.value = getMonth(curKey).trm;
+  if (fromSel) fromSel.addEventListener('change', onTransferAccountChange);
+  if (toSel)   toSel.addEventListener('change', onTransferAccountChange);
+  const amtEl = $('t-amt');
+  if (amtEl) amtEl.addEventListener('input', updateTransferResult);
+  if (trmEl) trmEl.addEventListener('input', updateTransferResult);
+  onTransferAccountChange();
+}
+
 function saveSettings() {
   const [y] = curKey.split('-');
   const v = parseCOP($('s-smmlv').value) || DEFAULTS.smmlv;
@@ -115,7 +198,7 @@ if (!db[curKey]) {
   const existingKeys = Object.keys(db).filter(k => k !== '_settings').sort();
   if (existingKeys.length > 0) {
     const prev = getMonth(existingKeys[existingKeys.length - 1]);
-    db[curKey] = { trm: prev.trm, transfer_date: '', pv: prev.pv, incomes: [], gastos: { ...prev.gastos, extras: [] } };
+    db[curKey] = { trm: prev.trm, transfer_date: '', pv: prev.pv, incomes: [], transfers: [], gastos: { ...prev.gastos, extras: [] } };
   }
 }
 loadForm(curKey);
@@ -124,6 +207,7 @@ recalc();
 initChart();
 initAnnual();
 initNumberHints();
+initTransfers();
 
 // Gastos auto-save
 GASTOS_KEYS.forEach(k => {
