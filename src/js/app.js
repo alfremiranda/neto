@@ -33,7 +33,7 @@ function nextMonth() {
 
 function addIncome() {
   const desc     = $('i-desc').value.trim();
-  const amount   = parseFloat($('i-amt').value) || 0;
+  const amount   = parseMoney($('i-amt').value);
   const currency = $('i-cur').value;
   const account  = $('i-acc').value.trim() || 'Otro';
   const tipo     = $('i-tipo').value;
@@ -51,7 +51,7 @@ function addIncome() {
 
 function addEgreso() {
   const tipo   = $('e-tipo').value;
-  const amount = parseFloat($('e-amt').value) || 0;
+  const amount = parseMoney($('e-amt').value);
   const cur    = $('e-cur').value;
   const date   = $('e-date').value;
   if (!amount) { toast('Ingresa el valor'); return; }
@@ -114,9 +114,9 @@ function updateTransferResult() {
   const toId   = $('t-to')   && $('t-to').value;
   const from   = TRANSFER_ACCOUNTS.find(a => a.id === fromId);
   const to     = TRANSFER_ACCOUNTS.find(a => a.id === toId);
-  const amount = parseFloat($('t-amt') && $('t-amt').value) || 0;
+  const amount = parseMoney($('t-amt') && $('t-amt').value);
   const trmEl  = $('t-trm');
-  const trm    = (trmEl && parseFloat(trmEl.value)) || getMonth(curKey).trm;
+  const trm    = (trmEl && parseMoney(trmEl.value)) || getMonth(curKey).trm;
   const el     = $('t-result');
   if (!el) return;
   if (!from || !to || !amount) { el.textContent = ''; return; }
@@ -132,14 +132,14 @@ function updateTransferResult() {
 function addTransfer() {
   const fromId = $('t-from').value;
   const toId   = $('t-to').value;
-  const amount = parseFloat($('t-amt').value) || 0;
+  const amount = parseMoney($('t-amt').value);
   const date   = $('t-date').value;
   if (!amount) { toast('Ingresa el monto'); return; }
   if (fromId === toId) { toast('Las cuentas deben ser distintas'); return; }
   const from  = TRANSFER_ACCOUNTS.find(a => a.id === fromId);
   const to    = TRANSFER_ACCOUNTS.find(a => a.id === toId);
   const cross = from && to && from.currency !== to.currency;
-  const trm   = cross ? (parseFloat($('t-trm').value) || getMonth(curKey).trm) : null;
+  const trm   = cross ? (parseMoney($('t-trm').value) || getMonth(curKey).trm) : null;
   let toAmount = amount;
   if (from.currency === 'USD' && to.currency === 'COP') toAmount = amount * trm;
   else if (from.currency === 'COP' && to.currency === 'USD') toAmount = amount / trm;
@@ -172,7 +172,7 @@ function initTransfers() {
   const dateEl = $('t-date');
   if (dateEl) dateEl.value = new Date().toISOString().slice(0, 10);
   const trmEl = $('t-trm');
-  if (trmEl) trmEl.value = getMonth(curKey).trm;
+  if (trmEl) setMoneyInput(trmEl, getMonth(curKey).trm, 2);
   if (fromSel) fromSel.addEventListener('change', onTransferAccountChange);
   if (toSel)   toSel.addEventListener('change', onTransferAccountChange);
   const amtEl = $('t-amt');

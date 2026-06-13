@@ -3,18 +3,38 @@ const set = (id, v) => { const el = $(id); if (el) el.textContent = v; };
 const bar = (id, a, b) => { const p = b > 0 ? Math.min(Math.round(a / b * 100), 100) : 0; $(id).style.width = p + '%'; };
 
 const parseCOP = str => parseInt(String(str).replace(/\D/g, '')) || 0;
+const parseMoney = str => parseFloat(String(str).replace(/\./g, '').replace(',', '.')) || 0;
 const copFormat = n => n > 0 ? Math.round(n).toLocaleString('es-CO') : '';
 
-function initCOPInput(el) {
+// Sets a numeric value onto a formatted money input
+function setMoneyInput(el, num, decimals) {
+  if (!el) return;
+  el.value = (num || 0).toLocaleString('es-CO', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+}
+
+// Formats as-you-type. getDecimals: number or () => number (0=COP integer, 2=USD)
+function initMoneyInput(el, getDecimals) {
   el.type = 'text';
-  el.setAttribute('inputmode', 'numeric');
+  el.setAttribute('inputmode', 'decimal');
   el.addEventListener('input', function() {
-    const raw = this.value.replace(/\D/g, '');
-    const num = parseInt(raw) || 0;
-    const formatted = num > 0 ? num.toLocaleString('es-CO') : '';
-    if (this.value !== formatted) this.value = formatted;
+    const dec = typeof getDecimals === 'function' ? getDecimals() : (getDecimals || 0);
+    const raw = this.value.replace(/\./g, ''); // strip thousands dots
+    const commaIdx = raw.indexOf(',');
+    const hasComma = commaIdx !== -1 && dec > 0;
+    const intRaw = (hasComma ? raw.slice(0, commaIdx) : raw).replace(/\D/g, '');
+    const intNum = parseInt(intRaw) || 0;
+    if (!intRaw && !hasComma) { this.value = ''; return; }
+    const intFmt = intNum.toLocaleString('es-CO');
+    if (hasComma) {
+      const decStr = raw.slice(commaIdx + 1).replace(/\D/g, '').slice(0, dec);
+      this.value = intFmt + ',' + decStr;
+    } else {
+      this.value = intFmt;
+    }
   });
 }
+
+function initCOPInput(el) { initMoneyInput(el, 0); }
 
 function openSheet(id) {
   document.querySelectorAll('.sheet').forEach(s => s.classList.remove('active'));
@@ -82,62 +102,57 @@ function renderMonthNav() {
   const next = $('btn-next'); if (next) next.disabled = mn === 11;
 }
 
-const _hintUpdaters = [];
-
-function _addHint(el, updateFn) {
-  const hint = document.createElement('div');
-  hint.className = 'num-hint';
-  el.parentNode.appendChild(hint);
-  const update = () => { hint.textContent = updateFn(parseFloat(el.value) || 0); };
-  el.addEventListener('input', update);
-  _hintUpdaters.push(update);
-  update();
-  return update;
-}
-
 function initNumberHints() {
-  ['s-smmlv'].forEach(id => {
-    const el = $(id);
-    if (el) initCOPInput(el);
+  // SMMLV: COP integer
+  const smmlvEl = $('s-smmlv');
+  if (smmlvEl) initMoneyInput(smmlvEl, 0);
+
+  // Egreso amount: COP integer or USD 2 decimals
+  const eAmt = $('e-amt');
+  if (eAmt) initMoneyInput(eAmt, () => ($('e-cur') && $('e-cur').value) === 'USD' ? 2 : 0);
+
+  // Transfer amount: COP or USD based on from-account currency
+  const tAmt = $('t-amt');
+  if (tAmt) initMoneyInput(tAmt, () => {
+    const from = TRANSFER_ACCOUNTS.find(a => a.id === ($('t-from') && $('t-from').value));
+    return from && from.currency === 'USD' ? 2 : 0;
   });
 
-  // TRM: hint debajo con formato + unidad
-  const trmEl = $('p-trm');
-  if (trmEl) _addHint(trmEl, v => v > 0 ? v.toLocaleString('es-CO', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' COP/USD' : '');
+  // Transfer TRM: always 2 decimals
+  const tTrm = $('t-trm');
+  if (tTrm) initMoneyInput(tTrm, 2);
 
-  // Monto ingreso: hint muestra equivalente con moneda
+  // Income amount: COP or USD + cross-currency hint
   const amtEl = $('i-amt'), curEl = $('i-cur');
-  if (amtEl && curEl) {
-    const hint = document.createElement('div');
-    hint.className = 'num-hint';
-    amtEl.parentNode.appendChild(hint);
-    const update = () => {
-      const v = parseFloat(amtEl.value) || 0;
-      if (!v) { hint.textContent = ''; return; }
-      hint.textContent = curEl.value === 'USD' ? USD(v) : (v > 999 ? COP(v) : '');
-    };
-    amtEl.addEventListener('input', update);
-    curEl.addEventListener('change', update);
-    _hintUpdaters.push(update);
-    update();
+  if (amtEl) {
+    initMoneyInput(amtEl, () => curEl && curEl.value === 'USD' ? 2 : 0);
+    if (curEl) {
+      const hint = document.createElement('div');
+      hint.className = 'num-hint';
+      amtEl.parentNode.appendChild(hint);
+      const update = () => {
+        const v = parseMoney(amtEl.value);
+        if (!v) { hint.textContent = ''; return; }
+        hint.textContent = curEl.value === 'USD' ? USD(v) : (v > 999 ? COP(v) : '');
+      };
+      amtEl.addEventListener('input', update);
+      curEl.addEventListener('change', update);
+      update();
+    }
   }
 }
 
-function updateNumberHints() {
-  _hintUpdaters.forEach(fn => fn());
-}
+function updateNumberHints() {}
 
 function loadForm(key) {
   const d = getMonth(key);
   const [y] = key.split('-');
   const smmlvEl = $('s-smmlv');
-  if (smmlvEl) smmlvEl.value = copFormat(getSMMLV(y));
+  if (smmlvEl) setMoneyInput(smmlvEl, getSMMLV(y), 0);
   const lblY = $('s-smmlv-year');
   if (lblY) lblY.textContent = y;
 
-  const tTransferTrm = $('t-trm');
-  if (tTransferTrm) tTransferTrm.value = d.trm;
-  updateNumberHints();
+  setMoneyInput($('t-trm'), d.trm, 2);
 }
 
 function recalc() {
