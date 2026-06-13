@@ -1,4 +1,4 @@
-const CACHE = 'neto-v2';
+const CACHE = 'neto-v3';
 
 const ASSETS = [
   './',

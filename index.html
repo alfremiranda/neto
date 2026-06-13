@@ -50,75 +50,11 @@
       </div>
 
       <div class="card">
-        <div class="sec">🔀 Movimientos entre cuentas</div>
-
-        <div class="g2" style="margin-bottom:8px">
-          <div>
-            <div class="flbl" id="t-amt-lbl">Monto</div>
-            <input type="number" id="t-amt" placeholder="0" step="0.01">
-          </div>
-          <div>
-            <div class="flbl">Fecha</div>
-            <input type="date" id="t-date">
-          </div>
+        <div class="sec" style="justify-content:space-between">
+          <span>🔀 Movimientos entre cuentas</span>
+          <button class="btn btn-p btn-sm" onclick="openSheet('sheet-transfer')">＋ Agregar</button>
         </div>
-        <div class="g2" style="margin-bottom:8px">
-          <div>
-            <div class="flbl">De</div>
-            <select id="t-from"></select>
-          </div>
-          <div>
-            <div class="flbl">A</div>
-            <select id="t-to"></select>
-          </div>
-        </div>
-        <div id="t-trm-row" style="display:none;margin-bottom:6px">
-          <div class="flbl">TRM</div>
-          <input type="number" id="t-trm" step="0.01" placeholder="3567.11">
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div id="t-result" style="font-size:12px;color:var(--blue);font-weight:500"></div>
-          <button class="btn btn-p" onclick="addTransfer()">Agregar</button>
-        </div>
-
         <div id="transfers-list"></div>
-      </div>
-
-      <div class="card">
-        <div class="sec">➕ Registrar ingreso</div>
-        <div style="margin-bottom:8px">
-          <div class="flbl">Descripción</div>
-          <input type="text" id="i-desc" placeholder="Ej: Contrato fijo junio, Proyecto Toptal X...">
-        </div>
-        <datalist id="cuentas-list">
-          <option value="ARQ (Observer Hub LLC)">
-          <option value="Toptal">
-          <option value="Bancolombia">
-          <option value="Nequi">
-          <option value="Otro">
-        </datalist>
-        <div class="g2" style="margin-bottom:8px">
-          <div><div class="flbl">Monto</div><input type="number" id="i-amt" placeholder="0"></div>
-          <div><div class="flbl">Moneda</div>
-            <select id="i-cur"><option value="USD">USD</option><option value="COP">COP</option></select>
-          </div>
-        </div>
-        <div class="g2">
-          <div>
-            <div class="flbl">Cuenta / Fuente</div>
-            <input type="text" id="i-acc" list="cuentas-list" placeholder="ARQ, Toptal...">
-          </div>
-          <div>
-            <div class="flbl">Tipo</div>
-            <select id="i-tipo">
-              <option value="servicios">Servicios</option>
-              <option value="otro">Otro</option>
-            </select>
-          </div>
-        </div>
-        <div style="margin-top:10px;text-align:right">
-          <button class="btn btn-p" onclick="addIncome()">Agregar</button>
-        </div>
       </div>
 
       <div class="card">
@@ -150,7 +86,10 @@
     <div>
 
       <div class="card">
-        <div class="sec">💵 Ingresos del mes</div>
+        <div class="sec" style="justify-content:space-between">
+          <span>💵 Ingresos del mes</span>
+          <button class="btn btn-p btn-sm" onclick="openSheet('sheet-income')">＋ Registrar</button>
+        </div>
         <div id="income-list"><div class="empty">Sin ingresos registrados</div></div>
         <div class="divider"></div>
         <div class="g2">
@@ -277,6 +216,86 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<datalist id="cuentas-list">
+  <option value="ARQ (Observer Hub LLC)">
+  <option value="Toptal">
+  <option value="Bancolombia">
+  <option value="Nequi">
+  <option value="Otro">
+</datalist>
+
+<div id="overlay" class="overlay" onclick="closeSheet()"></div>
+
+<div id="sheet-income" class="sheet">
+  <div class="sheet-hdr">
+    <span class="sheet-title">Registrar ingreso</span>
+    <button class="btn btn-icon" onclick="closeSheet()">✕</button>
+  </div>
+  <div class="sheet-body">
+    <div style="margin-bottom:8px">
+      <div class="flbl">Descripción</div>
+      <input type="text" id="i-desc" placeholder="Ej: Contrato fijo junio, Proyecto Toptal X...">
+    </div>
+    <div class="g2" style="margin-bottom:8px">
+      <div><div class="flbl">Monto</div><input type="number" id="i-amt" placeholder="0"></div>
+      <div><div class="flbl">Moneda</div>
+        <select id="i-cur"><option value="USD">USD</option><option value="COP">COP</option></select>
+      </div>
+    </div>
+    <div class="g2" style="margin-bottom:16px">
+      <div>
+        <div class="flbl">Cuenta / Fuente</div>
+        <input type="text" id="i-acc" list="cuentas-list" placeholder="ARQ, Toptal...">
+      </div>
+      <div>
+        <div class="flbl">Tipo</div>
+        <select id="i-tipo">
+          <option value="servicios">Servicios</option>
+          <option value="otro">Otro</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-p" style="width:100%" onclick="addIncome()">Agregar ingreso</button>
+  </div>
+</div>
+
+<div id="sheet-transfer" class="sheet">
+  <div class="sheet-hdr">
+    <span class="sheet-title">Nuevo movimiento</span>
+    <button class="btn btn-icon" onclick="closeSheet()">✕</button>
+  </div>
+  <div class="sheet-body">
+    <div class="g2" style="margin-bottom:8px">
+      <div>
+        <div class="flbl" id="t-amt-lbl">Monto</div>
+        <input type="number" id="t-amt" placeholder="0" step="0.01">
+      </div>
+      <div>
+        <div class="flbl">Fecha</div>
+        <input type="date" id="t-date">
+      </div>
+    </div>
+    <div class="g2" style="margin-bottom:8px">
+      <div>
+        <div class="flbl">De</div>
+        <select id="t-from"></select>
+      </div>
+      <div>
+        <div class="flbl">A</div>
+        <select id="t-to"></select>
+      </div>
+    </div>
+    <div id="t-trm-row" style="display:none;margin-bottom:8px">
+      <div class="flbl">TRM</div>
+      <input type="number" id="t-trm" step="0.01" placeholder="3567.11">
+    </div>
+    <div style="min-height:20px;margin-bottom:16px">
+      <div id="t-result" style="font-size:12px;color:var(--blue);font-weight:500"></div>
+    </div>
+    <button class="btn btn-p" style="width:100%" onclick="addTransfer()">Registrar movimiento</button>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>

@@ -45,6 +45,7 @@ function addIncome() {
   $('i-desc').value = '';
   $('i-amt').value  = '';
   toast('Ingreso agregado');
+  closeSheet();
   recalc();
 }
 
@@ -150,6 +151,7 @@ function addTransfer() {
   $('t-amt').value = '';
   $('t-result').textContent = '';
   toast('Movimiento registrado');
+  closeSheet();
   renderTransfers();
 }
 
@@ -240,6 +242,8 @@ if (trmEl) trmEl.addEventListener('input', recalc);
 
 // TRM en vivo
 initLiveTRM();
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
 
 // Service worker
 if ('serviceWorker' in navigator) {

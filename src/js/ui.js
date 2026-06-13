@@ -16,6 +16,23 @@ function initCOPInput(el) {
   });
 }
 
+function openSheet(id) {
+  document.querySelectorAll('.sheet').forEach(s => s.classList.remove('active'));
+  $('overlay').classList.add('active');
+  const sheet = $(id);
+  if (sheet) {
+    sheet.classList.add('active');
+    setTimeout(() => sheet.querySelector('input,select')?.focus(), 60);
+  }
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSheet() {
+  document.querySelectorAll('.sheet').forEach(s => s.classList.remove('active'));
+  $('overlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
 function toast(msg) {
   const t = $('toast');
   t.textContent = msg;
@@ -126,7 +143,7 @@ function recalc() {
 
   const il = $('income-list');
   if (!incomes.length) {
-    il.innerHTML = '<div class="empty">Sin ingresos registrados</div>';
+    il.innerHTML = `<div class="empty-state"><div class="empty-icon">💸</div><p>Sin ingresos este mes</p><button class="btn btn-p btn-sm" onclick="openSheet('sheet-income')">＋ Registrar ingreso</button></div>`;
   } else {
     il.innerHTML = incomes.map(i => `
       <div class="income-item">
@@ -191,7 +208,10 @@ function renderTransfers() {
   const el = $('transfers-list');
   if (!el) return;
   const transfers = (getMonth(curKey).transfers || []);
-  if (!transfers.length) { el.innerHTML = ''; return; }
+  if (!transfers.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">🔀</div><p>Sin movimientos este mes</p><button class="btn btn-p btn-sm" onclick="openSheet('sheet-transfer')">＋ Agregar movimiento</button></div>`;
+    return;
+  }
   el.innerHTML = '<div class="divider" style="margin:10px 0"></div>' + transfers.map(t => {
     const fromAcc = TRANSFER_ACCOUNTS.find(a => a.id === t.from) || { label: t.from };
     const toAcc   = TRANSFER_ACCOUNTS.find(a => a.id === t.to)   || { label: t.to };
