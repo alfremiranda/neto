@@ -171,11 +171,11 @@ function recalc() {
   const gast = calcGastos(d.gastos);
   const { ret, prim, netoLibre } = calcDistribucion(bruto, ss.total, gast);
 
-  bar('bss',  ss.total,             bruto); set('pss',  pct(ss.total, bruto));
-  bar('bgst', gast,                 bruto); set('pgst', pct(gast, bruto));
-  bar('bret', ret,                  bruto); set('pret', pct(ret, bruto));
-  bar('bprim',prim,                 bruto); set('pprim',pct(prim, bruto));
-  bar('bnet', Math.max(netoLibre,0),bruto); set('pnet', pct(Math.max(netoLibre,0), bruto));
+  bar('bss',  ss.total,             bruto); set('pss',  pct(ss.total, bruto)); set('vss',  COP(ss.total));
+  bar('bgst', gast,                 bruto); set('pgst', pct(gast, bruto));     set('vgst', COP(gast));
+  bar('bret', ret,                  bruto); set('pret', pct(ret, bruto));      set('vret', COP(ret));
+  bar('bprim',prim,                 bruto); set('pprim',pct(prim, bruto));     set('vprim',COP(prim));
+  bar('bnet', Math.max(netoLibre,0),bruto); set('pnet', pct(Math.max(netoLibre,0), bruto)); set('vnet', COP(Math.max(netoLibre, 0)));
 
   const flujo = calcFlujo(ss.total, gast, ret, prim, trm, totUSD);
   set('f-bancol', USD(flujo.aBancol));
