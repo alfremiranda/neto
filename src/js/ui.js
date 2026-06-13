@@ -133,7 +133,6 @@ function recalc() {
           <div class="ii-m">
             <span class="badge ${i.currency === 'USD' ? 'b-usd' : 'b-cop'}">${i.currency}</span>
             <span class="badge b-otro">${i.account}</span>
-            <span class="badge ${(i.tipo||'servicios')==='servicios' ? 'b-ss' : 'b-otro'}">${(i.tipo||'servicios')==='servicios' ? 'SS' : 'No SS'}</span>
           </div>
         </div>
         <div class="ii-r">
