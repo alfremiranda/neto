@@ -13,7 +13,7 @@ function buildAnnualData(year) {
     const { totUSD: mUSD, totCOP: mCOP, bruto } = calcTotales(incomes, trm);
     const ibc     = calcIBC(incomes, trm, getSMMLV(k.split('-')[0]));
     const egresos = d.egresos || [];
-    const ss      = calcSS(ibc, calcPV(egresos, trm));
+    const ss      = calcSS(ibc);
     const gast    = calcGastos(egresos, trm);
     const { ret, prim, netoLibre } = calcDistribucion(bruto, ss.total, gast);
     const neto    = Math.max(netoLibre, 0);

@@ -15,22 +15,15 @@ function calcIBC(incomes, trm, smmlv) {
   return Math.max(totalServicios * DEFAULTS.ibc_factor, smmlv);
 }
 
-function calcSS(ibc, pv) {
+function calcSS(ibc) {
   const salud = ibc * DEFAULTS.ss_salud;
   const pens  = ibc * DEFAULTS.ss_pens;
   const arl   = ibc * DEFAULTS.ss_arl;
-  return { salud, pens, arl, pv, total: salud + pens + arl + pv };
+  return { salud, pens, arl, total: salud + pens + arl };
 }
 
 function calcGastos(egresos, trm) {
   return (egresos || [])
-    .filter(e => e.tipo !== 'pension_vol')
-    .reduce((a, e) => a + (e.currency === 'USD' ? e.amount * (trm || DEFAULTS.trm) : e.amount), 0);
-}
-
-function calcPV(egresos, trm) {
-  return (egresos || [])
-    .filter(e => e.tipo === 'pension_vol')
     .reduce((a, e) => a + (e.currency === 'USD' ? e.amount * (trm || DEFAULTS.trm) : e.amount), 0);
 }
 

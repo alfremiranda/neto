@@ -73,7 +73,10 @@ function renderLiveTRM(trm, fresh) {
   const sheetBtn = $('trm-live-sheet-btn');
   if (sheetBtn) sheetBtn.onclick = () => {
     const el = $('t-trm');
-    if (el) { el.value = trm; el.dispatchEvent(new Event('input')); }
+    if (el) {
+      setMoneyInput(el, trm, 2);
+      el.dispatchEvent(new Event('input'));
+    }
     toast('TRM de hoy aplicado');
   };
 }

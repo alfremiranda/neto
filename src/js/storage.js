@@ -9,6 +9,12 @@ function getSMMLV(year) {
   return (s && s.smmlv && s.smmlv[String(year)]) || DEFAULTS.smmlv;
 }
 
+function makeDefaultEgresos() {
+  const tipos = ['arriendo','servicios','internet','mercado','tarjetas','transporte','streaming','salud','pension_vol'];
+  let id = Date.now();
+  return tipos.map(tipo => ({ id: id++, tipo, amount: 0, currency: 'COP', date: '' }));
+}
+
 function getMonth(k) {
   return db[k] || { trm: DEFAULTS.trm, incomes: [], transfers: [], egresos: [] };
 }
@@ -55,6 +61,15 @@ function migrateIfNeeded() {
     changed = true;
   });
 
+  // Add default egresos to months created after the refactor with empty egresos (not seeded yet)
+  Object.keys(db).filter(k => k !== '_settings').forEach(k => {
+    const m = db[k];
+    if (!m || !Array.isArray(m.egresos) || m.egresos.length > 0 || m.egresosSeeded) return;
+    m.egresos = makeDefaultEgresos();
+    m.egresosSeeded = true;
+    changed = true;
+  });
+
   if (changed) saveLocal();
 }
 
@@ -72,6 +87,8 @@ async function syncFromCloud() {
   if (!rows) return;
 
   const cloudKeys = new Set(rows.map(r => r.key));
+  const needsCloudUpdate = new Set();
+
   rows.forEach(({ key, data }) => {
     if (key === '_settings') {
       if (!db._settings) db._settings = data;
@@ -80,13 +97,38 @@ async function syncFromCloud() {
         Object.assign(db._settings.smmlv, data.smmlv);
       }
     } else {
+      const local = db[key];
+      // If local has seeded egresos and cloud has none, preserve local and push back
+      const localHasEgresos = local && local.egresosSeeded &&
+        Array.isArray(local.egresos) && local.egresos.length > 0;
+      const cloudLacksEgresos = !data || !Array.isArray(data.egresos) || data.egresos.length === 0;
+      if (localHasEgresos && cloudLacksEgresos) {
+        if (data) { data.egresos = local.egresos; data.egresosSeeded = true; }
+        needsCloudUpdate.add(key);
+      }
       db[key] = data;
     }
   });
 
+  // Push keys missing from cloud
   for (const key of Object.keys(db)) {
-    if (!cloudKeys.has(key)) await sbPush(key, db[key]);
+    if (!cloudKeys.has(key)) await sbPush(key, db[key]).catch(() => {});
   }
 
   saveLocal();
+
+  // Apply migrations to cloud data that still lacks egresos (old format / unseeded)
+  const preSeeded = new Set(
+    Object.keys(db).filter(k => k !== '_settings' && db[k] && db[k].egresosSeeded)
+  );
+  migrateIfNeeded();
+
+  // Push back only months that changed: preserved locally or newly seeded by migration
+  for (const key of Object.keys(db)) {
+    if (key === '_settings') continue;
+    const justSeeded = db[key] && db[key].egresosSeeded && !preSeeded.has(key);
+    if (needsCloudUpdate.has(key) || justSeeded) {
+      await sbPush(key, db[key]).catch(() => {});
+    }
+  }
 }

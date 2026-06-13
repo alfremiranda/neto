@@ -1,3 +1,15 @@
+function showView(view) {
+  $('view-mes').style.display = view === 'mes' ? '' : 'none';
+  $('view-ano').style.display = view === 'ano' ? '' : 'none';
+  $('nav-mes').classList.toggle('active', view === 'mes');
+  $('nav-ano').classList.toggle('active', view === 'ano');
+  if (view === 'ano') {
+    updateAnnual();
+    updateChart();
+    if (typeof trendChart !== 'undefined' && trendChart) trendChart.resize();
+  }
+}
+
 function switchMonth(key) {
   curKey = key;
   loadForm(key);
@@ -11,7 +23,7 @@ function prevMonth() {
   const prevKey = monthKey(m - 1, y);
   if (!db[prevKey]) {
     const current = getMonth(curKey);
-    db[prevKey] = { trm: current.trm, incomes: [], transfers: [], egresos: [] };
+    db[prevKey] = { trm: current.trm, incomes: [], transfers: [], egresos: makeDefaultEgresos(), egresosSeeded: true };
     save();
     toast('Mes creado');
   }
@@ -24,7 +36,7 @@ function nextMonth() {
   const nextKey = monthKey(m + 1, y);
   if (!db[nextKey]) {
     const current = getMonth(curKey);
-    db[nextKey] = { trm: current.trm, incomes: [], transfers: [], egresos: [] };
+    db[nextKey] = { trm: current.trm, incomes: [], transfers: [], egresos: makeDefaultEgresos(), egresosSeeded: true };
     save();
     toast('Mes creado');
   }
@@ -49,19 +61,58 @@ function addIncome() {
   recalc();
 }
 
+let _editingEgresoId = null;
+
+function openAddEgreso() {
+  _editingEgresoId = null;
+  const titleEl = $('egreso-sheet-title');
+  if (titleEl) titleEl.textContent = 'Agregar egreso';
+  const btnEl = $('egreso-submit-btn');
+  if (btnEl) btnEl.textContent = 'Agregar egreso';
+  $('e-amt').value = '';
+  $('e-date').value = new Date().toISOString().slice(0, 10);
+  openSheet('sheet-egreso');
+}
+
+function editEgreso(id) {
+  const d = getMonth(curKey);
+  const e = (d.egresos || []).find(e => e.id === id);
+  if (!e) return;
+  _editingEgresoId = id;
+  const titleEl = $('egreso-sheet-title');
+  if (titleEl) titleEl.textContent = 'Editar egreso';
+  const btnEl = $('egreso-submit-btn');
+  if (btnEl) btnEl.textContent = 'Guardar cambios';
+  $('e-tipo').value = e.tipo;
+  $('e-cur').value  = e.currency;
+  setMoneyInput($('e-amt'), e.amount, e.currency === 'USD' ? 2 : 0);
+  $('e-date').value = e.date || '';
+  openSheet('sheet-egreso');
+}
+
 function addEgreso() {
-  const tipo   = $('e-tipo').value;
-  const amount = parseMoney($('e-amt').value);
-  const cur    = $('e-cur').value;
-  const date   = $('e-date').value;
-  if (!amount) { toast('Ingresa el valor'); return; }
+  const tipo    = $('e-tipo').value;
+  const amount  = parseMoney($('e-amt').value);
+  const cur     = $('e-cur').value;
+  const date    = $('e-date').value;
+  const editing = _editingEgresoId;
   const d = getMonth(curKey);
   if (!d.egresos) d.egresos = [];
-  d.egresos.push({ id: Date.now(), tipo, amount, currency: cur, date: date || new Date().toISOString().slice(0, 10) });
+
+  if (editing !== null) {
+    const idx = d.egresos.findIndex(e => e.id === editing);
+    if (idx !== -1) d.egresos[idx] = { ...d.egresos[idx], tipo, amount, currency: cur, date: date || '' };
+    _editingEgresoId = null;
+    toast('Egreso actualizado');
+  } else {
+    if (!amount) { toast('Ingresa el valor'); return; }
+    d.egresos.push({ id: Date.now(), tipo, amount, currency: cur, date: date || new Date().toISOString().slice(0, 10) });
+    toast('Egreso registrado');
+  }
+
   db[curKey] = d;
   save();
   $('e-amt').value = '';
-  toast('Egreso registrado');
   closeSheet();
   recalc();
 }
@@ -201,7 +252,7 @@ if (!db[curKey]) {
   const existingKeys = Object.keys(db).filter(k => k !== '_settings').sort();
   if (existingKeys.length > 0) {
     const prev = getMonth(existingKeys[existingKeys.length - 1]);
-    db[curKey] = { trm: prev.trm, incomes: [], transfers: [], egresos: [] };
+    db[curKey] = { trm: prev.trm, incomes: [], transfers: [], egresos: makeDefaultEgresos(), egresosSeeded: true };
   }
 }
 loadForm(curKey);
@@ -226,6 +277,14 @@ if ('serviceWorker' in navigator) {
 // Sync Supabase
 if (sbReady()) {
   syncFromCloud().then(() => {
+    // Safety net: if sync overwrote seeded egresos with empty data, re-seed before rendering
+    const d = getMonth(curKey);
+    if (db[curKey] && Array.isArray(d.egresos) && d.egresos.length === 0 && !d.egresosSeeded) {
+      d.egresos = makeDefaultEgresos();
+      d.egresosSeeded = true;
+      db[curKey] = d;
+      save();
+    }
     renderMonthNav();
     loadForm(curKey);
     recalc();
