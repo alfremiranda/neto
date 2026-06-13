@@ -134,6 +134,8 @@ function recalc() {
   const incomes = d.incomes || [];
   const { totUSD, totCOP, bruto } = calcTotales(incomes, trm);
 
+  const totalsEl = $('income-totals');
+  if (totalsEl) totalsEl.style.display = incomes.length ? '' : 'none';
   set('tot-usd', USD(totUSD));
   set('tot-cop', COP(totCOP));
   set('tot-bruto', COP(bruto));

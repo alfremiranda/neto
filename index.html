@@ -66,21 +66,23 @@
           <button class="btn btn-p btn-sm" onclick="openSheet('sheet-income')">＋ Registrar</button>
         </div>
         <div id="income-list"><div class="empty">Sin ingresos registrados</div></div>
-        <div class="divider"></div>
-        <div class="g2">
-          <div class="metric">
-            <div class="ml">USD <span class="badge b-usd">ARQ + Toptal</span></div>
-            <div class="mv" id="tot-usd">USD 0</div>
+        <div id="income-totals" style="display:none">
+          <div class="divider"></div>
+          <div class="g2">
+            <div class="metric">
+              <div class="ml">USD <span class="badge b-usd">ARQ + Toptal</span></div>
+              <div class="mv" id="tot-usd">USD 0</div>
+            </div>
+            <div class="metric">
+              <div class="ml">COP <span class="badge b-cop">Bancolombia</span></div>
+              <div class="mv" id="tot-cop">$ 0</div>
+            </div>
           </div>
-          <div class="metric">
-            <div class="ml">COP <span class="badge b-cop">Bancolombia</span></div>
-            <div class="mv" id="tot-cop">$ 0</div>
+          <div class="metric" style="margin-top:8px">
+            <div class="ml">Total bruto equiv. COP</div>
+            <div class="mv" id="tot-bruto">$ 0</div>
+            <div class="ms" id="tot-bruto-u"></div>
           </div>
-        </div>
-        <div class="metric" style="margin-top:8px">
-          <div class="ml">Total bruto equiv. COP</div>
-          <div class="mv" id="tot-bruto">$ 0</div>
-          <div class="ms" id="tot-bruto-u"></div>
         </div>
       </div>
 
