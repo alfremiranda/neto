@@ -1,6 +1,6 @@
 {
-  "name": "Finanzas AMD",
-  "short_name": "FinanzasAMD",
+  "name": "Neto",
+  "short_name": "Neto",
   "description": "Planeador financiero mensual",
   "start_url": "./",
   "scope": "./",
