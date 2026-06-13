@@ -6,51 +6,29 @@ function switchMonth(key) {
 }
 
 function prevMonth() {
-  const keys = Object.keys(db).filter(k => k !== '_settings').sort();
-  const idx = keys.indexOf(curKey);
-  if (idx > 0) {
-    switchMonth(keys[idx - 1]);
-    return;
-  }
   const [y, m] = curKey.split('-').map(Number);
-  const prevM = m - 1 < 0 ? 11 : m - 1;
-  const prevY = m - 1 < 0 ? y - 1 : y;
-  const newKey = monthKey(prevM, prevY);
-  const current = getMonth(curKey);
-  db[newKey] = {
-    trm: current.trm,
-    transfer_date: '',
-    pv: current.pv,
-    incomes: [],
-    gastos: { ...current.gastos, extras: [] },
-  };
-  save();
-  switchMonth(newKey);
-  toast('Mes creado');
+  if (m === 0) return;
+  const prevKey = monthKey(m - 1, y);
+  if (!db[prevKey]) {
+    const current = getMonth(curKey);
+    db[prevKey] = { trm: current.trm, transfer_date: '', pv: current.pv, incomes: [], gastos: { ...current.gastos, extras: [] } };
+    save();
+    toast('Mes creado');
+  }
+  switchMonth(prevKey);
 }
 
 function nextMonth() {
-  const keys = Object.keys(db).filter(k => k !== '_settings').sort();
-  const idx = keys.indexOf(curKey);
-  if (idx < keys.length - 1) {
-    switchMonth(keys[idx + 1]);
-    return;
-  }
   const [y, m] = curKey.split('-').map(Number);
-  const nextM = m + 1 > 11 ? 0 : m + 1;
-  const nextY = m + 1 > 11 ? y + 1 : y;
-  const newKey = monthKey(nextM, nextY);
-  const prev = getMonth(curKey);
-  db[newKey] = {
-    trm: prev.trm,
-    transfer_date: '',
-    pv: prev.pv,
-    incomes: [],
-    gastos: { ...prev.gastos, extras: [] },
-  };
-  save();
-  switchMonth(newKey);
-  toast('Mes creado');
+  if (m === 11) return;
+  const nextKey = monthKey(m + 1, y);
+  if (!db[nextKey]) {
+    const current = getMonth(curKey);
+    db[nextKey] = { trm: current.trm, transfer_date: '', pv: current.pv, incomes: [], gastos: { ...current.gastos, extras: [] } };
+    save();
+    toast('Mes creado');
+  }
+  switchMonth(nextKey);
 }
 
 function addIncome() {
