@@ -18,7 +18,9 @@
       "Bash(npx tailwindcss *)",
       "Bash(npx tsc *)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "Bash(node_modules/.bin/tsc --noEmit)"
     ],
     "additionalDirectories": [
       "/Users/alfremiranda/Projects/finanzas-amd/_backup"
