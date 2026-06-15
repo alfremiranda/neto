@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p _backup)",
+      "Bash(cp -r src _backup/src)",
+      "Bash(cp index.html _backup/index.html)",
+      "Bash(cp sw.js _backup/sw.js)",
+      "Bash(cp manifest.json _backup/manifest.json)",
+      "Bash(rm -rf neto-vite)",
+      "Bash(npm create *)",
+      "Bash(cp /tmp/neto-vite/index.html .)",
+      "Bash(cp /tmp/neto-vite/package.json .)",
+      "Bash(cp /tmp/neto-vite/tsconfig.json .)",
+      "Bash(cp /tmp/neto-vite/tsconfig.app.json .)",
+      "Bash(cp /tmp/neto-vite/tsconfig.node.json .)",
+      "Bash(cp _backup/manifest.json public/manifest.json && echo \"manifest copied\")",
+      "Bash(npm install *)",
+      "Bash(npx tailwindcss *)",
+      "Bash(npx tsc *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
+    ],
+    "additionalDirectories": [
+      "/Users/alfremiranda/Projects/finanzas-amd/_backup"
+    ]
+  }
+}
