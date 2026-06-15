@@ -209,7 +209,7 @@ export const useFinanceStore = create<FinanceState>()(
                 ...settings,
                 smmlv: { ...(settings.smmlv ?? {}), [year]: value },
               },
-            },
+            } as FinanceDB,
           }
         })
         sbPush('_settings', get().db._settings).catch(() => {})
@@ -222,7 +222,7 @@ export const useFinanceStore = create<FinanceState>()(
             db: {
               ...state.db,
               _settings: { ...settings, accounts },
-            },
+            } as FinanceDB,
           }
         })
         sbPush('_settings', get().db._settings).catch(() => {})

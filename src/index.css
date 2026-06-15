@@ -48,27 +48,25 @@
     --n-danger-txt: #791F1F;
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --n-bg: #1c1c1e;
-      --n-bg2: #2c2c2e;
-      --n-bg3: #3a3a3c;
-      --n-txt: #f2f2f7;
-      --n-txt2: #aeaeb2;
-      --n-txt3: #636366;
-      --n-border: rgba(255,255,255,0.12);
-      --n-border2: rgba(255,255,255,0.22);
-      --n-blue-bg: #0c2a4a;
-      --n-blue-txt: #85B7EB;
-      --n-green-bg: #0a2a1a;
-      --n-green-txt: #97C459;
-      --n-purple-bg: #1e1b3a;
-      --n-purple-txt: #AFA9EC;
-      --n-gray-bg: #2a2a28;
-      --n-gray-txt: #D3D1C7;
-      --n-danger-bg: #2a1010;
-      --n-danger-txt: #F09595;
-    }
+  html.dark {
+    --n-bg: #1c1c1e;
+    --n-bg2: #2c2c2e;
+    --n-bg3: #3a3a3c;
+    --n-txt: #f2f2f7;
+    --n-txt2: #aeaeb2;
+    --n-txt3: #636366;
+    --n-border: rgba(255,255,255,0.12);
+    --n-border2: rgba(255,255,255,0.22);
+    --n-blue-bg: #0c2a4a;
+    --n-blue-txt: #85B7EB;
+    --n-green-bg: #0a2a1a;
+    --n-green-txt: #97C459;
+    --n-purple-bg: #1e1b3a;
+    --n-purple-txt: #AFA9EC;
+    --n-gray-bg: #2a2a28;
+    --n-gray-txt: #D3D1C7;
+    --n-danger-bg: #2a1010;
+    --n-danger-txt: #F09595;
   }
 
   * {
