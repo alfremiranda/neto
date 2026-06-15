@@ -64,6 +64,41 @@ function toast(msg) {
 
 let pendingDeleteId = null;
 
+function renderAccountCards() {
+  const el = $('account-cards');
+  if (!el) return;
+  const accounts = getAccounts();
+  const balances = (getMonth(curKey).balances) || {};
+  const trm = getMonth(curKey).trm || DEFAULTS.trm;
+  el.innerHTML = accounts.map(a => {
+    const bal = balances[a.id];
+    const hasBal = bal != null;
+    const balStr = hasBal
+      ? (a.currency === 'USD' ? USD(bal) : COP(bal))
+      : `<span style="color:var(--txt3);font-size:13px;font-weight:400">Tocar para ingresar</span>`;
+    const monthlyInt = hasBal && a.rate > 0 ? bal * (a.rate / 100) / 12 : 0;
+    const intStr = monthlyInt > 0
+      ? `≈ ${a.currency === 'USD' ? USD(monthlyInt) : COP(monthlyInt)}/mes · ${a.rate}% a.a.`
+      : '';
+    const numStr = a.number ? `•••• ${String(a.number).slice(-4)}` : '';
+    const badgeClass = a.currency === 'USD' ? 'b-usd' : 'b-cop';
+    return `
+      <div class="acc-card" onclick="openBalanceEditor('${a.id}')">
+        <div class="acc-hdr">
+          <span class="acc-name" title="${a.label}">${a.label}</span>
+          <div style="display:flex;gap:3px;align-items:center;flex-shrink:0">
+            <span class="badge ${badgeClass}">${a.currency}</span>
+            <button class="btn btn-icon acc-cfg-btn" onclick="event.stopPropagation();editAccountConfig('${a.id}')" title="Configurar cuenta">${icon('settings-2', 11)}</button>
+          </div>
+        </div>
+        ${numStr ? `<div class="acc-num">${numStr}</div>` : ''}
+        <div class="acc-bal">${balStr}</div>
+        ${intStr ? `<div class="acc-rate">${intStr}</div>` : ''}
+      </div>`;
+  }).join('');
+  renderIcons();
+}
+
 function renderEgresos() {
   const el = $('egresos-list');
   if (!el) return;
@@ -128,6 +163,13 @@ function initNumberHints() {
   // Transfer TRM: always 2 decimals
   const tTrm = $('t-trm');
   if (tTrm) initMoneyInput(tTrm, 2);
+
+  // Balance editor: currency depends on selected account
+  const balEl = $('bal-amount');
+  if (balEl) initMoneyInput(balEl, () => {
+    const a = getAccounts().find(acc => acc.id === (typeof _editingBalanceId !== 'undefined' ? _editingBalanceId : null));
+    return a && a.currency === 'USD' ? 2 : 0;
+  });
 
   // Income amount: COP or USD + cross-currency hint
   const amtEl = $('i-amt'), curEl = $('i-cur');
@@ -235,6 +277,7 @@ function recalc() {
   set('f-neto',       USD(flujo.netoU));
   set('f-int',        '≈ ' + USD(flujo.interest) + '/mes');
 
+  renderAccountCards();
   renderEgresos();
   renderTransfers();
   updateChart();
@@ -251,8 +294,8 @@ function renderTransfers() {
     renderIcons(); return;
   }
   el.innerHTML = '<div class="divider" style="margin:10px 0"></div>' + transfers.map(t => {
-    const fromAcc = TRANSFER_ACCOUNTS.find(a => a.id === t.from) || { label: t.from };
-    const toAcc   = TRANSFER_ACCOUNTS.find(a => a.id === t.to)   || { label: t.to };
+    const fromAcc = getAccounts().find(a => a.id === t.from) || { label: t.from };
+    const toAcc   = getAccounts().find(a => a.id === t.to)   || { label: t.to };
     const fromStr = t.fromCurrency === 'USD' ? USD(t.amount) : COP(t.amount);
     const toStr   = t.toCurrency   === 'USD' ? USD(t.toAmount) : COP(t.toAmount);
     const trmStr  = t.trm ? ' @' + t.trm.toLocaleString('es-CO', {minimumFractionDigits:2,maximumFractionDigits:2}) : '';

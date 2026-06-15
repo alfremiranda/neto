@@ -9,6 +9,19 @@ function getSMMLV(year) {
   return (s && s.smmlv && s.smmlv[String(year)]) || DEFAULTS.smmlv;
 }
 
+function getAccounts() {
+  const s = db._settings;
+  if (s && Array.isArray(s.accounts) && s.accounts.length > 0) return s.accounts;
+  return TRANSFER_ACCOUNTS.map(a => ({ ...a, number: '', rate: a.id === 'ARQ' ? 3.5 : 0 }));
+}
+
+function saveAccountsConfig(accounts) {
+  if (!db._settings) db._settings = {};
+  db._settings.accounts = accounts;
+  saveLocal();
+  sbPush('_settings', db._settings).catch(() => {});
+}
+
 function makeDefaultEgresos() {
   const tipos = ['arriendo','servicios','internet','mercado','tarjetas','transporte','streaming','salud','pension_vol'];
   let id = Date.now();
@@ -92,9 +105,14 @@ async function syncFromCloud() {
   rows.forEach(({ key, data }) => {
     if (key === '_settings') {
       if (!db._settings) db._settings = data;
-      else if (data && data.smmlv) {
-        if (!db._settings.smmlv) db._settings.smmlv = {};
-        Object.assign(db._settings.smmlv, data.smmlv);
+      else {
+        if (data && data.smmlv) {
+          if (!db._settings.smmlv) db._settings.smmlv = {};
+          Object.assign(db._settings.smmlv, data.smmlv);
+        }
+        if (data && data.accounts && !db._settings.accounts) {
+          db._settings.accounts = data.accounts;
+        }
       }
     } else {
       const local = db[key];

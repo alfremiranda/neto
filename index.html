@@ -39,8 +39,12 @@
         <div class="card">
           <div class="sec" style="justify-content:space-between">
             <span><i data-lucide="arrow-left-right" width="14" height="14"></i> Movimientos entre cuentas</span>
-            <button class="btn btn-p btn-sm" onclick="openSheet('sheet-transfer')"><i data-lucide="plus" width="13" height="13"></i> Agregar</button>
+            <div style="display:flex;gap:6px;align-items:center">
+              <button class="btn btn-icon btn-sm" onclick="openAddAccountConfig()" title="Agregar cuenta"><i data-lucide="circle-plus" width="14" height="14"></i></button>
+              <button class="btn btn-p btn-sm" onclick="openSheet('sheet-transfer')"><i data-lucide="plus" width="13" height="13"></i> Movimiento</button>
+            </div>
           </div>
+          <div id="account-cards"></div>
           <div id="transfers-list"></div>
         </div>
 
@@ -305,6 +309,53 @@
       <div id="t-result" style="font-size:12px;color:var(--blue);font-weight:500"></div>
     </div>
     <button class="btn btn-p" style="width:100%" onclick="addTransfer()">Registrar movimiento</button>
+  </div>
+</div>
+
+<div id="sheet-account-edit" class="sheet">
+  <div class="sheet-hdr">
+    <span class="sheet-title" id="acc-sheet-title">Agregar cuenta</span>
+    <button class="btn btn-icon" onclick="closeSheet()"><i data-lucide="x" width="16" height="16"></i></button>
+  </div>
+  <div class="sheet-body">
+    <div style="margin-bottom:8px">
+      <div class="flbl">Nombre de la cuenta</div>
+      <input type="text" id="acc-name" placeholder="Ej: ARQ Dollar App, Bancolombia...">
+    </div>
+    <div class="g2" style="margin-bottom:8px">
+      <div>
+        <div class="flbl">Moneda</div>
+        <select id="acc-cur">
+          <option value="COP">COP</option>
+          <option value="USD">USD</option>
+        </select>
+      </div>
+      <div>
+        <div class="flbl">Tasa de rentabilidad (% anual)</div>
+        <input type="number" id="acc-rate" placeholder="0" step="0.01" min="0">
+      </div>
+    </div>
+    <div style="margin-bottom:20px">
+      <div class="flbl">Número de cuenta <span style="color:var(--txt3)">(opcional)</span></div>
+      <input type="text" id="acc-number" placeholder="Últimos dígitos o referencia">
+    </div>
+    <button class="btn btn-p" style="width:100%;margin-bottom:8px" onclick="saveAccountConfig()">Guardar cuenta</button>
+    <button class="btn btn-d" id="acc-delete-btn" style="width:100%;display:none" onclick="deleteAccountConfig()">Eliminar cuenta</button>
+  </div>
+</div>
+
+<div id="sheet-balance" class="sheet">
+  <div class="sheet-hdr">
+    <span class="sheet-title" id="bal-account-name">Saldo</span>
+    <button class="btn btn-icon" onclick="closeSheet()"><i data-lucide="x" width="16" height="16"></i></button>
+  </div>
+  <div class="sheet-body">
+    <div style="margin-bottom:4px;font-size:11px;color:var(--txt3)">Saldo actual de la cuenta</div>
+    <div style="margin-bottom:20px">
+      <div class="flbl" id="bal-currency" style="margin-bottom:4px">COP</div>
+      <input type="number" id="bal-amount" placeholder="0">
+    </div>
+    <button class="btn btn-p" style="width:100%" onclick="saveBalance()">Actualizar saldo</button>
   </div>
 </div>
 
