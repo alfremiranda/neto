@@ -150,8 +150,8 @@ function deleteIncome(id) {
 function onTransferAccountChange() {
   const fromId = $('t-from') && $('t-from').value;
   const toId   = $('t-to')   && $('t-to').value;
-  const from   = TRANSFER_ACCOUNTS.find(a => a.id === fromId);
-  const to     = TRANSFER_ACCOUNTS.find(a => a.id === toId);
+  const from   = getAccounts().find(a => a.id === fromId);
+  const to     = getAccounts().find(a => a.id === toId);
   const cross  = from && to && from.currency !== to.currency;
   const row    = $('t-trm-row');
   if (row) row.style.display = cross ? '' : 'none';
@@ -163,8 +163,8 @@ function onTransferAccountChange() {
 function updateTransferResult() {
   const fromId = $('t-from') && $('t-from').value;
   const toId   = $('t-to')   && $('t-to').value;
-  const from   = TRANSFER_ACCOUNTS.find(a => a.id === fromId);
-  const to     = TRANSFER_ACCOUNTS.find(a => a.id === toId);
+  const from   = getAccounts().find(a => a.id === fromId);
+  const to     = getAccounts().find(a => a.id === toId);
   const amount = parseMoney($('t-amt') && $('t-amt').value);
   const trmEl  = $('t-trm');
   const trm    = (trmEl && parseMoney(trmEl.value)) || getMonth(curKey).trm;
@@ -187,8 +187,8 @@ function addTransfer() {
   const date   = $('t-date').value;
   if (!amount) { toast('Ingresa el monto'); return; }
   if (fromId === toId) { toast('Las cuentas deben ser distintas'); return; }
-  const from  = TRANSFER_ACCOUNTS.find(a => a.id === fromId);
-  const to    = TRANSFER_ACCOUNTS.find(a => a.id === toId);
+  const from  = getAccounts().find(a => a.id === fromId);
+  const to    = getAccounts().find(a => a.id === toId);
   const cross = from && to && from.currency !== to.currency;
   const trm   = cross ? (parseMoney($('t-trm').value) || getMonth(curKey).trm) : null;
   let toAmount = amount;
@@ -215,11 +215,22 @@ function deleteTransfer(id) {
   renderTransfers();
 }
 
-function initTransfers() {
-  const opts = TRANSFER_ACCOUNTS.map(a => `<option value="${a.id}">${a.label} (${a.currency})</option>`).join('');
+function refreshTransferSelects() {
+  const accounts = getAccounts();
+  const opts = accounts.map(a => `<option value="${a.id}">${a.label} (${a.currency})</option>`).join('');
   const fromSel = $('t-from'), toSel = $('t-to');
-  if (fromSel) { fromSel.innerHTML = opts; fromSel.value = 'ARQ'; }
-  if (toSel)   { toSel.innerHTML   = opts; toSel.value   = 'Bancolombia'; }
+  if (fromSel) { const v = fromSel.value; fromSel.innerHTML = opts; fromSel.value = accounts.find(a => a.id === v) ? v : (accounts[0] || {}).id; }
+  if (toSel)   { const v = toSel.value;   toSel.innerHTML   = opts; toSel.value   = accounts.find(a => a.id === v) ? v : (accounts[1] || accounts[0] || {}).id; }
+}
+
+function initTransfers() {
+  const accounts = getAccounts();
+  const opts = accounts.map(a => `<option value="${a.id}">${a.label} (${a.currency})</option>`).join('');
+  const fromSel = $('t-from'), toSel = $('t-to');
+  const defaultFrom = (accounts.find(a => a.id === 'ARQ') || accounts[0] || {}).id;
+  const defaultTo   = (accounts.find(a => a.id === 'Bancolombia') || accounts[1] || accounts[0] || {}).id;
+  if (fromSel) { fromSel.innerHTML = opts; fromSel.value = defaultFrom; }
+  if (toSel)   { toSel.innerHTML   = opts; toSel.value   = defaultTo; }
   const dateEl = $('t-date');
   if (dateEl) dateEl.value = new Date().toISOString().slice(0, 10);
   const trmEl = $('t-trm');
@@ -230,6 +241,94 @@ function initTransfers() {
   if (amtEl) amtEl.addEventListener('input', updateTransferResult);
   if (trmEl) trmEl.addEventListener('input', updateTransferResult);
   onTransferAccountChange();
+}
+
+// --- Account config management ---
+let _editingAccountId = null;
+
+function openAddAccountConfig() {
+  _editingAccountId = null;
+  const t = $('acc-sheet-title'); if (t) t.textContent = 'Agregar cuenta';
+  const d = $('acc-delete-btn'); if (d) d.style.display = 'none';
+  $('acc-name').value = '';
+  $('acc-cur').value = 'COP';
+  $('acc-number').value = '';
+  $('acc-rate').value = '';
+  openSheet('sheet-account-edit');
+}
+
+function editAccountConfig(id) {
+  const a = getAccounts().find(acc => acc.id === id);
+  if (!a) return;
+  _editingAccountId = id;
+  const t = $('acc-sheet-title'); if (t) t.textContent = 'Editar cuenta';
+  const d = $('acc-delete-btn'); if (d) d.style.display = '';
+  $('acc-name').value = a.label;
+  $('acc-cur').value = a.currency;
+  $('acc-number').value = a.number || '';
+  $('acc-rate').value = a.rate || '';
+  openSheet('sheet-account-edit');
+}
+
+function saveAccountConfig() {
+  const label    = $('acc-name').value.trim();
+  const currency = $('acc-cur').value;
+  const number   = $('acc-number').value.trim();
+  const rate     = parseFloat(String($('acc-rate').value).replace(',', '.')) || 0;
+  if (!label) { toast('Ingresa el nombre de la cuenta'); return; }
+  let accounts = getAccounts();
+  if (_editingAccountId) {
+    const idx = accounts.findIndex(a => a.id === _editingAccountId);
+    if (idx !== -1) accounts[idx] = { ...accounts[idx], label, currency, number, rate };
+    toast('Cuenta actualizada');
+  } else {
+    accounts.push({ id: 'acc_' + Date.now(), label, currency, number, rate });
+    toast('Cuenta agregada');
+  }
+  saveAccountsConfig(accounts);
+  closeSheet();
+  renderAccountCards();
+  refreshTransferSelects();
+  renderIcons();
+}
+
+function deleteAccountConfig() {
+  if (!_editingAccountId) return;
+  saveAccountsConfig(getAccounts().filter(a => a.id !== _editingAccountId));
+  closeSheet();
+  renderAccountCards();
+  refreshTransferSelects();
+  toast('Cuenta eliminada');
+  renderIcons();
+}
+
+// --- Balance editor ---
+let _editingBalanceId = null;
+
+function openBalanceEditor(accountId) {
+  _editingBalanceId = accountId;
+  const a = getAccounts().find(acc => acc.id === accountId);
+  if (!a) return;
+  const t = $('bal-account-name'); if (t) t.textContent = a.label;
+  const c = $('bal-currency');     if (c) c.textContent = a.currency;
+  const bal = ((getMonth(curKey).balances) || {})[accountId] || 0;
+  const el = $('bal-amount');
+  if (el) setMoneyInput(el, bal, a.currency === 'USD' ? 2 : 0);
+  openSheet('sheet-balance');
+}
+
+function saveBalance() {
+  const amount = parseMoney($('bal-amount').value);
+  if (!_editingBalanceId) return;
+  const d = getMonth(curKey);
+  if (!d.balances) d.balances = {};
+  d.balances[_editingBalanceId] = amount;
+  db[curKey] = d;
+  save();
+  toast('Saldo actualizado');
+  closeSheet();
+  renderAccountCards();
+  renderIcons();
 }
 
 function saveSettings() {

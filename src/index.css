@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+    --muted: 36 14% 97%;
+    --muted-foreground: 0 0% 40%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --primary: 0 0% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 36 14% 95%;
+    --secondary-foreground: 0 0% 10%;
+    --accent: 36 14% 92%;
+    --accent-foreground: 0 0% 10%;
+    --destructive: 0 72% 59%;
+    --destructive-foreground: 0 0% 98%;
+    --ring: 215 64% 54%;
+    --radius: 0.5rem;
+
+    /* Neto design tokens */
+    --n-bg: #ffffff;
+    --n-bg2: #f7f7f5;
+    --n-bg3: #f0ede8;
+    --n-txt: #1a1a1a;
+    --n-txt2: #666666;
+    --n-txt3: #999999;
+    --n-border: rgba(0,0,0,0.1);
+    --n-border2: rgba(0,0,0,0.2);
+    --n-blue: #378ADD;
+    --n-blue-bg: #E6F1FB;
+    --n-blue-txt: #0C447C;
+    --n-green: #1D9E75;
+    --n-green-bg: #EAF3DE;
+    --n-green-txt: #27500A;
+    --n-purple-bg: #EEEDFE;
+    --n-purple-txt: #3C3489;
+    --n-gray-bg: #F1EFE8;
+    --n-gray-txt: #444441;
+    --n-amber: #EF9F27;
+    --n-danger: #E24B4A;
+    --n-danger-bg: #FCEBEB;
+    --n-danger-txt: #791F1F;
+  }
+
+  html.dark {
+    --n-bg: #1c1c1e;
+    --n-bg2: #2c2c2e;
+    --n-bg3: #3a3a3c;
+    --n-txt: #f2f2f7;
+    --n-txt2: #aeaeb2;
+    --n-txt3: #636366;
+    --n-border: rgba(255,255,255,0.12);
+    --n-border2: rgba(255,255,255,0.22);
+    --n-blue-bg: #0c2a4a;
+    --n-blue-txt: #85B7EB;
+    --n-green-bg: #0a2a1a;
+    --n-green-txt: #97C459;
+    --n-purple-bg: #1e1b3a;
+    --n-purple-txt: #AFA9EC;
+    --n-gray-bg: #2a2a28;
+    --n-gray-txt: #D3D1C7;
+    --n-danger-bg: #2a1010;
+    --n-danger-txt: #F09595;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--n-bg3);
+    color: var(--n-txt);
+    font-size: 14px;
+    min-height: 100vh;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+
+  /* iOS: prevenir auto-zoom en inputs */
+  input, select, textarea {
+    font-size: 16px;
+  }
+
+  @media (min-width: 601px) {
+    input, select, textarea {
+      font-size: 13px;
+    }
+  }
+}
