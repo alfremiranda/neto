@@ -63,7 +63,7 @@ export function ObligacionesCard() {
 
   if (bruto === 0) {
     return (
-      <SectionCard icon={Landmark} title="Obligaciones fiscales">
+      <SectionCard icon={Landmark} title="Obligaciones tributarias">
         <Empty className="border-0 py-2">
           <EmptyHeader>
             <EmptyMedia variant="icon"><ShieldCheck size={14} /></EmptyMedia>
@@ -87,7 +87,7 @@ export function ObligacionesCard() {
   )
 
   return (
-    <SectionCard icon={Landmark} title="Obligaciones fiscales" action={totalAction}>
+    <SectionCard icon={Landmark} title="Obligaciones tributarias" action={totalAction}>
 
       {/* IBC context line */}
       <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-3 pb-3 border-b border-[var(--border)]">

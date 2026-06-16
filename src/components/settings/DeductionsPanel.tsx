@@ -7,10 +7,28 @@ import { Switch } from '@/components/ui/switch'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerBody, DrawerClose } from '@/components/ui/drawer'
-import { BASE_LABELS, GROUP_LABELS, MONTH_ABBR, monthsLabel } from '@/data/deductions'
+import { BASE_LABELS, MONTH_ABBR, monthsLabel } from '@/data/deductions'
 import type { DeductionBase, DeductionConfig, DeductionGroup } from '@/types'
 
-const GROUP_ORDER: DeductionGroup[] = ['ss', 'provision']
+const DISPLAY_SECTIONS: {
+  label: string
+  filter: (d: DeductionConfig) => boolean
+  canAdd: boolean
+  addGroup: DeductionGroup
+}[] = [
+  {
+    label:    'Obligaciones tributarias',
+    filter:   d => d.group === 'ss' || d.id === 'retencion',
+    canAdd:   false,
+    addGroup: 'ss',
+  },
+  {
+    label:    'Provisiones voluntarias',
+    filter:   d => d.group === 'provision' && d.id !== 'retencion',
+    canAdd:   true,
+    addGroup: 'provision',
+  },
+]
 
 const BASE_OPTIONS: { value: DeductionBase; label: string; desc: string }[] = [
   { value: 'bruto',     label: '% Bruto',   desc: 'Porcentaje sobre el total de ingresos del mes' },
@@ -410,12 +428,12 @@ export function DeductionsPanel() {
         </button>
       </div>
 
-      {GROUP_ORDER.map(group => {
-        const items = deductions.filter(d => d.group === group)
+      {DISPLAY_SECTIONS.map(section => {
+        const items = deductions.filter(section.filter)
         return (
-          <div key={group}>
+          <div key={section.label}>
             <div className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1.5">
-              {GROUP_LABELS[group]}
+              {section.label}
             </div>
             <div className="bg-[var(--background)] rounded-lg border border-[var(--border)] px-3">
               {items.map(d => (
@@ -427,11 +445,10 @@ export function DeductionsPanel() {
                 </p>
               )}
             </div>
-
-            {group !== 'ss' && (
+            {section.canAdd && (
               <button
                 type="button"
-                onClick={() => openCreate(group)}
+                onClick={() => openCreate(section.addGroup)}
                 className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground border-none bg-transparent cursor-pointer transition-colors px-1"
               >
                 <Plus size={12} />
