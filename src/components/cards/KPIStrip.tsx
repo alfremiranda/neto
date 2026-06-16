@@ -1,0 +1,196 @@
+import { useFinanceStore } from '@/store/financeStore'
+import { useSettingsStore } from '@/store/settingsStore'
+import { calcTotales, calcIBC, calcGastos, calcAllDeductions } from '@/lib/calc'
+import { COP, USD } from '@/lib/format'
+import { cn } from '@/lib/utils'
+import { Card } from '@/components/ui/card'
+import { TooltipProvider, TooltipRoot, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+import { EGRESO_CATEGORIAS } from '@/data/defaults'
+
+type DetailLine = { label: string; value: string; dim?: boolean; separator?: boolean }
+
+interface KPICardProps {
+  label: string
+  value: string
+  sub?: string
+  accent?: string
+  detail?: DetailLine[]
+}
+
+function KPITooltipContent({ lines }: { lines: DetailLine[] }) {
+  return (
+    <div className="space-y-0.5">
+      {lines.map((line, i) =>
+        line.separator ? (
+          <div key={i} className="border-t border-[var(--border)] my-1.5" />
+        ) : (
+          <div key={i} className={cn('flex items-baseline justify-between gap-3', line.dim && 'opacity-50')}>
+            <span className="text-[11px] text-muted-foreground truncate">{line.label}</span>
+            <span className="text-[11px] font-mono font-medium tabular-nums shrink-0">{line.value}</span>
+          </div>
+        )
+      )}
+    </div>
+  )
+}
+
+function KPICard({ label, value, sub, accent, detail }: KPICardProps) {
+  const card = (
+    <Card className={cn('p-4 flex flex-col gap-1.5', detail && 'cursor-help')}>
+      <div className="text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
+        {label}
+      </div>
+      <div className={cn('text-xl font-semibold font-heading leading-none tabular-nums', accent ?? 'text-foreground')}>
+        {value}
+      </div>
+      {sub && (
+        <div className="text-xs text-muted-foreground">{sub}</div>
+      )}
+    </Card>
+  )
+
+  if (!detail || detail.length === 0) return card
+
+  return (
+    <TooltipRoot delayDuration={200}>
+      <TooltipTrigger asChild>{card}</TooltipTrigger>
+      <TooltipContent side="bottom">
+        <KPITooltipContent lines={detail} />
+      </TooltipContent>
+    </TooltipRoot>
+  )
+}
+
+function egresoCategory(category: string) {
+  return EGRESO_CATEGORIAS.find(c => c.id === category)?.label ?? 'Otros'
+}
+
+export function KPIStrip() {
+  const { getCurrentMonth, getSMMLV, curKey } = useFinanceStore()
+  const deductions = useSettingsStore(s => s.deductions)
+  const month = getCurrentMonth()
+  const [y, m] = curKey.split('-').map(Number)
+  const smmlv = getSMMLV(y)
+
+  const { bruto } = calcTotales(month.incomes, month.trm)
+  const ibc       = calcIBC(month.incomes, month.trm, smmlv)
+  const gast      = calcGastos(month.egresos || [], month.trm)
+  const res       = calcAllDeductions(bruto, ibc, m, deductions, gast, month.trm, month.voluntarias)
+
+  const pct = (n: number) => bruto > 0 ? `${Math.round(n / bruto * 100)}% del bruto` : undefined
+
+  const retencionItems = res.provItems.filter(i => i.id === 'retencion')
+  const retencionTotal = retencionItems.reduce((a, i) => a + i.amount, 0)
+  const provItems      = res.provItems.filter(i => i.id !== 'retencion')
+  const provTotal      = provItems.reduce((a, i) => a + i.amount, 0)
+                       + res.volItems.reduce((a, i) => a + i.amount, 0)
+
+  const ssAccent   = `text-[var(${res.ssItems[0]?.color          ?? '--n-blue'})]`
+  const retAccent  = `text-[var(${retencionItems[0]?.color        ?? '--n-purple-txt'})]`
+  const provAccent = `text-[var(${provItems.find(i => i.applies)?.color ?? '--n-amber'})]`
+
+  // --- Breakdown details ---
+
+  const ingresoDetail: DetailLine[] = month.incomes.length > 0
+    ? month.incomes.map(inc => ({
+        label: inc.desc || inc.account,
+        value: inc.currency === 'USD'
+          ? `${USD(inc.amount)} ≈ ${COP(inc.amount * month.trm)}`
+          : COP(inc.amount),
+      }))
+    : []
+
+  const ssDetail: DetailLine[] = res.ssItems.map(i => ({
+    label: `${i.label} (${i.pct}%)`,
+    value: COP(i.amount),
+  }))
+
+  const retencionDetail: DetailLine[] = retencionItems.map(i => ({
+    label: `${i.pct}% sobre bruto`,
+    value: COP(i.amount),
+  }))
+
+  const provDetail: DetailLine[] = [
+    ...provItems.filter(i => i.applies && i.amount > 0).map(i => ({
+      label: i.label,
+      value: COP(i.amount),
+    })),
+    ...(provItems.filter(i => i.applies && i.amount > 0).length > 0 && res.volItems.filter(i => i.applies && i.amount > 0).length > 0
+      ? [{ label: '', value: '', separator: true } as DetailLine]
+      : []),
+    ...res.volItems.filter(i => i.applies && i.amount > 0).map(i => ({
+      label: i.label,
+      value: COP(i.amount),
+    })),
+  ]
+
+  // Group egresos by category
+  const egresosByCategory = (month.egresos || []).reduce<Record<string, number>>((acc, e) => {
+    const amtCOP = e.currency === 'USD' ? e.amount * month.trm : e.amount
+    if (amtCOP === 0) return acc
+    const cat = egresoCategory(e.category)
+    acc[cat] = (acc[cat] ?? 0) + amtCOP
+    return acc
+  }, {})
+  const egresoDetail: DetailLine[] = Object.entries(egresosByCategory)
+    .sort(([, a], [, b]) => b - a)
+    .map(([cat, amt]) => ({ label: cat, value: COP(amt) }))
+
+  const netoDetail: DetailLine[] = bruto > 0 ? [
+    { label: 'Ingreso bruto',    value: COP(bruto) },
+    { label: '− Seg. social',    value: COP(res.ssTotal) },
+    { label: '− Retención',      value: COP(retencionTotal) },
+    { label: '− Provisiones',    value: COP(provTotal) },
+    { label: '− Egresos',        value: COP(gast) },
+    { label: '', value: '', separator: true },
+    { label: 'Neto libre',       value: COP(Math.max(res.netoLibre, 0)) },
+  ] : []
+
+  return (
+    <TooltipProvider>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-5">
+        <KPICard
+          label="Ingreso bruto"
+          value={COP(bruto)}
+          sub={bruto > 0 ? `TRM ${month.trm.toLocaleString('es-CO')}` : 'Sin ingresos este mes'}
+          detail={ingresoDetail.length > 0 ? ingresoDetail : undefined}
+        />
+        <KPICard
+          label="Seguridad social"
+          value={COP(res.ssTotal)}
+          sub={pct(res.ssTotal)}
+          accent={ssAccent}
+          detail={ssDetail}
+        />
+        <KPICard
+          label="Retención"
+          value={COP(retencionTotal)}
+          sub={pct(retencionTotal)}
+          accent={retAccent}
+          detail={retencionDetail.length > 0 ? retencionDetail : undefined}
+        />
+        <KPICard
+          label="Provisiones"
+          value={COP(provTotal)}
+          sub={pct(provTotal)}
+          accent={provAccent}
+          detail={provDetail.length > 0 ? provDetail : undefined}
+        />
+        <KPICard
+          label="Egresos"
+          value={COP(gast)}
+          sub={pct(gast)}
+          accent="text-[var(--n-green)]"
+          detail={egresoDetail.length > 0 ? egresoDetail : undefined}
+        />
+        <KPICard
+          label="Neto libre"
+          value={COP(Math.max(res.netoLibre, 0))}
+          sub={pct(Math.max(res.netoLibre, 0))}
+          accent={res.netoLibre > 0 ? 'text-[var(--n-lime)]' : 'text-[var(--n-danger)]'}
+          detail={netoDetail.length > 0 ? netoDetail : undefined}
+        />
+      </div>
+    </TooltipProvider>
+  )
+}

@@ -1,11 +1,20 @@
 import { useState } from 'react'
+import { CalendarRange, Download } from 'lucide-react'
 import { TrendChart } from '@/components/annual/TrendChart'
 import { AnnualTable } from '@/components/annual/AnnualTable'
 import { ConfigCard } from '@/components/annual/ConfigCard'
 import { useFinanceStore } from '@/store/financeStore'
+import { useSettingsStore } from '@/store/settingsStore'
+import { useUIStore } from '@/store/uiStore'
+import { SectionCard } from '@/components/ui/SectionCard'
+import { Button } from '@/components/ui/button'
+import { exportAnnualCSV } from '@/lib/export'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 export function AnoView() {
-  const { db } = useFinanceStore()
+  const { db, getSMMLV } = useFinanceStore()
+  const deductions = useSettingsStore(s => s.deductions)
+  const { showToast } = useUIStore()
   const currentYear = new Date().getFullYear()
 
   const years = [...new Set([
@@ -14,27 +23,57 @@ export function AnoView() {
   ])].sort().reverse()
 
   const [year, setYear] = useState(currentYear)
+  const [exporting, setExporting] = useState(false)
+
+  function handleExport() {
+    setExporting(true)
+    try {
+      exportAnnualCSV(
+        db as Record<string, import('@/types').MonthData>,
+        year,
+        getSMMLV,
+        deductions,
+      )
+      showToast(`CSV ${year} descargado`)
+    } catch {
+      showToast('Error al exportar')
+    } finally {
+      setExporting(false)
+    }
+  }
 
   return (
-    <div className="space-y-[10px]">
+    <div className="space-y-4">
       <TrendChart />
 
-      <div className="bg-[var(--n-bg)] border border-[var(--n-border)] rounded-xl p-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="text-[12px] font-medium text-[var(--n-txt2)] flex items-center gap-[5px]">
-            <span>📅</span>
-            <span>Resumen anual</span>
+      <SectionCard
+        icon={CalendarRange}
+        title="Resumen anual"
+        action={
+          <div className="flex items-center gap-2">
+            <Select value={String(year)} onValueChange={v => setYear(parseInt(v))}>
+              <SelectTrigger size="sm" className="w-auto">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {years.map(y => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleExport}
+              disabled={exporting}
+              title={`Exportar ${year} como CSV`}
+            >
+              <Download size={12} />
+              CSV
+            </Button>
           </div>
-          <select
-            value={year}
-            onChange={e => setYear(parseInt(e.target.value))}
-            className="border border-[var(--n-border2)] rounded-lg px-2 py-1 bg-[var(--n-bg)] text-[var(--n-txt)] text-[13px] appearance-none"
-          >
-            {years.map(y => <option key={y} value={y}>{y}</option>)}
-          </select>
-        </div>
+        }
+      >
         <AnnualTable year={year} />
-      </div>
+      </SectionCard>
 
       <ConfigCard />
     </div>

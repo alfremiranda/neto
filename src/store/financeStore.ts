@@ -1,8 +1,8 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { DEFAULTS, TRANSFER_ACCOUNTS, GASTOS_KEYS } from '@/data/defaults'
+import { DEFAULTS, TRANSFER_ACCOUNTS, GASTOS_KEYS, EGRESO_TIPOS, EGRESO_CATEGORIAS } from '@/data/defaults'
 import { sbPush, sbPullAll } from '@/lib/supabase'
-import type { FinanceDB, MonthData, Account, Settings, Income, Egreso, Transfer } from '@/types'
+import type { FinanceDB, MonthData, Account, Settings, Income, Egreso, Transfer, VoluntariaItem } from '@/types'
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -10,15 +10,42 @@ export function monthKey(m: number, y: number): string {
   return `${y}-${String(m).padStart(2, '0')}`
 }
 
-function makeDefaultEgresos(): Egreso[] {
-  const tipos = ['arriendo','servicios','internet','mercado','tarjetas','transporte','streaming','salud','pension_vol']
-  let id = Date.now()
-  return tipos.map(tipo => ({ id: id++, tipo, amount: 0, currency: 'COP' as const, date: '' }))
-}
-
 function emptyMonth(trm = DEFAULTS.trm): MonthData {
   return { trm, incomes: [], transfers: [], egresos: [] }
 }
+
+// Initialize a month on first write: inherit TRM + seed recurring egresos from the previous month.
+function initMonth(key: string, db: FinanceDB): MonthData {
+  const [y, m] = key.split('-').map(Number)
+  const prevKey = m > 1 ? monthKey(m - 1, y) : monthKey(12, y - 1)
+  const prev = db[prevKey] as MonthData | undefined
+  return {
+    trm: prev?.trm ?? DEFAULTS.trm,
+    incomes: [],
+    transfers: [],
+    egresos: prev ? shiftRecurring(prev.egresos || [], key) : [],
+  }
+}
+
+// Copy recurring egresos into a new month key, adjusting the date's month/year.
+function shiftRecurring(egresos: Egreso[], newKey: string): Egreso[] {
+  const [y, m0] = newKey.split('-').map(Number) // m0 is 0-indexed
+  const isoM = m0 + 1                           // convert to 1-indexed for ISO dates
+  const base  = Date.now()
+  return egresos
+    .filter(e => e.recurring)
+    .map((e, i) => {
+      let date = ''
+      if (e.date) {
+        const day     = parseInt(e.date.split('-')[2] ?? '1', 10)
+        const lastDay = new Date(y, isoM, 0).getDate()
+        const d       = Math.min(day, lastDay)
+        date = `${y}-${String(isoM).padStart(2, '0')}-${String(d).padStart(2, '0')}`
+      }
+      return { ...e, id: base + i, date }
+    })
+}
+
 
 // ─── store interface ─────────────────────────────────────────────────────────
 
@@ -37,13 +64,19 @@ interface FinanceState {
   updateMonth: (key: string, data: Partial<MonthData>) => void
   setMonthFull: (key: string, data: MonthData) => void
   addIncome: (income: Omit<Income, 'id'>) => void
+  updateIncome: (id: number, patch: Partial<Omit<Income, 'id'>>) => void
   removeIncome: (id: number) => void
   addEgreso: (egreso: Omit<Egreso, 'id'>) => void
   updateEgreso: (id: number, egreso: Partial<Egreso>) => void
   removeEgreso: (id: number) => void
   addTransfer: (transfer: Omit<Transfer, 'id'>) => void
+  updateTransfer: (id: number, transfer: Omit<Transfer, 'id'>) => void
   removeTransfer: (id: number) => void
-  setBalance: (accountId: string, amount: number) => void
+  addVoluntaria: (item: Omit<VoluntariaItem, 'id'>) => void
+  removeVoluntaria: (id: number) => void
+  reorderEgresos: (orderedIds: number[]) => void
+  setStartingBalance: (accountId: string, amount: number) => void
+  setSsAccount: (accountId: string | null) => void
   setTRM: (trm: number) => void
   saveSMMLV: (year: string, value: number) => void
   saveAccountsConfig: (accounts: Account[]) => void
@@ -51,6 +84,7 @@ interface FinanceState {
   // navigation
   prevMonth: () => void
   nextMonth: () => void
+  deleteMonth: (key: string) => void
 
   // sync
   syncFromCloud: () => Promise<void>
@@ -110,10 +144,21 @@ export const useFinanceStore = create<FinanceState>()(
 
       addIncome: (income) => {
         const { curKey, db } = get()
-        const d = db[curKey] ?? emptyMonth()
+        const d = db[curKey] ?? initMonth(curKey, db)
         const updated: MonthData = {
           ...d,
           incomes: [...d.incomes, { ...income, id: Date.now() }],
+        }
+        set(state => ({ db: { ...state.db, [curKey]: updated } }))
+        get().pushCurrent()
+      },
+
+      updateIncome: (id, patch) => {
+        const { curKey, db } = get()
+        const d = db[curKey] ?? emptyMonth()
+        const updated: MonthData = {
+          ...d,
+          incomes: d.incomes.map(i => i.id === id ? { ...i, ...patch } : i),
         }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
         get().pushCurrent()
@@ -129,7 +174,7 @@ export const useFinanceStore = create<FinanceState>()(
 
       addEgreso: (egreso) => {
         const { curKey, db } = get()
-        const d = db[curKey] ?? emptyMonth()
+        const d = db[curKey] ?? initMonth(curKey, db)
         const updated: MonthData = {
           ...d,
           egresos: [...(d.egresos || []), { ...egreso, id: Date.now() }],
@@ -159,13 +204,24 @@ export const useFinanceStore = create<FinanceState>()(
 
       addTransfer: (transfer) => {
         const { curKey, db } = get()
-        const d = db[curKey] ?? emptyMonth()
+        const d = db[curKey] ?? initMonth(curKey, db)
         const newTransfer: Transfer = { ...transfer, id: Date.now() }
         const updated: MonthData = {
           ...d,
           transfers: [...(d.transfers || []), newTransfer],
           // update TRM if cross-currency
           trm: transfer.trm ?? d.trm,
+        }
+        set(state => ({ db: { ...state.db, [curKey]: updated } }))
+        get().pushCurrent()
+      },
+
+      updateTransfer: (id, transfer) => {
+        const { curKey, db } = get()
+        const d = db[curKey] ?? emptyMonth()
+        const updated: MonthData = {
+          ...d,
+          transfers: (d.transfers || []).map(t => t.id === id ? { ...transfer, id } : t),
         }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
         get().pushCurrent()
@@ -182,20 +238,64 @@ export const useFinanceStore = create<FinanceState>()(
         get().pushCurrent()
       },
 
-      setBalance: (accountId, amount) => {
+      addVoluntaria: (item) => {
         const { curKey, db } = get()
-        const d = db[curKey] ?? emptyMonth()
+        const d = db[curKey] ?? initMonth(curKey, db)
         const updated: MonthData = {
           ...d,
-          balances: { ...(d.balances || {}), [accountId]: amount },
+          voluntarias: [...(d.voluntarias ?? []), { ...item, id: Date.now() }],
         }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
         get().pushCurrent()
       },
 
+      removeVoluntaria: (id) => {
+        const { curKey, db } = get()
+        const d = db[curKey] ?? emptyMonth()
+        const updated: MonthData = {
+          ...d,
+          voluntarias: (d.voluntarias ?? []).filter(v => v.id !== id),
+        }
+        set(state => ({ db: { ...state.db, [curKey]: updated } }))
+        get().pushCurrent()
+      },
+
+      reorderEgresos: (orderedIds) => {
+        const { curKey, db } = get()
+        const d = db[curKey] ?? emptyMonth()
+        const byId = new Map((d.egresos ?? []).map(e => [e.id, e]))
+        const updated: MonthData = {
+          ...d,
+          egresos: orderedIds.map(id => byId.get(id)!).filter(Boolean),
+        }
+        set(state => ({ db: { ...state.db, [curKey]: updated } }))
+        get().pushCurrent()
+      },
+
+      setStartingBalance: (accountId, amount) => {
+        const accounts = get().getAccounts().map(a =>
+          a.id === accountId ? { ...a, startingBalance: amount } : a
+        )
+        get().saveAccountsConfig(accounts)
+      },
+
+      setSsAccount: (accountId) => {
+        set(state => {
+          const settings = (state.db._settings ?? {}) as Settings
+          return {
+            db: {
+              ...state.db,
+              _settings: { ...settings, ssAccount: accountId ?? undefined },
+            } as FinanceDB,
+          }
+        })
+        sbPush('_settings', get().db._settings).catch(() => {})
+      },
+
       setTRM: (trm) => {
-        const { curKey } = get()
-        get().updateMonth(curKey, { trm })
+        const { curKey, db } = get()
+        const existing = db[curKey] ?? initMonth(curKey, db)
+        set(state => ({ db: { ...state.db, [curKey]: { ...existing, trm } } }))
         get().pushCurrent()
       },
 
@@ -231,43 +331,32 @@ export const useFinanceStore = create<FinanceState>()(
       // ── navigation ─────────────────────────────────────────────────────────
 
       prevMonth: () => {
-        const { curKey, db } = get()
+        const { curKey } = get()
         const [y, m] = curKey.split('-').map(Number)
-        if (m === 0) return
-        const prevKey = monthKey(m - 1, y)
-        if (!db[prevKey]) {
-          const current = db[curKey] ?? emptyMonth()
-          const newMonth: MonthData = {
-            trm: current.trm,
-            incomes: [],
-            transfers: [],
-            egresos: makeDefaultEgresos(),
-            egresosSeeded: true,
-          }
-          set(state => ({ db: { ...state.db, [prevKey]: newMonth }, curKey: prevKey }))
-        } else {
-          set({ curKey: prevKey })
-        }
+        if (m === 1) return
+        set({ curKey: monthKey(m - 1, y) })
       },
 
       nextMonth: () => {
-        const { curKey, db } = get()
+        const { curKey } = get()
         const [y, m] = curKey.split('-').map(Number)
-        if (m === 11) return
-        const nextKey = monthKey(m + 1, y)
-        if (!db[nextKey]) {
-          const current = db[curKey] ?? emptyMonth()
-          const newMonth: MonthData = {
-            trm: current.trm,
-            incomes: [],
-            transfers: [],
-            egresos: makeDefaultEgresos(),
-            egresosSeeded: true,
-          }
-          set(state => ({ db: { ...state.db, [nextKey]: newMonth }, curKey: nextKey }))
-        } else {
-          set({ curKey: nextKey })
+        if (m === 12) return
+        set({ curKey: monthKey(m + 1, y) })
+      },
+
+      deleteMonth: (key) => {
+        const { db, curKey } = get()
+        if (key === '_settings') return
+        const newDb = { ...db }
+        delete newDb[key]
+        // If deleting the current month, move to adjacent
+        let newCurKey = curKey
+        if (key === curKey) {
+          const [y, mo] = key.split('-').map(Number)
+          newCurKey = mo > 0 ? `${y}-${String(mo - 1).padStart(2, '0')}` : key
         }
+        set({ db: newDb, curKey: newCurKey })
+        sbPush(key, null).catch(() => {})
       },
 
       // ── sync ───────────────────────────────────────────────────────────────
@@ -350,7 +439,7 @@ export const useFinanceStore = create<FinanceState>()(
           }
         }
 
-        // Migrate old gastos object → egresos array
+        // Migrate old gastos object → egresos array (legacy format)
         Object.keys(newDb).filter(k => k !== '_settings').forEach(k => {
           const m = newDb[k] as (MonthData & {
             gastos?: Record<string, number> & { extras?: Array<{id?:number;amount:number}> }
@@ -361,24 +450,48 @@ export const useFinanceStore = create<FinanceState>()(
           let id = Date.now()
           if (m.gastos) {
             GASTOS_KEYS.forEach(tipo => {
-              if ((m.gastos![tipo] || 0) > 0)
-                m.egresos!.push({ id: id++, amount: m.gastos![tipo], currency: 'COP', date: '', tipo })
+              if ((m.gastos![tipo] || 0) > 0) {
+                const tipoData = EGRESO_TIPOS.find(t => t.id === tipo)
+                m.egresos!.push({
+                  id: id++, amount: m.gastos![tipo], currency: 'COP', date: '',
+                  desc: tipoData?.label ?? tipo, category: tipoData?.category ?? 'otro',
+                })
+              }
             });
             (m.gastos.extras || []).forEach(e => {
-              m.egresos!.push({ id: e.id ?? id++, amount: e.amount, currency: 'COP', date: '', tipo: 'otro' })
+              m.egresos!.push({ id: e.id ?? id++, amount: e.amount, currency: 'COP', date: '', desc: 'Otro', category: 'otro' })
             })
           }
           if ((m.pv || 0) > 0)
-            m.egresos!.push({ id: id++, amount: m.pv!, currency: 'COP', date: '', tipo: 'pension_vol' })
+            m.egresos!.push({ id: id++, amount: m.pv!, currency: 'COP', date: '', desc: 'Pensión voluntaria', category: 'otro' })
           changed = true
         })
 
-        // Seed default egresos for empty un-seeded months
+        // Migrate tipo-based egresos → desc + category
         Object.keys(newDb).filter(k => k !== '_settings').forEach(k => {
           const m = newDb[k] as MonthData | undefined
-          if (!m || !Array.isArray(m.egresos) || m.egresos.length > 0 || m.egresosSeeded) return
-          m.egresos = makeDefaultEgresos()
-          m.egresosSeeded = true
+          if (!m?.egresos?.length) return
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const needsMigration = m.egresos.some((e: any) => !e.desc)
+          if (!needsMigration) return
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          m.egresos = m.egresos.map((e: any) => {
+            if (e.desc) return e
+            const tipo = e.tipo ?? ''
+            const tipoData = EGRESO_TIPOS.find(t => t.id === tipo)
+            const catId = e.category
+              ?? tipoData?.category
+              ?? EGRESO_CATEGORIAS.find(c => c.tipos.includes(tipo))?.id
+              ?? 'otro'
+            return {
+              id: e.id,
+              desc: tipoData?.label ?? tipo ?? 'Egreso',
+              category: catId,
+              amount: e.amount,
+              currency: e.currency,
+              date: e.date ?? '',
+            }
+          })
           changed = true
         })
 
@@ -401,8 +514,7 @@ export const useFinanceStore = create<FinanceState>()(
             trm: prev?.trm ?? DEFAULTS.trm,
             incomes: [],
             transfers: [],
-            egresos: makeDefaultEgresos(),
-            egresosSeeded: true,
+            egresos: [],
           }
         }
       },

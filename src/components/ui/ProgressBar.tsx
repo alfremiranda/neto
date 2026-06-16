@@ -14,7 +14,7 @@ export function ProgressBar({ label, value, pct, color, className }: ProgressBar
         <span className="text-[11px] text-[var(--n-txt2)]">{label}</span>
         <span className="text-[15px] font-semibold text-[var(--n-txt)]">{value}</span>
       </div>
-      <div className="h-[5px] bg-[var(--n-bg3)] rounded-[3px] overflow-hidden">
+      <div className="h-[5px] bg-muted rounded-[3px] overflow-hidden">
         <div
           className="h-[5px] rounded-[3px] transition-[width] duration-400"
           style={{ width: `${w}%`, background: color }}

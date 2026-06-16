@@ -1,100 +1,347 @@
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/geist-mono";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 10%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 10%;
-    --muted: 36 14% 97%;
-    --muted-foreground: 0 0% 40%;
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --primary: 0 0% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 36 14% 95%;
-    --secondary-foreground: 0 0% 10%;
-    --accent: 36 14% 92%;
-    --accent-foreground: 0 0% 10%;
-    --destructive: 0 72% 59%;
-    --destructive-foreground: 0 0% 98%;
-    --ring: 215 64% 54%;
-    --radius: 0.5rem;
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.148 0.004 228.8);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.148 0.004 228.8);
+    --muted: oklch(0.963 0.002 197.1);
+    --muted-foreground: oklch(0.56 0.021 213.5);
+    --border: oklch(0.925 0.005 214.3);
+    --input: oklch(0.925 0.005 214.3);
+    --primary: oklch(0.5 0.134 242.749);
+    --primary-foreground: oklch(0.977 0.013 236.62);
+    --secondary: oklch(0.967 0.001 286.375);
+    --secondary-foreground: oklch(0.21 0.006 285.885);
+    --accent: oklch(0.963 0.002 197.1);
+    --accent-foreground: oklch(0.218 0.008 223.9);
+    --destructive: oklch(0.577 0.245 27.325);
+    --destructive-foreground: oklch(0.977 0.013 236.62);
+    --ring: oklch(0.723 0.014 214.4);
+    --radius: 0.625rem;
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.148 0.004 228.8);
+    --chart-1: oklch(0.845 0.143 164.978);
+    --chart-2: oklch(0.696 0.17 162.48);
+    --chart-3: oklch(0.596 0.145 163.225);
+    --chart-4: oklch(0.508 0.118 165.612);
+    --chart-5: oklch(0.432 0.095 166.913);
+    --sidebar: oklch(0.987 0.002 197.1);
+    --sidebar-foreground: oklch(0.148 0.004 228.8);
+    --sidebar-primary: oklch(0.588 0.158 241.966);
+    --sidebar-primary-foreground: oklch(0.977 0.013 236.62);
+    --sidebar-accent: oklch(0.963 0.002 197.1);
+    --sidebar-accent-foreground: oklch(0.218 0.008 223.9);
+    --sidebar-border: oklch(0.925 0.005 214.3);
+    --sidebar-ring: oklch(0.723 0.014 214.4);
 
-    /* Neto design tokens */
-    --n-bg: #ffffff;
-    --n-bg2: #f7f7f5;
-    --n-bg3: #f0ede8;
-    --n-txt: #1a1a1a;
-    --n-txt2: #666666;
-    --n-txt3: #999999;
-    --n-border: rgba(0,0,0,0.1);
-    --n-border2: rgba(0,0,0,0.2);
-    --n-blue: #378ADD;
-    --n-blue-bg: #E6F1FB;
-    --n-blue-txt: #0C447C;
-    --n-green: #1D9E75;
-    --n-green-bg: #EAF3DE;
-    --n-green-txt: #27500A;
-    --n-purple-bg: #EEEDFE;
-    --n-purple-txt: #3C3489;
-    --n-gray-bg: #F1EFE8;
-    --n-gray-txt: #444441;
-    --n-amber: #EF9F27;
-    --n-danger: #E24B4A;
-    --n-danger-bg: #FCEBEB;
-    --n-danger-txt: #791F1F;
+    /* Neto design tokens — bridge to shadcn palette via lazy var() */
+    --n-bg:      var(--card);
+    --n-bg2:     var(--muted);
+    --n-bg3:     var(--muted);
+    --n-hover:   oklch(0.935 0.002 214);
+    --n-txt:     var(--foreground);
+    --n-txt2:    var(--muted-foreground);
+    --n-txt3:    oklch(0.6 0 0);
+    --n-border:  var(--border);
+    --n-border2: rgba(0,0,0,0.18);
+    --n-blue:    var(--primary);
+    --n-blue-bg:  oklch(0.94 0.03 242);
+    --n-blue-txt: oklch(0.28 0.1 242);
+    --n-green:    oklch(0.52 0.15 159);
+    --n-green-bg: oklch(0.94 0.04 145);
+    --n-green-txt: oklch(0.3 0.1 145);
+    --n-purple-bg: oklch(0.94 0.04 290);
+    --n-purple-txt: oklch(0.3 0.12 290);
+    --n-gray-bg:  oklch(0.94 0.01 90);
+    --n-gray-txt: oklch(0.35 0.01 90);
+    --n-amber:    oklch(0.72 0.17 74);
+    --n-pink:     oklch(0.55 0.18 350);
+    --n-pink-bg:  oklch(0.95 0.04 350);
+    --n-pink-txt: oklch(0.35 0.15 350);
+    --n-lime:     oklch(0.52 0.17 130);
+    --n-lime-bg:  oklch(0.94 0.07 130);
+    --n-lime-txt: oklch(0.32 0.14 130);
+    --n-danger:   var(--destructive);
+    --n-danger-bg:  oklch(0.95 0.03 20);
+    --n-danger-txt: oklch(0.35 0.15 20);
+
+    /* Egreso category palette — distinct from KPI tokens */
+    --cat-home:        oklch(0.50 0.12 185);
+    --cat-home-bg:     oklch(0.93 0.04 185);
+    --cat-food:        oklch(0.55 0.17 50);
+    --cat-food-bg:     oklch(0.95 0.05 55);
+    --cat-tech:        oklch(0.42 0.16 260);
+    --cat-tech-bg:     oklch(0.93 0.05 260);
+    --cat-bank:        oklch(0.45 0.06 240);
+    --cat-bank-bg:     oklch(0.93 0.02 240);
+    --cat-health:      oklch(0.52 0.18 8);
+    --cat-health-bg:   oklch(0.94 0.04 8);
+    --cat-transit:     oklch(0.50 0.14 215);
+    --cat-transit-bg:  oklch(0.93 0.04 215);
+    --cat-family:      oklch(0.55 0.16 28);
+    --cat-family-bg:   oklch(0.94 0.05 28);
+    --cat-other:       oklch(0.52 0.02 250);
+    --cat-other-bg:    oklch(0.93 0.01 250);
+  }
+
+  .dark {
+    --background: oklch(0.13 0.006 228.8);
+    --foreground: oklch(0.96 0.002 197.1);
+    --card: oklch(0.21 0.008 223.9);
+    --card-foreground: oklch(0.96 0.002 197.1);
+    --popover: oklch(0.21 0.008 223.9);
+    --popover-foreground: oklch(0.96 0.002 197.1);
+    --primary: oklch(0.55 0.13 240.79);
+    --primary-foreground: oklch(0.977 0.013 236.62);
+    --secondary: oklch(0.27 0.008 286.033);
+    --secondary-foreground: oklch(0.98 0 0);
+    --muted: oklch(0.27 0.01 216.9);
+    --muted-foreground: oklch(0.7 0.014 214.4);
+    --accent: oklch(0.27 0.01 216.9);
+    --accent-foreground: oklch(0.96 0.002 197.1);
+    --destructive: oklch(0.7 0.19 22.216);
+    --border: oklch(1 0 0 / 14%);
+    --input: oklch(1 0 0 / 18%);
+    --ring: oklch(0.56 0.021 213.5);
+    --chart-1: oklch(0.845 0.143 164.978);
+    --chart-2: oklch(0.696 0.17 162.48);
+    --chart-3: oklch(0.596 0.145 163.225);
+    --chart-4: oklch(0.508 0.118 165.612);
+    --chart-5: oklch(0.432 0.095 166.913);
+    --sidebar: oklch(0.21 0.008 223.9);
+    --sidebar-foreground: oklch(0.96 0.002 197.1);
+    --sidebar-primary: oklch(0.685 0.169 237.323);
+    --sidebar-primary-foreground: oklch(0.293 0.066 243.157);
+    --sidebar-accent: oklch(0.27 0.01 216.9);
+    --sidebar-accent-foreground: oklch(0.96 0.002 197.1);
+    --sidebar-border: oklch(1 0 0 / 14%);
+    --sidebar-ring: oklch(0.56 0.021 213.5);
+
+    /* Dark overrides for Neto tokens */
+    --n-bg3:     var(--background);
+    --n-hover:   oklch(0.31 0.01 218);
+    --n-txt3:    oklch(0.5 0.008 218);
+    --n-border2: rgba(255,255,255,0.18);
+    --n-blue:    oklch(0.65 0.13 242);
+    --n-blue-bg:  oklch(0.18 0.05 242);
+    --n-blue-txt: oklch(0.75 0.1 242);
+    --n-green:    oklch(0.65 0.15 159);
+    --n-green-bg: oklch(0.17 0.05 145);
+    --n-green-txt: oklch(0.75 0.12 145);
+    --n-purple-bg: oklch(0.18 0.06 290);
+    --n-purple-txt: oklch(0.75 0.1 290);
+    --n-gray-bg:   oklch(0.2 0.005 90);
+    --n-gray-txt:  oklch(0.8 0.008 90);
+    --n-amber:     oklch(0.82 0.17 74);
+    --n-pink:      oklch(0.72 0.16 350);
+    --n-pink-bg:   oklch(0.18 0.06 350);
+    --n-pink-txt:  oklch(0.82 0.13 350);
+    --n-lime:      oklch(0.72 0.18 130);
+    --n-lime-bg:   oklch(0.17 0.07 130);
+    --n-lime-txt:  oklch(0.82 0.15 130);
+    --n-danger-bg:  oklch(0.18 0.05 20);
+    --n-danger-txt: oklch(0.8 0.12 20);
+
+    /* Egreso category palette — dark mode */
+    --cat-home:        oklch(0.72 0.13 185);
+    --cat-home-bg:     oklch(0.18 0.05 185);
+    --cat-food:        oklch(0.80 0.17 55);
+    --cat-food-bg:     oklch(0.18 0.06 55);
+    --cat-tech:        oklch(0.74 0.14 260);
+    --cat-tech-bg:     oklch(0.18 0.06 260);
+    --cat-bank:        oklch(0.74 0.06 240);
+    --cat-bank-bg:     oklch(0.18 0.03 240);
+    --cat-health:      oklch(0.74 0.17 8);
+    --cat-health-bg:   oklch(0.18 0.06 8);
+    --cat-transit:     oklch(0.74 0.14 215);
+    --cat-transit-bg:  oklch(0.18 0.05 215);
+    --cat-family:      oklch(0.77 0.17 28);
+    --cat-family-bg:   oklch(0.18 0.06 28);
+    --cat-other:       oklch(0.72 0.02 250);
+    --cat-other-bg:    oklch(0.18 0.01 250);
   }
 
   html.dark {
-    --n-bg: #1c1c1e;
-    --n-bg2: #2c2c2e;
-    --n-bg3: #3a3a3c;
-    --n-txt: #f2f2f7;
-    --n-txt2: #aeaeb2;
-    --n-txt3: #636366;
-    --n-border: rgba(255,255,255,0.12);
-    --n-border2: rgba(255,255,255,0.22);
-    --n-blue-bg: #0c2a4a;
-    --n-blue-txt: #85B7EB;
-    --n-green-bg: #0a2a1a;
-    --n-green-txt: #97C459;
-    --n-purple-bg: #1e1b3a;
-    --n-purple-txt: #AFA9EC;
-    --n-gray-bg: #2a2a28;
-    --n-gray-txt: #D3D1C7;
-    --n-danger-bg: #2a1010;
-    --n-danger-txt: #F09595;
+    /* Structural tokens — resolved via .dark {} values via lazy var() */
+    --n-bg:     var(--card);
+    --n-bg2:    var(--muted);
+    --n-txt:    var(--foreground);
+    --n-txt2:   var(--muted-foreground);
+    --n-border: var(--border);
+    --n-danger: var(--destructive);
   }
 
   * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    border-color: var(--border);
+  }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  html {
+    --font-sans: 'Inter Variable', Inter, system-ui, sans-serif;
+    --font-mono: 'Geist Mono Variable', 'Geist Mono', monospace;
+    --font-heading: var(--font-mono);
+    font-family: var(--font-sans);
   }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--n-bg3);
-    color: var(--n-txt);
     font-size: 14px;
-    min-height: 100vh;
+    background-color: var(--background);
+    color: var(--foreground);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   #root {
-    min-height: 100vh;
+    height: 100%;
   }
 
   /* iOS: prevenir auto-zoom en inputs */
   input, select, textarea {
     font-size: 16px;
   }
-
   @media (min-width: 601px) {
     input, select, textarea {
       font-size: 13px;
     }
   }
+
+  /* Typography hierarchy — headings use Geist Mono (--font-heading) */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--foreground);
+  }
+  h1 { font-size: 1.5rem;   line-height: 2rem;    letter-spacing: -0.02em; }
+  h2 { font-size: 1.25rem;  line-height: 1.75rem; letter-spacing: -0.015em; }
+  h3 { font-size: 1.125rem; line-height: 1.75rem; letter-spacing: -0.01em; }
+  h4 { font-size: 1rem;     line-height: 1.5rem; }
+  h5, h6 { font-size: 0.875rem; line-height: 1.25rem; }
+  p { font-size: 0.875rem; line-height: 1.5; color: var(--foreground); }
+  small { font-size: 0.75rem; color: var(--muted-foreground); }
+  strong { font-weight: 600; }
+
+  /* Utility: tabular-nums + heading font for monetary displays */
+  .font-heading {
+    font-family: var(--font-heading);
+  }
+}
+
+/*
+  Fix: Tailwind v3 wraps CSS variable colors in hsl() which is invalid for
+  oklch values. These overrides restore direct var() references.
+  Later in source order → wins over Tailwind-generated hsl() rules.
+*/
+.bg-background  { background-color: var(--background) !important; }
+.bg-card        { background-color: var(--card) !important; }
+.bg-muted       { background-color: var(--muted) !important; }
+.bg-accent      { background-color: var(--accent) !important; }
+.bg-primary     { background-color: var(--primary) !important; }
+.bg-secondary   { background-color: var(--secondary) !important; }
+.bg-destructive { background-color: var(--destructive) !important; }
+.bg-border      { background-color: var(--border) !important; }
+.bg-popover     { background-color: var(--popover) !important; }
+.bg-sidebar     { background-color: var(--sidebar) !important; }
+.bg-input       { background-color: var(--input) !important; }
+
+.text-foreground          { color: var(--foreground) !important; }
+.text-card-foreground     { color: var(--card-foreground) !important; }
+.text-muted-foreground    { color: var(--muted-foreground) !important; }
+.text-accent-foreground   { color: var(--accent-foreground) !important; }
+.text-primary             { color: var(--primary) !important; }
+.text-primary-foreground  { color: var(--primary-foreground) !important; }
+.text-secondary-foreground { color: var(--secondary-foreground) !important; }
+.text-destructive         { color: var(--destructive) !important; }
+.text-popover-foreground  { color: var(--popover-foreground) !important; }
+.text-sidebar-foreground  { color: var(--sidebar-foreground) !important; }
+
+.border-border  { border-color: var(--border) !important; }
+.border-input   { border-color: var(--input) !important; }
+.border-ring    { border-color: var(--ring) !important; }
+.border-primary { border-color: var(--primary) !important; }
+
+.ring-ring    { --tw-ring-color: var(--ring); }
+.ring-primary { --tw-ring-color: var(--primary); }
+
+/* Radix select/combobox highlighted item — needs !important to beat the cv() override blocks above */
+[data-slot="select-item"][data-highlighted] {
+  background-color: var(--accent) !important;
+  color: var(--accent-foreground) !important;
+  outline: none;
+}
+
+.outline-ring { outline-color: var(--ring); }
+
+/* Shared form field styles — consistent with shadcn design tokens */
+.field-label {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  margin-bottom: 4px;
+  letter-spacing: 0.01em;
+}
+.field-input,
+.field-select {
+  width: 100%;
+  height: 2.5rem;
+  padding: 0 0.75rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background-color: var(--background);
+  color: var(--foreground);
+  font-size: 0.875rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 150ms, box-shadow 150ms;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.field-input::placeholder {
+  color: var(--muted-foreground);
+  opacity: 0.6;
+}
+.field-input:focus,
+.field-select:focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 20%, transparent);
+}
+.field-input:disabled,
+.field-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Thin, themed scrollbars — applies to modals, overflow containers */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+*::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
 }

@@ -1,7 +1,14 @@
-import { Sun, Moon } from 'lucide-react'
-import { MonthNav } from './MonthNav'
+import { Sun, Moon, CalendarDays } from 'lucide-react'
 import { useLiveTRM } from '@/hooks/useLiveTRM'
 import { useTheme } from '@/hooks/useTheme'
+
+const DAYS  = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
+const MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
+
+function todayLabel() {
+  const d = new Date()
+  return `${DAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}`
+}
 
 export function Header() {
   const { trm, fresh } = useLiveTRM()
@@ -12,22 +19,38 @@ export function Header() {
     : '—'
 
   return (
-    <header className="grid gap-2 py-3 pb-4"
-      style={{ gridTemplateColumns: '1fr auto 1fr' }}>
-      <h1 className="text-[14px] font-semibold text-[var(--n-txt2)] self-center">Neto</h1>
-      <MonthNav />
-      <div className="flex items-center justify-end gap-2">
+    <header className="flex items-center justify-between gap-2 px-4 sm:px-5 h-14 shrink-0 bg-[var(--n-bg)] border-b border-[var(--n-border)]">
+      <span className="text-base font-bold font-heading tracking-tight text-[var(--n-txt)] select-none">Neto</span>
+
+      <div className="flex items-center gap-2">
+        {/* Date chip */}
+        <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[var(--n-bg2)] text-[11px] font-medium text-[var(--n-txt2)] whitespace-nowrap select-none">
+          <CalendarDays size={11} className="text-[var(--n-txt3)] shrink-0" />
+          <span>{todayLabel()}</span>
+        </div>
+
+        {/* TRM chip */}
         {trm && (
-          <span className="text-[11px] text-[var(--n-txt3)] whitespace-nowrap">
-            <span
-              className={`text-[8px] align-middle mr-0.5 ${fresh ? 'text-[var(--n-green)]' : 'text-[var(--n-amber)]'}`}
-              title={fresh ? 'Actualizado ahora' : 'Desde caché (< 8h)'}
-            >
-              ●
+          <div
+            title={fresh ? 'TRM en vivo (Banco República)' : 'TRM desde caché (< 8h)'}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[var(--n-bg2)] text-[11px] font-medium whitespace-nowrap select-none"
+          >
+            {/* Live pulse badge */}
+            <span className="relative flex h-[7px] w-[7px] shrink-0">
+              {fresh && (
+                <span className="absolute inline-flex h-full w-full rounded-full bg-[var(--n-green)] opacity-75 animate-ping" />
+              )}
+              <span
+                className="relative inline-flex h-[7px] w-[7px] rounded-full"
+                style={{ background: fresh ? 'var(--n-green)' : 'var(--n-amber)' }}
+              />
             </span>
-            TRM&nbsp;{trmFormatted}
-          </span>
+            <span className="text-[var(--n-txt3)]">TRM</span>
+            <span className="text-[var(--n-txt2)]">{trmFormatted}</span>
+          </div>
         )}
+
+        {/* Theme toggle */}
         <button
           onClick={toggle}
           title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}

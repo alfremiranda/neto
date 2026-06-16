@@ -3,6 +3,8 @@ import { Trash2 } from 'lucide-react'
 import { SheetBase } from '@/components/ui/SheetBase'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
+import { Button } from '@/components/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 export function AccountEditSheet() {
   const { getAccounts, saveAccountsConfig } = useFinanceStore()
@@ -23,7 +25,7 @@ export function AccountEditSheet() {
     } else {
       setLabel(''); setCurrency('COP'); setNumber(''); setRate('')
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSheet, editingAccountId])
 
   function handleSave() {
@@ -55,68 +57,67 @@ export function AccountEditSheet() {
     <SheetBase id="account-edit" title={isEditing ? 'Editar cuenta' : 'Agregar cuenta'}>
       <div className="space-y-4">
         <div>
-          <label className="block text-[11px] text-[var(--n-txt3)] mb-[3px]">Nombre</label>
+          <label className="field-label">Nombre</label>
           <input
             type="text"
             value={label}
             onChange={e => setLabel(e.target.value)}
             placeholder="Ej: ARQ Principal"
-            className="w-full border border-[var(--n-border2)] rounded-lg px-[10px] py-2 bg-[var(--n-bg)] text-[var(--n-txt)] focus:outline-none focus:ring-2 focus:ring-[var(--n-blue)]"
+            className="field-input"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-[11px] text-[var(--n-txt3)] mb-[3px]">Moneda</label>
-            <select
-              value={currency}
-              onChange={e => setCurrency(e.target.value as 'USD' | 'COP')}
-              className="w-full border border-[var(--n-border2)] rounded-lg px-[10px] py-2 bg-[var(--n-bg)] text-[var(--n-txt)] appearance-none"
-            >
-              <option value="USD">USD</option>
-              <option value="COP">COP</option>
-            </select>
+            <label className="field-label">Moneda</label>
+            <Select value={currency} onValueChange={v => setCurrency(v as 'USD' | 'COP')}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="USD">USD</SelectItem>
+                <SelectItem value="COP">COP</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div>
-            <label className="block text-[11px] text-[var(--n-txt3)] mb-[3px]">Tasa anual % (opcional)</label>
+            <label className="field-label">Tasa anual % (opcional)</label>
             <input
               type="text"
               inputMode="decimal"
               value={rate}
               onChange={e => setRate(e.target.value)}
-              placeholder="Ej: 3.5"
-              className="w-full border border-[var(--n-border2)] rounded-lg px-[10px] py-2 bg-[var(--n-bg)] text-[var(--n-txt)] focus:outline-none focus:ring-2 focus:ring-[var(--n-blue)]"
+              placeholder="3.5"
+              className="field-input"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-[11px] text-[var(--n-txt3)] mb-[3px]">Número de cuenta (opcional, últimos 4 dígitos)</label>
+          <label className="field-label">Número de cuenta — últimos 4 dígitos (opcional)</label>
           <input
             type="text"
             value={number}
             onChange={e => setNumber(e.target.value)}
             placeholder="1234"
             maxLength={20}
-            className="w-full border border-[var(--n-border2)] rounded-lg px-[10px] py-2 bg-[var(--n-bg)] text-[var(--n-txt)] focus:outline-none focus:ring-2 focus:ring-[var(--n-blue)]"
+            className="field-input"
           />
         </div>
 
-        <button
-          onClick={handleSave}
-          className="w-full bg-[var(--n-txt)] text-[var(--n-bg)] rounded-lg py-2 px-4 text-[13px] font-medium border-0 cursor-pointer hover:opacity-85 transition-opacity active:scale-[.97]"
-        >
+        <Button className="w-full" onClick={handleSave}>
           {isEditing ? 'Guardar cambios' : 'Agregar cuenta'}
-        </button>
+        </Button>
 
         {isEditing && (
-          <button
+          <Button
+            variant="outline"
+            className="w-full text-destructive border-destructive hover:bg-[var(--n-danger-bg)] hover:text-destructive"
             onClick={handleDelete}
-            className="w-full border border-[var(--n-danger)] text-[var(--n-danger)] rounded-lg py-2 px-4 text-[13px] font-medium bg-transparent cursor-pointer hover:bg-[var(--n-danger-bg)] transition-colors flex items-center justify-center gap-2"
           >
             <Trash2 size={14} />
             Eliminar cuenta
-          </button>
+          </Button>
         )}
       </div>
     </SheetBase>

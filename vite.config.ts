@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
-  base: '/finanzas-amd/',
+  base: '/neto/',
   plugins: [react()],
   resolve: {
     // Vite 8: native TypeScript path alias support

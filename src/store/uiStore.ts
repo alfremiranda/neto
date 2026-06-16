@@ -7,8 +7,11 @@ interface UIState {
   pendingDeleteId: number | null
   toastMsg: string | null
   editingEgresoId: number | null
+  editingIncomeId: number | null
   editingAccountId: string | null
   editingBalanceId: string | null
+  editingTransferId: number | null
+  sidebarCollapsed: boolean
 
   setView: (v: ViewType) => void
   openSheet: (id: SheetId) => void
@@ -16,8 +19,11 @@ interface UIState {
   setPendingDelete: (id: number | null) => void
   showToast: (msg: string) => void
   setEditingEgreso: (id: number | null) => void
+  setEditingIncome: (id: number | null) => void
   setEditingAccount: (id: string | null) => void
   setEditingBalance: (id: string | null) => void
+  setEditingTransfer: (id: number | null) => void
+  toggleSidebar: () => void
 }
 
 let toastTimer: ReturnType<typeof setTimeout> | null = null
@@ -28,8 +34,11 @@ export const useUIStore = create<UIState>()((set) => ({
   pendingDeleteId: null,
   toastMsg: null,
   editingEgresoId: null,
+  editingIncomeId: null,
   editingAccountId: null,
   editingBalanceId: null,
+  editingTransferId: null,
+  sidebarCollapsed: false,
 
   setView: (view) => set({ view }),
 
@@ -38,8 +47,10 @@ export const useUIStore = create<UIState>()((set) => ({
   closeSheet: () => set({
     activeSheet: null,
     editingEgresoId: null,
+    editingIncomeId: null,
     editingAccountId: null,
     editingBalanceId: null,
+    editingTransferId: null,
   }),
 
   setPendingDelete: (id) => set({ pendingDeleteId: id }),
@@ -51,6 +62,9 @@ export const useUIStore = create<UIState>()((set) => ({
   },
 
   setEditingEgreso: (id) => set({ editingEgresoId: id }),
+  setEditingIncome: (id) => set({ editingIncomeId: id }),
   setEditingAccount: (id) => set({ editingAccountId: id }),
   setEditingBalance: (id) => set({ editingBalanceId: id }),
+  setEditingTransfer: (id) => set({ editingTransferId: id }),
+  toggleSidebar: () => set(s => ({ sidebarCollapsed: !s.sidebarCollapsed })),
 }))

@@ -2,21 +2,21 @@
   "name": "Neto — Planeador financiero",
   "short_name": "Neto",
   "description": "Planeador financiero mensual para independientes",
-  "start_url": "/finanzas-amd/",
-  "scope": "/finanzas-amd/",
+  "start_url": "/neto/",
+  "scope": "/neto/",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#f0ede8",
   "theme_color": "#1a1a1a",
   "icons": [
     {
-      "src": "/finanzas-amd/icon.svg",
+      "src": "/neto/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "/finanzas-amd/icon.svg",
+      "src": "/neto/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "maskable"

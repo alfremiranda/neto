@@ -5,7 +5,7 @@ import App from './App.tsx'
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/finanzas-amd/sw.js').catch(() => {})
+    navigator.serviceWorker.register('/neto/sw.js').catch(() => {})
   })
 }
 

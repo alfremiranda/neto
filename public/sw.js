@@ -1,5 +1,5 @@
 const CACHE = 'neto-v1'
-const SHELL = '/finanzas-amd/'
+const SHELL = '/neto/'
 
 // APIs que siempre van a la red
 const NETWORK_ONLY = ['supabase.co', 'datos.gov.co', 'open.er-api.com']

@@ -1,8 +1,10 @@
+import { CalendarDays } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { monthKey } from '@/store/financeStore'
 import { buildAnnualData } from '@/lib/calc'
 import { COP, USD, pct } from '@/lib/format'
 import { MetricCard } from '@/components/ui/MetricCard'
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
 import { MONTHS } from '@/data/defaults'
 
 interface AnnualTableProps {
@@ -20,7 +22,15 @@ export function AnnualTable({ year }: AnnualTableProps) {
   const filled = rows.filter(r => r.hasData)
 
   if (!filled.length) {
-    return <div className="text-center py-6 text-[13px] text-[var(--n-txt3)]">Sin meses registrados en {year}</div>
+    return (
+      <Empty>
+        <EmptyHeader>
+          <EmptyMedia variant="icon"><CalendarDays size={14} /></EmptyMedia>
+          <EmptyTitle>Sin registros en {year}</EmptyTitle>
+          <EmptyDescription>Navega a un mes y agrega ingresos o egresos para ver el resumen anual</EmptyDescription>
+        </EmptyHeader>
+      </Empty>
+    )
   }
 
   const totBruto = filled.reduce((a, r) => a + (r.bruto ?? 0), 0)
@@ -36,22 +46,22 @@ export function AnnualTable({ year }: AnnualTableProps) {
       <div className="grid grid-cols-2 gap-2">
         <MetricCard
           label="Bruto total año"
-          value={<span className="text-[15px]">{COP(totBruto)}</span>}
+          value={<span className="text-[15px] font-heading tabular-nums">{COP(totBruto)}</span>}
           sub={`${USD(totUSD)} + ${COP(totCOP)}`}
         />
         <MetricCard
           label="SS pagado"
-          value={<span className="text-[15px] text-[#378ADD]">{COP(totSS)}</span>}
+          value={<span className="text-[15px] font-heading tabular-nums text-[var(--n-blue)]">{COP(totSS)}</span>}
           sub={`${pct(totSS, totBruto)} del bruto`}
         />
         <MetricCard
-          label="Manutención"
-          value={<span className="text-[15px] text-[#1D9E75]">{COP(totGast)}</span>}
+          label="Egresos"
+          value={<span className="text-[15px] font-heading tabular-nums text-[var(--n-green)]">{COP(totGast)}</span>}
           sub={`${pct(totGast, totBruto)} del bruto`}
         />
         <MetricCard
           label="Neto libre acum."
-          value={<span className="text-[15px] text-[#639922]">{COP(totNeto)}</span>}
+          value={<span className="text-[15px] font-heading tabular-nums text-[var(--n-lime)]">{COP(totNeto)}</span>}
           sub={`${pct(totNeto, totBruto)} del bruto`}
         />
       </div>
@@ -60,12 +70,12 @@ export function AnnualTable({ year }: AnnualTableProps) {
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-[12px]">
           <thead>
-            <tr className="border-b border-[var(--n-border2)]">
-              <th className="text-left py-[6px] px-[6px] text-[var(--n-txt3)] font-medium">Mes</th>
-              <th className="text-right py-[6px] px-[6px] text-[var(--n-txt3)] font-medium">Bruto COP</th>
-              <th className="text-right py-[6px] px-[6px] text-[var(--n-txt3)] font-medium">SS</th>
-              <th className="text-right py-[6px] px-[6px] text-[var(--n-txt3)] font-medium">Manut.</th>
-              <th className="text-right py-[6px] px-[6px] text-[var(--n-txt3)] font-medium">Neto libre</th>
+            <tr className="border-b border-border">
+              <th className="text-left py-[6px] px-[6px] text-muted-foreground font-medium">Mes</th>
+              <th className="text-right py-[6px] px-[6px] text-muted-foreground font-medium">Bruto COP</th>
+              <th className="text-right py-[6px] px-[6px] text-[var(--n-blue)] font-medium">SS</th>
+              <th className="text-right py-[6px] px-[6px] text-[var(--n-green)] font-medium">Egresos</th>
+              <th className="text-right py-[6px] px-[6px] text-[var(--n-lime)] font-medium">Neto libre</th>
             </tr>
           </thead>
           <tbody>
@@ -77,17 +87,17 @@ export function AnnualTable({ year }: AnnualTableProps) {
                   key={r.m}
                   onClick={() => setCurKey(key)}
                   className={[
-                    'border-b border-[var(--n-border)] cursor-pointer hover:bg-[var(--n-bg2)] transition-colors',
-                    isCurrent ? 'bg-[var(--n-bg2)]' : '',
+                    'border-b border-border cursor-pointer hover:bg-muted transition-colors',
+                    isCurrent ? 'bg-muted' : '',
                   ].join(' ')}
                 >
-                  <td className="py-[7px] px-[6px] text-[var(--n-txt2)] font-medium">
-                    {MONTHS[r.m].slice(0, 3)}
+                  <td className="py-[7px] px-[6px] text-muted-foreground font-medium">
+                    {MONTHS[r.m - 1].slice(0, 3)}
                   </td>
-                  <td className="py-[7px] px-[6px] text-right">{COP(r.bruto ?? 0)}</td>
-                  <td className="py-[7px] px-[6px] text-right text-[#378ADD]">{COP(r.ssTot ?? 0)}</td>
-                  <td className="py-[7px] px-[6px] text-right text-[#1D9E75]">{COP(r.gast ?? 0)}</td>
-                  <td className="py-[7px] px-[6px] text-right font-semibold text-[#639922]">
+                  <td className="py-[7px] px-[6px] text-right tabular-nums">{COP(r.bruto ?? 0)}</td>
+                  <td className="py-[7px] px-[6px] text-right tabular-nums text-[var(--n-blue)]">{COP(r.ssTot ?? 0)}</td>
+                  <td className="py-[7px] px-[6px] text-right tabular-nums text-[var(--n-green)]">{COP(r.gast ?? 0)}</td>
+                  <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold text-[var(--n-lime)]">
                     {COP(Math.max(r.netoLibre ?? 0, 0))}
                   </td>
                 </tr>
@@ -95,12 +105,12 @@ export function AnnualTable({ year }: AnnualTableProps) {
             })}
           </tbody>
           <tfoot>
-            <tr className="border-t border-[var(--n-border2)]">
-              <td className="py-[7px] px-[6px] text-[var(--n-txt3)] text-[11px]">TOTAL</td>
-              <td className="py-[7px] px-[6px] text-right font-semibold">{COP(totBruto)}</td>
-              <td className="py-[7px] px-[6px] text-right font-semibold text-[#378ADD]">{COP(totSS)}</td>
-              <td className="py-[7px] px-[6px] text-right font-semibold text-[#1D9E75]">{COP(totGast)}</td>
-              <td className="py-[7px] px-[6px] text-right font-bold text-[#639922]">{COP(totNeto)}</td>
+            <tr className="border-t-2 border-border">
+              <td className="py-[7px] px-[6px] text-muted-foreground text-[11px] font-medium tracking-wider">TOTAL</td>
+              <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold">{COP(totBruto)}</td>
+              <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold text-[var(--n-blue)]">{COP(totSS)}</td>
+              <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold text-[var(--n-green)]">{COP(totGast)}</td>
+              <td className="py-[7px] px-[6px] text-right tabular-nums font-bold text-[var(--n-lime)]">{COP(totNeto)}</td>
             </tr>
           </tfoot>
         </table>

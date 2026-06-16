@@ -1,8 +1,11 @@
 import { useState } from 'react'
+import { Settings } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { parseCOP, copFormat } from '@/lib/format'
 import { DEFAULTS } from '@/data/defaults'
+import { SectionCard } from '@/components/ui/SectionCard'
+import { Button } from '@/components/ui/button'
 
 export function ConfigCard() {
   const { getSMMLV, saveSMMLV, curKey } = useFinanceStore()
@@ -19,14 +22,10 @@ export function ConfigCard() {
   }
 
   return (
-    <div className="bg-[var(--n-bg)] border border-[var(--n-border)] rounded-xl p-4">
-      <div className="text-[12px] font-medium text-[var(--n-txt2)] mb-3 flex items-center gap-[5px]">
-        <span>⚙️</span>
-        <span>Configuración</span>
-      </div>
+    <SectionCard icon={Settings} title={`Configuración ${y}`}>
       <div className="flex items-end gap-3">
         <div className="flex-1">
-          <label className="block text-[11px] text-[var(--n-txt3)] mb-[3px]">SMMLV {y} (COP)</label>
+          <label className="field-label">SMMLV {y} (COP)</label>
           <input
             type="text"
             inputMode="numeric"
@@ -35,19 +34,16 @@ export function ConfigCard() {
               const stripped = e.target.value.replace(/[^\d]/g, '')
               setVal(stripped ? parseInt(stripped).toLocaleString('es-CO') : '')
             }}
-            className="w-full border border-[var(--n-border2)] rounded-lg px-[10px] py-2 bg-[var(--n-bg)] text-[var(--n-txt)] focus:outline-none focus:ring-2 focus:ring-[var(--n-blue)]"
+            className="field-input font-heading tabular-nums"
           />
         </div>
-        <button
-          onClick={handleSave}
-          className="bg-[var(--n-txt)] text-[var(--n-bg)] rounded-lg px-4 py-2 text-[13px] font-medium border-0 cursor-pointer hover:opacity-85 transition-opacity whitespace-nowrap"
-        >
+        <Button onClick={handleSave} className="shrink-0">
           Guardar
-        </button>
+        </Button>
       </div>
-      <div className="text-[11px] text-[var(--n-txt3)] mt-[6px]">
+      <p className="text-xs text-muted-foreground mt-2">
         Usado para calcular el IBC mínimo de seguridad social
-      </div>
-    </div>
+      </p>
+    </SectionCard>
   )
 }

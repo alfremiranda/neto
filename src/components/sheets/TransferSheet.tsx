@@ -6,14 +6,18 @@ import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { COP, USD, parseMoney } from '@/lib/format'
 import { useLiveTRM } from '@/hooks/useLiveTRM'
+import { Button } from '@/components/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { DatePicker } from '@/components/ui/DatePicker'
 
 export function TransferSheet() {
-  const { getAccounts, getCurrentMonth, addTransfer } = useFinanceStore()
-  const { closeSheet, showToast } = useUIStore()
+  const { getAccounts, getCurrentMonth, addTransfer, updateTransfer } = useFinanceStore()
+  const { closeSheet, showToast, activeSheet, editingTransferId } = useUIStore()
   const liveTRM = useLiveTRM()
 
   const accounts = getAccounts()
   const month = getCurrentMonth()
+  const isEditing = editingTransferId != null
 
   const [fromId, setFromId] = useState(accounts[0]?.id || '')
   const [toId, setToId]     = useState(accounts[1]?.id || accounts[0]?.id || '')
@@ -26,10 +30,45 @@ export function TransferSheet() {
 
   const amt = useMoneyInput({ decimals: from?.currency === 'USD' ? 2 : 0 })
 
+  // Load existing transfer data when editing
   useEffect(() => {
+    if (activeSheet !== 'transfer') return
     const trm = month.trm
-    setTrmDisplay(trm.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
-  }, [month.trm])
+    const trmStr = trm.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+    if (isEditing) {
+      const t = (month.transfers || []).find(t => t.id === editingTransferId)
+      if (t) {
+        setFromId(t.from)
+        setToId(t.to)
+        setDate(t.date)
+        amt.setValue(t.amount)
+        setTrmDisplay(t.trm
+          ? t.trm.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+          : trmStr)
+        return
+      }
+    }
+    // New transfer defaults
+    setFromId(accounts[0]?.id || '')
+    setToId(accounts[1]?.id || accounts[0]?.id || '')
+    setDate(new Date().toISOString().slice(0, 10))
+    amt.setValue(0)
+    setTrmDisplay(trmStr)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSheet, editingTransferId])
+
+  // Effective balance for "Todo →" shortcut (only for new transfers)
+  const transfers = month.transfers || []
+  const fromDelta = transfers.reduce((acc, t) => {
+    if (t.from === fromId) return acc - t.amount
+    if (t.to === fromId)   return acc + t.toAmount
+    return acc
+  }, 0)
+  const fromBase = month.balances?.[fromId]
+  const fromEffective = fromBase != null
+    ? fromBase + fromDelta
+    : fromDelta !== 0 ? fromDelta : null
 
   function getResult(): string {
     if (!from || !to || !amt.numericValue) return ''
@@ -48,7 +87,7 @@ export function TransferSheet() {
     if (from.currency === 'USD' && to.currency === 'COP') toAmount = amt.numericValue * (trm ?? month.trm)
     else if (from.currency === 'COP' && to.currency === 'USD') toAmount = amt.numericValue / (trm ?? month.trm)
 
-    addTransfer({
+    const payload = {
       date: date || new Date().toISOString().slice(0, 10),
       from: fromId, to: toId,
       amount: amt.numericValue,
@@ -56,25 +95,30 @@ export function TransferSheet() {
       toCurrency: to.currency,
       trm,
       toAmount,
-    })
-    showToast('Movimiento registrado')
-    amt.setValue(0)
+    }
+
+    if (isEditing && editingTransferId != null) {
+      updateTransfer(editingTransferId, payload)
+      showToast('Movimiento actualizado')
+    } else {
+      addTransfer(payload)
+      showToast('Movimiento registrado')
+    }
     closeSheet()
   }
 
   return (
-    <SheetBase id="transfer" title="Nuevo movimiento">
+    <SheetBase id="transfer" title={isEditing ? 'Editar movimiento' : 'Nuevo movimiento'}>
       <div className="space-y-4">
-        {/* TRM en vivo */}
         {liveTRM.trm && (
-          <div className="flex justify-between items-center bg-[var(--n-bg2)] rounded-lg px-3 py-2">
-            <span className="text-[11px] text-[var(--n-txt3)]">TRM en vivo</span>
+          <div className="flex justify-between items-center bg-muted rounded-lg px-3 py-2">
+            <span className="text-xs text-muted-foreground">TRM en vivo</span>
             <div className="flex items-center gap-2">
-              <span className="text-[13px] font-medium">
+              <span className="text-sm font-medium tabular-nums">
                 {liveTRM.trm.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
               <button
-                className="text-[11px] text-[var(--n-blue)] border-none bg-transparent cursor-pointer"
+                className="text-xs text-primary border-none bg-transparent cursor-pointer hover:underline"
                 onClick={() => setTrmDisplay(
                   liveTRM.trm!.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
                 )}
@@ -87,32 +131,44 @@ export function TransferSheet() {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-[11px] text-[var(--n-txt3)] mb-[3px]">Desde</label>
-            <select
-              value={fromId}
-              onChange={e => setFromId(e.target.value)}
-              className="w-full border border-[var(--n-border2)] rounded-lg px-[10px] py-2 bg-[var(--n-bg)] text-[var(--n-txt)] appearance-none"
-            >
-              {accounts.map(a => <option key={a.id} value={a.id}>{a.label} ({a.currency})</option>)}
-            </select>
+            <label className="field-label">Desde</label>
+            <Select value={fromId} onValueChange={setFromId}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {accounts.map(a => <SelectItem key={a.id} value={a.id}>{a.label} ({a.currency})</SelectItem>)}
+              </SelectContent>
+            </Select>
           </div>
           <div>
-            <label className="block text-[11px] text-[var(--n-txt3)] mb-[3px]">Hacia</label>
-            <select
-              value={toId}
-              onChange={e => setToId(e.target.value)}
-              className="w-full border border-[var(--n-border2)] rounded-lg px-[10px] py-2 bg-[var(--n-bg)] text-[var(--n-txt)] appearance-none"
-            >
-              {accounts.map(a => <option key={a.id} value={a.id}>{a.label} ({a.currency})</option>)}
-            </select>
+            <label className="field-label">Hacia</label>
+            <Select value={toId} onValueChange={setToId}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {accounts.map(a => <SelectItem key={a.id} value={a.id}>{a.label} ({a.currency})</SelectItem>)}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
-        <MoneyInput
-          label={`Monto${from ? ` (${from.currency})` : ''}`}
-          value={amt.display}
-          onChange={amt.handleChange}
-        />
+        <div>
+          <div className="flex items-center justify-between mb-0.5">
+            <label className="field-label">Monto{from ? ` (${from.currency})` : ''}</label>
+            {!isEditing && fromEffective != null && fromEffective > 0 && (
+              <button
+                type="button"
+                className="text-xs text-primary border-none bg-transparent cursor-pointer hover:underline"
+                onClick={() => amt.setValue(fromEffective)}
+              >
+                Todo → {from?.currency === 'USD' ? USD(fromEffective) : COP(fromEffective)}
+              </button>
+            )}
+          </div>
+          <MoneyInput value={amt.display} onChange={amt.handleChange} />
+        </div>
 
         {isCross && (
           <MoneyInput
@@ -123,27 +179,19 @@ export function TransferSheet() {
         )}
 
         {getResult() && (
-          <div className="text-[13px] text-[var(--n-txt2)] bg-[var(--n-bg2)] rounded-lg px-3 py-2">
+          <div className="text-sm text-muted-foreground bg-muted rounded-lg px-3 py-2">
             {getResult()}
           </div>
         )}
 
         <div>
-          <label className="block text-[11px] text-[var(--n-txt3)] mb-[3px]">Fecha</label>
-          <input
-            type="date"
-            value={date}
-            onChange={e => setDate(e.target.value)}
-            className="w-full border border-[var(--n-border2)] rounded-lg px-[10px] py-2 bg-[var(--n-bg)] text-[var(--n-txt)] focus:outline-none focus:ring-2 focus:ring-[var(--n-blue)]"
-          />
+          <label className="field-label">Fecha</label>
+          <DatePicker value={date} onChange={setDate} />
         </div>
 
-        <button
-          onClick={handleSubmit}
-          className="w-full bg-[var(--n-txt)] text-[var(--n-bg)] rounded-lg py-2 px-4 text-[13px] font-medium border-0 cursor-pointer hover:opacity-85 transition-opacity active:scale-[.97]"
-        >
-          Registrar movimiento
-        </button>
+        <Button className="w-full" onClick={handleSubmit}>
+          {isEditing ? 'Guardar cambios' : 'Registrar movimiento'}
+        </Button>
       </div>
     </SheetBase>
   )

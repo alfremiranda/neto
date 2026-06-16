@@ -1,21 +1,39 @@
+import { KPIStrip } from '@/components/cards/KPIStrip'
+import { DistribucionCard } from '@/components/cards/DistribucionCard'
 import { MovimientosCard } from '@/components/cards/MovimientosCard'
 import { IngresosCard } from '@/components/cards/IngresosCard'
 import { EgresosCard } from '@/components/cards/EgresosCard'
-import { DistribucionCard } from '@/components/cards/DistribucionCard'
 import { ObligacionesCard } from '@/components/cards/ObligacionesCard'
-import { FlujoCard } from '@/components/cards/FlujoCard'
+import { ProvisionesCard } from '@/components/cards/ProvisionesCard'
+import { MonthNav } from '@/components/layout/MonthNav'
 
 export function MesView() {
   return (
-    <div className="space-y-[10px]">
-      <MovimientosCard />
-      <IngresosCard />
-      <EgresosCard />
-      <div className="grid grid-cols-2 gap-[10px] sm:grid-cols-2 grid-cols-1">
-        <DistribucionCard />
-        <ObligacionesCard />
+    <div>
+      <div className="mb-4">
+        <MonthNav />
       </div>
-      <FlujoCard />
+
+      {/* ── Insights del mes ──────────────────────────────── */}
+      <KPIStrip />
+      <DistribucionCard />
+
+      {/* ── Ingresos + Movimientos ────────────────────────── */}
+      <div className="grid md:grid-cols-2 gap-4 mb-4">
+        <IngresosCard />
+        <MovimientosCard />
+      </div>
+
+      {/* ── Obligaciones + Provisiones ───────────────────── */}
+      <div className="grid md:grid-cols-2 gap-4 mb-4">
+        <ObligacionesCard />
+        <ProvisionesCard />
+      </div>
+
+      {/* ── Egresos ──────────────────────────────────────── */}
+      <div className="mb-4">
+        <EgresosCard />
+      </div>
     </div>
   )
 }

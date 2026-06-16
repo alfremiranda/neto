@@ -4,9 +4,10 @@ import { MoneyInput } from '@/components/ui/MoneyInput'
 import { useMoneyInput } from '@/hooks/useMoneyInput'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
+import { Button } from '@/components/ui/button'
 
 export function BalanceSheet() {
-  const { getCurrentMonth, getAccounts, setBalance } = useFinanceStore()
+  const { getAccounts, setStartingBalance } = useFinanceStore()
   const { closeSheet, showToast, editingBalanceId, activeSheet } = useUIStore()
 
   const account = editingBalanceId ? getAccounts().find(a => a.id === editingBalanceId) : null
@@ -15,38 +16,38 @@ export function BalanceSheet() {
 
   useEffect(() => {
     if (activeSheet !== 'balance' || !editingBalanceId) return
-    const bal = (getCurrentMonth().balances || {})[editingBalanceId] || 0
-    amt.setValue(bal)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    amt.setValue(account?.startingBalance ?? 0)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSheet, editingBalanceId])
 
   function handleSave() {
     if (!editingBalanceId) return
-    setBalance(editingBalanceId, amt.numericValue)
-    showToast('Saldo actualizado')
+    setStartingBalance(editingBalanceId, amt.numericValue)
+    showToast('Saldo inicial actualizado')
     closeSheet()
   }
 
   return (
-    <SheetBase id="balance" title="Saldo de cuenta">
+    <SheetBase id="balance" title="Saldo inicial de cuenta">
       <div className="space-y-4">
         {account && (
-          <div className="text-[13px] text-[var(--n-txt2)]">
-            {account.label} · <span className="font-medium">{account.currency}</span>
+          <div className="text-sm text-muted-foreground">
+            {account.label} · <span className="font-medium text-foreground">{account.currency}</span>
           </div>
         )}
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Ingresa el saldo que tenía esta cuenta antes de empezar a registrar movimientos en la app.
+          El balance actual se calculará automáticamente a partir de aquí.
+        </p>
         <MoneyInput
-          label="Saldo actual"
+          label="Saldo inicial"
           currency={account?.currency}
           value={amt.display}
           onChange={amt.handleChange}
         />
-        <button
-          onClick={handleSave}
-          className="w-full bg-[var(--n-txt)] text-[var(--n-bg)] rounded-lg py-2 px-4 text-[13px] font-medium border-0 cursor-pointer hover:opacity-85 transition-opacity active:scale-[.97]"
-        >
-          Guardar saldo
-        </button>
+        <Button className="w-full" onClick={handleSave}>
+          Guardar saldo inicial
+        </Button>
       </div>
     </SheetBase>
   )

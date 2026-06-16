@@ -5,14 +5,18 @@ export interface Income {
   currency: 'USD' | 'COP'
   account: string
   tipo: 'servicios' | 'otro'
+  date?: string
 }
 
 export interface Egreso {
   id: number
-  tipo: string
+  desc: string
+  category: string
   amount: number
   currency: 'USD' | 'COP'
   date: string
+  recurring?: boolean
+  account?: string  // account ID this egreso debits (optional)
 }
 
 export interface Transfer {
@@ -33,6 +37,14 @@ export interface Account {
   currency: 'USD' | 'COP'
   number: string
   rate: number
+  startingBalance?: number  // one-time base; balance rolls forward from here
+}
+
+export interface VoluntariaItem {
+  id: number
+  label: string
+  amount: number
+  currency: 'USD' | 'COP'
 }
 
 export interface MonthData {
@@ -40,6 +52,7 @@ export interface MonthData {
   incomes: Income[]
   transfers: Transfer[]
   egresos: Egreso[]
+  voluntarias?: VoluntariaItem[]
   egresosSeeded?: boolean
   balances?: Record<string, number>
 }
@@ -47,11 +60,12 @@ export interface MonthData {
 export interface Settings {
   smmlv?: Record<string, number>
   accounts?: Account[]
+  ssAccount?: string  // account ID that pays SS each month
 }
 
 export type FinanceDB = { _settings?: Settings } & Record<string, MonthData>
 
-export type ViewType = 'mes' | 'ano'
+export type ViewType = 'mes' | 'ano' | 'cuentas' | 'config'
 
 export type SheetId = 'income' | 'egreso' | 'transfer' | 'account-edit' | 'balance' | null
 
@@ -98,4 +112,43 @@ export interface AnnualRow {
   ret?: number
   prim?: number
   netoLibre?: number
+}
+
+/* ─── Deductions system ─────────────────────────────────── */
+
+export type DeductionBase  = 'ibc' | 'bruto' | 'fixed_cop' | 'fixed_usd'
+export type DeductionGroup = 'ss' | 'provision' | 'voluntary'
+
+export interface DeductionConfig {
+  id:       string
+  label:    string
+  group:    DeductionGroup
+  base:     DeductionBase
+  pct:      number          // percentage 0–100
+  amount?:  number          // for fixed_cop / fixed_usd
+  months:   number[]        // 1–12; empty = every month
+  enabled:  boolean
+  color:    string          // CSS var token e.g. '--n-blue'
+  locked?:  boolean         // system default — can't delete
+}
+
+export interface DeductionResult {
+  id:      string
+  label:   string
+  group:   DeductionGroup
+  amount:  number
+  pct:     number
+  base:    DeductionBase
+  color:   string
+  applies: boolean               // false if frequency excludes this month
+}
+
+export interface AllDeductionsResult {
+  ssItems:    DeductionResult[]
+  ssTotal:    number
+  provItems:  DeductionResult[]
+  volItems:   DeductionResult[]
+  nonSsTotal: number
+  total:      number             // ssTotal + nonSsTotal + gast
+  netoLibre:  number
 }
