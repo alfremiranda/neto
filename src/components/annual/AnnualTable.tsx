@@ -1,5 +1,6 @@
 import { CalendarDays } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
+import { useSettingsStore } from '@/store/settingsStore'
 import { monthKey } from '@/store/financeStore'
 import { buildAnnualData } from '@/lib/calc'
 import { COP, USD, pct } from '@/lib/format'
@@ -13,12 +14,13 @@ interface AnnualTableProps {
 
 export function AnnualTable({ year }: AnnualTableProps) {
   const { db, curKey, getSMMLV, setCurKey } = useFinanceStore()
+  const deductions = useSettingsStore(s => s.deductions)
 
   const dbAsMonthMap = Object.fromEntries(
     Object.entries(db).filter(([k]) => k !== '_settings')
   ) as Parameters<typeof buildAnnualData>[0]
 
-  const rows = buildAnnualData(dbAsMonthMap, year, y => getSMMLV(y))
+  const rows = buildAnnualData(dbAsMonthMap, year, y => getSMMLV(y), deductions)
   const filled = rows.filter(r => r.hasData)
 
   if (!filled.length) {
@@ -35,15 +37,22 @@ export function AnnualTable({ year }: AnnualTableProps) {
 
   const totBruto = filled.reduce((a, r) => a + (r.bruto ?? 0), 0)
   const totSS    = filled.reduce((a, r) => a + (r.ssTot ?? 0), 0)
+  const totRet   = filled.reduce((a, r) => a + (r.ret ?? 0), 0)
+  const totProv  = filled.reduce((a, r) => a + (r.prim ?? 0), 0)
   const totGast  = filled.reduce((a, r) => a + (r.gast ?? 0), 0)
   const totNeto  = filled.reduce((a, r) => a + Math.max(r.netoLibre ?? 0, 0), 0)
   const totUSD   = filled.reduce((a, r) => a + (r.totUSD ?? 0), 0)
   const totCOP   = filled.reduce((a, r) => a + (r.totCOP ?? 0), 0)
 
+  // Derive colors from deductions config
+  const ssColor  = deductions.find(d => d.group === 'ss' && d.enabled)?.color ?? '--n-blue'
+  const retColor = deductions.find(d => d.id === 'retencion')?.color ?? '--n-amber'
+  const provColor = deductions.find(d => d.group === 'provision' && d.id !== 'retencion' && d.enabled)?.color ?? '--n-pink'
+
   return (
     <div className="space-y-3">
       {/* Summary metrics */}
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
         <MetricCard
           label="Bruto total año"
           value={<span className="text-[15px] font-heading tabular-nums">{COP(totBruto)}</span>}
@@ -51,8 +60,18 @@ export function AnnualTable({ year }: AnnualTableProps) {
         />
         <MetricCard
           label="SS pagado"
-          value={<span className="text-[15px] font-heading tabular-nums text-[var(--n-blue)]">{COP(totSS)}</span>}
+          value={<span className="text-[15px] font-heading tabular-nums" style={{ color: `var(${ssColor})` }}>{COP(totSS)}</span>}
           sub={`${pct(totSS, totBruto)} del bruto`}
+        />
+        <MetricCard
+          label="Retención"
+          value={<span className="text-[15px] font-heading tabular-nums" style={{ color: `var(${retColor})` }}>{COP(totRet)}</span>}
+          sub={`${pct(totRet, totBruto)} del bruto`}
+        />
+        <MetricCard
+          label="Provisiones"
+          value={<span className="text-[15px] font-heading tabular-nums" style={{ color: `var(${provColor})` }}>{COP(totProv)}</span>}
+          sub={`${pct(totProv, totBruto)} del bruto`}
         />
         <MetricCard
           label="Egresos"
@@ -73,7 +92,9 @@ export function AnnualTable({ year }: AnnualTableProps) {
             <tr className="border-b border-border">
               <th className="text-left py-[6px] px-[6px] text-muted-foreground font-medium">Mes</th>
               <th className="text-right py-[6px] px-[6px] text-muted-foreground font-medium">Bruto COP</th>
-              <th className="text-right py-[6px] px-[6px] text-[var(--n-blue)] font-medium">SS</th>
+              <th className="text-right py-[6px] px-[6px] font-medium" style={{ color: `var(${ssColor})` }}>SS</th>
+              <th className="text-right py-[6px] px-[6px] font-medium" style={{ color: `var(${retColor})` }}>Retención</th>
+              <th className="text-right py-[6px] px-[6px] font-medium" style={{ color: `var(${provColor})` }}>Provisiones</th>
               <th className="text-right py-[6px] px-[6px] text-[var(--n-green)] font-medium">Egresos</th>
               <th className="text-right py-[6px] px-[6px] text-[var(--n-lime)] font-medium">Neto libre</th>
             </tr>
@@ -95,7 +116,9 @@ export function AnnualTable({ year }: AnnualTableProps) {
                     {MONTHS[r.m - 1].slice(0, 3)}
                   </td>
                   <td className="py-[7px] px-[6px] text-right tabular-nums">{COP(r.bruto ?? 0)}</td>
-                  <td className="py-[7px] px-[6px] text-right tabular-nums text-[var(--n-blue)]">{COP(r.ssTot ?? 0)}</td>
+                  <td className="py-[7px] px-[6px] text-right tabular-nums" style={{ color: `var(${ssColor})` }}>{COP(r.ssTot ?? 0)}</td>
+                  <td className="py-[7px] px-[6px] text-right tabular-nums" style={{ color: `var(${retColor})` }}>{COP(r.ret ?? 0)}</td>
+                  <td className="py-[7px] px-[6px] text-right tabular-nums" style={{ color: `var(${provColor})` }}>{COP(r.prim ?? 0)}</td>
                   <td className="py-[7px] px-[6px] text-right tabular-nums text-[var(--n-green)]">{COP(r.gast ?? 0)}</td>
                   <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold text-[var(--n-lime)]">
                     {COP(Math.max(r.netoLibre ?? 0, 0))}
@@ -108,7 +131,9 @@ export function AnnualTable({ year }: AnnualTableProps) {
             <tr className="border-t-2 border-border">
               <td className="py-[7px] px-[6px] text-muted-foreground text-[11px] font-medium tracking-wider">TOTAL</td>
               <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold">{COP(totBruto)}</td>
-              <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold text-[var(--n-blue)]">{COP(totSS)}</td>
+              <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold" style={{ color: `var(${ssColor})` }}>{COP(totSS)}</td>
+              <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold" style={{ color: `var(${retColor})` }}>{COP(totRet)}</td>
+              <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold" style={{ color: `var(${provColor})` }}>{COP(totProv)}</td>
               <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold text-[var(--n-green)]">{COP(totGast)}</td>
               <td className="py-[7px] px-[6px] text-right tabular-nums font-bold text-[var(--n-lime)]">{COP(totNeto)}</td>
             </tr>

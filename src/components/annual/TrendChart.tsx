@@ -11,15 +11,16 @@ import { SectionCard } from '@/components/ui/SectionCard'
 
 const M = 1_000_000
 
-const SERIES_KEYS = ['ss', 'egres', 'prov', 'neto'] as const
+const SERIES_KEYS = ['ss', 'ret', 'prov', 'egres', 'neto'] as const
 type SeriesKey = typeof SERIES_KEYS[number]
 
 interface BarDatum {
   label: string
   monthKey: string
   ss: number
-  egres: number
+  ret: number
   prov: number
+  egres: number
   neto: number
 }
 
@@ -43,16 +44,34 @@ export function TrendChart() {
   const containerRef = useRef<HTMLDivElement>(null)
   const [tooltip, setTooltip] = useState<Tooltip | null>(null)
 
+  // Derive colors from current month's calcAllDeductions — same source as DistribucionCard/KPIStrip
   const series = useMemo(() => {
-    const ssColor   = deductions.filter(d => d.group === 'ss' && d.enabled)[0]?.color ?? '--n-blue'
-    const provColor = deductions.find(d => d.group === 'provision' && d.id !== 'retencion' && d.enabled)?.color ?? '--n-amber'
+    const d = db[curKey]
+    const [y, mStr] = curKey.split('-')
+    const mNum = parseInt(mStr)
+    const trm = d?.trm || DEFAULTS.trm
+    const incomes = d?.incomes || []
+    const egresos = d?.egresos || []
+    const smmlv = getSMMLV(parseInt(y))
+    const { bruto } = calcTotales(incomes, trm)
+    const ibc = calcIBC(incomes, trm, smmlv)
+    const gast = calcGastos(egresos, trm)
+    const res = calcAllDeductions(bruto, ibc, mNum, deductions, gast, trm, d?.voluntarias)
+
+    const ssColor  = res.ssItems[0]?.color ?? '--n-blue'
+    const retColor = res.provItems.find(i => i.id === 'retencion')?.color ?? '--n-amber'
+    const provColor = res.provItems.filter(i => i.id !== 'retencion').find(i => i.applies)?.color
+                   ?? res.provItems.filter(i => i.id !== 'retencion')[0]?.color
+                   ?? '--n-pink'
+
     return [
-      { key: 'ss'    as SeriesKey, label: 'SS',          token: ssColor     },
+      { key: 'ss'    as SeriesKey, label: 'SS',          token: ssColor    },
+      { key: 'ret'   as SeriesKey, label: 'Retención',   token: retColor   },
+      { key: 'prov'  as SeriesKey, label: 'Provisiones', token: provColor  },
       { key: 'egres' as SeriesKey, label: 'Egresos',     token: '--n-green' },
-      { key: 'prov'  as SeriesKey, label: 'Provisiones', token: provColor   },
       { key: 'neto'  as SeriesKey, label: 'Neto libre',  token: '--n-lime'  },
     ]
-  }, [deductions])
+  }, [db, curKey, deductions, getSMMLV])
 
   const allKeys = [...new Set([
     ...Object.keys(db).filter(k => k !== '_settings').sort(),
@@ -70,17 +89,18 @@ export function TrendChart() {
     const egresos = d?.egresos || []
     const { bruto } = calcTotales(incomes, trm)
     const gast    = calcGastos(egresos, trm)
-    // No recorded activity → show as empty, don't inflate with SMMLV-based SS
-    if (bruto === 0 && gast === 0) return { label, monthKey: k, ss: 0, egres: 0, prov: 0, neto: 0 }
+    if (bruto === 0 && gast === 0) return { label, monthKey: k, ss: 0, ret: 0, prov: 0, egres: 0, neto: 0 }
     const smmlv   = getSMMLV(parseInt(y))
     const ibc     = calcIBC(incomes, trm, smmlv)
     const res     = calcAllDeductions(bruto, ibc, monthNum, deductions, gast, trm, d?.voluntarias)
+    const retAmt  = res.provItems.find(i => i.id === 'retencion')?.amount ?? 0
     return {
       label,
       monthKey: k,
       ss:    res.ssTotal / M,
+      ret:   retAmt / M,
+      prov:  Math.max(res.nonSsTotal - retAmt, 0) / M,
       egres: gast / M,
-      prov:  res.nonSsTotal / M,
       neto:  Math.max(res.netoLibre, 0) / M,
     }
   }), [db, curKey, deductions])  // eslint-disable-line react-hooks/exhaustive-deps
@@ -104,8 +124,6 @@ export function TrendChart() {
     const w = W - mg.left - mg.right
     const h = H - mg.top - mg.bottom
 
-    // Use var() tokens directly — set via .style() (CSS property), not .attr() (SVG attribute)
-    // SVG presentation attributes don't resolve CSS custom properties; style properties do
     const colorVars = series.map(s => `var(${s.token})`)
     const tickColor = get('--muted-foreground')
     const gridColor = dark ? 'oklch(1 0 0 / 8%)' : 'oklch(0 0 0 / 5%)'
@@ -117,10 +135,10 @@ export function TrendChart() {
 
     const g = svg.append('g').attr('transform', `translate(${mg.left},${mg.top})`)
 
-    const keys: SeriesKey[] = ['ss', 'egres', 'prov', 'neto']
+    const keys: SeriesKey[] = ['ss', 'ret', 'prov', 'egres', 'neto']
     const stacked = d3.stack<BarDatum>().keys(keys)(data)
 
-    const maxVal = d3.max(data, d => d.ss + d.egres + d.prov + d.neto) ?? 1
+    const maxVal = d3.max(data, d => d.ss + d.ret + d.prov + d.egres + d.neto) ?? 1
 
     const xScale = d3.scaleBand<string>()
       .domain(data.map(d => d.label))
@@ -210,7 +228,7 @@ export function TrendChart() {
       .attr('y', d => yScale(d[1]))
       .attr('height', d => Math.max(0, yScale(d[0]) - yScale(d[1])))
 
-    // Legend
+    // Legend — 5 items, split 3+2 on narrow widths
     const legendG = svg.append('g').attr('transform', `translate(${mg.left},${H - 18})`)
     const itemW = w / series.length
 
@@ -235,7 +253,7 @@ export function TrendChart() {
             className="absolute z-10 pointer-events-none rounded-lg border border-[var(--border)] bg-[var(--popover)] shadow-lg px-3 py-2.5 text-[11px] min-w-[160px]"
             style={{
               left: tooltip.x + 14,
-              top:  tooltip.y - 90,
+              top:  tooltip.y - 110,
               transform: tooltip.x > (containerRef.current?.clientWidth ?? 400) * 0.6
                 ? 'translateX(calc(-100% - 28px))'
                 : 'none',
