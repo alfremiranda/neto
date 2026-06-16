@@ -55,20 +55,20 @@
     --n-blue:    var(--primary);
     --n-blue-bg:  oklch(0.94 0.03 242);
     --n-blue-txt: oklch(0.28 0.1 242);
-    --n-green:    oklch(0.52 0.15 159);
-    --n-green-bg: oklch(0.94 0.04 145);
-    --n-green-txt: oklch(0.3 0.1 145);
+    --n-green:    oklch(0.59 0.18 163);   /* emerald-600 */
+    --n-green-bg: oklch(0.94 0.05 163);
+    --n-green-txt: oklch(0.30 0.12 163);
     --n-purple-bg: oklch(0.94 0.04 290);
-    --n-purple-txt: oklch(0.3 0.12 290);
+    --n-purple-txt: oklch(0.30 0.12 290);
     --n-gray-bg:  oklch(0.94 0.01 90);
     --n-gray-txt: oklch(0.35 0.01 90);
-    --n-amber:    oklch(0.72 0.17 74);
-    --n-pink:     oklch(0.55 0.18 350);
-    --n-pink-bg:  oklch(0.95 0.04 350);
-    --n-pink-txt: oklch(0.35 0.15 350);
-    --n-lime:     oklch(0.72 0.20 92);
-    --n-lime-bg:  oklch(0.94 0.08 92);
-    --n-lime-txt: oklch(0.38 0.14 92);
+    --n-amber:    oklch(0.77 0.18 73);    /* amber-500 */
+    --n-pink:     oklch(0.56 0.22 13);    /* rose-500 */
+    --n-pink-bg:  oklch(0.95 0.05 13);
+    --n-pink-txt: oklch(0.35 0.16 13);
+    --n-lime:     oklch(0.72 0.16 201);   /* cyan-500 */
+    --n-lime-bg:  oklch(0.94 0.05 201);
+    --n-lime-txt: oklch(0.30 0.12 201);
     --n-danger:   var(--destructive);
     --n-danger-bg:  oklch(0.95 0.03 20);
     --n-danger-txt: oklch(0.35 0.15 20);
@@ -133,20 +133,20 @@
     --n-blue:    oklch(0.65 0.13 242);
     --n-blue-bg:  oklch(0.18 0.05 242);
     --n-blue-txt: oklch(0.75 0.1 242);
-    --n-green:    oklch(0.65 0.15 159);
-    --n-green-bg: oklch(0.17 0.05 145);
-    --n-green-txt: oklch(0.75 0.12 145);
+    --n-green:    oklch(0.73 0.18 163);   /* emerald-400 */
+    --n-green-bg: oklch(0.17 0.06 163);
+    --n-green-txt: oklch(0.80 0.14 163);
     --n-purple-bg: oklch(0.18 0.06 290);
-    --n-purple-txt: oklch(0.75 0.1 290);
-    --n-gray-bg:   oklch(0.2 0.005 90);
-    --n-gray-txt:  oklch(0.8 0.008 90);
-    --n-amber:     oklch(0.82 0.17 74);
-    --n-pink:      oklch(0.72 0.16 350);
-    --n-pink-bg:   oklch(0.18 0.06 350);
-    --n-pink-txt:  oklch(0.82 0.13 350);
-    --n-lime:      oklch(0.85 0.20 92);
-    --n-lime-bg:   oklch(0.20 0.07 92);
-    --n-lime-txt:  oklch(0.90 0.18 92);
+    --n-purple-txt: oklch(0.75 0.10 290);
+    --n-gray-bg:   oklch(0.20 0.005 90);
+    --n-gray-txt:  oklch(0.80 0.008 90);
+    --n-amber:     oklch(0.83 0.18 73);   /* amber-400 */
+    --n-pink:      oklch(0.68 0.22 13);   /* rose-400 */
+    --n-pink-bg:   oklch(0.18 0.07 13);
+    --n-pink-txt:  oklch(0.82 0.16 13);
+    --n-lime:      oklch(0.82 0.16 201);  /* cyan-400 */
+    --n-lime-bg:   oklch(0.18 0.06 201);
+    --n-lime-txt:  oklch(0.88 0.14 201);
     --n-danger-bg:  oklch(0.18 0.05 20);
     --n-danger-txt: oklch(0.8 0.12 20);
 
