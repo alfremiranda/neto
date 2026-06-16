@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, Trash2, RotateCcw, Pencil, X } from 'lucide-react'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useUIStore } from '@/store/uiStore'
@@ -127,9 +127,22 @@ function DeductionDrawer({
     onClose()
   }
 
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 639px)')
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+
+  const direction = isMobile ? 'bottom' : 'right'
+
   return (
-    <Drawer open={state.open} onOpenChange={open => { if (!open) onClose() }} direction="right">
-      <DrawerContent className="inset-y-0 right-0 w-full max-w-sm rounded-l-2xl border-l border-[var(--border)]">
+    <Drawer open={state.open} onOpenChange={open => { if (!open) onClose() }} direction={direction}>
+      <DrawerContent className={isMobile
+        ? 'inset-x-0 bottom-0 max-h-[92dvh] rounded-t-2xl border-t border-[var(--border)]'
+        : 'inset-y-0 right-0 w-full max-w-sm rounded-l-2xl border-l border-[var(--border)]'
+      }>
         <DrawerHeader>
           <DrawerTitle>{isEdit ? 'Editar deducción' : 'Nueva deducción'}</DrawerTitle>
           <DrawerClose asChild>
