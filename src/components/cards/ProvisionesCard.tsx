@@ -110,7 +110,7 @@ export function ProvisionesCard() {
 
   const totalAction = grandTotal > 0 ? (
     <div className="text-right">
-      <div className={`text-base font-bold font-heading tabular-nums text-[var(${provColor})]`}>
+      <div className="text-base font-bold font-heading tabular-nums" style={{ color: `var(${provColor})` }}>
         {COP(grandTotal)}
       </div>
       {showUSD && (

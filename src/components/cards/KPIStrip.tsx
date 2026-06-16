@@ -13,7 +13,8 @@ interface KPICardProps {
   label: string
   value: string
   sub?: string
-  accent?: string
+  accentToken?: string  // CSS var name e.g. '--n-blue'; use for dynamic colors
+  accent?: string       // static Tailwind class e.g. 'text-[var(--n-lime)]'
   detail?: DetailLine[]
 }
 
@@ -34,13 +35,16 @@ function KPITooltipContent({ lines }: { lines: DetailLine[] }) {
   )
 }
 
-function KPICard({ label, value, sub, accent, detail }: KPICardProps) {
+function KPICard({ label, value, sub, accentToken, accent, detail }: KPICardProps) {
   const card = (
     <Card className={cn('p-4 flex flex-col gap-1.5', detail && 'cursor-help')}>
       <div className="text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
         {label}
       </div>
-      <div className={cn('text-xl font-semibold font-heading leading-none tabular-nums', accent ?? 'text-foreground')}>
+      <div
+        className={cn('text-xl font-semibold font-heading leading-none tabular-nums', !accentToken && (accent ?? 'text-foreground'))}
+        style={accentToken ? { color: `var(${accentToken})` } : undefined}
+      >
         {value}
       </div>
       {sub && (
@@ -85,9 +89,9 @@ export function KPIStrip() {
   const provTotal      = provItems.reduce((a, i) => a + i.amount, 0)
                        + res.volItems.reduce((a, i) => a + i.amount, 0)
 
-  const ssAccent   = `text-[var(${res.ssItems[0]?.color          ?? '--n-blue'})]`
-  const retAccent  = `text-[var(${retencionItems[0]?.color        ?? '--n-purple-txt'})]`
-  const provAccent = `text-[var(${provItems.find(i => i.applies)?.color ?? '--n-amber'})]`
+  const ssToken   = res.ssItems[0]?.color                    ?? '--n-blue'
+  const retToken  = retencionItems[0]?.color                  ?? '--n-purple-txt'
+  const provToken = provItems.find(i => i.applies)?.color     ?? '--n-amber'
 
   // --- Breakdown details ---
 
@@ -159,21 +163,21 @@ export function KPIStrip() {
           label="Seguridad social"
           value={COP(res.ssTotal)}
           sub={pct(res.ssTotal)}
-          accent={ssAccent}
+          accentToken={ssToken}
           detail={ssDetail}
         />
         <KPICard
           label="Retención"
           value={COP(retencionTotal)}
           sub={pct(retencionTotal)}
-          accent={retAccent}
+          accentToken={retToken}
           detail={retencionDetail.length > 0 ? retencionDetail : undefined}
         />
         <KPICard
           label="Provisiones"
           value={COP(provTotal)}
           sub={pct(provTotal)}
-          accent={provAccent}
+          accentToken={provToken}
           detail={provDetail.length > 0 ? provDetail : undefined}
         />
         <KPICard
