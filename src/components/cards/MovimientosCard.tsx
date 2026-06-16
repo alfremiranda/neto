@@ -8,7 +8,6 @@ import { MONTHS } from '@/data/defaults'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Button } from '@/components/ui/button'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
-import type { Settings } from '@/types'
 
 export function MovimientosCard() {
   const { db, getCurrentMonth, getAccounts, removeTransfer, curKey } = useFinanceStore()

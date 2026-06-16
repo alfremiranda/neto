@@ -37,7 +37,7 @@ function AccountCard({
   selected: boolean
   onClick: () => void
 }) {
-  const { setEditingAccount, setEditingBalance, openSheet } = useUIStore()
+  const { setEditingAccount, openSheet } = useUIStore()
   const fmt = (n: number) => account.currency === 'USD' ? USD(n) : COP(n)
   const hasConfig = account.startingBalance != null
 
