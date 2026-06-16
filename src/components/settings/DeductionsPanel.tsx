@@ -446,14 +446,15 @@ export function DeductionsPanel() {
               )}
             </div>
             {section.canAdd && (
-              <button
-                type="button"
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => openCreate(section.addGroup)}
-                className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground border-none bg-transparent cursor-pointer transition-colors px-1"
+                className="mt-2 w-full"
               >
-                <Plus size={12} />
+                <Plus size={13} />
                 Agregar deducción
-              </button>
+              </Button>
             )}
           </div>
         )
