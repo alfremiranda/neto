@@ -116,7 +116,7 @@ export interface AnnualRow {
 
 /* ─── Deductions system ─────────────────────────────────── */
 
-export type DeductionBase  = 'ibc' | 'bruto' | 'fixed_cop' | 'fixed_usd'
+export type DeductionBase  = 'ibc' | 'bruto' | 'fixed_cop' | 'fixed_usd' | 'base_usd'
 export type DeductionGroup = 'ss' | 'provision' | 'voluntary'
 
 export interface DeductionConfig {
@@ -125,7 +125,7 @@ export interface DeductionConfig {
   group:    DeductionGroup
   base:     DeductionBase
   pct:      number          // percentage 0–100
-  amount?:  number          // for fixed_cop / fixed_usd
+  amount?:  number          // for fixed_cop / fixed_usd / base_usd (the USD base income)
   months:   number[]        // 1–12; empty = every month
   enabled:  boolean
   color:    string          // CSS var token e.g. '--n-blue'

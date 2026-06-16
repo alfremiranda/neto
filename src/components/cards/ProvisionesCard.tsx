@@ -147,6 +147,7 @@ export function ProvisionesCard() {
               {provItems.map(item => {
                 const badge = item.base === 'fixed_cop' ? 'fijo'
                   : item.base === 'fixed_usd' ? 'fijo USD'
+                  : item.base === 'base_usd'  ? `${item.pct}% s/U$${item.amount ?? 0}`
                   : `${item.pct}%`
                 return (
                   <div key={item.id} className="flex items-center gap-2.5 py-2 border-b border-[var(--border)] last:border-0">

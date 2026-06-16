@@ -12,10 +12,11 @@ import type { DeductionBase, DeductionConfig, DeductionGroup } from '@/types'
 
 const GROUP_ORDER: DeductionGroup[] = ['ss', 'provision']
 
-const BASE_OPTIONS: { value: DeductionBase; label: string }[] = [
-  { value: 'bruto',     label: '% Bruto'   },
-  { value: 'fixed_cop', label: 'Fijo COP'  },
-  { value: 'fixed_usd', label: 'Fijo USD'  },
+const BASE_OPTIONS: { value: DeductionBase; label: string; desc: string }[] = [
+  { value: 'bruto',     label: '% Bruto',   desc: 'Porcentaje sobre el total de ingresos del mes' },
+  { value: 'base_usd',  label: 'Base USD',  desc: 'Porcentaje sobre un ingreso fijo en USD × TRM' },
+  { value: 'fixed_cop', label: 'Fijo COP',  desc: 'Monto fijo mensual en pesos' },
+  { value: 'fixed_usd', label: 'Fijo USD',  desc: 'Monto fijo mensual en dólares' },
 ]
 
 const PALETTE_OPTIONS = [
@@ -105,24 +106,17 @@ function DeductionDrawer({
   const [months, setMonths] = useState<number[]>(d?.months ?? [])
   const [color,  setColor]  = useState(d?.color  ?? '--n-green')
 
-  const isFixed = base === 'fixed_cop' || base === 'fixed_usd'
+  const isFixed   = base === 'fixed_cop' || base === 'fixed_usd'
+  const isBaseUsd = base === 'base_usd'
 
   function handleSave() {
     if (!label.trim()) return
+    const savePct    = isFixed ? 0 : pct
+    const saveAmount = (isFixed || isBaseUsd) ? amount : undefined
     if (isEdit && d) {
-      setDeduction(d.id, {
-        label: label.trim(), base,
-        pct: isFixed ? 0 : pct,
-        amount: isFixed ? amount : undefined,
-        months, color,
-      })
+      setDeduction(d.id, { label: label.trim(), base, pct: savePct, amount: saveAmount, months, color })
     } else {
-      addDeduction({
-        label: label.trim(), group: state.group, base,
-        pct: isFixed ? 0 : pct,
-        amount: isFixed ? amount : undefined,
-        months, enabled: true, color,
-      })
+      addDeduction({ label: label.trim(), group: state.group, base, pct: savePct, amount: saveAmount, months, enabled: true, color })
     }
     onClose()
   }
@@ -174,21 +168,57 @@ function DeductionDrawer({
             {locked || d?.base === 'ibc' ? (
               <p className="text-sm font-medium">{BASE_LABELS[base]}</p>
             ) : (
-              <Select value={base} onValueChange={v => setBase(v as DeductionBase)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {BASE_OPTIONS.map(o => (
-                    <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <>
+                <Select value={base} onValueChange={v => setBase(v as DeductionBase)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {BASE_OPTIONS.map(o => (
+                      <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-[11px] text-muted-foreground">
+                  {BASE_OPTIONS.find(o => o.value === base)?.desc}
+                </p>
+              </>
             )}
           </div>
 
-          {/* Value */}
-          {!isFixed ? (
+          {/* Value fields — depend on base type */}
+          {isBaseUsd ? (
+            <>
+              <div className="space-y-1.5">
+                <label className="field-label">Ingreso base (USD)</label>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground shrink-0">U$</span>
+                  <Input
+                    type="number" min="0" step="100"
+                    value={amount}
+                    onChange={e => setAmount(parseFloat(e.target.value) || 0)}
+                    className="font-mono text-right"
+                    placeholder="8800"
+                  />
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  Solo este ingreso USD se usa como base de cálculo
+                </p>
+              </div>
+              <div className="space-y-1.5">
+                <label className="field-label">Porcentaje (%)</label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number" min="0" max="100" step="0.001"
+                    value={pct}
+                    onChange={e => setPct(parseFloat(e.target.value) || 0)}
+                    className="font-mono text-right"
+                  />
+                  <span className="text-sm text-muted-foreground shrink-0">%</span>
+                </div>
+              </div>
+            </>
+          ) : !isFixed ? (
             <div className="space-y-1.5">
               <label className="field-label">Porcentaje (%)</label>
               <div className="flex items-center gap-2">
@@ -298,9 +328,10 @@ function DeductionRow({
       </span>
 
       {/* Value display */}
-      <span className="text-xs font-mono tabular-nums text-right shrink-0 w-14">
+      <span className="text-xs font-mono tabular-nums text-right shrink-0 w-20">
         {d.base === 'fixed_cop' ? `$${(d.amount ?? 0).toLocaleString('es-CO')}` :
          d.base === 'fixed_usd' ? `U$${d.amount ?? 0}` :
+         d.base === 'base_usd'  ? `${d.pct}% U$${d.amount ?? 0}` :
          `${d.pct}%`}
       </span>
 

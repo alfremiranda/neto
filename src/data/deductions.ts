@@ -47,6 +47,7 @@ export const BASE_LABELS: Record<string, string> = {
   bruto:     'Bruto',
   fixed_cop: 'Fijo COP',
   fixed_usd: 'Fijo USD',
+  base_usd:  'Base USD',
 }
 
 export const GROUP_LABELS: Record<string, string> = {

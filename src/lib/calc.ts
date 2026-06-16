@@ -80,6 +80,7 @@ export function calcAllDeductions(
       case 'bruto':     return bruto * (d.pct / 100)
       case 'fixed_cop': return d.amount ?? 0
       case 'fixed_usd': return (d.amount ?? 0) * trm
+      case 'base_usd':  return (d.amount ?? 0) * trm * (d.pct / 100)
       default:          return 0
     }
   }
