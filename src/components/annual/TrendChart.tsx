@@ -3,7 +3,7 @@ import * as d3 from 'd3'
 import { TrendingUp } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
-import { calcTotales, calcIBC, calcGastos, calcAllDeductions } from '@/lib/calc'
+import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase } from '@/lib/calc'
 import { COP } from '@/lib/format'
 import { MONTHS, DEFAULTS } from '@/data/defaults'
 import { useTheme } from '@/hooks/useTheme'
@@ -11,14 +11,13 @@ import { SectionCard } from '@/components/ui/SectionCard'
 
 const M = 1_000_000
 
-const SERIES_KEYS = ['ss', 'ret', 'prov', 'egres', 'neto'] as const
+const SERIES_KEYS = ['oblig', 'prov', 'egres', 'neto'] as const
 type SeriesKey = typeof SERIES_KEYS[number]
 
 interface BarDatum {
   label: string
   monthKey: string
-  ss: number
-  ret: number
+  oblig: number
   prov: number
   egres: number
   neto: number
@@ -56,20 +55,18 @@ export function TrendChart() {
     const { bruto } = calcTotales(incomes, trm)
     const ibc = calcIBC(incomes, trm, smmlv)
     const gast = calcGastos(egresos, trm)
-    const res = calcAllDeductions(bruto, ibc, mNum, deductions, gast, trm, d?.voluntarias)
+    const provBase = calcProvisionBase(incomes, trm, ibc)
+    const res = calcAllDeductions(bruto, ibc, mNum, deductions, gast, trm, d?.voluntarias, provBase)
 
-    const ssColor  = res.ssItems[0]?.color ?? '--n-blue'
-    const retColor = res.provItems.find(i => i.id === 'retencion')?.color ?? '--n-amber'
     const provColor = res.provItems.filter(i => i.id !== 'retencion').find(i => i.applies)?.color
                    ?? res.provItems.filter(i => i.id !== 'retencion')[0]?.color
-                   ?? '--n-pink'
+                   ?? '--color-provision'
 
     return [
-      { key: 'ss'    as SeriesKey, label: 'SS',          token: ssColor    },
-      { key: 'ret'   as SeriesKey, label: 'Retención',   token: retColor   },
-      { key: 'prov'  as SeriesKey, label: 'Provisiones', token: provColor  },
-      { key: 'egres' as SeriesKey, label: 'Egresos',     token: '--n-green' },
-      { key: 'neto'  as SeriesKey, label: 'Neto libre',  token: '--n-lime'  },
+      { key: 'oblig' as SeriesKey, label: 'Obligaciones', token: '--color-tax' },
+      { key: 'prov'  as SeriesKey, label: 'Provisiones',  token: provColor   },
+      { key: 'egres' as SeriesKey, label: 'Egresos',      token: '--color-expense'  },
+      { key: 'neto'  as SeriesKey, label: 'Neto libre',   token: '--color-net'  },
     ]
   }, [db, curKey, deductions, getSMMLV])
 
@@ -89,16 +86,16 @@ export function TrendChart() {
     const egresos = d?.egresos || []
     const { bruto } = calcTotales(incomes, trm)
     const gast    = calcGastos(egresos, trm)
-    if (bruto === 0 && gast === 0) return { label, monthKey: k, ss: 0, ret: 0, prov: 0, egres: 0, neto: 0 }
+    if (bruto === 0 && gast === 0) return { label, monthKey: k, oblig: 0, prov: 0, egres: 0, neto: 0 }
     const smmlv   = getSMMLV(parseInt(y))
     const ibc     = calcIBC(incomes, trm, smmlv)
-    const res     = calcAllDeductions(bruto, ibc, monthNum, deductions, gast, trm, d?.voluntarias)
+    const provBase = calcProvisionBase(incomes, trm, ibc)
+    const res     = calcAllDeductions(bruto, ibc, monthNum, deductions, gast, trm, d?.voluntarias, provBase)
     const retAmt  = res.provItems.find(i => i.id === 'retencion')?.amount ?? 0
     return {
       label,
       monthKey: k,
-      ss:    res.ssTotal / M,
-      ret:   retAmt / M,
+      oblig: (res.ssTotal + retAmt) / M,
       prov:  Math.max(res.nonSsTotal - retAmt, 0) / M,
       egres: gast / M,
       neto:  Math.max(res.netoLibre, 0) / M,
@@ -135,10 +132,10 @@ export function TrendChart() {
 
     const g = svg.append('g').attr('transform', `translate(${mg.left},${mg.top})`)
 
-    const keys: SeriesKey[] = ['ss', 'ret', 'prov', 'egres', 'neto']
+    const keys: SeriesKey[] = ['oblig', 'prov', 'egres', 'neto']
     const stacked = d3.stack<BarDatum>().keys(keys)(data)
 
-    const maxVal = d3.max(data, d => d.ss + d.ret + d.prov + d.egres + d.neto) ?? 1
+    const maxVal = d3.max(data, d => d.oblig + d.prov + d.egres + d.neto) ?? 1
 
     const xScale = d3.scaleBand<string>()
       .domain(data.map(d => d.label))
@@ -160,7 +157,7 @@ export function TrendChart() {
 
     // Y axis ticks
     g.append('g')
-      .call(d3.axisLeft(yScale).ticks(4).tickFormat(v => `$${v}M`))
+      .call(d3.axisLeft(yScale).ticks(4).tickFormat(v => `$${(v as number).toLocaleString('es-CO', { maximumFractionDigits: 1 })}M`))
       .call(ax => ax.select('.domain').remove())
       .call(ax => ax.selectAll('.tick line').remove())
       .call(ax => ax.selectAll('text').attr('fill', tickColor).attr('font-size', '10.5px'))

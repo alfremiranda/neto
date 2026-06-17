@@ -1,7 +1,7 @@
 import { Route } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
-import { calcTotales, calcIBC, calcGastos, calcAllDeductions } from '@/lib/calc'
+import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase } from '@/lib/calc'
 import { COP, USD } from '@/lib/format'
 import { Badge } from '@/components/ui/Badge'
 import { SectionCard } from '@/components/ui/SectionCard'
@@ -17,7 +17,8 @@ export function FlujoCard() {
   const { totUSD, bruto } = calcTotales(month.incomes, month.trm)
   const ibc   = calcIBC(month.incomes, month.trm, smmlv)
   const gast  = calcGastos(month.egresos || [], month.trm)
-  const res   = calcAllDeductions(bruto, ibc, m, deductions, gast, month.trm, month.voluntarias)
+  const provBase = calcProvisionBase(month.incomes, month.trm, ibc)
+  const res   = calcAllDeductions(bruto, ibc, m, deductions, gast, month.trm, month.voluntarias, provBase)
 
   // COP obligations → Bancolombia (SS + egresos)
   const aBancolCOP = res.ssTotal + gast
@@ -59,8 +60,8 @@ export function FlujoCard() {
     <SectionCard icon={Route} title="Flujo recomendado">
       <div className="space-y-0">
         {steps.map(s => (
-          <div key={s.num} className="flex gap-[10px] items-start py-[9px] border-b border-[var(--n-border)] last:border-0">
-            <div className="w-5 h-5 rounded-full bg-[var(--n-blue-bg)] text-[var(--n-blue-txt)] text-xs font-semibold flex items-center justify-center shrink-0 mt-0.5">
+          <div key={s.num} className="flex gap-[10px] items-start py-[9px] border-b border-[var(--border)] last:border-0">
+            <div className="w-5 h-5 rounded-full bg-[var(--color-income-bg)] text-[var(--color-income-txt)] text-xs font-semibold flex items-center justify-center shrink-0 mt-0.5">
               {s.num}
             </div>
             <div className="flex-1">
@@ -76,7 +77,7 @@ export function FlujoCard() {
       </div>
 
       {interest > 0 && (
-        <div className="mt-3 text-xs text-[var(--n-green)] text-right tabular-nums">
+        <div className="mt-3 text-xs text-[var(--color-provision)] text-right tabular-nums">
           ≈ {USD(interest)}/mes interés ARQ Savings
         </div>
       )}

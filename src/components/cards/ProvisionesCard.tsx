@@ -1,12 +1,14 @@
 import { useState } from 'react'
-import { PiggyBank, Plus, Trash2, Check, X, Calculator } from 'lucide-react'
+import { PiggyBank, Plus, Trash2, Check, X, Calculator, Settings2 } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
-import { calcTotales, calcIBC, calcGastos, calcAllDeductions } from '@/lib/calc'
+import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase } from '@/lib/calc'
 import { COP, USD } from '@/lib/format'
 import { SectionCard } from '@/components/ui/SectionCard'
-import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
+import { Button } from '@/components/ui/button'
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useUIStore } from '@/store/uiStore'
 
 const INPUT_CLS = 'h-7 text-xs border border-[var(--border)] rounded px-2 bg-[var(--background)] text-[var(--foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--ring)]'
 
@@ -29,7 +31,7 @@ function AddVoluntariaForm({
 
   return (
     <div className="flex items-center gap-1.5 py-1.5">
-      <span className="w-1.5 h-1.5 rounded-full bg-[var(--n-green)] shrink-0" />
+      <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-provision)] shrink-0" />
       <input
         type="text"
         value={label}
@@ -81,6 +83,7 @@ function AddVoluntariaForm({
 export function ProvisionesCard() {
   const { getCurrentMonth, getSMMLV, curKey, addVoluntaria, removeVoluntaria } = useFinanceStore()
   const deductions = useSettingsStore(s => s.deductions)
+  const { setView } = useUIStore()
   const [showForm, setShowForm] = useState(false)
 
   const month = getCurrentMonth()
@@ -90,7 +93,8 @@ export function ProvisionesCard() {
   const { totUSD, bruto } = calcTotales(month.incomes, month.trm)
   const ibc  = calcIBC(month.incomes, month.trm, smmlv)
   const gast = calcGastos(month.egresos || [], month.trm)
-  const res  = calcAllDeductions(bruto, ibc, m, deductions, gast, month.trm, month.voluntarias)
+  const provBase = calcProvisionBase(month.incomes, month.trm, ibc)
+  const res  = calcAllDeductions(bruto, ibc, m, deductions, gast, month.trm, month.voluntarias, provBase)
 
   const showUSD   = totUSD > 0
   const provItems = res.provItems.filter(i => i.id !== 'retencion' && i.applies && i.amount > 0)
@@ -101,7 +105,7 @@ export function ProvisionesCard() {
   const volTotal   = volItems.reduce((a, i) => a + i.amount, 0)
   const grandTotal = provTotal + volTotal
 
-  const provColor = res.provItems.find(i => i.id !== 'retencion' && i.applies)?.color ?? '--n-amber'
+  const provColor = res.provItems.find(i => i.id !== 'retencion' && i.applies)?.color ?? '--color-tax'
 
   function handleAdd(label: string, amount: number, currency: 'COP' | 'USD') {
     addVoluntaria({ label, amount, currency })
@@ -126,8 +130,30 @@ export function ProvisionesCard() {
           <EmptyHeader>
             <EmptyMedia variant="icon"><Calculator size={14} /></EmptyMedia>
             <EmptyTitle>Sin provisiones</EmptyTitle>
-            <EmptyDescription>Registra ingresos para calcular retención y primas</EmptyDescription>
+            <EmptyDescription>Registra ingresos para calcular primas y cesantías</EmptyDescription>
           </EmptyHeader>
+        </Empty>
+      </SectionCard>
+    )
+  }
+
+  if (provItems.length === 0 && voluntarias.length === 0 && !showForm) {
+    return (
+      <SectionCard icon={PiggyBank} title="Provisiones">
+        <Empty className="border-0 py-2">
+          <EmptyHeader>
+            <EmptyMedia variant="icon"><Calculator size={14} /></EmptyMedia>
+            <EmptyTitle>Sin provisiones activas</EmptyTitle>
+            <EmptyDescription>Activa primas, cesantías o vacaciones en Configuración, o agrega un ahorro voluntario</EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button size="sm" variant="outline" onClick={() => setView('config')}>
+              <Settings2 size={13} /> Configuración
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => setShowForm(true)}>
+              <Plus size={13} /> Ahorro voluntario
+            </Button>
+          </EmptyContent>
         </Empty>
       </SectionCard>
     )
@@ -175,7 +201,7 @@ export function ProvisionesCard() {
                 const amtCOP = v.currency === 'USD' ? v.amount * month.trm : v.amount
                 return (
                   <div key={v.id} className="flex items-center gap-2.5 py-2 border-b border-[var(--border)] last:border-0 group">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--n-green)] shrink-0" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-provision)] shrink-0" />
                     <span className="text-sm text-foreground flex-1 truncate">{v.label}</span>
                     {v.currency === 'USD' && (
                       <span className="text-[10px] text-muted-foreground font-mono tabular-nums shrink-0">
@@ -188,7 +214,7 @@ export function ProvisionesCard() {
                     <button
                       type="button"
                       onClick={() => removeVoluntaria(v.id)}
-                      className="p-1 rounded text-muted-foreground hover:text-destructive hover:bg-[var(--n-danger-bg)] border-none bg-transparent cursor-pointer transition-colors opacity-0 group-hover:opacity-100 shrink-0"
+                      className="p-1 rounded text-muted-foreground hover:text-destructive hover:bg-[var(--color-danger-bg)] border-none bg-transparent cursor-pointer transition-colors opacity-0 group-hover:opacity-100 shrink-0"
                       aria-label={`Eliminar ${v.label}`}
                     >
                       <Trash2 size={12} />

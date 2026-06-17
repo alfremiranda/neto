@@ -5,39 +5,39 @@ export const DEFAULT_DEDUCTIONS: DeductionConfig[] = [
   {
     id: 'salud', label: 'Salud (EPS)', group: 'ss',
     base: 'ibc', pct: 12.5, months: [],
-    enabled: true, locked: true, color: '--n-blue',
+    enabled: true, locked: true, color: '--color-income',
   },
   {
     id: 'pension', label: 'Pensión obligatoria', group: 'ss',
     base: 'ibc', pct: 16, months: [],
-    enabled: true, locked: true, color: '--n-blue',
+    enabled: true, locked: true, color: '--color-income',
   },
   {
     id: 'arl', label: 'ARL (riesgo I)', group: 'ss',
     base: 'ibc', pct: 0.522, months: [],
-    enabled: true, locked: true, color: '--n-blue',
+    enabled: true, locked: true, color: '--color-income',
   },
 
   // ── Provisiones (base: bruto) ────────────────────────────
   {
     id: 'retencion', label: 'Retención en la fuente', group: 'provision',
     base: 'bruto', pct: 20, months: [],
-    enabled: true, locked: true, color: '--n-amber',
+    enabled: true, locked: true, color: '--color-tax',
   },
   {
     id: 'primas', label: 'Primas de servicios', group: 'provision',
-    base: 'bruto', pct: 8.33, months: [6, 12],
-    enabled: true, color: '--n-pink',
+    base: 'neto_ibc', pct: 8.33, months: [],
+    enabled: true, color: '--color-provision',
   },
   {
     id: 'cesantias', label: 'Cesantías', group: 'provision',
-    base: 'bruto', pct: 8.33, months: [],
-    enabled: false, color: '--n-lime',
+    base: 'neto_ibc', pct: 8.33, months: [],
+    enabled: true, color: '--color-provision',
   },
   {
     id: 'vacaciones', label: 'Vacaciones', group: 'provision',
-    base: 'bruto', pct: 4.17, months: [],
-    enabled: false, color: '--n-purple-txt',
+    base: 'neto_ibc', pct: 4.17, months: [],
+    enabled: true, color: '--color-provision',
   },
 
 ]
@@ -45,6 +45,7 @@ export const DEFAULT_DEDUCTIONS: DeductionConfig[] = [
 export const BASE_LABELS: Record<string, string> = {
   ibc:       'IBC',
   bruto:     'Bruto',
+  neto_ibc:  'Bruto − IBC',
   fixed_cop: 'Fijo COP',
   fixed_usd: 'Fijo USD',
   base_usd:  'Base USD',

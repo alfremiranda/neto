@@ -31,3 +31,18 @@ export function formatMoney(n: number, decimals: number): string {
     maximumFractionDigits: decimals,
   })
 }
+
+const MONTHS_SHORT = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
+
+export function fmtDate(iso: string): string {
+  const parts = iso.split('-')
+  const m = parseInt(parts[1] ?? '0', 10) - 1
+  const d = parseInt(parts[2] ?? '0', 10)
+  if (!d) return ''
+  return `${MONTHS_SHORT[m] ?? ''} ${d}`
+}
+
+export function localToday(): string {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}

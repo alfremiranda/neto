@@ -41,6 +41,14 @@ export function calcSS(ibc: number, deductions?: DeductionConfig[]): SSResult {
   return { salud, pens, arl, total: salud + pens + arl }
 }
 
+export function calcProvisionBase(incomes: Income[], trm: number, ibc: number): number {
+  const selected = incomes.filter(i => i.applyProvisions !== false)
+  const base = selected.reduce(
+    (a, i) => a + (i.currency === 'USD' ? i.amount * trm : i.amount), 0
+  )
+  return Math.max(base - ibc, 0)
+}
+
 export function calcGastos(egresos: Egreso[], trm: number): number {
   return (egresos || [])
     .reduce((a, e) => a + (e.currency === 'USD' ? e.amount * (trm || DEFAULTS.trm) : e.amount), 0)
@@ -60,14 +68,17 @@ export function calcDistribucion(bruto: number, ssTot: number, gast: number): Di
  * @param gast      Pre-computed egresos total in COP
  */
 export function calcAllDeductions(
-  bruto:        number,
-  ibc:          number,
-  monthNum:     number,
-  deductions:   DeductionConfig[],
-  gast:         number,
-  trm:          number,
-  voluntarias?: VoluntariaItem[],
+  bruto:          number,
+  ibc:            number,
+  monthNum:       number,
+  deductions:     DeductionConfig[],
+  gast:           number,
+  trm:            number,
+  voluntarias?:   VoluntariaItem[],
+  provisionBase?: number,  // base for neto_ibc; computed from selected incomes by caller
 ): AllDeductionsResult {
+  const provBase = provisionBase ?? Math.max(bruto - ibc, 0)
+
   function applies(d: DeductionConfig): boolean {
     if (!d.months || d.months.length === 0) return true
     return d.months.includes(monthNum)
@@ -78,6 +89,7 @@ export function calcAllDeductions(
     switch (d.base) {
       case 'ibc':       return ibc * (d.pct / 100)
       case 'bruto':     return bruto * (d.pct / 100)
+      case 'neto_ibc':  return provBase * (d.pct / 100)
       case 'fixed_cop': return d.amount ?? 0
       case 'fixed_usd': return (d.amount ?? 0) * trm
       case 'base_usd':  return (d.amount ?? 0) * trm * (d.pct / 100)
@@ -108,7 +120,7 @@ export function calcAllDeductions(
     amount: v.currency === 'USD' ? v.amount * trm : v.amount,
     pct:    0,
     base:   (v.currency === 'USD' ? 'fixed_usd' : 'fixed_cop') as DeductionBase,
-    color:  '--n-amber',
+    color:  '--color-tax',
     applies: true,
   }))
 
@@ -158,7 +170,8 @@ export function buildAnnualData(
     let ssTot: number, ret: number, prim: number, netoLibre: number
 
     if (deductions) {
-      const res = calcAllDeductions(bruto, ibc, m, deductions, gast, trm, d.voluntarias)
+      const provBase = calcProvisionBase(incomes, trm, ibc)
+      const res = calcAllDeductions(bruto, ibc, m, deductions, gast, trm, d.voluntarias, provBase)
       ssTot     = res.ssTotal
       ret  = res.provItems.find(i => i.id === 'retencion')?.amount ?? 0
       prim = res.provItems.find(i => i.id === 'primas')?.amount ?? 0

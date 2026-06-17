@@ -3,7 +3,7 @@ import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, ShieldCheck, Pencil, Plus,
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { buildLedger, computeAccountBalance } from '@/lib/calc'
-import { COP, USD } from '@/lib/format'
+import { COP, USD, fmtDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { CurrencyBadge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/button'
@@ -13,18 +13,11 @@ import type { LedgerEntry } from '@/lib/calc'
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
-const MONTH_SHORT = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic']
-
-function fmtDate(iso: string): string {
-  const [, mm, dd] = iso.split('-')
-  const m = parseInt(mm ?? '0', 10) - 1
-  const d = parseInt(dd ?? '0', 10)
-  return `${d} ${MONTH_SHORT[m] ?? ''}`
-}
+const MONTH_SHORT = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
 
 function fmtMonth(key: string): string {
   const [y, m0] = key.split('-').map(Number)
-  return `${MONTH_SHORT[m0] ?? ''} ${y}`
+  return `${MONTH_SHORT[(m0 ?? 1) - 1] ?? ''} ${y}`
 }
 
 // ─── Account card ─────────────────────────────────────────────────────────────
@@ -47,8 +40,8 @@ function AccountCard({
       className={cn(
         'rounded-xl p-4 cursor-pointer transition-all border-2 flex flex-col gap-2',
         selected
-          ? 'border-[var(--primary)] bg-[var(--n-blue-bg)]'
-          : 'border-[var(--border)] bg-card hover:bg-[var(--n-bg)] hover:border-[var(--n-border2)]',
+          ? 'border-[var(--primary)] bg-[var(--color-income-bg)]'
+          : 'border-[var(--border)] bg-card hover:bg-[var(--card)] hover:border-[rgba(0,0,0,0.18)]',
       )}
     >
       {/* Header row */}
@@ -65,7 +58,7 @@ function AccountCard({
       </div>
 
       {account.rate > 0 && hasConfig && (
-        <div className="text-2xs text-[var(--n-green)] tabular-nums -mt-1">
+        <div className="text-2xs text-[var(--color-provision)] tabular-nums -mt-1">
           ≈ {fmt(balance * (account.rate / 100) / 12)}/mes · {account.rate}% a.a.
         </div>
       )}
@@ -77,7 +70,7 @@ function AccountCard({
           'mt-auto self-start flex items-center gap-1 text-[11px] font-medium px-2 py-1 rounded-md border-none cursor-pointer transition-colors',
           selected
             ? 'bg-[var(--primary)]/10 text-[var(--primary)] hover:bg-[var(--primary)]/20'
-            : 'bg-muted text-muted-foreground hover:text-foreground hover:bg-[var(--n-hover)]',
+            : 'bg-muted text-muted-foreground hover:text-foreground hover:bg-[var(var(--accent))]',
         )}
       >
         <Pencil size={10} strokeWidth={2.5} />
@@ -90,11 +83,11 @@ function AccountCard({
 // ─── Ledger entry row ─────────────────────────────────────────────────────────
 
 const ENTRY_ICONS = {
-  income:       { Icon: ArrowDownLeft,  color: 'text-[var(--n-green)]',   bg: 'bg-[var(--n-green-bg)]'  },
-  egreso:       { Icon: ArrowUpRight,   color: 'text-[var(--n-danger)]',  bg: 'bg-[var(--n-danger-bg)]' },
-  transfer_in:  { Icon: ArrowDownLeft,  color: 'text-[var(--n-blue)]',    bg: 'bg-[var(--n-blue-bg)]'   },
+  income:       { Icon: ArrowDownLeft,  color: 'text-[var(--color-provision)]',   bg: 'bg-[var(--color-provision-bg)]'  },
+  egreso:       { Icon: ArrowUpRight,   color: 'text-[var(--color-danger)]',  bg: 'bg-[var(--color-danger-bg)]' },
+  transfer_in:  { Icon: ArrowDownLeft,  color: 'text-[var(--color-income)]',    bg: 'bg-[var(--color-income-bg)]'   },
   transfer_out: { Icon: ArrowUpRight,   color: 'text-muted-foreground',   bg: 'bg-muted'                 },
-  ss:           { Icon: ShieldCheck,    color: 'text-[var(--n-amber)]',   bg: 'bg-[var(--n-gray-bg)]'   },
+  ss:           { Icon: ShieldCheck,    color: 'text-[var(--color-tax)]',   bg: 'bg-[var(--color-account-other-bg)]'   },
 }
 
 function LedgerRow({ entry, account, accounts }: { entry: LedgerEntry; account: Account; accounts: Account[] }) {
@@ -127,7 +120,7 @@ function LedgerRow({ entry, account, accounts }: { entry: LedgerEntry; account: 
 
       {/* Amount + running balance */}
       <div className="text-right shrink-0">
-        <div className={cn('text-sm font-semibold tabular-nums font-heading', isCredit ? 'text-[var(--n-green)]' : 'text-foreground')}>
+        <div className={cn('text-sm font-semibold tabular-nums font-heading', isCredit ? 'text-[var(--color-provision)]' : 'text-foreground')}>
           {isCredit ? '+' : ''}{fmt(entry.convertedAmount)}
         </div>
         <div className="text-[10px] text-muted-foreground tabular-nums">{fmt(entry.balance)}</div>
@@ -226,7 +219,7 @@ export function CuentasView() {
               </Button>
               <div>
                 <div className="text-[10px] text-muted-foreground">Entradas</div>
-                <div className="text-sm font-semibold tabular-nums text-[var(--n-green)]">+{fmt(totalCredits)}</div>
+                <div className="text-sm font-semibold tabular-nums text-[var(--color-provision)]">+{fmt(totalCredits)}</div>
               </div>
               <div>
                 <div className="text-[10px] text-muted-foreground">Salidas</div>

@@ -6,6 +6,7 @@ export interface Income {
   account: string
   tipo: 'servicios' | 'otro'
   date?: string
+  applyProvisions?: boolean  // default true — include in provision base for primas/cesantías/vacaciones
 }
 
 export interface Egreso {
@@ -16,6 +17,7 @@ export interface Egreso {
   currency: 'USD' | 'COP'
   date: string
   recurring?: boolean
+  confirmed?: boolean  // false = seeded from prev month, needs amount verification
   account?: string  // account ID this egreso debits (optional)
 }
 
@@ -116,7 +118,7 @@ export interface AnnualRow {
 
 /* ─── Deductions system ─────────────────────────────────── */
 
-export type DeductionBase  = 'ibc' | 'bruto' | 'fixed_cop' | 'fixed_usd' | 'base_usd'
+export type DeductionBase  = 'ibc' | 'bruto' | 'neto_ibc' | 'fixed_cop' | 'fixed_usd' | 'base_usd'
 export type DeductionGroup = 'ss' | 'provision' | 'voluntary'
 
 export interface DeductionConfig {
@@ -128,7 +130,7 @@ export interface DeductionConfig {
   amount?:  number          // for fixed_cop / fixed_usd / base_usd (the USD base income)
   months:   number[]        // 1–12; empty = every month
   enabled:  boolean
-  color:    string          // CSS var token e.g. '--n-blue'
+  color:    string          // CSS var token e.g. '--color-income'
   locked?:  boolean         // system default — can't delete
 }
 

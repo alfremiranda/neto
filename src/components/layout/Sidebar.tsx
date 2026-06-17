@@ -19,7 +19,7 @@ export function Sidebar() {
       <nav
         className={cn(
           'hidden sm:flex flex-col h-full shrink-0 overflow-hidden',
-          'bg-[var(--n-bg)] border-r border-[var(--n-border)]',
+          'bg-[var(--card)] border-r border-[var(--border)]',
           'transition-[width] duration-200 ease-in-out',
           sidebarCollapsed ? 'w-14' : 'w-[200px]',
         )}
@@ -34,8 +34,8 @@ export function Sidebar() {
               className={cn(
                 'flex items-center gap-3 w-full rounded-lg border-none cursor-pointer font-[inherit]',
                 'transition-[background,color] duration-150 px-3 py-2.5 bg-transparent',
-                'text-[var(--n-txt3)] hover:bg-[var(--n-bg2)] hover:text-[var(--n-txt2)]',
-                view === id && 'bg-[var(--n-bg2)] !text-[var(--n-txt)]',
+                'text-[var(--n-txt3)] hover:bg-[var(--muted)] hover:text-[var(--muted-foreground)]',
+                view === id && 'bg-[var(--muted)] !text-[var(--foreground)]',
               )}
             >
               <Icon size={17} className="shrink-0" />
@@ -52,14 +52,14 @@ export function Sidebar() {
         </div>
 
         {/* Collapse toggle */}
-        <div className="p-2 border-t border-[var(--n-border)] shrink-0">
+        <div className="p-2 border-t border-[var(--border)] shrink-0">
           <button
             onClick={toggleSidebar}
             title={sidebarCollapsed ? 'Expandir menú' : 'Colapsar menú'}
             className={cn(
               'flex items-center gap-3 w-full rounded-lg border-none cursor-pointer font-[inherit]',
               'px-3 py-2.5 bg-transparent transition-colors duration-150',
-              'text-[var(--n-txt3)] hover:bg-[var(--n-bg2)] hover:text-[var(--n-txt2)]',
+              'text-[var(--n-txt3)] hover:bg-[var(--muted)] hover:text-[var(--muted-foreground)]',
             )}
           >
             {sidebarCollapsed
@@ -83,7 +83,7 @@ export function Sidebar() {
         'sm:hidden fixed bottom-0 left-0 right-0 z-50',
         'flex flex-row justify-around',
         'px-4 pt-2 pb-[env(safe-area-inset-bottom)]',
-        'bg-[var(--n-bg)] border-t border-[var(--n-border)]',
+        'bg-[var(--card)] border-t border-[var(--border)]',
       )}>
         {NAV_ITEMS.map(({ id, label, Icon }) => (
           <button
@@ -93,7 +93,7 @@ export function Sidebar() {
               'flex flex-col items-center gap-[3px] px-4 py-2 rounded-lg',
               'border-none bg-transparent cursor-pointer font-[inherit]',
               'transition-colors text-[var(--n-txt3)]',
-              view === id && '!text-[var(--n-txt)]',
+              view === id && '!text-[var(--foreground)]',
             )}
           >
             <Icon size={20} />

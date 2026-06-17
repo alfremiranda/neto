@@ -42,7 +42,7 @@ function shiftRecurring(egresos: Egreso[], newKey: string): Egreso[] {
         const d       = Math.min(day, lastDay)
         date = `${y}-${String(isoM).padStart(2, '0')}-${String(d).padStart(2, '0')}`
       }
-      return { ...e, id: base + i, date }
+      return { ...e, id: base + i, date, confirmed: false }
     })
 }
 
@@ -69,6 +69,7 @@ interface FinanceState {
   addEgreso: (egreso: Omit<Egreso, 'id'>) => void
   updateEgreso: (id: number, egreso: Partial<Egreso>) => void
   removeEgreso: (id: number) => void
+  confirmEgreso: (id: number) => void
   addTransfer: (transfer: Omit<Transfer, 'id'>) => void
   updateTransfer: (id: number, transfer: Omit<Transfer, 'id'>) => void
   removeTransfer: (id: number) => void
@@ -177,7 +178,7 @@ export const useFinanceStore = create<FinanceState>()(
         const d = db[curKey] ?? initMonth(curKey, db)
         const updated: MonthData = {
           ...d,
-          egresos: [...(d.egresos || []), { ...egreso, id: Date.now() }],
+          egresos: [...(d.egresos || []), { ...egreso, id: Date.now(), confirmed: true }],
         }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
         get().pushCurrent()
@@ -188,7 +189,18 @@ export const useFinanceStore = create<FinanceState>()(
         const d = db[curKey] ?? emptyMonth()
         const updated: MonthData = {
           ...d,
-          egresos: (d.egresos || []).map(e => e.id === id ? { ...e, ...patch } : e),
+          egresos: (d.egresos || []).map(e => e.id === id ? { ...e, ...patch, confirmed: true } : e),
+        }
+        set(state => ({ db: { ...state.db, [curKey]: updated } }))
+        get().pushCurrent()
+      },
+
+      confirmEgreso: (id) => {
+        const { curKey, db } = get()
+        const d = db[curKey] ?? emptyMonth()
+        const updated: MonthData = {
+          ...d,
+          egresos: (d.egresos || []).map(e => e.id === id ? { ...e, confirmed: true } : e),
         }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
         get().pushCurrent()

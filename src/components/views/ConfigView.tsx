@@ -38,7 +38,7 @@ function ParamsTab() {
               setVal(stripped ? parseInt(stripped).toLocaleString('es-CO') : '')
             }}
             onBlur={handleSave}
-            className="flex-1 border border-[var(--n-border2)] rounded-lg px-[10px] py-2 bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--n-blue)]"
+            className="flex-1 border border-[rgba(0,0,0,0.18)] rounded-lg px-[10px] py-2 bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--color-income)]"
           />
           <Button onClick={handleSave}>Guardar</Button>
         </div>

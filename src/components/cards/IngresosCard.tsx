@@ -4,19 +4,13 @@ import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { calcTotales } from '@/lib/calc'
 import { COP, USD } from '@/lib/format'
+import { fmtDate } from '@/lib/format'
 import { Badge } from '@/components/ui/Badge'
 import { MetricCard } from '@/components/ui/MetricCard'
 import { IncomeSheet } from '@/components/sheets/IncomeSheet'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Button } from '@/components/ui/button'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty'
-
-const MONTHS_SHORT = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic']
-
-function formatIncomeDate(iso: string): string {
-  const [, m, d] = iso.split('-').map(Number)
-  return `${d} ${MONTHS_SHORT[m - 1]}`
-}
 
 export function IngresosCard() {
   const { getCurrentMonth, removeIncome } = useFinanceStore()
@@ -89,10 +83,13 @@ export function IngresosCard() {
                     <div className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1 flex-wrap">
                       <Badge variant={acctVariant}>{inc.account}</Badge>
                       <span>· {inc.tipo}</span>
+                      {inc.applyProvisions === false && (
+                        <span className="text-muted-foreground/50">· sin prov.</span>
+                      )}
                       {inc.date && (
                         <>
                           <span>·</span>
-                          <span>{formatIncomeDate(inc.date)}</span>
+                          <span>{fmtDate(inc.date)}</span>
                         </>
                       )}
                     </div>
@@ -120,6 +117,7 @@ export function IngresosCard() {
                     size={isPending ? "sm" : "icon-sm"}
                     onClick={() => handleDelete(inc.id)}
                     title={isPending ? 'Confirmar eliminación' : 'Eliminar'}
+                    className={!isPending ? 'hover:bg-[var(--color-danger-bg)] hover:text-[var(--color-danger)]' : ''}
                   >
                     {isPending ? '¿Eliminar?' : <Trash2 size={13} />}
                   </Button>
@@ -127,7 +125,7 @@ export function IngresosCard() {
               )
             })}
 
-            <div className="mt-3 pt-3 border-t border-[var(--n-border)]">
+            <div className="mt-3 pt-3 border-t border-[var(--border)]">
               <MetricCard
                 label="Total bruto equiv. COP"
                 value={COP(bruto)}

@@ -11,8 +11,8 @@ export function ProgressBar({ label, value, pct, color, className }: ProgressBar
   return (
     <div className={className}>
       <div className="flex justify-between items-baseline mb-[5px]">
-        <span className="text-[11px] text-[var(--n-txt2)]">{label}</span>
-        <span className="text-[15px] font-semibold text-[var(--n-txt)]">{value}</span>
+        <span className="text-[11px] text-[var(--muted-foreground)]">{label}</span>
+        <span className="text-[15px] font-semibold text-[var(--foreground)]">{value}</span>
       </div>
       <div className="h-[5px] bg-muted rounded-[3px] overflow-hidden">
         <div

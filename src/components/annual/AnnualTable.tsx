@@ -38,16 +38,16 @@ export function AnnualTable({ year }: AnnualTableProps) {
   const totBruto = filled.reduce((a, r) => a + (r.bruto ?? 0), 0)
   const totSS    = filled.reduce((a, r) => a + (r.ssTot ?? 0), 0)
   const totRet   = filled.reduce((a, r) => a + (r.ret ?? 0), 0)
+  const totOblig = totSS + totRet
   const totProv  = filled.reduce((a, r) => a + (r.prim ?? 0), 0)
   const totGast  = filled.reduce((a, r) => a + (r.gast ?? 0), 0)
   const totNeto  = filled.reduce((a, r) => a + Math.max(r.netoLibre ?? 0, 0), 0)
   const totUSD   = filled.reduce((a, r) => a + (r.totUSD ?? 0), 0)
   const totCOP   = filled.reduce((a, r) => a + (r.totCOP ?? 0), 0)
 
-  // Derive colors from deductions config
-  const ssColor  = deductions.find(d => d.group === 'ss' && d.enabled)?.color ?? '--n-blue'
-  const retColor = deductions.find(d => d.id === 'retencion')?.color ?? '--n-amber'
-  const provColor = deductions.find(d => d.group === 'provision' && d.id !== 'retencion' && d.enabled)?.color ?? '--n-pink'
+  // Colors
+  const obligColor = '--color-tax-txt'
+  const provColor  = deductions.find(d => d.group === 'provision' && d.id !== 'retencion' && d.enabled)?.color ?? '--color-provision'
 
   return (
     <div className="space-y-3">
@@ -59,14 +59,9 @@ export function AnnualTable({ year }: AnnualTableProps) {
           sub={`${USD(totUSD)} + ${COP(totCOP)}`}
         />
         <MetricCard
-          label="SS pagado"
-          value={<span className="text-[15px] font-heading tabular-nums" style={{ color: `var(${ssColor})` }}>{COP(totSS)}</span>}
-          sub={`${pct(totSS, totBruto)} del bruto`}
-        />
-        <MetricCard
-          label="Retención"
-          value={<span className="text-[15px] font-heading tabular-nums" style={{ color: `var(${retColor})` }}>{COP(totRet)}</span>}
-          sub={`${pct(totRet, totBruto)} del bruto`}
+          label="Obligaciones tributarias"
+          value={<span className="text-[15px] font-heading tabular-nums" style={{ color: `var(${obligColor})` }}>{COP(totOblig)}</span>}
+          sub={`${pct(totOblig, totBruto)} del bruto`}
         />
         <MetricCard
           label="Provisiones"
@@ -75,12 +70,12 @@ export function AnnualTable({ year }: AnnualTableProps) {
         />
         <MetricCard
           label="Egresos"
-          value={<span className="text-[15px] font-heading tabular-nums text-[var(--n-green)]">{COP(totGast)}</span>}
+          value={<span className="text-[15px] font-heading tabular-nums text-[var(--color-expense)]">{COP(totGast)}</span>}
           sub={`${pct(totGast, totBruto)} del bruto`}
         />
         <MetricCard
           label="Neto libre acum."
-          value={<span className="text-[15px] font-heading tabular-nums text-[var(--n-lime)]">{COP(totNeto)}</span>}
+          value={<span className="text-[15px] font-heading tabular-nums text-[var(--color-net-txt)]">{COP(totNeto)}</span>}
           sub={`${pct(totNeto, totBruto)} del bruto`}
         />
       </div>
@@ -92,17 +87,17 @@ export function AnnualTable({ year }: AnnualTableProps) {
             <tr className="border-b border-border">
               <th className="text-left py-[6px] px-[6px] text-muted-foreground font-medium">Mes</th>
               <th className="text-right py-[6px] px-[6px] text-muted-foreground font-medium">Bruto COP</th>
-              <th className="text-right py-[6px] px-[6px] font-medium" style={{ color: `var(${ssColor})` }}>SS</th>
-              <th className="text-right py-[6px] px-[6px] font-medium" style={{ color: `var(${retColor})` }}>Retención</th>
+              <th className="text-right py-[6px] px-[6px] font-medium" style={{ color: `var(${obligColor})` }}>Obligaciones</th>
               <th className="text-right py-[6px] px-[6px] font-medium" style={{ color: `var(${provColor})` }}>Provisiones</th>
-              <th className="text-right py-[6px] px-[6px] text-[var(--n-green)] font-medium">Egresos</th>
-              <th className="text-right py-[6px] px-[6px] text-[var(--n-lime)] font-medium">Neto libre</th>
+              <th className="text-right py-[6px] px-[6px] text-[var(--color-expense)] font-medium">Egresos</th>
+              <th className="text-right py-[6px] px-[6px] text-[var(--color-net-txt)] font-medium">Neto libre</th>
             </tr>
           </thead>
           <tbody>
             {rows.filter(r => r.hasData).map(r => {
               const key = monthKey(r.m, year)
               const isCurrent = key === curKey
+              const oblig = (r.ssTot ?? 0) + (r.ret ?? 0)
               return (
                 <tr
                   key={r.m}
@@ -116,11 +111,10 @@ export function AnnualTable({ year }: AnnualTableProps) {
                     {MONTHS[r.m - 1].slice(0, 3)}
                   </td>
                   <td className="py-[7px] px-[6px] text-right tabular-nums">{COP(r.bruto ?? 0)}</td>
-                  <td className="py-[7px] px-[6px] text-right tabular-nums" style={{ color: `var(${ssColor})` }}>{COP(r.ssTot ?? 0)}</td>
-                  <td className="py-[7px] px-[6px] text-right tabular-nums" style={{ color: `var(${retColor})` }}>{COP(r.ret ?? 0)}</td>
+                  <td className="py-[7px] px-[6px] text-right tabular-nums" style={{ color: `var(${obligColor})` }}>{COP(oblig)}</td>
                   <td className="py-[7px] px-[6px] text-right tabular-nums" style={{ color: `var(${provColor})` }}>{COP(r.prim ?? 0)}</td>
-                  <td className="py-[7px] px-[6px] text-right tabular-nums text-[var(--n-green)]">{COP(r.gast ?? 0)}</td>
-                  <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold text-[var(--n-lime)]">
+                  <td className="py-[7px] px-[6px] text-right tabular-nums text-[var(--color-expense)]">{COP(r.gast ?? 0)}</td>
+                  <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold text-[var(--color-net-txt)]">
                     {COP(Math.max(r.netoLibre ?? 0, 0))}
                   </td>
                 </tr>
@@ -131,11 +125,10 @@ export function AnnualTable({ year }: AnnualTableProps) {
             <tr className="border-t-2 border-border">
               <td className="py-[7px] px-[6px] text-muted-foreground text-[11px] font-medium tracking-wider">TOTAL</td>
               <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold">{COP(totBruto)}</td>
-              <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold" style={{ color: `var(${ssColor})` }}>{COP(totSS)}</td>
-              <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold" style={{ color: `var(${retColor})` }}>{COP(totRet)}</td>
+              <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold" style={{ color: `var(${obligColor})` }}>{COP(totOblig)}</td>
               <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold" style={{ color: `var(${provColor})` }}>{COP(totProv)}</td>
-              <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold text-[var(--n-green)]">{COP(totGast)}</td>
-              <td className="py-[7px] px-[6px] text-right tabular-nums font-bold text-[var(--n-lime)]">{COP(totNeto)}</td>
+              <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold text-[var(--color-expense)]">{COP(totGast)}</td>
+              <td className="py-[7px] px-[6px] text-right tabular-nums font-bold text-[var(--color-net-txt)]">{COP(totNeto)}</td>
             </tr>
           </tfoot>
         </table>

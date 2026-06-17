@@ -1,14 +1,14 @@
 import { cn } from '@/lib/utils'
 
 const variantClasses: Record<string, string> = {
-  usd:      'bg-[var(--n-blue-bg)] text-[var(--n-blue-txt)]',
-  cop:      'bg-[var(--n-green-bg)] text-[var(--n-green-txt)]',
-  arq:      'bg-[var(--n-blue-bg)] text-[var(--n-blue-txt)]',
-  toptal:   'bg-[var(--n-purple-bg)] text-[var(--n-purple-txt)]',
-  bancol:   'bg-[var(--n-green-bg)] text-[var(--n-green-txt)]',
-  otro:     'bg-[var(--n-gray-bg)] text-[var(--n-gray-txt)]',
-  ss:       'bg-[var(--n-blue-bg)] text-[var(--n-blue-txt)]',
-  default:  'bg-[var(--n-gray-bg)] text-[var(--n-gray-txt)]',
+  usd:      'bg-[var(--color-income-bg)] text-[var(--color-income-txt)]',
+  cop:      'bg-[var(--color-provision-bg)] text-[var(--color-provision-txt)]',
+  arq:      'bg-[var(--color-income-bg)] text-[var(--color-income-txt)]',
+  toptal:   'bg-[var(--color-account-toptal-bg)] text-[var(--color-account-toptal-txt)]',
+  bancol:   'bg-[var(--color-provision-bg)] text-[var(--color-provision-txt)]',
+  otro:     'bg-[var(--color-account-other-bg)] text-[var(--color-account-other-txt)]',
+  ss:       'bg-[var(--color-income-bg)] text-[var(--color-income-txt)]',
+  default:  'bg-[var(--color-account-other-bg)] text-[var(--color-account-other-txt)]',
 }
 
 interface BadgeProps {

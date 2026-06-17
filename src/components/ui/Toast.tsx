@@ -7,7 +7,7 @@ export function Toast() {
   return (
     <div
       className={cn(
-        'fixed left-1/2 -translate-x-1/2 bg-[var(--n-txt)] text-[var(--n-bg)] px-5 py-[10px] rounded-[20px] text-[13px]',
+        'fixed left-1/2 -translate-x-1/2 bg-[var(--foreground)] text-[var(--card)] px-5 py-[10px] rounded-[20px] text-[13px]',
         'opacity-0 pointer-events-none transition-opacity duration-300 z-[99]',
         // Mobile: above bottom nav
         'bottom-6 sm:bottom-6',

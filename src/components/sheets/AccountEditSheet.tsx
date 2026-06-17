@@ -112,7 +112,7 @@ export function AccountEditSheet() {
         {isEditing && (
           <Button
             variant="outline"
-            className="w-full text-destructive border-destructive hover:bg-[var(--n-danger-bg)] hover:text-destructive"
+            className="w-full text-destructive border-destructive hover:bg-[var(--color-danger-bg)] hover:text-destructive"
             onClick={handleDelete}
           >
             <Trash2 size={14} />

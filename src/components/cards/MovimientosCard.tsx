@@ -1,7 +1,7 @@
 import { Trash2, Settings2, Plus, ArrowLeftRight, Pencil } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
-import { COP, USD } from '@/lib/format'
+import { COP, USD, fmtDate } from '@/lib/format'
 import { computeAccountBalance } from '@/lib/calc'
 import { CurrencyBadge } from '@/components/ui/Badge'
 import { MONTHS } from '@/data/defaults'
@@ -52,7 +52,7 @@ export function MovimientosCard() {
             <div
               key={a.id}
               onClick={() => openBalance(a.id)}
-              className="bg-muted rounded-lg p-3 cursor-pointer hover:bg-[var(--n-hover)] transition-colors min-w-0"
+              className="bg-muted rounded-lg p-3 cursor-pointer hover:bg-[var(var(--accent))] transition-colors min-w-0"
             >
               <div className="flex justify-between items-start gap-1 mb-0.5">
                 <span className="text-xs text-muted-foreground font-medium truncate flex-1 min-w-0">{a.label}</span>
@@ -74,7 +74,7 @@ export function MovimientosCard() {
                   : <span className="text-sm font-normal text-muted-foreground">Tocar para configurar</span>}
               </div>
               {monthlyInt > 0 && (
-                <div className="text-2xs text-[var(--n-green)] mt-[3px]">
+                <div className="text-2xs text-[var(--color-provision)] mt-[3px]">
                   ≈ {fmt(monthlyInt)}/mes · {a.rate}% a.a.
                 </div>
               )}
@@ -98,11 +98,11 @@ export function MovimientosCard() {
             const fromAcc = accounts.find(a => a.id === t.from)
             const toAcc   = accounts.find(a => a.id === t.to)
             return (
-              <div key={t.id} className="flex items-center gap-2 py-2 border-b border-[var(--n-border)] last:border-0">
+              <div key={t.id} className="flex items-center gap-2 py-2 border-b border-[var(--border)] last:border-0">
                 <div className="flex-1 min-w-0">
                   <div className="text-xs font-medium flex justify-between items-center">
                     <span>{fromAcc?.label ?? t.from} → {toAcc?.label ?? t.to}</span>
-                    <span className="font-normal text-muted-foreground">{t.date}</span>
+                    <span className="font-normal text-muted-foreground">{t.date ? fmtDate(t.date) : ''}</span>
                   </div>
                   <div className="text-xs text-muted-foreground mt-0.5">
                     {t.fromCurrency === 'USD' ? USD(t.amount) : COP(t.amount)}
@@ -113,7 +113,6 @@ export function MovimientosCard() {
                   variant="ghost"
                   size="icon-sm"
                   onClick={() => { setEditingTransfer(t.id); openSheet('transfer') }}
-                  className="hover:bg-[var(--n-bg2)]"
                 >
                   <Pencil size={12} />
                 </Button>
@@ -121,7 +120,7 @@ export function MovimientosCard() {
                   variant="ghost"
                   size="icon-sm"
                   onClick={() => { removeTransfer(t.id); showToast('Movimiento eliminado') }}
-                  className="hover:bg-[var(--n-danger-bg)] hover:text-[var(--n-danger)]"
+                  className="hover:bg-[var(--color-danger-bg)] hover:text-[var(--color-danger)]"
                 >
                   <Trash2 size={12} />
                 </Button>

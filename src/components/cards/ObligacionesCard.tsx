@@ -1,7 +1,7 @@
 import { Landmark, ShieldCheck } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
-import { calcTotales, calcIBC, calcGastos, calcAllDeductions } from '@/lib/calc'
+import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase } from '@/lib/calc'
 import { COP, USD } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { SectionCard } from '@/components/ui/SectionCard'
@@ -54,7 +54,8 @@ export function ObligacionesCard() {
   const { totUSD, bruto } = calcTotales(month.incomes, month.trm)
   const ibc  = calcIBC(month.incomes, month.trm, smmlv)
   const gast = calcGastos(month.egresos || [], month.trm)
-  const res  = calcAllDeductions(bruto, ibc, m, deductions, gast, month.trm, month.voluntarias)
+  const provBase = calcProvisionBase(month.incomes, month.trm, ibc)
+  const res  = calcAllDeductions(bruto, ibc, m, deductions, gast, month.trm, month.voluntarias, provBase)
 
   const ibcIsMin   = ibc <= smmlv * 1.001
   const showUSD    = totUSD > 0
@@ -77,7 +78,7 @@ export function ObligacionesCard() {
 
   const totalAction = (
     <div className="text-right">
-      <div className="text-base font-bold font-heading tabular-nums text-[var(--n-blue)]">
+      <div className="text-base font-bold font-heading tabular-nums text-[var(--color-tax-txt)]">
         {COP(totalOblig)}
       </div>
       {showUSD && (

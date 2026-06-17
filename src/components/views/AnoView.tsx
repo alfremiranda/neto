@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { CalendarRange, Download } from 'lucide-react'
 import { TrendChart } from '@/components/annual/TrendChart'
+import { EgresosCategoryChart } from '@/components/annual/EgresosCategoryChart'
+import { EgresosBreakdown } from '@/components/annual/EgresosBreakdown'
 import { AnnualTable } from '@/components/annual/AnnualTable'
-import { ConfigCard } from '@/components/annual/ConfigCard'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useUIStore } from '@/store/uiStore'
@@ -75,7 +76,9 @@ export function AnoView() {
         <AnnualTable year={year} />
       </SectionCard>
 
-      <ConfigCard />
+      <EgresosCategoryChart year={year} />
+      <EgresosBreakdown year={year} />
+
     </div>
   )
 }

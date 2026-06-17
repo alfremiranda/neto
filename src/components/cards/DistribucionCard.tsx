@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
-import { calcTotales, calcIBC, calcGastos, calcAllDeductions } from '@/lib/calc'
+import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase } from '@/lib/calc'
 import { COP } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
@@ -25,26 +25,23 @@ export function DistribucionCard() {
   const { bruto } = calcTotales(month.incomes, month.trm)
   const ibc  = calcIBC(month.incomes, month.trm, smmlv)
   const gast = calcGastos(month.egresos || [], month.trm)
-  const res  = calcAllDeductions(bruto, ibc, m, deductions, gast, month.trm, month.voluntarias)
+  const provBase = calcProvisionBase(month.incomes, month.trm, ibc)
+  const res  = calcAllDeductions(bruto, ibc, m, deductions, gast, month.trm, month.voluntarias, provBase)
 
-  const retencionItems = res.provItems.filter(i => i.id === 'retencion')
+  const retencionTotal = res.provItems.filter(i => i.id === 'retencion').reduce((a, i) => a + i.amount, 0)
   const otherProvItems = res.provItems.filter(i => i.id !== 'retencion')
-  const retencionTotal = retencionItems.reduce((a, i) => a + i.amount, 0)
   const provTotal      = otherProvItems.reduce((a, i) => a + i.amount, 0)
                        + res.volItems.reduce((a, i) => a + i.amount, 0)
+  const obligTotal     = res.ssTotal + retencionTotal
   const netoLibre      = Math.max(res.netoLibre, 0)
 
-  // Colors follow the deduction config — no hardcoding
-  const ssColor  = res.ssItems[0]?.color          ?? '--n-blue'
-  const retColor = retencionItems[0]?.color        ?? '--n-purple-txt'
-  const provColor = otherProvItems.find(i => i.applies)?.color ?? '--n-amber'
+  const provColor = otherProvItems.find(i => i.applies)?.color ?? '--color-provision'
 
   const raw: Omit<Segment, 'pct'>[] = [
-    { id: 'ss',       label: 'Seg. social',  color: ssColor,   amount: res.ssTotal    },
-    { id: 'ret',      label: 'Retención',    color: retColor,  amount: retencionTotal },
-    { id: 'prov',     label: 'Provisiones',  color: provColor, amount: provTotal      },
-    { id: 'egresos',  label: 'Egresos',      color: '--n-green', amount: gast         },
-    { id: 'neto',     label: 'Neto libre',   color: '--n-lime',  amount: netoLibre    },
+    { id: 'oblig',   label: 'Obligaciones', color: '--color-tax', amount: obligTotal },
+    { id: 'prov',    label: 'Provisiones',  color: provColor,   amount: provTotal  },
+    { id: 'egresos', label: 'Egresos',      color: '--color-expense',  amount: gast       },
+    { id: 'neto',    label: 'Neto libre',   color: '--color-net',  amount: netoLibre  },
   ]
 
   if (bruto === 0) return null

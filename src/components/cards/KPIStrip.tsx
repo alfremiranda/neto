@@ -1,6 +1,6 @@
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
-import { calcTotales, calcIBC, calcGastos, calcAllDeductions } from '@/lib/calc'
+import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase } from '@/lib/calc'
 import { COP, USD } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { Card } from '@/components/ui/card'
@@ -13,8 +13,8 @@ interface KPICardProps {
   label: string
   value: string
   sub?: string
-  accentToken?: string  // CSS var name e.g. '--n-blue'; use for dynamic colors
-  accent?: string       // static Tailwind class e.g. 'text-[var(--n-lime)]'
+  accentToken?: string  // CSS var name e.g. '--color-income'; use for dynamic colors
+  accent?: string       // static Tailwind class e.g. 'text-[var(--color-net)]'
   detail?: DetailLine[]
 }
 
@@ -79,7 +79,8 @@ export function KPIStrip() {
   const { bruto } = calcTotales(month.incomes, month.trm)
   const ibc       = calcIBC(month.incomes, month.trm, smmlv)
   const gast      = calcGastos(month.egresos || [], month.trm)
-  const res       = calcAllDeductions(bruto, ibc, m, deductions, gast, month.trm, month.voluntarias)
+  const provBase  = calcProvisionBase(month.incomes, month.trm, ibc)
+  const res       = calcAllDeductions(bruto, ibc, m, deductions, gast, month.trm, month.voluntarias, provBase)
 
   const pct = (n: number) => bruto > 0 ? `${Math.round(n / bruto * 100)}% del bruto` : undefined
 
@@ -88,10 +89,9 @@ export function KPIStrip() {
   const provItems      = res.provItems.filter(i => i.id !== 'retencion')
   const provTotal      = provItems.reduce((a, i) => a + i.amount, 0)
                        + res.volItems.reduce((a, i) => a + i.amount, 0)
+  const obligTotal     = res.ssTotal + retencionTotal
 
-  const ssToken   = res.ssItems[0]?.color                    ?? '--n-blue'
-  const retToken  = retencionItems[0]?.color                  ?? '--n-purple-txt'
-  const provToken = provItems.find(i => i.applies)?.color     ?? '--n-amber'
+  const provToken = provItems.find(i => i.applies)?.color ?? '--color-provision'
 
   // --- Breakdown details ---
 
@@ -104,15 +104,13 @@ export function KPIStrip() {
       }))
     : []
 
-  const ssDetail: DetailLine[] = res.ssItems.map(i => ({
-    label: `${i.label} (${i.pct}%)`,
-    value: COP(i.amount),
-  }))
-
-  const retencionDetail: DetailLine[] = retencionItems.map(i => ({
-    label: `${i.pct}% sobre bruto`,
-    value: COP(i.amount),
-  }))
+  const obligDetail: DetailLine[] = [
+    ...res.ssItems.map(i => ({ label: `${i.label} (${i.pct}%)`, value: COP(i.amount) })),
+    ...(res.ssItems.length > 0 && retencionItems.length > 0
+      ? [{ label: '', value: '', separator: true } as DetailLine]
+      : []),
+    ...retencionItems.map(i => ({ label: `Retención en la fuente (${i.pct}%)`, value: COP(i.amount) })),
+  ]
 
   const provDetail: DetailLine[] = [
     ...provItems.filter(i => i.applies && i.amount > 0).map(i => ({
@@ -141,18 +139,17 @@ export function KPIStrip() {
     .map(([cat, amt]) => ({ label: cat, value: COP(amt) }))
 
   const netoDetail: DetailLine[] = bruto > 0 ? [
-    { label: 'Ingreso bruto',    value: COP(bruto) },
-    { label: '− Seg. social',    value: COP(res.ssTotal) },
-    { label: '− Retención',      value: COP(retencionTotal) },
-    { label: '− Provisiones',    value: COP(provTotal) },
-    { label: '− Egresos',        value: COP(gast) },
+    { label: 'Ingreso bruto',         value: COP(bruto) },
+    { label: '− Oblig. tributarias',  value: COP(obligTotal) },
+    { label: '− Provisiones',         value: COP(provTotal) },
+    { label: '− Egresos',             value: COP(gast) },
     { label: '', value: '', separator: true },
-    { label: 'Neto libre',       value: COP(Math.max(res.netoLibre, 0)) },
+    { label: 'Neto libre',            value: COP(Math.max(res.netoLibre, 0)) },
   ] : []
 
   return (
     <TooltipProvider>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-5">
         <KPICard
           label="Ingreso bruto"
           value={COP(bruto)}
@@ -160,18 +157,11 @@ export function KPIStrip() {
           detail={ingresoDetail.length > 0 ? ingresoDetail : undefined}
         />
         <KPICard
-          label="Seguridad social"
-          value={COP(res.ssTotal)}
-          sub={pct(res.ssTotal)}
-          accentToken={ssToken}
-          detail={ssDetail}
-        />
-        <KPICard
-          label="Retención"
-          value={COP(retencionTotal)}
-          sub={pct(retencionTotal)}
-          accentToken={retToken}
-          detail={retencionDetail.length > 0 ? retencionDetail : undefined}
+          label="O. Tributarias"
+          value={COP(obligTotal)}
+          sub={pct(obligTotal)}
+          accentToken="--color-tax-txt"
+          detail={obligDetail.length > 0 ? obligDetail : undefined}
         />
         <KPICard
           label="Provisiones"
@@ -184,14 +174,14 @@ export function KPIStrip() {
           label="Egresos"
           value={COP(gast)}
           sub={pct(gast)}
-          accent="text-[var(--n-green)]"
+          accent="text-[var(--color-expense)]"
           detail={egresoDetail.length > 0 ? egresoDetail : undefined}
         />
         <KPICard
           label="Neto libre"
           value={COP(Math.max(res.netoLibre, 0))}
           sub={pct(Math.max(res.netoLibre, 0))}
-          accent={res.netoLibre > 0 ? 'text-[var(--n-lime)]' : 'text-[var(--n-danger)]'}
+          accent={res.netoLibre > 0 ? 'text-[var(--color-net-txt)]' : 'text-[var(--color-danger)]'}
           detail={netoDetail.length > 0 ? netoDetail : undefined}
         />
       </div>

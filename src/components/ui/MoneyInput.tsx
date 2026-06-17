@@ -30,10 +30,10 @@ export const MoneyInput = forwardRef<HTMLInputElement, MoneyInputProps>(
           {...rest}
         />
         {hint && !error && (
-          <div className="text-[10px] text-[var(--n-blue)] font-medium min-h-[13px]">{hint}</div>
+          <div className="text-[10px] text-[var(--color-income)] font-medium min-h-[13px]">{hint}</div>
         )}
         {error && (
-          <div className="text-[10px] text-[var(--n-danger)] font-medium">{error}</div>
+          <div className="text-[10px] text-[var(--color-danger)] font-medium">{error}</div>
         )}
       </div>
     )

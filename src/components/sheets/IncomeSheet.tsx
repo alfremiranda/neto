@@ -4,14 +4,11 @@ import { MoneyInput } from '@/components/ui/MoneyInput'
 import { useMoneyInput } from '@/hooks/useMoneyInput'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
+import { localToday } from '@/lib/format'
 import { Button } from '@/components/ui/button'
+import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { DatePicker } from '@/components/ui/DatePicker'
-
-function todayISO() {
-  const d = new Date()
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-}
 
 export function IncomeSheet() {
   const { addIncome, updateIncome, getCurrentMonth, getAccounts } = useFinanceStore()
@@ -24,8 +21,9 @@ export function IncomeSheet() {
   const [desc, setDesc]         = useState('')
   const [currency, setCurrency] = useState<'USD' | 'COP'>('USD')
   const [account, setAccount]   = useState('ARQ')
-  const [tipo, setTipo]         = useState<'servicios' | 'otro'>('servicios')
-  const [date, setDate]         = useState(todayISO())
+  const [tipo, setTipo]             = useState<'servicios' | 'otro'>('servicios')
+  const [date, setDate]             = useState(localToday())
+  const [applyProvisions, setApply] = useState(true)
   const decimals = currency === 'USD' ? 2 : 0
   const amt = useMoneyInput({ decimals })
 
@@ -37,14 +35,16 @@ export function IncomeSheet() {
       setCurrency(editing.currency)
       setAccount(editing.account)
       setTipo(editing.tipo)
-      setDate(editing.date ?? todayISO())
+      setDate(editing.date ?? localToday())
+      setApply(editing.applyProvisions ?? true)
       amt.setValue(editing.amount)
     } else {
       setDesc('')
       setCurrency('USD')
       setAccount('ARQ')
       setTipo('servicios')
-      setDate(todayISO())
+      setDate(localToday())
+      setApply(true)
       amt.setValue(0)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -55,7 +55,7 @@ export function IncomeSheet() {
       showToast('Ingresa descripción y monto')
       return
     }
-    const payload = { desc: desc.trim(), amount: amt.numericValue, currency, account, tipo, date }
+    const payload = { desc: desc.trim(), amount: amt.numericValue, currency, account, tipo, date, applyProvisions }
     if (isEdit && editingIncomeId !== null) {
       updateIncome(editingIncomeId, payload)
       showToast('Ingreso actualizado')
@@ -141,6 +141,16 @@ export function IncomeSheet() {
           <label className="field-label">Fecha de ingreso</label>
           <DatePicker value={date} onChange={setDate} />
         </div>
+
+        {tipo === 'servicios' && (
+          <div className="flex items-center justify-between py-1">
+            <div>
+              <div className="text-sm font-medium">Aplicar provisiones</div>
+              <div className="text-xs text-muted-foreground">Incluir en el cálculo de primas y cesantías</div>
+            </div>
+            <Switch checked={applyProvisions} onCheckedChange={setApply} />
+          </div>
+        )}
 
         <Button className="w-full" onClick={handleSubmit}>
           {isEdit ? 'Guardar cambios' : 'Registrar ingreso'}

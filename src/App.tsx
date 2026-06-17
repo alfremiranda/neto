@@ -29,7 +29,7 @@ export default function App() {
 
       <div className="flex flex-1 min-h-0 overflow-hidden">
         <Sidebar />
-        <main className="flex-1 overflow-auto p-4 sm:p-5 lg:p-6 pb-[calc(72px+env(safe-area-inset-bottom))] sm:pb-5 lg:pb-6 bg-[var(--n-bg3)]">
+        <main className="flex-1 overflow-auto p-4 sm:p-5 lg:p-6 pb-[calc(72px+env(safe-area-inset-bottom))] sm:pb-5 lg:pb-6 bg-[var(--background)]">
           <div className="max-w-5xl mx-auto">
             {view === 'mes'     && <MesView />}
             {view === 'ano'     && <AnoView />}

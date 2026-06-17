@@ -27,7 +27,7 @@ export function MonthNav() {
           onClick={prevMonth}
           disabled={m === 0}
           aria-label="Mes anterior"
-          className="w-8 h-8 flex items-center justify-center rounded-lg border border-[var(--n-border2)] bg-transparent text-[var(--n-txt)] hover:bg-[var(--n-bg2)] disabled:opacity-25 disabled:pointer-events-none transition-colors active:scale-95"
+          className="w-8 h-8 flex items-center justify-center rounded-lg border border-[rgba(0,0,0,0.18)] bg-transparent text-[var(--foreground)] hover:bg-[var(--muted)] disabled:opacity-25 disabled:pointer-events-none transition-colors active:scale-95"
         >
           <ChevronLeft size={16} />
         </button>
@@ -38,7 +38,7 @@ export function MonthNav() {
           onClick={nextMonth}
           disabled={m === 11}
           aria-label="Mes siguiente"
-          className="w-8 h-8 flex items-center justify-center rounded-lg border border-[var(--n-border2)] bg-transparent text-[var(--n-txt)] hover:bg-[var(--n-bg2)] disabled:opacity-25 disabled:pointer-events-none transition-colors active:scale-95"
+          className="w-8 h-8 flex items-center justify-center rounded-lg border border-[rgba(0,0,0,0.18)] bg-transparent text-[var(--foreground)] hover:bg-[var(--muted)] disabled:opacity-25 disabled:pointer-events-none transition-colors active:scale-95"
         >
           <ChevronRight size={16} />
         </button>
@@ -47,7 +47,7 @@ export function MonthNav() {
           <button
             onClick={() => setConfirmOpen(true)}
             aria-label="Eliminar mes"
-            className="w-7 h-7 flex items-center justify-center rounded-lg border border-[var(--n-border2)] bg-transparent text-muted-foreground hover:bg-[var(--n-danger-bg)] hover:text-[var(--n-danger)] hover:border-[var(--n-danger)] transition-colors active:scale-95"
+            className="w-7 h-7 flex items-center justify-center rounded-lg border border-[rgba(0,0,0,0.18)] bg-transparent text-muted-foreground hover:bg-[var(--color-danger-bg)] hover:text-[var(--color-danger)] hover:border-[var(--color-danger)] transition-colors active:scale-95"
           >
             <Trash2 size={13} />
           </button>

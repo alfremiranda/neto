@@ -5,6 +5,7 @@ import { useMoneyInput } from '@/hooks/useMoneyInput'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { EGRESO_CATEGORIAS } from '@/data/defaults'
+import { localToday } from '@/lib/format'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -20,7 +21,7 @@ export function EgresoSheet() {
   const [desc, setDesc]           = useState('')
   const [category, setCategory]   = useState('vivienda')
   const [currency, setCurrency]   = useState<'USD' | 'COP'>('COP')
-  const [date, setDate]           = useState(new Date().toISOString().slice(0, 10))
+  const [date, setDate]           = useState(localToday())
   const [recurring, setRecurring] = useState(false)
   const [account, setAccount]     = useState('')
 
@@ -44,7 +45,7 @@ export function EgresoSheet() {
       setDesc('')
       setCategory('vivienda')
       setCurrency('COP')
-      setDate(new Date().toISOString().slice(0, 10))
+      setDate(localToday())
       setRecurring(false)
       setAccount('')
       amt.setValue(0)
@@ -72,6 +73,19 @@ export function EgresoSheet() {
     <SheetBase id="egreso" title={isEditing ? 'Editar egreso' : 'Agregar egreso'}>
       <div className="space-y-5">
 
+        {/* Description */}
+        <div>
+          <label className="field-label">Descripción</label>
+          <input
+            type="text"
+            value={desc}
+            onChange={e => setDesc(e.target.value)}
+            placeholder="Ej. Netflix, Rappi, Arriendo Laureles…"
+            className="field-input"
+            autoFocus
+          />
+        </div>
+
         {/* Category select */}
         <div>
           <label className="field-label">Categoría</label>
@@ -93,19 +107,6 @@ export function EgresoSheet() {
               })}
             </SelectContent>
           </Select>
-        </div>
-
-        {/* Description */}
-        <div>
-          <label className="field-label">Descripción</label>
-          <input
-            type="text"
-            value={desc}
-            onChange={e => setDesc(e.target.value)}
-            placeholder="Ej. Netflix, Rappi, Arriendo Laureles…"
-            className="field-input"
-            autoFocus
-          />
         </div>
 
         {/* Amount + Currency */}

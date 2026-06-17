@@ -20,7 +20,7 @@ y obligaciones en COP (seguridad social colombiana, egresos de manutención).
 - Aplica sobre todos los ingresos por prestación de servicios independientemente de cuenta o moneda
 - SS mensual: Salud 12.5% + Pensión 16% + ARL 0.522% sobre IBC
 - Provisiones bimestrales: Retención 20% sobre ingreso bruto
-- Provisiones Jun/Dic: Primas 8.33% sobre ingreso bruto (solo aplica en junio y diciembre)
+- Provisiones mensuales: Primas 8.33% sobre ingreso bruto (provisión mensual; pago efectivo jun/dic)
 - Retención se acumula en ARQ Savings (genera 3.5% anual) y se paga año vencido a la DIAN
 - TRM corresponde a la fecha de transferencia de ARQ/Toptal → Bancolombia; se actualiza manualmente
 
@@ -51,6 +51,6 @@ y obligaciones en COP (seguridad social colombiana, egresos de manutención).
 3. ~~Vista de resumen anual~~ ✓
 4. Migrar storage a Supabase (auth con GitHub o Google)
 5. PWA completa con service worker
-6. Fix: primas solo en jun/dic (actualmente se aplica todos los meses)
+6. ~~Fix: primas mensual~~ ✓ (provisión mensual 8.33%, pago real en jun/dic)
 7. Fix: aria-labels en botones icono y htmlFor en formularios
 8. Fix: rows de AnnualTable con role="button" + teclado

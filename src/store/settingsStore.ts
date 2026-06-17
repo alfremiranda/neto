@@ -39,21 +39,60 @@ export const useSettingsStore = create<SettingsState>()(
     }),
     {
       name: 'neto-settings',
-      version: 1,
-      // Merge stored deductions with any new defaults; migrate old frequency→months
+      version: 5,
+      // Always pass stored state through on version mismatch instead of discarding
+      migrate: (s: unknown) => s as SettingsState,
+      // Merge stored deductions with any new defaults; run schema migrations inline
       merge: (persisted: unknown, current) => {
         const p = persisted as Partial<SettingsState>
         if (!p?.deductions) return current
+
+        // Provision ids that should use neto_ibc instead of bruto
+        const NETO_IBC_IDS = new Set(['primas', 'cesantias', 'vacaciones'])
+
         const migrated = p.deductions.map((d: DeductionConfig & { frequency?: string }) => {
-          if (d.months !== undefined) return d
-          // migrate old frequency field
-          const months =
-            d.frequency === 'semiannual' ? [6, 12] :
-            d.frequency === 'bimonthly'  ? [] :
-            []
-          const { frequency: _, ...rest } = d
-          return { ...rest, months }
+          let result: DeductionConfig = d
+
+          // v1→v2: migrate old frequency field → months[]
+          if (result.months === undefined) {
+            const months =
+              (result as DeductionConfig & { frequency?: string }).frequency === 'semiannual' ? [6, 12] :
+              []
+            const { frequency: _, ...rest } = result as DeductionConfig & { frequency?: string }
+            result = { ...rest, months }
+          }
+
+          // v1→v2: migrate provision base bruto → neto_ibc
+          if (NETO_IBC_IDS.has(result.id) && result.base === 'bruto') {
+            result = { ...result, base: 'neto_ibc' }
+          }
+
+          // v2→v3: all provision items (primas/cesantías/vacaciones) → green (pre-token-rename)
+          const OLD_PROVISION_COLORS = new Set(['--n-lime', '--n-purple-txt', '--n-pink'])
+          if (NETO_IBC_IDS.has(result.id) && OLD_PROVISION_COLORS.has(result.color ?? '')) {
+            result = { ...result, color: '--n-green' }
+          }
+
+          // v3→v4: primas → provisión mensual (months: [] = todos los meses)
+          if (result.id === 'primas' && result.months?.length > 0) {
+            result = { ...result, months: [] }
+          }
+
+          // v4→v5: rename --n-* color tokens → --color-{semantic}
+          const TOKEN_MAP: Record<string, string> = {
+            '--n-blue':      '--color-income',
+            '--n-green':     '--color-provision',
+            '--n-amber':     '--color-tax',
+            '--n-pink':      '--color-expense',
+            '--n-lime':      '--color-net',
+          }
+          if (result.color && TOKEN_MAP[result.color]) {
+            result = { ...result, color: TOKEN_MAP[result.color] }
+          }
+
+          return result
         })
+
         const storedIds = new Set(migrated.map((d: DeductionConfig) => d.id))
         const newDefaults = DEFAULT_DEDUCTIONS.filter(d => !storedIds.has(d.id))
         return { ...current, deductions: [...migrated, ...newDefaults] }

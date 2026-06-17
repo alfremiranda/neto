@@ -31,24 +31,12 @@ const DISPLAY_SECTIONS: {
 ]
 
 const BASE_OPTIONS: { value: DeductionBase; label: string; desc: string }[] = [
-  { value: 'bruto',     label: '% Bruto',   desc: 'Porcentaje sobre el total de ingresos del mes' },
-  { value: 'base_usd',  label: 'Base USD',  desc: 'Porcentaje sobre un ingreso fijo en USD × TRM' },
-  { value: 'fixed_cop', label: 'Fijo COP',  desc: 'Monto fijo mensual en pesos' },
-  { value: 'fixed_usd', label: 'Fijo USD',  desc: 'Monto fijo mensual en dólares' },
+  { value: 'neto_ibc',  label: 'Bruto − IBC', desc: 'Sobre el ingreso bruto menos el IBC (base para primas, cesantías, vacaciones)' },
+  { value: 'bruto',     label: '% Bruto',      desc: 'Porcentaje sobre el total de ingresos del mes' },
+  { value: 'base_usd',  label: 'Base USD',     desc: 'Porcentaje sobre un ingreso fijo en USD × TRM' },
+  { value: 'fixed_cop', label: 'Fijo COP',     desc: 'Monto fijo mensual en pesos' },
+  { value: 'fixed_usd', label: 'Fijo USD',     desc: 'Monto fijo mensual en dólares' },
 ]
-
-const PALETTE_OPTIONS = [
-  { token: '--n-blue',       label: 'Azul'   },
-  { token: '--n-green',      label: 'Verde'  },
-  { token: '--n-amber',      label: 'Ámbar'  },
-  { token: '--n-pink',       label: 'Rosa'   },
-  { token: '--n-lime',       label: 'Lima'   },
-  { token: '--n-purple-txt', label: 'Morado' },
-]
-
-function getSwatchColor(token: string) {
-  return getComputedStyle(document.documentElement).getPropertyValue(token).trim()
-}
 
 // ─── Month picker ─────────────────────────────────────────────────────────────
 
@@ -122,7 +110,7 @@ function DeductionDrawer({
   const [pct,    setPct]    = useState(d?.pct    ?? 0)
   const [amount, setAmount] = useState(d?.amount ?? 0)
   const [months, setMonths] = useState<number[]>(d?.months ?? [])
-  const [color,  setColor]  = useState(d?.color  ?? '--n-green')
+  const color = d?.color ?? '--color-provision'
 
   const isFixed   = base === 'fixed_cop' || base === 'fixed_usd'
   const isBaseUsd = base === 'base_usd'
@@ -271,28 +259,6 @@ function DeductionDrawer({
             <MonthPicker months={months} onChange={setMonths} />
           </div>
 
-          {/* Color */}
-          {!locked && (
-            <div className="space-y-1.5">
-              <label className="field-label">Color</label>
-              <div className="flex gap-2.5 flex-wrap">
-                {PALETTE_OPTIONS.map(p => (
-                  <button
-                    key={p.token}
-                    title={p.label}
-                    type="button"
-                    onClick={() => setColor(p.token)}
-                    className={[
-                      'w-7 h-7 rounded-full border-2 cursor-pointer transition-transform hover:scale-110',
-                      color === p.token ? 'border-foreground scale-110' : 'border-transparent',
-                    ].join(' ')}
-                    style={{ background: getSwatchColor(p.token) }}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
           {/* Actions */}
           <div className="flex gap-2 pt-2">
             <Button variant="outline" className="flex-1" onClick={onClose}>Cancelar</Button>
@@ -329,9 +295,6 @@ function DeductionRow({
 
   return (
     <div className={['py-3 border-b border-[var(--border)] last:border-0 flex items-center gap-2.5', !d.enabled ? 'opacity-50' : ''].join(' ')}>
-      {/* Color swatch */}
-      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: `var(${d.color})` }} />
-
       {/* Label + base badge */}
       <div className="flex-1 min-w-0 flex items-center gap-2 flex-wrap">
         <span className="text-sm font-medium leading-none truncate">{d.label}</span>
@@ -378,7 +341,7 @@ function DeductionRow({
             'shrink-0 px-1.5 py-1 rounded-md text-xs border-none bg-transparent cursor-pointer transition-colors',
             confirmDelete
               ? 'bg-destructive text-destructive-foreground font-medium'
-              : 'text-muted-foreground hover:text-destructive hover:bg-[var(--n-danger-bg)]',
+              : 'text-muted-foreground hover:text-destructive hover:bg-[var(--color-danger-bg)]',
           ].join(' ')}
           aria-label={`Eliminar ${d.label}`}
         >
