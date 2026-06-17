@@ -70,7 +70,7 @@ function AccountCard({
           'mt-auto self-start flex items-center gap-1 text-[11px] font-medium px-2 py-1 rounded-md border-none cursor-pointer transition-colors',
           selected
             ? 'bg-[var(--primary)]/10 text-[var(--primary)] hover:bg-[var(--primary)]/20'
-            : 'bg-muted text-muted-foreground hover:text-foreground hover:bg-[var(var(--accent))]',
+            : 'bg-muted text-muted-foreground hover:text-foreground hover:bg-[var(--accent)]',
         )}
       >
         <Pencil size={10} strokeWidth={2.5} />

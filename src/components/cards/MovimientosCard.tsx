@@ -52,7 +52,7 @@ export function MovimientosCard() {
             <div
               key={a.id}
               onClick={() => openBalance(a.id)}
-              className="bg-muted rounded-lg p-3 cursor-pointer hover:bg-[var(var(--accent))] transition-colors min-w-0"
+              className="bg-muted rounded-lg p-3 cursor-pointer hover:bg-[var(--accent)] transition-colors min-w-0"
             >
               <div className="flex justify-between items-start gap-1 mb-0.5">
                 <span className="text-xs text-muted-foreground font-medium truncate flex-1 min-w-0">{a.label}</span>
