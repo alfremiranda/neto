@@ -524,6 +524,24 @@ export const useFinanceStore = create<FinanceState>()(
           changed = true
         })
 
+        // Restore ARQ Savings account if referenced in transfers but missing from accounts
+        const settings = (newDb._settings ?? {}) as Settings
+        const accounts: Account[] = settings.accounts ?? []
+        const ARQ_SAVINGS_ID = 'acc_1781573823915'
+        if (!accounts.find(a => a.id === ARQ_SAVINGS_ID)) {
+          const referencedInTransfers = Object.keys(newDb)
+            .filter(k => k !== '_settings')
+            .some(k => {
+              const m = newDb[k] as MonthData | undefined
+              return (m?.transfers ?? []).some(t => t.from === ARQ_SAVINGS_ID || t.to === ARQ_SAVINGS_ID)
+            })
+          if (referencedInTransfers) {
+            settings.accounts = [...accounts, { id: ARQ_SAVINGS_ID, label: 'ARQ Savings', currency: 'USD', number: '', rate: 3.5 }]
+            newDb._settings = settings as FinanceDB['_settings']
+            changed = true
+          }
+        }
+
         if (changed) set({ db: newDb })
       },
     }),
