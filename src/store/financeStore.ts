@@ -397,13 +397,16 @@ export const useFinanceStore = create<FinanceState>()(
               if (cloudSettings?.smmlv) {
                 localSettings.smmlv = { ...(localSettings.smmlv ?? {}), ...cloudSettings.smmlv }
               }
-              // Only use cloud accounts if local has no configured accounts (with startingBalance).
-              // Accounts with startingBalance are manually entered by the user — local always wins.
-              const localHasConfiguredAccounts = localSettings.accounts?.some(
-                (a: Account) => a.startingBalance != null
-              )
-              if (cloudSettings?.accounts && !localHasConfiguredAccounts) {
-                localSettings.accounts = cloudSettings.accounts
+              // Merge accounts: local accounts always win (never delete local accounts).
+              // Add any cloud accounts that don't exist locally.
+              // For existing accounts, local startingBalance takes precedence over cloud.
+              if (cloudSettings?.accounts) {
+                const localAccounts = localSettings.accounts ?? []
+                const localIds = new Set(localAccounts.map((a: Account) => a.id))
+                const newFromCloud = cloudSettings.accounts.filter(
+                  (a: Account) => !localIds.has(a.id)
+                )
+                localSettings.accounts = [...localAccounts, ...newFromCloud]
               }
               newDb._settings = localSettings
             }
