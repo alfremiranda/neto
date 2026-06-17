@@ -18,7 +18,6 @@ export function AccountEditSheet() {
   const [currency, setCurrency] = useState<'USD' | 'COP'>('COP')
   const [number, setNumber]     = useState('')
   const [rate, setRate]         = useState('')
-  const [hasBalance, setHasBalance] = useState(false)
 
   const balanceAmt = useMoneyInput({ decimals: currency === 'USD' ? 2 : 0 })
 
@@ -31,12 +30,11 @@ export function AccountEditSheet() {
         setCurrency(a.currency)
         setNumber(a.number || '')
         setRate(a.rate ? String(a.rate) : '')
-        setHasBalance(a.startingBalance != null)
         balanceAmt.setValue(a.startingBalance ?? 0)
       }
     } else {
       setLabel(''); setCurrency('COP'); setNumber(''); setRate('')
-      setHasBalance(false); balanceAmt.setValue(0)
+      balanceAmt.setValue(0)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSheet, editingAccountId])
@@ -45,7 +43,7 @@ export function AccountEditSheet() {
     if (!label.trim()) { showToast('Ingresa el nombre de la cuenta'); return }
     const accounts = getAccounts()
     const rateNum = parseFloat(rate.replace(',', '.')) || 0
-    const startingBalance = hasBalance ? balanceAmt.numericValue : undefined
+    const startingBalance = balanceAmt.numericValue
     if (editingAccountId) {
       const idx = accounts.findIndex(a => a.id === editingAccountId)
       if (idx !== -1) accounts[idx] = { ...accounts[idx], label: label.trim(), currency, number: number.trim(), rate: rateNum, startingBalance }
@@ -119,32 +117,13 @@ export function AccountEditSheet() {
           />
         </div>
 
-        {/* Starting balance */}
-        <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label className="field-label mb-0">Saldo inicial</label>
-            <button
-              type="button"
-              className="text-xs text-primary border-none bg-transparent cursor-pointer hover:underline"
-              onClick={() => { setHasBalance(v => !v); if (hasBalance) balanceAmt.setValue(0) }}
-            >
-              {hasBalance ? 'Quitar' : 'Agregar'}
-            </button>
-          </div>
-          {hasBalance && (
-            <MoneyInput
-              currency={currency}
-              value={balanceAmt.display}
-              onChange={balanceAmt.handleChange}
-              placeholder="0"
-            />
-          )}
-          {!hasBalance && (
-            <p className="text-xs text-muted-foreground">
-              Saldo antes de empezar a registrar movimientos en la app.
-            </p>
-          )}
-        </div>
+        <MoneyInput
+          label="Saldo inicial"
+          currency={currency}
+          value={balanceAmt.display}
+          onChange={balanceAmt.handleChange}
+          placeholder="0"
+        />
 
         <Button className="w-full" onClick={handleSave}>
           {isEditing ? 'Guardar cambios' : 'Agregar cuenta'}

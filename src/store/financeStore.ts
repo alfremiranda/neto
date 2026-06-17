@@ -536,10 +536,20 @@ export const useFinanceStore = create<FinanceState>()(
               return (m?.transfers ?? []).some(t => t.from === ARQ_SAVINGS_ID || t.to === ARQ_SAVINGS_ID)
             })
           if (referencedInTransfers) {
-            settings.accounts = [...accounts, { id: ARQ_SAVINGS_ID, label: 'ARQ Savings', currency: 'USD', number: '', rate: 3.5 }]
+            settings.accounts = [...accounts, { id: ARQ_SAVINGS_ID, label: 'ARQ Savings', currency: 'USD', number: '', rate: 3.5, startingBalance: 0 }]
             newDb._settings = settings as FinanceDB['_settings']
             changed = true
           }
+        }
+
+        // Set startingBalance: 0 on any account that has it undefined/null
+        const settingsForBalance = (newDb._settings ?? {}) as Settings
+        if (settingsForBalance.accounts?.some((a: Account) => a.startingBalance == null)) {
+          settingsForBalance.accounts = settingsForBalance.accounts.map((a: Account) =>
+            a.startingBalance == null ? { ...a, startingBalance: 0 } : a
+          )
+          newDb._settings = settingsForBalance as FinanceDB['_settings']
+          changed = true
         }
 
         if (changed) set({ db: newDb })

@@ -46,11 +46,11 @@ export const EGRESO_TIPOS: { id: string; label: string; category: string }[] = [
 ]
 
 export const TRANSFER_ACCOUNTS: Account[] = [
-  { id: 'ARQ',         label: 'ARQ (Observer Hub)', currency: 'USD', number: '', rate: 3.5 },
-  { id: 'Toptal',      label: 'Toptal',              currency: 'USD', number: '', rate: 0 },
-  { id: 'Bancolombia', label: 'Bancolombia',          currency: 'COP', number: '', rate: 0 },
-  { id: 'NU',          label: 'NU',                   currency: 'COP', number: '', rate: 0 },
-  { id: 'Nequi',       label: 'Nequi',                currency: 'COP', number: '', rate: 0 },
+  { id: 'ARQ',         label: 'ARQ (Observer Hub)', currency: 'USD', number: '', rate: 3.5, startingBalance: 0 },
+  { id: 'Toptal',      label: 'Toptal',              currency: 'USD', number: '', rate: 0,   startingBalance: 0 },
+  { id: 'Bancolombia', label: 'Bancolombia',          currency: 'COP', number: '', rate: 0,  startingBalance: 0 },
+  { id: 'NU',          label: 'NU',                   currency: 'COP', number: '', rate: 0,  startingBalance: 0 },
+  { id: 'Nequi',       label: 'Nequi',                currency: 'COP', number: '', rate: 0,  startingBalance: 0 },
 ]
 
 export const DEFAULTS = {
