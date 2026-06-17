@@ -397,7 +397,12 @@ export const useFinanceStore = create<FinanceState>()(
               if (cloudSettings?.smmlv) {
                 localSettings.smmlv = { ...(localSettings.smmlv ?? {}), ...cloudSettings.smmlv }
               }
-              if (cloudSettings?.accounts && !localSettings.accounts) {
+              // Only use cloud accounts if local has no configured accounts (with startingBalance).
+              // Accounts with startingBalance are manually entered by the user — local always wins.
+              const localHasConfiguredAccounts = localSettings.accounts?.some(
+                (a: Account) => a.startingBalance != null
+              )
+              if (cloudSettings?.accounts && !localHasConfiguredAccounts) {
                 localSettings.accounts = cloudSettings.accounts
               }
               newDb._settings = localSettings
@@ -420,6 +425,15 @@ export const useFinanceStore = create<FinanceState>()(
         // Push local keys missing from cloud
         for (const key of Object.keys(newDb)) {
           if (!cloudKeys.has(key)) await sbPush(key, newDb[key]).catch(() => {})
+        }
+
+        // Re-read current state right before applying: preserve any account configs
+        // saved by the user while this async sync was running (race condition fix).
+        const liveSettings = get().db._settings as Settings | undefined
+        if (liveSettings?.accounts?.some((a: Account) => a.startingBalance != null)) {
+          const merged = (newDb._settings ?? {}) as Settings
+          merged.accounts = liveSettings.accounts
+          newDb._settings = merged as FinanceDB['_settings']
         }
 
         set({ db: newDb })
