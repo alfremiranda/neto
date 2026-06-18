@@ -34,7 +34,7 @@ export function DatePicker({ value, onChange, className, placeholder = 'Seleccio
         <Button
           variant="outline"
           className={cn(
-            'w-full justify-start text-left font-normal h-10 rounded-[var(--radius)] border-[var(--border)] text-sm',
+            'w-full justify-start text-left font-normal h-9',
             !selected && 'text-muted-foreground',
             className,
           )}
