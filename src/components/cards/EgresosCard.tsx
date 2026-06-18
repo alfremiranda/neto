@@ -406,8 +406,9 @@ export function EgresosCard() {
 
                 {/* Sort */}
                 <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger data-size="none" className="w-7 h-7 px-0 justify-center [&>svg:last-child]:hidden border-transparent bg-transparent hover:bg-[var(--accent)]">
-                    <ArrowUpDown size={13} className="text-muted-foreground shrink-0" />
+                  <SelectTrigger data-size="none" className="h-7 w-auto px-2 gap-1.5 text-xs border-transparent bg-transparent hover:bg-[var(--accent)]">
+                    <ArrowUpDown size={12} className="text-muted-foreground shrink-0" />
+                    <SelectValue />
                   </SelectTrigger>
                   <SelectContent align="end">
                     <SelectItem value="date-desc">Fecha: más reciente</SelectItem>
