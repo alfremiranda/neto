@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Pencil, Trash2, Plus, Receipt, GripVertical, RefreshCw, Check, X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Pencil, Trash2, Plus, Receipt, RefreshCw, Check, X, ChevronLeft, ChevronRight, ArrowUpDown } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { calcGastos } from '@/lib/calc'
@@ -90,23 +90,16 @@ function EgresosBar({ egresos, trm }: { egresos: Egreso[]; trm: number }) {
 // ─── Egreso row ───────────────────────────────────────────────────────────────
 
 function EgresoRow({
-  egreso, trm, accounts, showDragHandle,
+  egreso, trm, accounts,
   onEdit, onDelete, onConfirm,
-  onDragStart, onDragOver, onDrop, onDragEnd,
-  isOver, isPendingDelete,
+  isPendingDelete,
 }: {
   egreso: Egreso
   trm: number
   accounts: Account[]
-  showDragHandle: boolean
   onEdit: () => void
   onDelete: () => void
   onConfirm: () => void
-  onDragStart: () => void
-  onDragOver: (e: React.DragEvent) => void
-  onDrop: () => void
-  onDragEnd: () => void
-  isOver: boolean
   isPendingDelete: boolean
 }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -124,24 +117,7 @@ function EgresoRow({
   const isUnconfirmed = egreso.confirmed === false
 
   return (
-    <div
-      draggable={showDragHandle}
-      onDragStart={onDragStart}
-      onDragOver={onDragOver}
-      onDrop={onDrop}
-      onDragEnd={onDragEnd}
-      className={cn(
-        'flex items-center gap-2 py-2 border-b border-[var(--border)] last:border-0',
-        isOver && 'border-t-2 border-t-[var(--primary)] border-b-0',
-      )}
-    >
-      {/* Drag handle — only in Todos tab */}
-      {showDragHandle ? (
-        <GripVertical size={14} className="shrink-0 text-muted-foreground/30 cursor-grab active:cursor-grabbing hover:text-muted-foreground/60 transition-colors" />
-      ) : (
-        <span className="w-[14px] shrink-0" />
-      )}
-
+    <div className="flex items-center gap-2 py-2 border-b border-[var(--border)] last:border-0">
       <CategoryIcon category={category} />
 
       <div className="flex-1 min-w-0">
@@ -219,15 +195,14 @@ const TAB_CLS = [
 ].join(' ')
 
 export function EgresosCard() {
-  const { getCurrentMonth, removeEgreso, reorderEgresos, getAccounts, confirmEgreso } = useFinanceStore()
+  const { getCurrentMonth, removeEgreso, getAccounts, confirmEgreso } = useFinanceStore()
   const { openSheet, showToast, setEditingEgreso } = useUIStore()
 
   const [activeTab,     setActiveTab]     = useState('todos')
   const [filterAccount, setFilterAccount] = useState('')
   const [filterDate,    setFilterDate]    = useState('')
+  const [sortBy,        setSortBy]        = useState('date-desc')
   const [confirmId,     setConfirmId]     = useState<number | null>(null)
-  const [dragIdx,       setDragIdx]       = useState<number | null>(null)
-  const [overIdx,       setOverIdx]       = useState<number | null>(null)
   const [canLeft,       setCanLeft]       = useState(false)
   const [canRight,      setCanRight]      = useState(false)
 
@@ -276,13 +251,25 @@ export function EgresosCard() {
 
   const hasFilters = !!filterAccount || !!filterDate
 
-  // Filtered list
-  const visible = egresos.filter(e => {
-    if (activeTab !== 'todos' && (e.category || 'otro') !== activeTab) return false
-    if (filterAccount && e.account !== filterAccount) return false
-    if (filterDate && e.date !== filterDate) return false
-    return true
-  })
+  // Filtered + sorted list
+  const visible = egresos
+    .filter(e => {
+      if (activeTab !== 'todos' && (e.category || 'otro') !== activeTab) return false
+      if (filterAccount && e.account !== filterAccount) return false
+      if (filterDate && e.date !== filterDate) return false
+      return true
+    })
+    .sort((a, b) => {
+      const amtA = a.currency === 'USD' ? a.amount * month.trm : a.amount
+      const amtB = b.currency === 'USD' ? b.amount * month.trm : b.amount
+      switch (sortBy) {
+        case 'date-asc':    return (a.date || '').localeCompare(b.date || '')
+        case 'amount-desc': return amtB - amtA
+        case 'amount-asc':  return amtA - amtB
+        case 'name-asc':    return (a.desc || '').localeCompare(b.desc || '', 'es')
+        default:            return (b.date || '').localeCompare(a.date || '') // date-desc
+      }
+    })
 
   const subtotal = visible.reduce(
     (a, e) => a + (e.currency === 'USD' ? e.amount * month.trm : e.amount), 0
@@ -312,15 +299,6 @@ export function EgresosCard() {
     } else {
       setConfirmId(id)
     }
-  }
-
-  function handleDrop(toIdx: number) {
-    if (dragIdx === null || dragIdx === toIdx) { setDragIdx(null); setOverIdx(null); return }
-    const reordered = [...egresos]
-    const [item] = reordered.splice(dragIdx, 1)
-    reordered.splice(toIdx, 0, item)
-    reorderEgresos(reordered.map(e => e.id))
-    setDragIdx(null); setOverIdx(null)
   }
 
   const subtotalLabel = activeTab === 'todos'
@@ -398,7 +376,7 @@ export function EgresosCard() {
               <div className="px-4 py-2 flex items-center gap-2 border-b border-[var(--border)]">
                 {/* Account filter */}
                 <Select value={filterAccount || 'all'} onValueChange={v => setFilterAccount(v === 'all' ? '' : v)}>
-                  <SelectTrigger size="sm" className="w-auto min-w-[130px] h-7 text-xs">
+                  <SelectTrigger className="w-auto min-w-[130px] h-7 text-xs">
                     <SelectValue placeholder="Todas las cuentas" />
                   </SelectTrigger>
                   <SelectContent>
@@ -425,6 +403,20 @@ export function EgresosCard() {
                     </Button>
                   )}
                 </div>
+
+                {/* Sort */}
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-7 h-7 px-0 justify-center [&>svg:last-child]:hidden border-transparent bg-transparent hover:bg-[var(--accent)]">
+                    <ArrowUpDown size={13} className="text-muted-foreground shrink-0" />
+                  </SelectTrigger>
+                  <SelectContent align="end">
+                    <SelectItem value="date-desc">Fecha: más reciente</SelectItem>
+                    <SelectItem value="date-asc">Fecha: más antigua</SelectItem>
+                    <SelectItem value="amount-desc">Mayor monto</SelectItem>
+                    <SelectItem value="amount-asc">Menor monto</SelectItem>
+                    <SelectItem value="name-asc">Nombre A–Z</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Content */}
@@ -435,27 +427,18 @@ export function EgresosCard() {
                   </div>
                 ) : (
                   <>
-                    {visible.map(e => {
-                      const origIdx = egresos.indexOf(e)
-                      return (
-                        <EgresoRow
-                          key={e.id}
-                          egreso={e}
-                          trm={month.trm}
-                          accounts={accounts}
-                          showDragHandle={activeTab === 'todos'}
-                          onEdit={() => handleEdit(e.id)}
-                          onDelete={() => handleDelete(e.id)}
-                          onConfirm={() => confirmEgreso(e.id)}
-                          onDragStart={() => setDragIdx(origIdx)}
-                          onDragOver={ev => { ev.preventDefault(); setOverIdx(origIdx) }}
-                          onDrop={() => handleDrop(origIdx)}
-                          onDragEnd={() => { setDragIdx(null); setOverIdx(null) }}
-                          isOver={overIdx === origIdx && dragIdx !== origIdx}
-                          isPendingDelete={confirmId === e.id}
-                        />
-                      )
-                    })}
+                    {visible.map(e => (
+                      <EgresoRow
+                        key={e.id}
+                        egreso={e}
+                        trm={month.trm}
+                        accounts={accounts}
+                        onEdit={() => handleEdit(e.id)}
+                        onDelete={() => handleDelete(e.id)}
+                        onConfirm={() => confirmEgreso(e.id)}
+                        isPendingDelete={confirmId === e.id}
+                      />
+                    ))}
 
                     {/* Subtotal */}
                     <div className="flex justify-between items-center mt-3 bg-muted rounded-lg px-3 py-2.5">
