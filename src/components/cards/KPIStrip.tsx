@@ -4,7 +4,7 @@ import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase 
 import { COP, USD } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { Card } from '@/components/ui/card'
-import { TooltipProvider, TooltipRoot, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { EGRESO_CATEGORIAS } from '@/data/defaults'
 
 type DetailLine = { label: string; value: string; dim?: boolean; separator?: boolean }
@@ -56,12 +56,12 @@ function KPICard({ label, value, sub, accentToken, accent, detail }: KPICardProp
   if (!detail || detail.length === 0) return card
 
   return (
-    <TooltipRoot delayDuration={200}>
+    <Tooltip delayDuration={200}>
       <TooltipTrigger asChild>{card}</TooltipTrigger>
       <TooltipContent side="bottom">
         <KPITooltipContent lines={detail} />
       </TooltipContent>
-    </TooltipRoot>
+    </Tooltip>
   )
 }
 
@@ -148,8 +148,7 @@ export function KPIStrip() {
   ] : []
 
   return (
-    <TooltipProvider>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-5">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-5">
         <KPICard
           label="Ingreso bruto"
           value={COP(bruto)}
@@ -185,6 +184,5 @@ export function KPIStrip() {
           detail={netoDetail.length > 0 ? netoDetail : undefined}
         />
       </div>
-    </TooltipProvider>
   )
 }

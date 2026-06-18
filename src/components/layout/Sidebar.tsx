@@ -1,6 +1,15 @@
 import { CalendarDays, BarChart2, Settings, Landmark, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useUIStore } from '@/store/uiStore'
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from '@/components/ui/sidebar'
 import type { ViewType } from '@/types'
 
 const NAV_ITEMS: Array<{ id: ViewType; label: string; Icon: typeof CalendarDays }> = [
@@ -10,97 +19,74 @@ const NAV_ITEMS: Array<{ id: ViewType; label: string; Icon: typeof CalendarDays 
   { id: 'config',  label: 'Configuración', Icon: Settings },
 ]
 
-export function Sidebar() {
-  const { view, setView, sidebarCollapsed, toggleSidebar } = useUIStore()
+function CollapseButton() {
+  const { toggleSidebar, open } = useSidebar()
+  return (
+    <SidebarMenuButton tooltip={open ? 'Colapsar' : 'Expandir'} onClick={toggleSidebar}>
+      {open ? <PanelLeftClose /> : <PanelLeftOpen />}
+      <span>{open ? 'Colapsar' : 'Expandir'}</span>
+    </SidebarMenuButton>
+  )
+}
+
+export function AppSidebar() {
+  const { view, setView } = useUIStore()
 
   return (
-    <>
-      {/* Desktop sidebar */}
-      <nav
-        className={cn(
-          'hidden sm:flex flex-col h-full shrink-0 overflow-hidden',
-          'bg-[var(--card)] border-r border-[var(--border)]',
-          'transition-[width] duration-200 ease-in-out',
-          sidebarCollapsed ? 'w-14' : 'w-[200px]',
-        )}
-      >
-        {/* Nav items */}
-        <div className="flex flex-col gap-1 p-2 flex-1 overflow-hidden">
+    <Sidebar collapsible="icon">
+      <SidebarContent className="pt-2">
+        <SidebarMenu>
           {NAV_ITEMS.map(({ id, label, Icon }) => (
-            <button
-              key={id}
-              onClick={() => setView(id)}
-              title={sidebarCollapsed ? label : undefined}
-              className={cn(
-                'flex items-center gap-3 w-full rounded-lg border-none cursor-pointer font-[inherit]',
-                'transition-[background,color] duration-150 px-3 py-2.5 bg-transparent',
-                'text-[var(--n-txt3)] hover:bg-[var(--muted)] hover:text-[var(--muted-foreground)]',
-                view === id && 'bg-[var(--muted)] !text-[var(--foreground)]',
-              )}
-            >
-              <Icon size={17} className="shrink-0" />
-              <span
-                className={cn(
-                  'text-[13px] font-medium whitespace-nowrap overflow-hidden transition-[opacity,max-width] duration-200',
-                  sidebarCollapsed ? 'opacity-0 max-w-0' : 'opacity-100 max-w-[160px]',
-                )}
+            <SidebarMenuItem key={id}>
+              <SidebarMenuButton
+                isActive={view === id}
+                tooltip={label}
+                onClick={() => setView(id)}
               >
-                {label}
-              </span>
-            </button>
+                <Icon />
+                <span>{label}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
           ))}
-        </div>
+        </SidebarMenu>
+      </SidebarContent>
 
-        {/* Collapse toggle */}
-        <div className="p-2 border-t border-[var(--border)] shrink-0">
-          <button
-            onClick={toggleSidebar}
-            title={sidebarCollapsed ? 'Expandir menú' : 'Colapsar menú'}
-            className={cn(
-              'flex items-center gap-3 w-full rounded-lg border-none cursor-pointer font-[inherit]',
-              'px-3 py-2.5 bg-transparent transition-colors duration-150',
-              'text-[var(--n-txt3)] hover:bg-[var(--muted)] hover:text-[var(--muted-foreground)]',
-            )}
-          >
-            {sidebarCollapsed
-              ? <PanelLeftOpen size={17} className="shrink-0" />
-              : <PanelLeftClose size={17} className="shrink-0" />
-            }
-            <span
-              className={cn(
-                'text-[13px] font-medium whitespace-nowrap overflow-hidden transition-[opacity,max-width] duration-200',
-                sidebarCollapsed ? 'opacity-0 max-w-0' : 'opacity-100 max-w-[160px]',
-              )}
-            >
-              Colapsar
-            </span>
-          </button>
-        </div>
-      </nav>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <CollapseButton />
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+    </Sidebar>
+  )
+}
 
-      {/* Mobile bottom nav */}
-      <nav className={cn(
-        'sm:hidden fixed bottom-0 left-0 right-0 z-50',
-        'flex flex-row justify-around',
-        'px-4 pt-2 pb-[env(safe-area-inset-bottom)]',
-        'bg-[var(--card)] border-t border-[var(--border)]',
-      )}>
-        {NAV_ITEMS.map(({ id, label, Icon }) => (
-          <button
-            key={id}
-            onClick={() => setView(id)}
-            className={cn(
-              'flex flex-col items-center gap-[3px] px-4 py-2 rounded-lg',
-              'border-none bg-transparent cursor-pointer font-[inherit]',
-              'transition-colors text-[var(--n-txt3)]',
-              view === id && '!text-[var(--foreground)]',
-            )}
-          >
-            <Icon size={20} />
-            <span className="text-[9px] font-medium">{label}</span>
-          </button>
-        ))}
-      </nav>
-    </>
+export function Sidebar_MobileNav() {
+  const { view, setView } = useUIStore()
+
+  return (
+    <nav className={cn(
+      'sm:hidden fixed bottom-0 left-0 right-0 z-50',
+      'flex flex-row justify-around',
+      'px-4 pt-2 pb-[env(safe-area-inset-bottom)]',
+      'bg-[var(--card)] border-t border-[var(--border)]',
+    )}>
+      {NAV_ITEMS.map(({ id, label, Icon }) => (
+        <button
+          key={id}
+          onClick={() => setView(id)}
+          className={cn(
+            'flex flex-col items-center gap-[3px] px-4 py-2 rounded-lg',
+            'border-none bg-transparent cursor-pointer font-[inherit]',
+            'transition-colors text-[var(--n-txt3)]',
+            view === id && '!text-[var(--foreground)]',
+          )}
+        >
+          <Icon size={20} />
+          <span className="text-[9px] font-medium">{label}</span>
+        </button>
+      ))}
+    </nav>
   )
 }
