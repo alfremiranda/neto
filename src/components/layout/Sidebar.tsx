@@ -8,6 +8,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarRail,
   useSidebar,
 } from '@/components/ui/sidebar'
 import type { ViewType } from '@/types'
@@ -19,45 +20,63 @@ const NAV_ITEMS: Array<{ id: ViewType; label: string; Icon: typeof CalendarDays 
   { id: 'config',  label: 'Configuración', Icon: Settings },
 ]
 
-function CollapseButton() {
-  const { toggleSidebar, open } = useSidebar()
+// Wrap each nav button inside useSidebar context so tooltip is only active when collapsed
+function NavButton({ id, label, Icon }: { id: ViewType; label: string; Icon: typeof CalendarDays }) {
+  const { view, setView } = useUIStore()
+  const { state } = useSidebar()
+  const collapsed = state === 'collapsed'
+
   return (
-    <SidebarMenuButton tooltip={open ? 'Colapsar' : 'Expandir'} onClick={toggleSidebar}>
-      {open ? <PanelLeftClose /> : <PanelLeftOpen />}
-      <span>{open ? 'Colapsar' : 'Expandir'}</span>
+    <SidebarMenuButton
+      isActive={view === id}
+      tooltip={collapsed ? label : undefined}
+      onClick={() => setView(id)}
+      className="h-10 text-sm"
+    >
+      <Icon />
+      <span>{label}</span>
+    </SidebarMenuButton>
+  )
+}
+
+function CollapseButton() {
+  const { toggleSidebar, state } = useSidebar()
+  const collapsed = state === 'collapsed'
+
+  return (
+    <SidebarMenuButton
+      tooltip={collapsed ? 'Expandir' : undefined}
+      onClick={toggleSidebar}
+      className="h-10 text-sm"
+    >
+      {collapsed ? <PanelLeftOpen /> : <PanelLeftClose />}
+      <span>{collapsed ? 'Expandir' : 'Colapsar'}</span>
     </SidebarMenuButton>
   )
 }
 
 export function AppSidebar() {
-  const { view, setView } = useUIStore()
-
   return (
     <Sidebar collapsible="icon">
-      <SidebarContent className="pt-2">
-        <SidebarMenu>
+      <SidebarContent className="pt-3">
+        <SidebarMenu className="gap-0.5 px-2">
           {NAV_ITEMS.map(({ id, label, Icon }) => (
             <SidebarMenuItem key={id}>
-              <SidebarMenuButton
-                isActive={view === id}
-                tooltip={label}
-                onClick={() => setView(id)}
-              >
-                <Icon />
-                <span>{label}</span>
-              </SidebarMenuButton>
+              <NavButton id={id} label={label} Icon={Icon} />
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
       </SidebarContent>
 
-      <SidebarFooter>
-        <SidebarMenu>
+      <SidebarFooter className="pb-3">
+        <SidebarMenu className="px-2">
           <SidebarMenuItem>
             <CollapseButton />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
+
+      <SidebarRail />
     </Sidebar>
   )
 }
