@@ -376,7 +376,7 @@ export function EgresosCard() {
               <div className="px-4 py-2 flex items-center gap-2 border-b border-[var(--border)]">
                 {/* Account filter */}
                 <Select value={filterAccount || 'all'} onValueChange={v => setFilterAccount(v === 'all' ? '' : v)}>
-                  <SelectTrigger size="sm" className="w-auto min-w-[130px] text-xs">
+                  <SelectTrigger data-size="none" className="w-auto min-w-[130px] h-7 text-xs">
                     <SelectValue placeholder="Todas las cuentas" />
                   </SelectTrigger>
                   <SelectContent>
@@ -406,7 +406,7 @@ export function EgresosCard() {
 
                 {/* Sort */}
                 <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger size="sm" className="w-7 px-0 justify-center [&>svg:last-child]:hidden border-transparent bg-transparent hover:bg-[var(--accent)]">
+                  <SelectTrigger data-size="none" className="w-7 h-7 px-0 justify-center [&>svg:last-child]:hidden border-transparent bg-transparent hover:bg-[var(--accent)]">
                     <ArrowUpDown size={13} className="text-muted-foreground shrink-0" />
                   </SelectTrigger>
                   <SelectContent align="end">
