@@ -74,6 +74,7 @@ interface FinanceState {
   updateTransfer: (id: number, transfer: Omit<Transfer, 'id'>) => void
   removeTransfer: (id: number) => void
   addVoluntaria: (item: Omit<VoluntariaItem, 'id'>) => void
+  updateVoluntaria: (item: VoluntariaItem) => void
   removeVoluntaria: (id: number) => void
   reorderEgresos: (orderedIds: number[]) => void
   setStartingBalance: (accountId: string, amount: number) => void
@@ -256,6 +257,17 @@ export const useFinanceStore = create<FinanceState>()(
         const updated: MonthData = {
           ...d,
           voluntarias: [...(d.voluntarias ?? []), { ...item, id: Date.now() }],
+        }
+        set(state => ({ db: { ...state.db, [curKey]: updated } }))
+        get().pushCurrent()
+      },
+
+      updateVoluntaria: (item) => {
+        const { curKey, db } = get()
+        const d = db[curKey] ?? emptyMonth()
+        const updated: MonthData = {
+          ...d,
+          voluntarias: (d.voluntarias ?? []).map(v => v.id === item.id ? item : v),
         }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
         get().pushCurrent()

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { PiggyBank, Plus, Trash2, Check, X, Calculator, Settings2 } from 'lucide-react'
+import { PiggyBank, Plus, Trash2, Pencil, Check, X, Calculator, Settings2 } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
 import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase } from '@/lib/calc'
@@ -15,13 +15,15 @@ const INPUT_CLS = 'h-7 text-xs border border-[var(--border)] rounded px-2 bg-[va
 function AddVoluntariaForm({
   onAdd,
   onCancel,
+  initial,
 }: {
   onAdd: (label: string, amount: number, currency: 'COP' | 'USD') => void
   onCancel: () => void
+  initial?: { label: string; amount: number; currency: 'COP' | 'USD' }
 }) {
-  const [label, setLabel]       = useState('')
-  const [amount, setAmount]     = useState('')
-  const [currency, setCurrency] = useState<'COP' | 'USD'>('COP')
+  const [label, setLabel]       = useState(initial?.label ?? '')
+  const [amount, setAmount]     = useState(initial ? String(initial.amount) : '')
+  const [currency, setCurrency] = useState<'COP' | 'USD'>(initial?.currency ?? 'COP')
 
   function handleSubmit() {
     const n = parseFloat(amount.replace(/\./g, '').replace(',', '.'))
@@ -81,10 +83,11 @@ function AddVoluntariaForm({
 }
 
 export function ProvisionesCard() {
-  const { getCurrentMonth, getSMMLV, curKey, addVoluntaria, removeVoluntaria } = useFinanceStore()
+  const { getCurrentMonth, getSMMLV, curKey, addVoluntaria, updateVoluntaria, removeVoluntaria } = useFinanceStore()
   const deductions = useSettingsStore(s => s.deductions)
   const { setView } = useUIStore()
-  const [showForm, setShowForm] = useState(false)
+  const [showForm, setShowForm]     = useState(false)
+  const [editingId, setEditingId]   = useState<number | null>(null)
 
   const month = getCurrentMonth()
   const [y, m] = curKey.split('-').map(Number)
@@ -198,9 +201,22 @@ export function ProvisionesCard() {
             </div>
             <div className="px-3">
               {voluntarias.map(v => {
+                if (editingId === v.id) {
+                  return (
+                    <AddVoluntariaForm
+                      key={v.id}
+                      initial={v}
+                      onAdd={(label, amount, currency) => {
+                        updateVoluntaria({ id: v.id, label, amount, currency })
+                        setEditingId(null)
+                      }}
+                      onCancel={() => setEditingId(null)}
+                    />
+                  )
+                }
                 const amtCOP = v.currency === 'USD' ? v.amount * month.trm : v.amount
                 return (
-                  <div key={v.id} className="flex items-center gap-2.5 py-2 border-b border-[var(--border)] last:border-0 group">
+                  <div key={v.id} className="flex items-center gap-2.5 py-2 border-b border-[var(--border)] last:border-0">
                     <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-provision)] shrink-0" />
                     <span className="text-sm text-foreground flex-1 truncate">{v.label}</span>
                     {v.currency === 'USD' && (
@@ -211,14 +227,17 @@ export function ProvisionesCard() {
                     <span className="text-sm font-semibold tabular-nums font-heading text-right shrink-0 min-w-[6.5rem]">
                       {COP(amtCOP)}
                     </span>
-                    <button
-                      type="button"
+                    <Button variant="ghost" size="icon-sm" onClick={() => setEditingId(v.id)} title="Editar">
+                      <Pencil size={12} />
+                    </Button>
+                    <Button
+                      variant="ghost" size="icon-sm"
                       onClick={() => removeVoluntaria(v.id)}
-                      className="p-1 rounded text-muted-foreground hover:text-destructive hover:bg-[var(--color-danger-bg)] border-none bg-transparent cursor-pointer transition-colors opacity-0 group-hover:opacity-100 shrink-0"
-                      aria-label={`Eliminar ${v.label}`}
+                      className="hover:bg-[var(--color-danger-bg)] hover:text-[var(--color-danger)]"
+                      title="Eliminar"
                     >
                       <Trash2 size={12} />
-                    </button>
+                    </Button>
                   </div>
                 )
               })}
