@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import { Home, ShoppingBasket, Monitor, CreditCard, Heart, Car, Users, Tag } from 'lucide-react'
+import { Home, ShoppingBasket, Monitor, CreditCard, Heart, Car, Users, Tag, Plane } from 'lucide-react'
 import type { Account } from '@/types'
 
 export const MONTHS = [
@@ -29,6 +29,7 @@ export const EGRESO_CATEGORIAS: EgresoCategoria[] = [
   { id: 'salud',        label: 'Salud',        color: '--cat-health',  bgColor: '--cat-health-bg',  icon: Heart,          tipos: ['salud'] },
   { id: 'movilidad',    label: 'Movilidad',    color: '--cat-transit', bgColor: '--cat-transit-bg', icon: Car,            tipos: ['transporte'] },
   { id: 'familia',      label: 'Familia',      color: '--cat-family',  bgColor: '--cat-family-bg',  icon: Users,          tipos: [] },
+  { id: 'viajes',       label: 'Viajes',       color: '--cat-travel',  bgColor: '--cat-travel-bg',  icon: Plane,          tipos: ['viaje'] },
   { id: 'otro',         label: 'Otros',        color: '--cat-other',   bgColor: '--cat-other-bg',   icon: Tag,            tipos: ['pension_vol', 'otro'] },
 ]
 
@@ -41,6 +42,7 @@ export const EGRESO_TIPOS: { id: string; label: string; category: string }[] = [
   { id: 'tarjetas',    label: 'Tarjetas',            category: 'bancario'     },
   { id: 'salud',       label: 'Salud prepagada',     category: 'salud'        },
   { id: 'transporte',  label: 'Transporte',          category: 'movilidad'    },
+  { id: 'viaje',       label: 'Viaje',               category: 'viajes'       },
   { id: 'pension_vol', label: 'Pensión voluntaria',  category: 'otro'         },
   { id: 'otro',        label: 'Otro',                category: 'otro'         },
 ]
@@ -51,6 +53,7 @@ export const TRANSFER_ACCOUNTS: Account[] = [
   { id: 'Bancolombia', label: 'Bancolombia',          currency: 'COP', number: '', rate: 0,  startingBalance: 0 },
   { id: 'NU',          label: 'NU',                   currency: 'COP', number: '', rate: 0,  startingBalance: 0 },
   { id: 'Nequi',       label: 'Nequi',                currency: 'COP', number: '', rate: 0,  startingBalance: 0 },
+  { id: 'Efectivo',    label: 'Efectivo',             currency: 'COP', type: 'cash', number: '', rate: 0,  startingBalance: 0, locked: true },
 ]
 
 export const DEFAULTS = {

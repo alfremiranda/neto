@@ -45,6 +45,9 @@
 
     /* ── Layer 3: Neto domain tokens ─────────────────────────────────────── */
 
+    /* Tertiary text — dimmer than muted-foreground; icons, labels, placeholders */
+    --n-txt3: oklch(0.68 0.012 214);
+
     /* Ingresos — primary blue */
     --color-income:     var(--primary);
     --color-income-bg:  oklch(0.94 0.03 242);
@@ -100,6 +103,8 @@
     --cat-transit-bg: oklch(0.93 0.05 208);
     --cat-family:     oklch(0.65 0.24 42);   /* orange-warm  */
     --cat-family-bg:  oklch(0.95 0.06 42);
+    --cat-travel:     oklch(0.52 0.24 285);  /* violet-600   */
+    --cat-travel-bg:  oklch(0.94 0.06 285);
     --cat-other:      oklch(0.51 0.08 265);  /* purple-gray  */
     --cat-other-bg:   oklch(0.94 0.03 265);
   }
@@ -139,6 +144,8 @@
     --sidebar-ring: oklch(0.56 0.021 213.5);
 
     /* ── Layer 3: Neto domain tokens dark ───────────────────────────────── */
+
+    --n-txt3: oklch(0.52 0.012 214);
 
     --color-income:     var(--primary);
     --color-income-bg:  oklch(0.18 0.05 242);
@@ -186,6 +193,8 @@
     --cat-transit-bg: oklch(0.18 0.07 208);
     --cat-family:     oklch(0.80 0.22 42);
     --cat-family-bg:  oklch(0.18 0.08 42);
+    --cat-travel:     oklch(0.74 0.22 285);  /* violet dark  */
+    --cat-travel-bg:  oklch(0.18 0.07 285);
     --cat-other:      oklch(0.73 0.08 265);
     --cat-other-bg:   oklch(0.18 0.03 265);
   }
@@ -258,6 +267,7 @@
   Later in source order → wins over Tailwind-generated hsl() rules.
 */
 .bg-background  { background-color: var(--background) !important; }
+.bg-foreground  { background-color: var(--foreground) !important; }
 .bg-card        { background-color: var(--card) !important; }
 .bg-muted       { background-color: var(--muted) !important; }
 .bg-accent      { background-color: var(--accent) !important; }
@@ -269,6 +279,7 @@
 .bg-sidebar     { background-color: var(--sidebar) !important; }
 .bg-input       { background-color: var(--input) !important; }
 
+.text-background           { color: var(--background) !important; }
 .text-foreground           { color: var(--foreground) !important; }
 .text-card-foreground      { color: var(--card-foreground) !important; }
 .text-muted-foreground     { color: var(--muted-foreground) !important; }

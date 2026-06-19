@@ -25,13 +25,20 @@ function NavButton({ id, label, Icon }: { id: ViewType; label: string; Icon: typ
   const { view, setView } = useUIStore()
   const { state } = useSidebar()
   const collapsed = state === 'collapsed'
+  const active = view === id
 
   return (
     <SidebarMenuButton
-      isActive={view === id}
+      isActive={active}
       tooltip={collapsed ? label : undefined}
       onClick={() => setView(id)}
-      className="h-10 text-sm"
+      className={cn(
+        'transition-colors',
+        collapsed ? 'h-8 w-8' : 'h-10 text-sm',
+        active
+          ? 'bg-[var(--sidebar-primary)] text-[var(--sidebar-primary-foreground)] font-medium hover:bg-[var(--sidebar-primary)] hover:text-[var(--sidebar-primary-foreground)]'
+          : 'text-[var(--sidebar-foreground)] hover:bg-[var(--sidebar-accent)] hover:text-[var(--sidebar-accent-foreground)]',
+      )}
     >
       <Icon />
       <span>{label}</span>
@@ -47,7 +54,10 @@ function CollapseButton() {
     <SidebarMenuButton
       tooltip={collapsed ? 'Expandir' : undefined}
       onClick={toggleSidebar}
-      className="h-10 text-sm"
+      className={cn(
+        'transition-colors text-[var(--sidebar-foreground)] hover:bg-[var(--sidebar-accent)] hover:text-[var(--sidebar-accent-foreground)]',
+        collapsed ? 'h-8 w-8' : 'h-10 text-sm',
+      )}
     >
       {collapsed ? <PanelLeftOpen /> : <PanelLeftClose />}
       <span>{collapsed ? 'Expandir' : 'Colapsar'}</span>
@@ -59,7 +69,7 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarContent className="pt-3">
-        <SidebarMenu className="gap-0.5 px-2">
+        <SidebarMenu className="gap-1.5 px-2">
           {NAV_ITEMS.map(({ id, label, Icon }) => (
             <SidebarMenuItem key={id}>
               <NavButton id={id} label={label} Icon={Icon} />
@@ -69,7 +79,7 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="pb-3">
-        <SidebarMenu className="px-2">
+        <SidebarMenu className="gap-1.5 px-2">
           <SidebarMenuItem>
             <CollapseButton />
           </SidebarMenuItem>

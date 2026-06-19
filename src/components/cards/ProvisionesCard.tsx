@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { PiggyBank, Plus, Trash2, Pencil, Check, X, Calculator, Settings2 } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
+import { useLiveTRM } from '@/hooks/useLiveTRM'
 import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase } from '@/lib/calc'
 import { COP, USD } from '@/lib/format'
 import { SectionCard } from '@/components/ui/SectionCard'
@@ -39,6 +40,7 @@ function AddVoluntariaForm({
         value={label}
         onChange={e => setLabel(e.target.value)}
         placeholder="Descripción"
+        aria-label="Descripción del ahorro"
         className={`flex-1 min-w-0 ${INPUT_CLS}`}
         autoFocus
         onKeyDown={e => e.key === 'Enter' && handleSubmit()}
@@ -49,11 +51,12 @@ function AddVoluntariaForm({
         value={amount}
         onChange={e => setAmount(e.target.value)}
         placeholder="0"
+        aria-label="Monto"
         className={`w-24 font-mono text-right ${INPUT_CLS}`}
         onKeyDown={e => e.key === 'Enter' && handleSubmit()}
       />
       <Select value={currency} onValueChange={v => setCurrency(v as 'COP' | 'USD')}>
-        <SelectTrigger className="w-auto">
+        <SelectTrigger className="w-auto" aria-label="Moneda">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -85,6 +88,7 @@ function AddVoluntariaForm({
 export function ProvisionesCard() {
   const { getCurrentMonth, getSMMLV, curKey, addVoluntaria, updateVoluntaria, removeVoluntaria } = useFinanceStore()
   const deductions = useSettingsStore(s => s.deductions)
+  const { trm: liveTRM } = useLiveTRM()
   const { setView } = useUIStore()
   const [showForm, setShowForm]     = useState(false)
   const [editingId, setEditingId]   = useState<number | null>(null)
@@ -99,7 +103,11 @@ export function ProvisionesCard() {
   const provBase = calcProvisionBase(month.incomes, month.trm, ibc)
   const res  = calcAllDeductions(bruto, ibc, m, deductions, gast, month.trm, month.voluntarias, provBase)
 
-  const showUSD   = totUSD > 0
+  const showUSD      = totUSD > 0
+  const transferTRM  = liveTRM ?? month.trm
+  const trmNote      = liveTRM
+    ? `TRM hoy · ${liveTRM.toLocaleString('es-CO', { maximumFractionDigits: 0 })}`
+    : undefined
   const provItems = res.provItems.filter(i => i.id !== 'retencion' && i.applies && i.amount > 0)
   const volItems  = res.volItems
   const voluntarias = month.voluntarias ?? []
@@ -169,8 +177,11 @@ export function ProvisionesCard() {
         {/* Legal provisions group */}
         {provItems.length > 0 && (
           <div className="rounded-lg bg-muted overflow-hidden">
-            <div className="px-3 pt-2 pb-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70">
-              Provisiones legales
+            <div className="px-3 pt-2 pb-0.5 flex items-center gap-1">
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70">Provisiones legales</span>
+              {showUSD && trmNote && (
+                <span className="ml-auto text-[10px] tabular-nums text-muted-foreground/50">{trmNote}</span>
+              )}
             </div>
             <div className="px-3">
               {provItems.map(item => {
@@ -183,9 +194,12 @@ export function ProvisionesCard() {
                     <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: `var(${item.color})` }} />
                     <span className="text-sm text-foreground flex-1 truncate">{item.label}</span>
                     <span className="text-[10px] text-muted-foreground tabular-nums font-mono shrink-0">{badge}</span>
-                    <span className="text-sm font-semibold tabular-nums font-heading text-right shrink-0 min-w-[6.5rem]">
-                      {COP(item.amount)}
-                    </span>
+                    <div className="text-right shrink-0 min-w-[6.5rem]">
+                      <div className="text-sm font-semibold tabular-nums font-heading">{COP(item.amount)}</div>
+                      {showUSD && transferTRM > 0 && (
+                        <div className="text-[10px] text-muted-foreground tabular-nums">{USD(item.amount / transferTRM)}</div>
+                      )}
+                    </div>
                   </div>
                 )
               })}
@@ -196,8 +210,11 @@ export function ProvisionesCard() {
         {/* Voluntary savings group */}
         {(voluntarias.length > 0 || showForm) && (
           <div className="rounded-lg bg-muted overflow-hidden">
-            <div className="px-3 pt-2 pb-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70">
-              Ahorros voluntarios
+            <div className="px-3 pt-2 pb-0.5 flex items-center gap-1">
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70">Ahorros voluntarios</span>
+              {showUSD && trmNote && (
+                <span className="ml-auto text-[10px] tabular-nums text-muted-foreground/50">{trmNote}</span>
+              )}
             </div>
             <div className="px-3">
               {voluntarias.map(v => {
@@ -219,14 +236,12 @@ export function ProvisionesCard() {
                   <div key={v.id} className="flex items-center gap-2.5 py-2 border-b border-[var(--border)] last:border-0">
                     <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-provision)] shrink-0" />
                     <span className="text-sm text-foreground flex-1 truncate">{v.label}</span>
-                    {v.currency === 'USD' && (
-                      <span className="text-[10px] text-muted-foreground font-mono tabular-nums shrink-0">
-                        {USD(v.amount)}
-                      </span>
-                    )}
-                    <span className="text-sm font-semibold tabular-nums font-heading text-right shrink-0 min-w-[6.5rem]">
-                      {COP(amtCOP)}
-                    </span>
+                    <div className="text-right shrink-0 min-w-[6.5rem]">
+                      <div className="text-sm font-semibold tabular-nums font-heading">{COP(amtCOP)}</div>
+                      {showUSD && transferTRM > 0 && (
+                        <div className="text-[10px] text-muted-foreground tabular-nums">{USD(amtCOP / transferTRM)}</div>
+                      )}
+                    </div>
                     <Button variant="ghost" size="icon-sm" onClick={() => setEditingId(v.id)} title="Editar">
                       <Pencil size={12} />
                     </Button>

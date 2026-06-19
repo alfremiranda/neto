@@ -1,4 +1,5 @@
 import { DEFAULTS } from '@/data/defaults'
+import { localToday } from '@/lib/format'
 import type {
   Income, Egreso, MonthData, Totales, SSResult, Distribucion, Flujo, AnnualRow,
   DeductionConfig, DeductionResult, AllDeductionsResult, VoluntariaItem, DeductionBase,
@@ -206,6 +207,7 @@ export interface LedgerEntry {
   currency: 'USD' | 'COP'
   convertedAmount: number // signed, in account's own currency (+ = credit, - = debit)
   balance: number         // running balance after this entry
+  scheduled?: boolean     // true if date > today — pending, not yet settled
 }
 
 /**
@@ -248,8 +250,10 @@ export function buildLedger(
     }
 
     // Egresos
+    const today = localToday()
     for (const egr of (month.egresos || []) as Egreso[]) {
       if (egr.account !== accountId) continue
+      const scheduled = !!egr.date && egr.date > today
       entries.push({
         id: `egr-${egr.id}`,
         date: egr.date || `${key}-01`,
@@ -258,8 +262,9 @@ export function buildLedger(
         desc: egr.desc,
         amount: egr.amount,
         currency: egr.currency,
-        convertedAmount: -toAccountCcy(egr.amount, egr.currency),
+        convertedAmount: scheduled ? 0 : -toAccountCcy(egr.amount, egr.currency),
         balance: 0,
+        scheduled,
       })
     }
 
@@ -345,9 +350,11 @@ export function computeAccountBalance(
       }
     }
 
-    // Egresos debited from this account
+    // Egresos debited from this account (skip future-scheduled ones)
+    const today = localToday()
     for (const egr of (month.egresos || []) as Egreso[]) {
       if (egr.account !== accountId) continue
+      if (egr.date && egr.date > today) continue   // scheduled — not yet settled
       if (egr.currency === account.currency) {
         balance -= egr.amount
       } else if (egr.currency === 'USD') {

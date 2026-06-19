@@ -1,4 +1,5 @@
-import { Trash2, Settings2, Plus, ArrowLeftRight, Pencil } from 'lucide-react'
+import { useState } from 'react'
+import { Trash2, Settings2, Plus, ArrowLeftRight, Pencil, MoreVertical } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { COP, USD, fmtDate } from '@/lib/format'
@@ -7,7 +8,80 @@ import { CurrencyBadge } from '@/components/ui/Badge'
 import { MONTHS } from '@/data/defaults'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Button } from '@/components/ui/button'
+import { RowActionsSheet } from '@/components/ui/RowActionsSheet'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
+import type { Transfer, Account } from '@/types'
+
+// ─── Transfer row ─────────────────────────────────────────────────────────────
+
+function TransferRow({
+  t, accounts,
+  onEdit, onDelete,
+}: {
+  t: Transfer
+  accounts: Account[]
+  onEdit: () => void
+  onDelete: () => void
+}) {
+  const [sheetOpen, setSheetOpen] = useState(false)
+  const fromAcc = accounts.find(a => a.id === t.from)
+  const toAcc   = accounts.find(a => a.id === t.to)
+  const title   = `${fromAcc?.label ?? t.from} → ${toAcc?.label ?? t.to}`
+  const subtitle = [
+    t.fromCurrency === 'USD' ? USD(t.amount) : COP(t.amount),
+    t.trm ? `TRM ${t.trm.toLocaleString('es-CO', { maximumFractionDigits: 2 })}` : null,
+    t.date ? fmtDate(t.date) : null,
+  ].filter(Boolean).join(' · ')
+
+  return (
+    <>
+      <div className="flex items-center gap-2 min-h-[52px] py-1.5 border-b border-[var(--border)] last:border-0">
+        <div className="flex-1 min-w-0">
+          <div className="text-sm font-medium truncate">{title}</div>
+          <div className="text-xs text-muted-foreground mt-0.5 truncate">{subtitle}</div>
+        </div>
+
+        {/* Desktop actions */}
+        <div className="hidden sm:flex items-center gap-1 shrink-0">
+          <Button variant="ghost" size="icon-sm" onClick={onEdit} aria-label="Editar movimiento">
+            <Pencil size={12} />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={onDelete}
+            aria-label="Eliminar movimiento"
+            className="hover:bg-[var(--color-danger-bg)] hover:text-[var(--color-danger)]"
+          >
+            <Trash2 size={12} />
+          </Button>
+        </div>
+
+        {/* Mobile action */}
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          className="sm:hidden shrink-0"
+          onClick={() => setSheetOpen(true)}
+          aria-label="Opciones"
+        >
+          <MoreVertical size={16} />
+        </Button>
+      </div>
+
+      <RowActionsSheet
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+        title={title}
+        subtitle={subtitle}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
+    </>
+  )
+}
+
+// ─── Card ─────────────────────────────────────────────────────────────────────
 
 export function MovimientosCard() {
   const { db, getCurrentMonth, getAccounts, removeTransfer, curKey } = useFinanceStore()
@@ -26,7 +100,7 @@ export function MovimientosCard() {
       action={
         <Button size="sm" onClick={() => openSheet('transfer')}>
           <Plus size={13} />
-          Movimiento
+          <span className="hidden xs:inline">Movimiento</span>
         </Button>
       }
     >
@@ -60,8 +134,8 @@ export function MovimientosCard() {
                   <CurrencyBadge currency={a.currency} />
                   <button
                     onClick={e => { e.stopPropagation(); openEditAccount(a.id) }}
-                    className="border-none bg-transparent p-[3px] opacity-50 hover:opacity-100 rounded cursor-pointer text-foreground transition-opacity"
-                    title="Configurar cuenta"
+                    className="border-none bg-transparent min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:p-[3px] flex items-center justify-center opacity-50 hover:opacity-100 rounded cursor-pointer text-foreground transition-opacity"
+                    aria-label="Configurar cuenta"
                   >
                     <Settings2 size={11} />
                   </button>
@@ -94,39 +168,15 @@ export function MovimientosCard() {
         </Empty>
       ) : (
         <div>
-          {(month.transfers || []).map(t => {
-            const fromAcc = accounts.find(a => a.id === t.from)
-            const toAcc   = accounts.find(a => a.id === t.to)
-            return (
-              <div key={t.id} className="flex items-center gap-2 py-2 border-b border-[var(--border)] last:border-0">
-                <div className="flex-1 min-w-0">
-                  <div className="text-xs font-medium flex justify-between items-center">
-                    <span>{fromAcc?.label ?? t.from} → {toAcc?.label ?? t.to}</span>
-                    <span className="font-normal text-muted-foreground">{t.date ? fmtDate(t.date) : ''}</span>
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-0.5">
-                    {t.fromCurrency === 'USD' ? USD(t.amount) : COP(t.amount)}
-                    {t.trm ? ` · TRM ${t.trm.toLocaleString('es-CO', { maximumFractionDigits: 2 })}` : ''}
-                  </div>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  onClick={() => { setEditingTransfer(t.id); openSheet('transfer') }}
-                >
-                  <Pencil size={12} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  onClick={() => { removeTransfer(t.id); showToast('Movimiento eliminado') }}
-                  className="hover:bg-[var(--color-danger-bg)] hover:text-[var(--color-danger)]"
-                >
-                  <Trash2 size={12} />
-                </Button>
-              </div>
-            )
-          })}
+          {[...(month.transfers || [])].sort((a, b) => (b.date ?? '').localeCompare(a.date ?? '')).map(t => (
+            <TransferRow
+              key={t.id}
+              t={t}
+              accounts={accounts}
+              onEdit={() => { setEditingTransfer(t.id); openSheet('transfer') }}
+              onDelete={() => { removeTransfer(t.id); showToast('Movimiento eliminado') }}
+            />
+          ))}
         </div>
       )}
     </SectionCard>

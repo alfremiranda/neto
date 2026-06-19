@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Pencil, Trash2, Plus, Receipt, RefreshCw, Check, X, ChevronLeft, ChevronRight, ArrowUpDown } from 'lucide-react'
+import { Pencil, Trash2, Plus, Receipt, RefreshCw, Check, X, ChevronLeft, ChevronRight, ArrowUpDown, Clock, MoreVertical } from 'lucide-react'
+import { RowActionsSheet } from '@/components/ui/RowActionsSheet'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { calcGastos } from '@/lib/calc'
-import { COP, USD, fmtDate } from '@/lib/format'
+import { COP, USD, fmtDate, localToday } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { EGRESO_CATEGORIAS } from '@/data/defaults'
 import { EgresoSheet } from '@/components/sheets/EgresoSheet'
@@ -102,6 +103,7 @@ function EgresoRow({
   onConfirm: () => void
   isPendingDelete: boolean
 }) {
+  const [sheetOpen, setSheetOpen] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const desc      = egreso.desc || (egreso as any).tipo || '—'
   const category  = egreso.category || 'otro'
@@ -115,59 +117,93 @@ function EgresoRow({
       : 'otro'
     : 'otro'
   const isUnconfirmed = egreso.confirmed === false
+  const isScheduled   = !!egreso.date && egreso.date > localToday()
 
   return (
-    <div className="flex items-center gap-2 py-2 border-b border-[var(--border)] last:border-0">
-      <CategoryIcon category={category} />
+    <>
+      <div className={cn('flex items-center gap-2 min-h-[52px] py-1.5 border-b border-[var(--border)] last:border-0', isScheduled && 'opacity-60')}>
+        <CategoryIcon category={category} />
 
-      <div className="flex-1 min-w-0">
-        <span className="block text-sm truncate">{desc}</span>
-        <div className="flex items-center gap-1.5 mt-0.5">
-          {acctLabel && <Badge variant={acctVariant}>{acctLabel}</Badge>}
-          {dateStr && <span className="text-xs text-muted-foreground/60 tabular-nums">{dateStr}</span>}
-        </div>
-      </div>
-
-      {/* Amount */}
-      <div className="shrink-0 flex items-center gap-1.5 text-right">
-        {egreso.recurring && (
-          <RefreshCw size={12} className={cn('shrink-0', isUnconfirmed ? 'text-[var(--color-tax-txt)]' : 'text-muted-foreground')} />
-        )}
-        <div>
-          <div className={cn('text-sm font-semibold tabular-nums font-heading', isUnconfirmed && 'text-muted-foreground')}>
-            {egreso.currency === 'USD' ? USD(egreso.amount) : COP(amtCOP)}
+        <div className="flex-1 min-w-0">
+          <span className="block text-sm truncate">{desc}</span>
+          <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+            {acctLabel && <Badge variant={acctVariant}>{acctLabel}</Badge>}
+            {isScheduled && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-medium text-[var(--color-tax-txt)] bg-[var(--color-tax)]/10 px-1.5 py-0.5 rounded-full">
+                <Clock size={9} />
+                Programado
+              </span>
+            )}
+            {dateStr && <span className="text-xs text-muted-foreground/60 tabular-nums">{dateStr}</span>}
           </div>
-          {egreso.currency === 'USD' && (
-            <div className="text-[10px] text-muted-foreground tabular-nums">{COP(amtCOP)}</div>
-          )}
         </div>
+
+        {/* Amount */}
+        <div className="shrink-0 flex items-center gap-1.5 text-right">
+          {egreso.recurring && (
+            <RefreshCw size={12} className={cn('shrink-0', isUnconfirmed ? 'text-[var(--color-tax-txt)]' : 'text-muted-foreground')} />
+          )}
+          <div>
+            <div className={cn('text-sm font-semibold tabular-nums font-heading', (isUnconfirmed || isScheduled) && 'text-muted-foreground')}>
+              {egreso.currency === 'USD' ? USD(egreso.amount) : COP(amtCOP)}
+            </div>
+            {egreso.currency === 'USD' && (
+              <div className="text-[10px] text-muted-foreground tabular-nums">{COP(amtCOP)}</div>
+            )}
+          </div>
+        </div>
+
+        {/* Desktop actions */}
+        <div className="hidden sm:flex items-center shrink-0">
+          {isUnconfirmed && (
+            <Button
+              variant="ghost" size="icon-sm" onClick={onConfirm} aria-label="Confirmar monto"
+              className="text-[var(--color-tax-txt)] hover:text-[var(--color-tax-txt)] hover:bg-[var(--color-tax)]/10"
+            >
+              <Check size={12} />
+            </Button>
+          )}
+          <Button variant="ghost" size="icon-sm" onClick={onEdit} aria-label="Editar egreso">
+            <Pencil size={12} />
+          </Button>
+          <Button
+            data-egreso-confirm={isPendingDelete ? 'true' : undefined}
+            variant={isPendingDelete ? 'destructive' : 'ghost'}
+            size={isPendingDelete ? 'sm' : 'icon-sm'}
+            onClick={onDelete}
+            aria-label={isPendingDelete ? 'Confirmar eliminación' : 'Eliminar egreso'}
+            className={!isPendingDelete ? 'hover:bg-[var(--color-danger-bg)] hover:text-[var(--color-danger)]' : ''}
+          >
+            {isPendingDelete ? '¿Eliminar?' : <Trash2 size={12} />}
+          </Button>
+        </div>
+
+        {/* Mobile action */}
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          className="sm:hidden shrink-0"
+          onClick={() => setSheetOpen(true)}
+          aria-label="Opciones"
+        >
+          <MoreVertical size={16} />
+        </Button>
       </div>
 
-      {/* Actions — always visible */}
-      <div className="flex items-center shrink-0">
-        {isUnconfirmed && (
-          <Button
-            variant="ghost" size="icon-sm" onClick={onConfirm} title="Confirmar monto"
-            className="text-[var(--color-tax-txt)] hover:text-[var(--color-tax-txt)] hover:bg-[var(--color-tax)]/10"
-          >
-            <Check size={12} />
-          </Button>
-        )}
-        <Button variant="ghost" size="icon-sm" onClick={onEdit} title="Editar">
-          <Pencil size={12} />
-        </Button>
-        <Button
-          data-egreso-confirm={isPendingDelete ? 'true' : undefined}
-          variant={isPendingDelete ? 'destructive' : 'ghost'}
-          size={isPendingDelete ? 'sm' : 'icon-sm'}
-          onClick={onDelete}
-          title={isPendingDelete ? 'Confirmar eliminación' : 'Eliminar'}
-          className={!isPendingDelete ? 'hover:bg-[var(--color-danger-bg)] hover:text-[var(--color-danger)]' : ''}
-        >
-          {isPendingDelete ? '¿Eliminar?' : <Trash2 size={12} />}
-        </Button>
-      </div>
-    </div>
+      <RowActionsSheet
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+        title={desc}
+        subtitle={[acctLabel, dateStr].filter(Boolean).join(' · ')}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        extraActions={isUnconfirmed ? [{
+          label: 'Confirmar monto',
+          icon: <Check size={18} className="text-[var(--color-tax-txt)] shrink-0" />,
+          onClick: onConfirm,
+        }] : undefined}
+      />
+    </>
   )
 }
 
@@ -189,7 +225,7 @@ function CountBadge({ count, active }: { count: number; active: boolean }) {
 // ─── Card ─────────────────────────────────────────────────────────────────────
 
 const TAB_CLS = [
-  'gap-1 rounded-none px-3 pb-[10px] pt-2 text-xs border-b-2 border-transparent -mb-px',
+  'gap-1 rounded-none px-3 py-3 text-xs border-b-2 border-transparent -mb-px min-h-[44px]',
   'data-[state=active]:border-[var(--primary)] data-[state=active]:!bg-transparent',
   'data-[state=active]:!shadow-none data-[state=active]:text-foreground whitespace-nowrap',
 ].join(' ')
@@ -313,7 +349,7 @@ export function EgresosCard() {
         action={
           <Button size="sm" onClick={() => { setEditingEgreso(null); openSheet('egreso') }}>
             <Plus size={13} />
-            Agregar
+            <span className="hidden xs:inline">Agregar</span>
           </Button>
         }
       >
@@ -338,6 +374,7 @@ export function EgresosCard() {
                 {canLeft && (
                   <button
                     type="button" onClick={() => scrollTabs('left')}
+                    aria-label="Ver categorías anteriores"
                     className="absolute left-0 top-0 bottom-0 z-10 flex items-center justify-center w-7 bg-gradient-to-r from-background via-background/90 to-transparent"
                   >
                     <ChevronLeft size={13} className="text-muted-foreground" />
@@ -365,6 +402,7 @@ export function EgresosCard() {
                 {canRight && (
                   <button
                     type="button" onClick={() => scrollTabs('right')}
+                    aria-label="Ver más categorías"
                     className="absolute right-0 top-0 bottom-0 z-10 flex items-center justify-center w-7 bg-gradient-to-l from-background via-background/90 to-transparent"
                   >
                     <ChevronRight size={13} className="text-muted-foreground" />
@@ -372,25 +410,41 @@ export function EgresosCard() {
                 )}
               </div>
 
-              {/* Filter bar */}
-              <div className="px-4 py-2 flex items-center gap-2 border-b border-[var(--border)]">
-                {/* Account filter */}
-                <Select value={filterAccount || 'all'} onValueChange={v => setFilterAccount(v === 'all' ? '' : v)}>
-                  <SelectTrigger data-size="none" className="w-auto min-w-[130px] h-7 text-xs">
-                    <SelectValue placeholder="Todas las cuentas" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todas las cuentas</SelectItem>
-                    {accountOptions.map(a => (
-                      <SelectItem key={a} value={a}>
-                        {accounts.find(ac => ac.id === a)?.label ?? a}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              {/* Filter bar — stacks vertically on mobile */}
+              <div className="px-4 py-2 flex flex-col gap-2 border-b border-[var(--border)] sm:flex-row sm:items-center">
+                {/* Row 1 on mobile: account + sort */}
+                <div className="flex items-center gap-2">
+                  <Select value={filterAccount || 'all'} onValueChange={v => setFilterAccount(v === 'all' ? '' : v)}>
+                    <SelectTrigger data-size="none" className="min-w-0 flex-1 h-7 text-xs">
+                      <SelectValue placeholder="Todas las cuentas" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todas las cuentas</SelectItem>
+                      {accountOptions.map(a => (
+                        <SelectItem key={a} value={a}>
+                          {accounts.find(ac => ac.id === a)?.label ?? a}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
 
-                {/* Date filter */}
-                <div className="flex items-center gap-1 flex-1 min-w-0">
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger data-size="none" className="shrink-0 h-7 w-auto px-2 gap-1.5 text-xs border-transparent bg-transparent hover:bg-[var(--accent)]">
+                      <ArrowUpDown size={12} className="text-muted-foreground shrink-0" />
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent align="end">
+                      <SelectItem value="date-desc">Fecha: más reciente</SelectItem>
+                      <SelectItem value="date-asc">Fecha: más antigua</SelectItem>
+                      <SelectItem value="amount-desc">Mayor monto</SelectItem>
+                      <SelectItem value="amount-asc">Menor monto</SelectItem>
+                      <SelectItem value="name-asc">Nombre A–Z</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Row 2 on mobile: date picker */}
+                <div className="flex items-center gap-1 sm:flex-1 min-w-0">
                   <DatePicker
                     value={filterDate}
                     onChange={setFilterDate}
@@ -403,21 +457,6 @@ export function EgresosCard() {
                     </Button>
                   )}
                 </div>
-
-                {/* Sort */}
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger data-size="none" className="h-7 w-auto px-2 gap-1.5 text-xs border-transparent bg-transparent hover:bg-[var(--accent)]">
-                    <ArrowUpDown size={12} className="text-muted-foreground shrink-0" />
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent align="end">
-                    <SelectItem value="date-desc">Fecha: más reciente</SelectItem>
-                    <SelectItem value="date-asc">Fecha: más antigua</SelectItem>
-                    <SelectItem value="amount-desc">Mayor monto</SelectItem>
-                    <SelectItem value="amount-asc">Menor monto</SelectItem>
-                    <SelectItem value="name-asc">Nombre A–Z</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
 
               {/* Content */}

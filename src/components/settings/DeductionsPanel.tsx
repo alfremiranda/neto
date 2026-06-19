@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerBody, DrawerClose } from '@/components/ui/drawer'
 import { BASE_LABELS, MONTH_ABBR, monthsLabel } from '@/data/deductions'
+
+const MONTH_FULL = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
 import type { DeductionBase, DeductionConfig, DeductionGroup } from '@/types'
 
 const DISPLAY_SECTIONS: {
@@ -60,8 +62,10 @@ function MonthPicker({ months, onChange }: { months: number[]; onChange: (m: num
               key={monthNum}
               type="button"
               onClick={() => toggle(monthNum)}
+              aria-label={`${MONTH_FULL[i]}${active ? ' (activo)' : ''}`}
+              aria-pressed={active}
               className={[
-                'w-8 h-8 rounded-md text-[11px] font-mono font-semibold border cursor-pointer transition-colors',
+                'w-10 h-10 rounded-md text-[11px] font-mono font-semibold border cursor-pointer transition-colors',
                 active
                   ? 'bg-[var(--primary)] text-primary-foreground border-[var(--primary)]'
                   : 'bg-transparent text-muted-foreground border-[var(--border)] hover:border-[var(--primary)] hover:text-[var(--primary)]',

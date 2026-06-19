@@ -12,6 +12,9 @@ export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
+      screens: {
+        xs: '480px',
+      },
       fontFamily: {
         sans:    ['var(--font-sans)', 'Inter', 'system-ui', 'sans-serif'],
         mono:    ['var(--font-mono)', 'Geist Mono', 'monospace'],

@@ -86,11 +86,11 @@ export function AnnualTable({ year }: AnnualTableProps) {
           <thead>
             <tr className="border-b border-border">
               <th className="text-left py-[6px] px-[6px] text-muted-foreground font-medium">Mes</th>
-              <th className="text-right py-[6px] px-[6px] text-muted-foreground font-medium">Bruto COP</th>
-              <th className="text-right py-[6px] px-[6px] font-medium" style={{ color: `var(${obligColor})` }}>Obligaciones</th>
-              <th className="text-right py-[6px] px-[6px] font-medium" style={{ color: `var(${provColor})` }}>Provisiones</th>
-              <th className="text-right py-[6px] px-[6px] text-[var(--color-expense)] font-medium">Egresos</th>
-              <th className="text-right py-[6px] px-[6px] text-[var(--color-net-txt)] font-medium">Neto libre</th>
+              <th className="text-right py-[6px] px-[6px] text-muted-foreground font-medium">Bruto</th>
+              <th className="hidden sm:table-cell text-right py-[6px] px-[6px] font-medium" style={{ color: `var(${obligColor})` }}>Oblig.</th>
+              <th className="hidden sm:table-cell text-right py-[6px] px-[6px] font-medium" style={{ color: `var(${provColor})` }}>Prov.</th>
+              <th className="hidden xs:table-cell text-right py-[6px] px-[6px] text-[var(--color-expense)] font-medium">Egresos</th>
+              <th className="text-right py-[6px] px-[6px] text-[var(--color-net-txt)] font-medium">Neto</th>
             </tr>
           </thead>
           <tbody>
@@ -102,8 +102,12 @@ export function AnnualTable({ year }: AnnualTableProps) {
                 <tr
                   key={r.m}
                   onClick={() => setCurKey(key)}
+                  onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && setCurKey(key)}
+                  role="button"
+                  tabIndex={0}
+                  aria-pressed={isCurrent}
                   className={[
-                    'border-b border-border cursor-pointer hover:bg-muted transition-colors',
+                    'border-b border-border cursor-pointer hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-inset',
                     isCurrent ? 'bg-muted' : '',
                   ].join(' ')}
                 >
@@ -111,9 +115,9 @@ export function AnnualTable({ year }: AnnualTableProps) {
                     {MONTHS[r.m - 1].slice(0, 3)}
                   </td>
                   <td className="py-[7px] px-[6px] text-right tabular-nums">{COP(r.bruto ?? 0)}</td>
-                  <td className="py-[7px] px-[6px] text-right tabular-nums" style={{ color: `var(${obligColor})` }}>{COP(oblig)}</td>
-                  <td className="py-[7px] px-[6px] text-right tabular-nums" style={{ color: `var(${provColor})` }}>{COP(r.prim ?? 0)}</td>
-                  <td className="py-[7px] px-[6px] text-right tabular-nums text-[var(--color-expense)]">{COP(r.gast ?? 0)}</td>
+                  <td className="hidden sm:table-cell py-[7px] px-[6px] text-right tabular-nums" style={{ color: `var(${obligColor})` }}>{COP(oblig)}</td>
+                  <td className="hidden sm:table-cell py-[7px] px-[6px] text-right tabular-nums" style={{ color: `var(${provColor})` }}>{COP(r.prim ?? 0)}</td>
+                  <td className="hidden xs:table-cell py-[7px] px-[6px] text-right tabular-nums text-[var(--color-expense)]">{COP(r.gast ?? 0)}</td>
                   <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold text-[var(--color-net-txt)]">
                     {COP(Math.max(r.netoLibre ?? 0, 0))}
                   </td>
@@ -125,9 +129,9 @@ export function AnnualTable({ year }: AnnualTableProps) {
             <tr className="border-t-2 border-border">
               <td className="py-[7px] px-[6px] text-muted-foreground text-[11px] font-medium tracking-wider">TOTAL</td>
               <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold">{COP(totBruto)}</td>
-              <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold" style={{ color: `var(${obligColor})` }}>{COP(totOblig)}</td>
-              <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold" style={{ color: `var(${provColor})` }}>{COP(totProv)}</td>
-              <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold text-[var(--color-expense)]">{COP(totGast)}</td>
+              <td className="hidden sm:table-cell py-[7px] px-[6px] text-right tabular-nums font-semibold" style={{ color: `var(${obligColor})` }}>{COP(totOblig)}</td>
+              <td className="hidden sm:table-cell py-[7px] px-[6px] text-right tabular-nums font-semibold" style={{ color: `var(${provColor})` }}>{COP(totProv)}</td>
+              <td className="hidden xs:table-cell py-[7px] px-[6px] text-right tabular-nums font-semibold text-[var(--color-expense)]">{COP(totGast)}</td>
               <td className="py-[7px] px-[6px] text-right tabular-nums font-bold text-[var(--color-net-txt)]">{COP(totNeto)}</td>
             </tr>
           </tfoot>

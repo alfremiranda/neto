@@ -123,12 +123,19 @@ export const useFinanceStore = create<FinanceState>()(
 
       getAccounts: () => {
         const s = get().db._settings as Settings | undefined
-        if (s?.accounts && s.accounts.length > 0) return s.accounts
-        return TRANSFER_ACCOUNTS.map(a => ({
-          ...a,
-          number: '',
-          rate: a.id === 'ARQ' ? 3.5 : 0,
-        }))
+        const base: Account[] = s?.accounts && s.accounts.length > 0
+          ? s.accounts
+          : TRANSFER_ACCOUNTS.map(a => ({ ...a, number: '', rate: a.id === 'ARQ' ? 3.5 : 0 }))
+        const lockedDefaults = TRANSFER_ACCOUNTS.filter(a => a.locked)
+        const storedIds = new Set(base.map(a => a.id))
+        const missing = lockedDefaults.filter(a => !storedIds.has(a.id))
+        // Backfill type/locked on existing accounts that predate those fields
+        const patched = base.map(a => {
+          const def = lockedDefaults.find(d => d.id === a.id)
+          if (!def) return a
+          return { ...a, type: a.type ?? def.type, locked: true }
+        })
+        return missing.length ? [...patched, ...missing] : patched
       },
 
       // ── mutations ──────────────────────────────────────────────────────────

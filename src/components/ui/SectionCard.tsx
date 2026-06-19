@@ -14,12 +14,12 @@ interface SectionCardProps {
 export function SectionCard({ icon: Icon, title, action, children, className }: SectionCardProps) {
   return (
     <Card className={cn("overflow-visible", className)}>
-      <div className="flex items-center justify-between px-4 pt-4 pb-3">
-        <div className="flex items-center gap-2 text-foreground">
+      <div className="flex items-center justify-between gap-3 px-4 pt-4 pb-3">
+        <div className="flex items-center gap-2 text-foreground min-w-0">
           <Icon size={15} className="text-muted-foreground shrink-0" />
-          <span className="text-sm font-semibold font-heading leading-none">{title}</span>
+          <span className="text-sm font-semibold font-heading leading-none truncate">{title}</span>
         </div>
-        {action}
+        {action && <div className="shrink-0">{action}</div>}
       </div>
       <div className="px-4 pb-4">{children}</div>
     </Card>

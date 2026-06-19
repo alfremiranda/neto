@@ -37,9 +37,11 @@ export interface Account {
   id: string
   label: string
   currency: 'USD' | 'COP'
+  type?: 'account' | 'cash'  // default 'account'; cash hides number/rate fields
   number: string
   rate: number
   startingBalance?: number  // one-time base; balance rolls forward from here
+  locked?: boolean          // system accounts — cannot be deleted
 }
 
 export interface VoluntariaItem {

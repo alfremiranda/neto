@@ -53,8 +53,8 @@ export function Header() {
         {/* Theme toggle */}
         <button
           onClick={toggle}
-          title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-          className="p-1.5 rounded-lg text-[var(--n-txt3)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors border-0 bg-transparent cursor-pointer"
+          aria-label={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+          className="p-2.5 rounded-lg text-[var(--n-txt3)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors border-0 bg-transparent cursor-pointer"
         >
           {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
         </button>
