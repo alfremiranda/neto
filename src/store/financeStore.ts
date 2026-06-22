@@ -422,6 +422,14 @@ export const useFinanceStore = create<FinanceState>()(
         const cloudKeys = new Set(rows.map(r => r.key))
         const needsCloudUpdate = new Set<string>()
 
+        // Merge two arrays by id: local entries preserved, cloud wins on conflict.
+        function mergeById<T extends { id: number }>(local: T[], cloud: T[]): T[] {
+          const map = new Map<number, T>()
+          for (const item of local) map.set(item.id, item)
+          for (const item of cloud) map.set(item.id, item) // cloud wins on same id
+          return Array.from(map.values())
+        }
+
         rows.forEach(({ key, data }) => {
           if (key === '_settings') {
             const cloudSettings = data as Settings
@@ -432,9 +440,6 @@ export const useFinanceStore = create<FinanceState>()(
               if (cloudSettings?.smmlv) {
                 localSettings.smmlv = { ...(localSettings.smmlv ?? {}), ...cloudSettings.smmlv }
               }
-              // Merge accounts: local accounts always win (never delete local accounts).
-              // Add any cloud accounts that don't exist locally.
-              // For existing accounts, local startingBalance takes precedence over cloud.
               if (cloudSettings?.accounts) {
                 const localAccounts = localSettings.accounts ?? []
                 const localIds = new Set(localAccounts.map((a: Account) => a.id))
@@ -448,15 +453,27 @@ export const useFinanceStore = create<FinanceState>()(
           } else {
             const cloudData = data as MonthData
             const local = newDb[key]
-            const localHasEgresos = local?.egresosSeeded &&
-              Array.isArray(local.egresos) && local.egresos.length > 0
-            const cloudLacksEgresos = !cloudData?.egresos || cloudData.egresos.length === 0
-            if (localHasEgresos && cloudLacksEgresos) {
-              cloudData.egresos = local!.egresos
-              cloudData.egresosSeeded = true
-              needsCloudUpdate.add(key)
+
+            const mergedIncomes    = mergeById(local?.incomes    ?? [], cloudData?.incomes    ?? [])
+            const mergedEgresos    = mergeById(local?.egresos    ?? [], cloudData?.egresos    ?? [])
+            const mergedTransfers  = mergeById(local?.transfers  ?? [], cloudData?.transfers  ?? [])
+            const mergedVoluntarias = mergeById(local?.voluntarias ?? [], cloudData?.voluntarias ?? [])
+
+            // If local had entries the cloud didn't, push merged back to cloud
+            const localAdded =
+              mergedIncomes.length    > (cloudData?.incomes?.length    ?? 0) ||
+              mergedEgresos.length    > (cloudData?.egresos?.length    ?? 0) ||
+              mergedTransfers.length  > (cloudData?.transfers?.length  ?? 0) ||
+              mergedVoluntarias.length > (cloudData?.voluntarias?.length ?? 0)
+            if (localAdded) needsCloudUpdate.add(key)
+
+            newDb[key] = {
+              ...cloudData,
+              incomes:     mergedIncomes,
+              egresos:     mergedEgresos,
+              transfers:   mergedTransfers,
+              voluntarias: mergedVoluntarias,
             }
-            newDb[key] = cloudData
           }
         })
 
