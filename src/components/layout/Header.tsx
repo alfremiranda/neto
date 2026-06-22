@@ -1,6 +1,8 @@
-import { Sun, Moon, CalendarDays } from 'lucide-react'
+import { Sun, Moon, CalendarDays, LogOut } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
 import { useLiveTRM } from '@/hooks/useLiveTRM'
 import { useTheme } from '@/hooks/useTheme'
+import { useAuthStore } from '@/store/authStore'
 
 const DAYS  = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
 const MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
@@ -8,6 +10,58 @@ const MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', '
 function todayLabel() {
   const d = new Date()
   return `${DAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}`
+}
+
+function UserAvatar() {
+  const { user, signOut } = useAuthStore()
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    function onClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', onClickOutside)
+    return () => document.removeEventListener('mousedown', onClickOutside)
+  }, [open])
+
+  if (!user) return null
+
+  const avatarUrl = user.user_metadata?.avatar_url as string | undefined
+  const name = (user.user_metadata?.full_name ?? user.user_metadata?.user_name ?? user.email ?? '') as string
+  const initials = name.split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase()
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen(v => !v)}
+        aria-label="Cuenta"
+        className="w-8 h-8 rounded-full overflow-hidden border-2 border-[var(--border)] hover:border-[var(--primary)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] cursor-pointer"
+      >
+        {avatarUrl
+          ? <img src={avatarUrl} alt={name} className="w-full h-full object-cover" />
+          : <span className="w-full h-full flex items-center justify-center bg-[var(--muted)] text-[10px] font-bold">{initials}</span>
+        }
+      </button>
+
+      {open && (
+        <div className="absolute right-0 top-10 w-52 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-lg z-50 overflow-hidden">
+          <div className="px-3 py-2.5 border-b border-[var(--border)]">
+            <div className="text-xs font-medium truncate">{name}</div>
+            <div className="text-[11px] text-muted-foreground truncate">{user.email}</div>
+          </div>
+          <button
+            onClick={() => { setOpen(false); signOut() }}
+            className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-left hover:bg-[var(--muted)] transition-colors cursor-pointer border-0 bg-transparent text-foreground"
+          >
+            <LogOut size={14} className="text-muted-foreground" />
+            Cerrar sesión
+          </button>
+        </div>
+      )}
+    </div>
+  )
 }
 
 export function Header() {
@@ -58,6 +112,8 @@ export function Header() {
         >
           {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
         </button>
+
+        <UserAvatar />
       </div>
     </header>
   )
