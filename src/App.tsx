@@ -13,17 +13,39 @@ import { SidebarProvider } from '@/components/ui/sidebar'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { useUIStore } from '@/store/uiStore'
 import { useFinanceStore } from '@/store/financeStore'
-import { sbReady } from '@/lib/supabase'
+import { useAuthStore } from '@/store/authStore'
+import { LoginScreen } from '@/components/auth/LoginScreen'
 
 export default function App() {
   const view = useUIStore(s => s.view)
   const syncFromCloud = useFinanceStore(s => s.syncFromCloud)
+  const { user, loading, initialize } = useAuthStore()
 
+  // Initialize auth listener once on mount
   useEffect(() => {
-    if (sbReady()) {
+    const unsub = initialize()
+    return unsub
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Sync from cloud whenever the user authenticates
+  useEffect(() => {
+    if (user) {
       syncFromCloud().catch(() => {})
     }
-  }, [syncFromCloud])
+  }, [user, syncFromCloud])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[var(--background)]">
+        <div className="w-6 h-6 border-2 border-[var(--border)] border-t-foreground rounded-full animate-spin" />
+      </div>
+    )
+  }
+
+  if (!user) {
+    return <LoginScreen />
+  }
 
   return (
     <TooltipProvider>

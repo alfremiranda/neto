@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { SlidersHorizontal, Sliders } from 'lucide-react'
+import { SlidersHorizontal, Sliders, LogOut } from 'lucide-react'
 import { DeductionsPanel } from '@/components/settings/DeductionsPanel'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
+import { useAuthStore } from '@/store/authStore'
 import { parseCOP, copFormat } from '@/lib/format'
 import { DEFAULTS } from '@/data/defaults'
 import { Button } from '@/components/ui/button'
@@ -51,6 +52,8 @@ function ParamsTab() {
 }
 
 export function ConfigView() {
+  const { user, signOut } = useAuthStore()
+
   return (
     <div className="max-w-xl mx-auto">
       <h1 className="text-lg font-semibold mb-4">Configuración</h1>
@@ -81,6 +84,22 @@ export function ConfigView() {
           <DeductionsPanel />
         </TabsContent>
       </Tabs>
+
+      {/* Account section */}
+      {user && (
+        <div className="mt-8 pt-6 border-t border-[var(--border)]">
+          <div className="flex items-center justify-between">
+            <div className="min-w-0">
+              <div className="text-xs font-medium text-muted-foreground">Cuenta</div>
+              <div className="text-sm truncate mt-0.5">{user.email ?? user.user_metadata?.user_name ?? 'Usuario'}</div>
+            </div>
+            <Button variant="ghost" size="sm" onClick={signOut} className="shrink-0 text-muted-foreground hover:text-foreground">
+              <LogOut size={14} />
+              Cerrar sesión
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
