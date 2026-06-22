@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { SlidersHorizontal, Sliders, LogOut } from 'lucide-react'
+import { SlidersHorizontal, Sliders, LogOut, CloudUpload, RefreshCw } from 'lucide-react'
 import { DeductionsPanel } from '@/components/settings/DeductionsPanel'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
@@ -53,6 +53,29 @@ function ParamsTab() {
 
 export function ConfigView() {
   const { user, signOut } = useAuthStore()
+  const { forcePushAll, syncFromCloud } = useFinanceStore()
+  const { showToast } = useUIStore()
+  const [syncing, setSyncing] = useState<'push' | 'pull' | null>(null)
+
+  async function handleForcePush() {
+    setSyncing('push')
+    try {
+      const { pushed, errors } = await forcePushAll()
+      showToast(errors > 0 ? `Subidos ${pushed} — ${errors} errores` : `${pushed} registros subidos a la nube`)
+    } finally {
+      setSyncing(null)
+    }
+  }
+
+  async function handlePull() {
+    setSyncing('pull')
+    try {
+      await syncFromCloud()
+      showToast('Datos actualizados desde la nube')
+    } finally {
+      setSyncing(null)
+    }
+  }
 
   return (
     <div className="max-w-xl mx-auto">
@@ -85,10 +108,42 @@ export function ConfigView() {
         </TabsContent>
       </Tabs>
 
-      {/* Account section */}
+      {/* Sync + account section */}
       {user && (
-        <div className="mt-8 pt-6 border-t border-[var(--border)]">
-          <div className="flex items-center justify-between">
+        <div className="mt-8 pt-6 border-t border-[var(--border)] space-y-4">
+          {/* Sync actions */}
+          <div>
+            <div className="text-xs font-medium text-muted-foreground mb-2">Sincronización</div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleForcePush}
+                disabled={syncing !== null}
+                className="flex-1"
+              >
+                {syncing === 'push'
+                  ? <RefreshCw size={13} className="animate-spin" />
+                  : <CloudUpload size={13} />}
+                Subir todo a la nube
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePull}
+                disabled={syncing !== null}
+                className="flex-1"
+              >
+                {syncing === 'pull'
+                  ? <RefreshCw size={13} className="animate-spin" />
+                  : <RefreshCw size={13} />}
+                Jalar desde la nube
+              </Button>
+            </div>
+          </div>
+
+          {/* Account */}
+          <div className="flex items-center justify-between pt-2 border-t border-[var(--border)]">
             <div className="min-w-0">
               <div className="text-xs font-medium text-muted-foreground">Cuenta</div>
               <div className="text-sm truncate mt-0.5">{user.email ?? user.user_metadata?.user_name ?? 'Usuario'}</div>

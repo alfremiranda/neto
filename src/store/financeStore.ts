@@ -91,6 +91,7 @@ interface FinanceState {
   // sync
   syncFromCloud: () => Promise<void>
   pushCurrent: () => void
+  forcePushAll: () => Promise<{ pushed: number; errors: number }>
 
   // migration (runs on load)
   migrate: () => void
@@ -395,6 +396,21 @@ export const useFinanceStore = create<FinanceState>()(
       pushCurrent: () => {
         const { curKey, db } = get()
         sbPush(curKey, db[curKey]).catch(() => {})
+      },
+
+      forcePushAll: async () => {
+        const { db } = get()
+        let pushed = 0
+        let errors = 0
+        for (const key of Object.keys(db)) {
+          try {
+            await sbPush(key, db[key])
+            pushed++
+          } catch {
+            errors++
+          }
+        }
+        return { pushed, errors }
       },
 
       syncFromCloud: async () => {
