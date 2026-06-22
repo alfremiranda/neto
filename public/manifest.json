@@ -6,20 +6,34 @@
   "scope": "/neto/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#f0ede8",
+  "background_color": "#1a1a1a",
   "theme_color": "#1a1a1a",
+  "lang": "es",
+  "categories": ["finance", "productivity"],
   "icons": [
     {
-      "src": "/neto/icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/neto/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "/neto/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/neto/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/neto/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "maskable"
+      "purpose": "any"
     }
   ]
 }
