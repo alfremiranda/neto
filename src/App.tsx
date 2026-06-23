@@ -49,7 +49,7 @@ export default function App() {
         <div className="relative flex flex-row flex-1 min-h-0 overflow-hidden">
           <AppSidebar />
 
-          <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-5 lg:p-6 pb-[calc(54px+env(safe-area-inset-bottom))] sm:pb-5 lg:pb-6 bg-[var(--background)] min-w-0">
+          <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-5 lg:p-6 pb-4 sm:pb-5 lg:pb-6 bg-[var(--background)] min-w-0">
             <div className="max-w-5xl mx-auto">
               {view === 'mes'     && <MesView />}
               {view === 'ano'     && <AnoView />}

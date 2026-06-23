@@ -67,7 +67,7 @@ export function Sidebar_MobileNav() {
 
   return (
     <nav
-      className="sm:hidden fixed bottom-0 left-0 right-0 z-50 flex bg-[var(--card)] border-t border-[var(--border)]"
+      className="sm:hidden w-full flex shrink-0 bg-[var(--card)] border-t border-[var(--border)]"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       {NAV_ITEMS.map(({ id, mobileLabel, Icon }) => {
