@@ -23,7 +23,7 @@ export const useAuthStore = create<AuthState>()((set) => ({
     // Subscribe to session changes — auto-pull on SIGNED_IN (login + session restore)
     const unsub = onAuthStateChange((user, event) => {
       set({ user, loading: false })
-      if (event === 'SIGNED_IN' && user) {
+      if (event === 'SIGNED_IN' && user && !import.meta.env.DEV) {
         useFinanceStore.getState().syncFromCloud()
       }
     })
