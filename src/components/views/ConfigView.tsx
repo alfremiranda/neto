@@ -53,9 +53,19 @@ function ParamsTab() {
 
 export function ConfigView() {
   const { user, signOut } = useAuthStore()
-  const { forcePushAll, syncFromCloud, nuclearResetCurrentMonth, deduplicateAllMonths, hardResetAllData } = useFinanceStore()
+  const { forcePushAll, syncFromCloud, nuclearResetCurrentMonth, deduplicateAllMonths, hardResetAllData, wipeCloudAndPush } = useFinanceStore()
   const { showToast } = useUIStore()
-  const [syncing, setSyncing] = useState<'push' | 'pull' | 'nuclear' | 'dedup' | 'hard' | null>(null)
+  const [syncing, setSyncing] = useState<'push' | 'pull' | 'nuclear' | 'dedup' | 'hard' | 'wipe' | null>(null)
+
+  async function handleWipeCloudAndPush() {
+    setSyncing('wipe')
+    try {
+      await wipeCloudAndPush()
+      showToast('Nube limpiada y datos locales re-subidos')
+    } finally {
+      setSyncing(null)
+    }
+  }
 
   async function handleHardReset() {
     setSyncing('hard')
@@ -179,6 +189,23 @@ export function ConfigView() {
           <div className="pt-2 border-t border-[var(--border)]">
             <div className="text-xs font-medium text-muted-foreground mb-1">Recuperación de datos</div>
             <div className="flex flex-col gap-2">
+              <div>
+                <p className="text-xs text-muted-foreground mb-2">
+                  Borra la nube y re-sube solo los datos locales. Útil cuando otro dispositivo corrompió la nube.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleWipeCloudAndPush}
+                  disabled={syncing !== null}
+                  className="text-destructive border-destructive/40 hover:bg-destructive/10 hover:text-destructive"
+                >
+                  {syncing === 'wipe'
+                    ? <RefreshCw size={13} className="animate-spin" />
+                    : <Trash2 size={13} />}
+                  Limpiar nube y re-sincronizar
+                </Button>
+              </div>
               <div>
                 <p className="text-xs text-muted-foreground mb-2">
                   Elimina TODOS los datos de todos los meses, tanto local como en la nube. Irreversible.

@@ -92,6 +92,7 @@ interface FinanceState {
   nuclearResetCurrentMonth: () => void
   deduplicateAllMonths: () => number
   hardResetAllData: () => Promise<void>
+  wipeCloudAndPush: () => Promise<void>
 
   // sync
   syncFromCloud: () => Promise<void>
@@ -485,6 +486,16 @@ export const useFinanceStore = create<FinanceState>()(
       hardResetAllData: async () => {
         set({ db: {} as FinanceDB })
         await sbDeleteAll()
+      },
+
+      wipeCloudAndPush: async () => {
+        await sbDeleteAll()
+        const { db } = get()
+        await Promise.all(
+          Object.keys(db)
+            .filter(k => k !== '_settings')
+            .map(k => sbPush(k, db[k]).catch(() => {}))
+        )
       },
 
       // ── sync ───────────────────────────────────────────────────────────────
