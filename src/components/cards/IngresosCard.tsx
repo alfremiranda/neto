@@ -165,10 +165,14 @@ export function IngresosCard() {
         icon={Banknote}
         title="Ingresos del mes"
         action={
-          <Button size="sm" onClick={handleAdd}>
-            <Plus size={13} />
-            <span className="hidden xs:inline">Registrar</span>
-          </Button>
+          <>
+            <Button size="sm" onClick={handleAdd} className="hidden sm:flex">
+              <Plus size={13} />Registrar
+            </Button>
+            <IconButton variant="filled" size="md" onClick={handleAdd} aria-label="Registrar ingreso" className="sm:hidden">
+              <Plus />
+            </IconButton>
+          </>
         }
       >
         {!hasIncomes ? (

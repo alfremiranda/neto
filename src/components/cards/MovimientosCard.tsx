@@ -106,10 +106,14 @@ export function MovimientosCard() {
       icon={ArrowLeftRight}
       title="Movimientos entre cuentas"
       action={
-        <Button size="sm" onClick={() => openSheet('transfer')}>
-          <Plus size={13} />
-          <span className="hidden xs:inline">Movimiento</span>
-        </Button>
+        <>
+          <Button size="sm" onClick={() => openSheet('transfer')} className="hidden sm:flex">
+            <Plus size={13} />Movimiento
+          </Button>
+          <IconButton variant="filled" size="md" onClick={() => openSheet('transfer')} aria-label="Agregar movimiento" className="sm:hidden">
+            <Plus />
+          </IconButton>
+        </>
       }
     >
       {/* Account Scorecards */}
