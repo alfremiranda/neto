@@ -463,86 +463,25 @@ export const useFinanceStore = create<FinanceState>()(
         const rows = await sbPullAll()
         if (!rows) return
 
-        const { db } = get()
-        const newDb: FinanceDB = { ...db }
+        // Cloud is authoritative: replace local with cloud data entirely.
+        // Merging by ID caused duplicates when IDs changed across sessions.
+        const newDb: FinanceDB = {}
         const cloudKeys = new Set(rows.map(r => r.key))
-        const needsCloudUpdate = new Set<string>()
 
-        // Merge two arrays by id: local entries preserved, cloud wins on conflict.
-        function mergeById<T extends { id: number }>(local: T[], cloud: T[]): T[] {
-          const map = new Map<number, T>()
-          for (const item of local) map.set(item.id, item)
-          for (const item of cloud) map.set(item.id, item) // cloud wins on same id
-          return Array.from(map.values())
+        for (const { key, data } of rows) {
+          (newDb as Record<string, unknown>)[key] = data
         }
 
-        rows.forEach(({ key, data }) => {
-          if (key === '_settings') {
-            const cloudSettings = data as Settings
-            const localSettings = (newDb._settings ?? {}) as Settings
-            if (!newDb._settings) {
-              newDb._settings = cloudSettings
-            } else {
-              if (cloudSettings?.smmlv) {
-                localSettings.smmlv = { ...(localSettings.smmlv ?? {}), ...cloudSettings.smmlv }
-              }
-              if (cloudSettings?.accounts) {
-                const localAccounts = localSettings.accounts ?? []
-                const localIds = new Set(localAccounts.map((a: Account) => a.id))
-                const newFromCloud = cloudSettings.accounts.filter(
-                  (a: Account) => !localIds.has(a.id)
-                )
-                localSettings.accounts = [...localAccounts, ...newFromCloud]
-              }
-              newDb._settings = localSettings
-            }
-          } else {
-            const cloudData = data as MonthData
-            const local = newDb[key]
-
-            const mergedIncomes    = mergeById(local?.incomes    ?? [], cloudData?.incomes    ?? [])
-            const mergedEgresos    = mergeById(local?.egresos    ?? [], cloudData?.egresos    ?? [])
-            const mergedTransfers  = mergeById(local?.transfers  ?? [], cloudData?.transfers  ?? [])
-            const mergedVoluntarias = mergeById(local?.voluntarias ?? [], cloudData?.voluntarias ?? [])
-
-            // If local had entries the cloud didn't, push merged back to cloud
-            const localAdded =
-              mergedIncomes.length    > (cloudData?.incomes?.length    ?? 0) ||
-              mergedEgresos.length    > (cloudData?.egresos?.length    ?? 0) ||
-              mergedTransfers.length  > (cloudData?.transfers?.length  ?? 0) ||
-              mergedVoluntarias.length > (cloudData?.voluntarias?.length ?? 0)
-            if (localAdded) needsCloudUpdate.add(key)
-
-            newDb[key] = {
-              ...cloudData,
-              incomes:     mergedIncomes,
-              egresos:     mergedEgresos,
-              transfers:   mergedTransfers,
-              voluntarias: mergedVoluntarias,
-            }
+        // Push local months that cloud doesn't know about yet.
+        const { db } = get()
+        for (const key of Object.keys(db)) {
+          if (!cloudKeys.has(key)) {
+            (newDb as Record<string, unknown>)[key] = db[key]
+            sbPush(key, db[key]).catch(() => {})
           }
-        })
-
-        // Push local keys missing from cloud
-        for (const key of Object.keys(newDb)) {
-          if (!cloudKeys.has(key)) await sbPush(key, newDb[key]).catch(() => {})
-        }
-
-        // Re-read current state right before applying: preserve any account configs
-        // saved by the user while this async sync was running (race condition fix).
-        const liveSettings = get().db._settings as Settings | undefined
-        if (liveSettings?.accounts?.some((a: Account) => a.startingBalance != null)) {
-          const merged = (newDb._settings ?? {}) as Settings
-          merged.accounts = liveSettings.accounts
-          newDb._settings = merged as FinanceDB['_settings']
         }
 
         set({ db: newDb })
-
-        // Push back months that were fixed
-        for (const key of needsCloudUpdate) {
-          await sbPush(key, newDb[key]).catch(() => {})
-        }
       },
 
       // ── migration ──────────────────────────────────────────────────────────
