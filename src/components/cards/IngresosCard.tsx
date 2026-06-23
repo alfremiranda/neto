@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Plus, Trash2, Pencil, Banknote, Receipt, MoreVertical } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
+import { useMonthData } from '@/hooks/useMonthData'
 import { useUIStore } from '@/store/uiStore'
-import { useLiveTRM } from '@/hooks/useLiveTRM'
 import { calcTotales } from '@/lib/calc'
 import { COP, USD, fmtDate } from '@/lib/format'
 import { Badge } from '@/components/ui/Badge'
@@ -124,15 +124,12 @@ function IncomeRow({
 // ─── Card ─────────────────────────────────────────────────────────────────────
 
 export function IngresosCard() {
-  const { getCurrentMonth, removeIncome } = useFinanceStore()
+  const { removeIncome } = useFinanceStore()
   const { openSheet, setPendingDelete, showToast, setEditingIncome } = useUIStore()
-  const { trm: liveTRM } = useLiveTRM()
   const [confirmId, setConfirmId] = useState<number | null>(null)
 
-  const month = getCurrentMonth()
-  const { totUSD } = calcTotales(month.incomes, month.trm)
-  const displayTRM = liveTRM ?? month.trm
-  const { bruto }  = calcTotales(month.incomes, month.trm)
+  const month = useMonthData()
+  const { totUSD, bruto } = calcTotales(month.incomes, month.trm)
   const hasIncomes = month.incomes.length > 0
 
   function handleEdit(id: number) {
@@ -212,7 +209,7 @@ export function IngresosCard() {
                       {USD(totUSD)}
                     </span>
                     <span className="font-sans font-normal text-[11px] leading-[17px]">
-                      {` · ${liveTRM ? 'TRM hoy' : 'TRM mes'} ${displayTRM.toLocaleString('es-CO', { maximumFractionDigits: 2 })}`}
+                      {` · TRM mes ${month.trm.toLocaleString('es-CO', { maximumFractionDigits: 2 })}`}
                     </span>
                   </span>
                 ) : undefined}

@@ -1,5 +1,6 @@
 import { Route } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
+import { useMonthData } from '@/hooks/useMonthData'
 import { useSettingsStore } from '@/store/settingsStore'
 import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase } from '@/lib/calc'
 import { COP, USD } from '@/lib/format'
@@ -8,9 +9,9 @@ import { SectionCard } from '@/components/ui/SectionCard'
 import { DEFAULTS } from '@/data/defaults'
 
 export function FlujoCard() {
-  const { getCurrentMonth, getSMMLV, curKey } = useFinanceStore()
+  const { getSMMLV, curKey } = useFinanceStore()
   const deductions = useSettingsStore(s => s.deductions)
-  const month = getCurrentMonth()
+  const month = useMonthData()
   const [y, m] = curKey.split('-').map(Number)
   const smmlv = getSMMLV(y)
 

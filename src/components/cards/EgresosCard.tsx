@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Pencil, Trash2, Plus, Receipt, RefreshCw, Check, X, ChevronLeft, ChevronRight, ArrowUpDown, Clock, MoreVertical, SlidersHorizontal } from 'lucide-react'
+import { Pencil, Trash2, Plus, Receipt, RefreshCw, X, ChevronLeft, ChevronRight, ArrowUpDown, Clock, MoreVertical, SlidersHorizontal } from 'lucide-react'
 import { RowActionsSheet } from '@/components/ui/RowActionsSheet'
 import { useFinanceStore } from '@/store/financeStore'
+import { useMonthData } from '@/hooks/useMonthData'
 import { useUIStore } from '@/store/uiStore'
 import { calcGastos } from '@/lib/calc'
 import { COP, fmtDate, localToday } from '@/lib/format'
@@ -97,7 +98,7 @@ function EgresosBar({ egresos, trm }: { egresos: Egreso[]; trm: number }) {
 
 function EgresoRow({
   egreso, trm, accounts,
-  onEdit, onDelete, onConfirm,
+  onEdit, onDelete,
   isPendingDelete,
 }: {
   egreso: Egreso
@@ -105,7 +106,6 @@ function EgresoRow({
   accounts: Account[]
   onEdit: () => void
   onDelete: () => void
-  onConfirm: () => void
   isPendingDelete: boolean
 }) {
   const [sheetOpen, setSheetOpen] = useState(false)
@@ -146,7 +146,7 @@ function EgresoRow({
   return (
     <>
       {/* Desktop layout */}
-      <div className={cn('hidden sm:flex items-center gap-2 py-[9px] border-b border-[var(--border)] last:border-0', isScheduled && 'opacity-70')}>
+      <div className="hidden sm:flex items-center gap-2 py-[9px] border-b border-[var(--border)] last:border-0">
         <CategoryIcon category={category} />
 
         <div className="flex-1 min-w-0 flex flex-col">
@@ -159,7 +159,7 @@ function EgresoRow({
             {egreso.recurring && (
               <RefreshCw size={12} className={cn('shrink-0', isUnconfirmed ? 'text-[var(--color-tax-txt)]' : 'text-muted-foreground')} />
             )}
-            <span className={cn('text-sm font-semibold tabular-nums font-mono', (isUnconfirmed || isScheduled) && 'text-muted-foreground')}>
+            <span className={cn('text-sm font-semibold tabular-nums font-mono', isUnconfirmed && 'text-muted-foreground')}>
               {COP(amtCOP)}
             </span>
           </div>
@@ -167,14 +167,6 @@ function EgresoRow({
         </div>
 
         <div className="flex items-center gap-0.5 shrink-0">
-          {isUnconfirmed && (
-            <Button
-              variant="ghost" size="icon-sm" onClick={onConfirm} aria-label="Confirmar monto"
-              className="text-[var(--color-tax-txt)] hover:text-[var(--color-tax-txt)] hover:bg-[var(--color-tax)]/10"
-            >
-              <Check size={12} />
-            </Button>
-          )}
           <Button variant="ghost" size="icon-sm" onClick={onEdit} aria-label="Editar egreso">
             <Pencil size={12} />
           </Button>
@@ -194,12 +186,12 @@ function EgresoRow({
       {/* Mobile layout */}
       <div className={cn('sm:hidden flex items-start gap-2 py-2 border-b border-[var(--border)] last:border-0')}>
         <div className="flex-1 min-w-0 flex flex-col">
-          <div className={cn('flex items-center gap-2 mb-1', isScheduled && 'opacity-70')}>
+          <div className="flex items-center gap-2 mb-1">
             <CategoryIcon category={category} />
             {egreso.recurring && (
               <RefreshCw size={14} className={cn('shrink-0', isUnconfirmed ? 'text-[var(--color-tax-txt)]' : 'text-muted-foreground')} />
             )}
-            <span className={cn('text-base font-bold tabular-nums font-heading', (isUnconfirmed || isScheduled) && 'text-muted-foreground')}>
+            <span className={cn('text-base font-bold tabular-nums font-heading', isUnconfirmed && 'text-muted-foreground')}>
               {COP(amtCOP)}
             </span>
             <span className="text-[11px] font-semibold tabular-nums font-mono text-muted-foreground shrink-0">
@@ -228,11 +220,6 @@ function EgresoRow({
         subtitle={[acctLabel, dateStr].filter(Boolean).join(' · ')}
         onEdit={onEdit}
         onDelete={onDelete}
-        extraActions={isUnconfirmed ? [{
-          label: 'Confirmar monto',
-          icon: <Check size={18} className="text-[var(--color-tax-txt)] shrink-0" />,
-          onClick: onConfirm,
-        }] : undefined}
       />
     </>
   )
@@ -262,7 +249,7 @@ const TAB_CLS = [
 ].join(' ')
 
 export function EgresosCard() {
-  const { getCurrentMonth, removeEgreso, getAccounts, confirmEgreso } = useFinanceStore()
+  const { removeEgreso, getAccounts } = useFinanceStore()
   const { openSheet, showToast, setEditingEgreso } = useUIStore()
 
   const [activeTab,     setActiveTab]     = useState('todos')
@@ -303,7 +290,7 @@ export function EgresosCard() {
     return () => document.removeEventListener('mousedown', dismiss)
   }, [confirmId])
 
-  const month    = getCurrentMonth()
+  const month    = useMonthData()
   const egresos  = month.egresos || []
   const accounts = getAccounts()
 
@@ -593,7 +580,6 @@ export function EgresosCard() {
                         accounts={accounts}
                         onEdit={() => handleEdit(e.id)}
                         onDelete={() => handleDelete(e.id)}
-                        onConfirm={() => confirmEgreso(e.id)}
                         isPendingDelete={confirmId === e.id}
                       />
                     ))}

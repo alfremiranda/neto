@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useFinanceStore } from '@/store/financeStore'
+import { useMonthData } from '@/hooks/useMonthData'
 import { useSettingsStore } from '@/store/settingsStore'
 import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase } from '@/lib/calc'
 import { COP } from '@/lib/format'
@@ -14,11 +15,11 @@ interface Segment {
 }
 
 export function DistribucionCard() {
-  const { getCurrentMonth, getSMMLV, curKey } = useFinanceStore()
+  const { getSMMLV, curKey } = useFinanceStore()
   const deductions = useSettingsStore(s => s.deductions)
   const [hovered, setHovered] = useState<string | null>(null)
 
-  const month = getCurrentMonth()
+  const month = useMonthData()
   const [y, m] = curKey.split('-').map(Number)
   const smmlv = getSMMLV(y)
 

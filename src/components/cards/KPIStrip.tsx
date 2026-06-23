@@ -1,4 +1,5 @@
 import { useFinanceStore } from '@/store/financeStore'
+import { useMonthData } from '@/hooks/useMonthData'
 import { useSettingsStore } from '@/store/settingsStore'
 import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase } from '@/lib/calc'
 import { COP, USD } from '@/lib/format'
@@ -70,13 +71,13 @@ function egresoCategory(category: string) {
 }
 
 export function KPIStrip() {
-  const { getCurrentMonth, getSMMLV, curKey } = useFinanceStore()
+  const { getSMMLV, curKey } = useFinanceStore()
   const deductions = useSettingsStore(s => s.deductions)
-  const month = getCurrentMonth()
+  const month = useMonthData()
   const [y, m] = curKey.split('-').map(Number)
   const smmlv = getSMMLV(y)
 
-  const { bruto } = calcTotales(month.incomes, month.trm)
+  const { bruto, totUSD } = calcTotales(month.incomes, month.trm)
   const ibc       = calcIBC(month.incomes, month.trm, smmlv)
   const gast      = calcGastos(month.egresos || [], month.trm)
   const provBase  = calcProvisionBase(month.incomes, month.trm, ibc)
@@ -152,7 +153,7 @@ export function KPIStrip() {
       <KPICard
         label="Ingreso bruto"
         value={COP(bruto)}
-        sub={bruto > 0 ? `TRM ${month.trm.toLocaleString('es-CO')}` : 'Sin ingresos este mes'}
+        sub={bruto > 0 ? USD(totUSD) : 'Sin ingresos este mes'}
         detail={ingresoDetail.length > 0 ? ingresoDetail : undefined}
       />
       <KPICard
