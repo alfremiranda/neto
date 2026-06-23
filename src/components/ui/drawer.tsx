@@ -61,7 +61,11 @@ const DrawerTitle = React.forwardRef<
 DrawerTitle.displayName = DrawerPrimitive.Title.displayName
 
 const DrawerBody = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("overflow-y-auto flex-1 min-h-0 px-5 py-5 pb-8", className)} {...props} />
+  <div
+    className={cn("overflow-y-auto flex-1 min-h-0 px-5 py-5 pb-8 overscroll-contain", className)}
+    style={{ WebkitOverflowScrolling: 'touch' } as React.CSSProperties}
+    {...props}
+  />
 )
 
 export {

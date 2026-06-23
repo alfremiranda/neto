@@ -29,7 +29,7 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--background)]">
+      <div className="min-h-[100dvh] flex items-center justify-center bg-[var(--background)]">
         <div className="w-6 h-6 border-2 border-[var(--border)] border-t-foreground rounded-full animate-spin" />
       </div>
     )
@@ -41,7 +41,7 @@ export default function App() {
 
   return (
     <TooltipProvider>
-      <SidebarProvider defaultOpen className="flex-col h-screen overflow-hidden">
+      <SidebarProvider defaultOpen className="flex-col h-[100dvh] overflow-hidden">
         {/* TopNav — full width, above sidebar and content */}
         <Header />
 

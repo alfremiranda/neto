@@ -40,7 +40,7 @@ export function SheetBase({ id, title, children, footer }: SheetBaseProps) {
   // Direction-specific classes passed directly to DrawerContent
   const contentCls = isDesktop
     ? 'inset-y-0 right-0 w-[420px] shadow-2xl rounded-l-2xl'
-    : 'inset-x-0 bottom-0 max-h-[92vh] rounded-t-2xl'
+    : 'inset-x-0 bottom-0 max-h-[92dvh] rounded-t-2xl'
 
   return (
     <Drawer
@@ -71,7 +71,10 @@ export function SheetBase({ id, title, children, footer }: SheetBaseProps) {
         </DrawerBody>
 
         {footer && (
-          <div className="shrink-0 px-5 pb-5 pt-3 border-t border-[var(--border)]">
+          <div
+            className="shrink-0 px-5 pt-3 border-t border-[var(--border)]"
+            style={{ paddingBottom: 'max(20px, env(safe-area-inset-bottom))' }}
+          >
             {footer}
           </div>
         )}

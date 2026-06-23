@@ -36,7 +36,13 @@ export function LoginScreen() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[var(--background)]">
+    <div
+      className="min-h-[100dvh] flex flex-col items-center justify-center px-6 bg-[var(--background)]"
+      style={{
+        paddingTop: 'max(24px, env(safe-area-inset-top))',
+        paddingBottom: 'max(24px, env(safe-area-inset-bottom))',
+      }}
+    >
       <div className="w-full max-w-[320px] flex flex-col items-center gap-8">
 
         {/* Logo */}

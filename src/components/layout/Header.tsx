@@ -91,7 +91,10 @@ export function Header() {
     : '—'
 
   return (
-    <header className="flex items-center justify-between gap-2 px-3 sm:px-4 h-[54px] shrink-0 bg-[var(--card)] border-b border-[var(--border)]">
+    <header
+      className="flex items-center justify-between gap-2 px-3 sm:px-4 shrink-0 bg-[var(--card)] border-b border-[var(--border)]"
+      style={{ paddingTop: 'env(safe-area-inset-top)', height: 'calc(54px + env(safe-area-inset-top))' }}
+    >
       {/* Left: sidebar toggle (desktop) + logo */}
       <div className="flex items-center gap-3">
         <SidebarToggle />
