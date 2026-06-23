@@ -492,9 +492,7 @@ export const useFinanceStore = create<FinanceState>()(
         await sbDeleteAll()
         const { db } = get()
         await Promise.all(
-          Object.keys(db)
-            .filter(k => k !== '_settings')
-            .map(k => sbPush(k, db[k]).catch(() => {}))
+          Object.keys(db).map(k => sbPush(k, db[k]).catch(() => {}))
         )
       },
 
