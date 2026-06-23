@@ -18,7 +18,6 @@ import { LoginScreen } from '@/components/auth/LoginScreen'
 
 export default function App() {
   const view = useUIStore(s => s.view)
-  const syncFromCloud = useFinanceStore(s => s.syncFromCloud)
   const { user, loading, initialize } = useAuthStore()
 
   // Initialize auth listener once on mount
@@ -27,13 +26,6 @@ export default function App() {
     return unsub
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  // Sync from cloud whenever the user authenticates
-  useEffect(() => {
-    if (user) {
-      syncFromCloud().catch(() => {})
-    }
-  }, [user, syncFromCloud])
 
   if (loading) {
     return (
