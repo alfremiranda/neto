@@ -141,17 +141,7 @@ export function MovimientosCard() {
             >
               <div className="flex items-center gap-1 mb-0.5">
                 <span className="text-[12px] font-medium leading-[18px] text-muted-foreground truncate flex-1 min-w-0">{a.label}</span>
-                <div className="flex items-center gap-1 shrink-0">
-                  <CurrencyBadge currency={a.currency} />
-                  <IconButton
-                    variant="outline"
-                    size="sm"
-                    onClick={e => { e.stopPropagation(); openBalance(a.id) }}
-                    aria-label="Ajustar saldo"
-                  >
-                    <Plus />
-                  </IconButton>
-                </div>
+                <CurrencyBadge currency={a.currency} />
               </div>
               {numStr && <div className="text-[10px] font-normal leading-[15px] text-muted-foreground font-mono mb-1">{numStr}</div>}
               <div className="text-[16px] font-bold leading-[24px] font-mono mt-0.5">
