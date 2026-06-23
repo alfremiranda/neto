@@ -9,11 +9,11 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { ViewType } from '@/types'
 
-const NAV_ITEMS: Array<{ id: ViewType; label: string; Icon: typeof CalendarDays }> = [
-  { id: 'mes',     label: 'Mes actual',    Icon: CalendarDays },
-  { id: 'ano',     label: 'Resumen anual', Icon: PieChart },
-  { id: 'cuentas', label: 'Cuentas',       Icon: WalletCards },
-  { id: 'config',  label: 'Configuración', Icon: Settings2 },
+const NAV_ITEMS: Array<{ id: ViewType; label: string; mobileLabel: string; Icon: typeof CalendarDays }> = [
+  { id: 'mes',     label: 'Mes actual',    mobileLabel: 'Mes',           Icon: CalendarDays },
+  { id: 'ano',     label: 'Resumen anual', mobileLabel: 'Resumen',       Icon: PieChart },
+  { id: 'cuentas', label: 'Cuentas',       mobileLabel: 'Cuentas',       Icon: WalletCards },
+  { id: 'config',  label: 'Configuración', mobileLabel: 'Configuración', Icon: Settings2 },
 ]
 
 function NavButton({ id, label, Icon }: { id: ViewType; label: string; Icon: typeof CalendarDays }) {
@@ -66,32 +66,30 @@ export function Sidebar_MobileNav() {
   const { view, setView } = useUIStore()
 
   return (
-    <nav className={cn(
-      'sm:hidden fixed bottom-0 left-0 right-0 z-50',
-      'flex flex-row justify-around',
-      'px-2 pt-1.5 pb-[env(safe-area-inset-bottom)]',
-      'bg-[var(--card)] border-t border-[var(--border)]',
-    )}>
-      {NAV_ITEMS.map(({ id, label, Icon }) => {
+    <nav
+      className="sm:hidden fixed bottom-0 left-0 right-0 z-50 flex bg-[var(--card)] border-t border-[var(--border)]"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+    >
+      {NAV_ITEMS.map(({ id, mobileLabel, Icon }) => {
         const active = view === id
         return (
           <button
             key={id}
             onClick={() => setView(id)}
+            aria-label={mobileLabel}
+            aria-current={active ? 'page' : undefined}
             className={cn(
-              'relative flex flex-col items-center gap-[3px] px-4 py-2 rounded-lg',
-              'border-none bg-transparent cursor-pointer font-[inherit]',
-              'transition-colors min-w-[44px] min-h-[44px]',
+              'flex-1 flex flex-col items-center justify-center gap-1 py-3',
+              'border-none bg-transparent cursor-pointer font-[inherit] transition-colors',
               active
-                ? 'text-[var(--primary)]'
-                : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]',
+                ? 'text-[var(--sidebar-primary)]'
+                : 'text-[var(--n-txt3)] hover:text-[var(--muted-foreground)]',
             )}
           >
-            {active && (
-              <span className="absolute top-0 left-1/2 -translate-x-1/2 w-4 h-[2px] rounded-full bg-[var(--primary)]" />
-            )}
-            <Icon size={20} />
-            <span className="text-[9px] font-medium">{label}</span>
+            <Icon size={20} strokeWidth={active ? 2 : 1.75} />
+            <span className="text-[9px] font-medium leading-[14px] tracking-[0] select-none">
+              {mobileLabel}
+            </span>
           </button>
         )
       })}
