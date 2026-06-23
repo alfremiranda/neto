@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { SlidersHorizontal, Sliders, LogOut, CloudUpload, RefreshCw } from 'lucide-react'
+import { SlidersHorizontal, Sliders, LogOut, CloudUpload, RefreshCw, RotateCcw } from 'lucide-react'
 import { DeductionsPanel } from '@/components/settings/DeductionsPanel'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
@@ -53,9 +53,20 @@ function ParamsTab() {
 
 export function ConfigView() {
   const { user, signOut } = useAuthStore()
-  const { forcePushAll, syncFromCloud } = useFinanceStore()
+  const { forcePushAll, syncFromCloud, restoreJuneEgresos } = useFinanceStore()
   const { showToast } = useUIStore()
-  const [syncing, setSyncing] = useState<'push' | 'pull' | null>(null)
+  const [syncing, setSyncing] = useState<'push' | 'pull' | 'restore' | null>(null)
+
+  async function handleRestoreJune() {
+    setSyncing('restore')
+    try {
+      restoreJuneEgresos()
+      const { errors } = await forcePushAll()
+      showToast(errors > 0 ? `Restaurados — ${errors} errores` : 'Egresos de junio restaurados y sincronizados')
+    } finally {
+      setSyncing(null)
+    }
+  }
 
   async function handleForcePush() {
     setSyncing('push')
@@ -142,6 +153,22 @@ export function ConfigView() {
             </div>
           </div>
 
+
+          {/* One-time restore */}
+          <div className="pt-2 border-t border-[var(--border)]">
+            <div className="text-xs font-medium text-muted-foreground mb-2">Recuperación de datos</div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRestoreJune}
+              disabled={syncing !== null}
+            >
+              {syncing === 'restore'
+                ? <RefreshCw size={13} className="animate-spin" />
+                : <RotateCcw size={13} />}
+              Restaurar egresos de junio (14 items)
+            </Button>
+          </div>
 
           {/* Account */}
           <div className="flex items-center justify-between pt-2 border-t border-[var(--border)]">
