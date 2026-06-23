@@ -315,12 +315,10 @@
 
   html {
     height: var(--app-height, 100dvh);
-    overflow: hidden;
   }
 
   body {
     height: 100%;
-    overflow: hidden;
     font-size: 14px;
     background-color: var(--background);
     color: var(--foreground);
