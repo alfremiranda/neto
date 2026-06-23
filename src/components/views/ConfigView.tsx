@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { SlidersHorizontal, Sliders, LogOut, CloudUpload, RefreshCw, RotateCcw } from 'lucide-react'
+import { SlidersHorizontal, Sliders, LogOut, CloudUpload, RefreshCw, Trash2 } from 'lucide-react'
 import { DeductionsPanel } from '@/components/settings/DeductionsPanel'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
@@ -53,16 +53,16 @@ function ParamsTab() {
 
 export function ConfigView() {
   const { user, signOut } = useAuthStore()
-  const { forcePushAll, syncFromCloud, restoreJuneEgresos } = useFinanceStore()
+  const { forcePushAll, syncFromCloud, nuclearResetCurrentMonth } = useFinanceStore()
   const { showToast } = useUIStore()
-  const [syncing, setSyncing] = useState<'push' | 'pull' | 'restore' | null>(null)
+  const [syncing, setSyncing] = useState<'push' | 'pull' | 'nuclear' | null>(null)
 
-  async function handleRestoreJune() {
-    setSyncing('restore')
+  async function handleNuclearReset() {
+    setSyncing('nuclear')
     try {
-      restoreJuneEgresos()
+      nuclearResetCurrentMonth()
       const { errors } = await forcePushAll()
-      showToast(errors > 0 ? `Restaurados — ${errors} errores` : 'Egresos de junio restaurados y sincronizados')
+      showToast(errors > 0 ? `Reset completado — ${errors} errores` : 'Mes reiniciado: ingresos y movimientos borrados, 14 egresos restaurados')
     } finally {
       setSyncing(null)
     }
@@ -154,19 +154,23 @@ export function ConfigView() {
           </div>
 
 
-          {/* One-time restore */}
+          {/* Nuclear reset */}
           <div className="pt-2 border-t border-[var(--border)]">
-            <div className="text-xs font-medium text-muted-foreground mb-2">Recuperación de datos</div>
+            <div className="text-xs font-medium text-muted-foreground mb-1">Recuperación de datos</div>
+            <p className="text-xs text-muted-foreground mb-2">
+              Borra todos los ingresos y movimientos del mes actual. Restaura los 14 egresos conocidos de junio. Requiere re-ingresar ingresos manualmente.
+            </p>
             <Button
               variant="outline"
               size="sm"
-              onClick={handleRestoreJune}
+              onClick={handleNuclearReset}
               disabled={syncing !== null}
+              className="text-destructive border-destructive/40 hover:bg-destructive/10 hover:text-destructive"
             >
-              {syncing === 'restore'
+              {syncing === 'nuclear'
                 ? <RefreshCw size={13} className="animate-spin" />
-                : <RotateCcw size={13} />}
-              Restaurar egresos de junio (14 items)
+                : <Trash2 size={13} />}
+              Reiniciar mes actual (nuclear)
             </Button>
           </div>
 
