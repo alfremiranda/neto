@@ -71,7 +71,7 @@ export type FinanceDB = { _settings?: Settings } & Record<string, MonthData>
 
 export type ViewType = 'mes' | 'ano' | 'cuentas' | 'config'
 
-export type SheetId = 'income' | 'egreso' | 'transfer' | 'account-edit' | 'balance' | null
+export type SheetId = 'income' | 'egreso' | 'transfer' | 'account-edit' | 'balance' | 'account-detail' | null
 
 export interface TRMCache {
   trm: number

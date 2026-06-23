@@ -98,7 +98,7 @@ export function MovimientosCard() {
   const accounts = getAccounts()
   const [y, m] = curKey.split('-').map(Number)
 
-  function openBalance(id: string) { setEditingBalance(id); openSheet('balance') }
+  function openDetail(id: string) { setEditingBalance(id); openSheet('account-detail') }
 
   return (
     <SectionCard
@@ -136,7 +136,7 @@ export function MovimientosCard() {
           return (
             <div
               key={a.id}
-              onClick={() => openBalance(a.id)}
+              onClick={() => openDetail(a.id)}
               className="bg-muted rounded-xl p-3 cursor-pointer hover:bg-[var(--accent)] transition-colors min-w-0"
             >
               <div className="flex items-center gap-1 mb-0.5">
