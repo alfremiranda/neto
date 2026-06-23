@@ -25,7 +25,7 @@ function useIsDesktop() {
 
 interface SheetBaseProps {
   id: SheetId
-  title: string
+  title: ReactNode
   children: ReactNode
   footer?: ReactNode
 }
@@ -68,8 +68,13 @@ export function SheetBase({ id, title, children, footer }: SheetBaseProps) {
 
         <DrawerBody>
           {children}
-          {footer && <div className="pt-2">{footer}</div>}
         </DrawerBody>
+
+        {footer && (
+          <div className="shrink-0 px-5 pb-5 pt-3 border-t border-[var(--border)]">
+            {footer}
+          </div>
+        )}
       </DrawerContent>
     </Drawer>
   )

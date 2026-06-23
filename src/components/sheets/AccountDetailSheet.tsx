@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import {
   ArrowDownLeft, ArrowUpRight, ShieldCheck,
-  Pencil, Trash2, MoveRight, Landmark, Clock, Settings2, MoreVertical,
+  Pencil, Trash2, MoveRight, Landmark, Clock, Settings2, MoreVertical, ArrowLeftRight,
 } from 'lucide-react'
 import { SheetBase } from '@/components/ui/SheetBase'
 import { RowActionsSheet } from '@/components/ui/RowActionsSheet'
@@ -150,24 +150,37 @@ export function AccountDetailSheet() {
 
   if (!account) return <SheetBase id="account-detail" title="Cuenta"><div /></SheetBase>
 
+  const titleNode = (
+    <span className="flex items-center gap-2">
+      {account.label}
+      <CurrencyBadge currency={account.currency} />
+    </span>
+  )
+
   return (
-    <SheetBase id="account-detail" title={account.label}>
+    <SheetBase
+      id="account-detail"
+      title={titleNode}
+      footer={
+        <Button className="w-full" onClick={() => openSheet('transfer')}>
+          <ArrowLeftRight size={14} />
+          Agregar movimiento
+        </Button>
+      }
+    >
       {/* Stats bar */}
-      <div className="flex items-center gap-3 pb-4 mb-1 border-b border-[var(--border)] -mt-2 flex-wrap">
-        <CurrencyBadge currency={account.currency} />
-        <div className="flex items-center gap-4 ml-auto">
-          <div className="text-right">
-            <div className="text-[10px] text-muted-foreground">Entradas</div>
-            <div className="text-sm font-semibold tabular-nums text-[var(--color-provision)]">+{fmt(totalCredits)}</div>
-          </div>
-          <div className="text-right">
-            <div className="text-[10px] text-muted-foreground">Salidas</div>
-            <div className="text-sm font-semibold tabular-nums">{fmt(totalDebits)}</div>
-          </div>
-          <div className="text-right">
-            <div className="text-[10px] text-muted-foreground">Saldo actual</div>
-            <div className="text-sm font-bold tabular-nums font-heading">{fmt(currentBalance)}</div>
-          </div>
+      <div className="flex items-center gap-4 justify-end pb-4 mb-1 border-b border-[var(--border)] -mt-2">
+        <div className="text-right">
+          <div className="text-[10px] text-muted-foreground">Entradas</div>
+          <div className="text-sm font-semibold tabular-nums text-[var(--color-provision)]">+{fmt(totalCredits)}</div>
+        </div>
+        <div className="text-right">
+          <div className="text-[10px] text-muted-foreground">Salidas</div>
+          <div className="text-sm font-semibold tabular-nums">{fmt(totalDebits)}</div>
+        </div>
+        <div className="text-right">
+          <div className="text-[10px] text-muted-foreground">Saldo actual</div>
+          <div className="text-sm font-bold tabular-nums font-heading">{fmt(currentBalance)}</div>
         </div>
       </div>
 
