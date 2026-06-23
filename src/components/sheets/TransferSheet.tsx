@@ -181,7 +181,15 @@ export function TransferSheet() {
   }
 
   return (
-    <SheetBase id="transfer" title={isEditing ? 'Editar movimiento' : 'Nuevo movimiento'}>
+    <SheetBase
+      id="transfer"
+      title={isEditing ? 'Editar movimiento' : 'Nuevo movimiento'}
+      footer={
+        <Button className="w-full" onClick={handleSubmit}>
+          {isEditing ? 'Guardar cambios' : 'Registrar movimiento'}
+        </Button>
+      }
+    >
       <div className="space-y-4">
 
         {/* Live TRM banner */}
@@ -355,9 +363,6 @@ export function TransferSheet() {
           </div>
         )}
 
-        <Button className="w-full" onClick={handleSubmit}>
-          {isEditing ? 'Guardar cambios' : 'Registrar movimiento'}
-        </Button>
       </div>
     </SheetBase>
   )

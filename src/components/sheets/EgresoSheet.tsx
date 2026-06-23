@@ -70,7 +70,15 @@ export function EgresoSheet() {
   }
 
   return (
-    <SheetBase id="egreso" title={isEditing ? 'Editar egreso' : 'Agregar egreso'}>
+    <SheetBase
+      id="egreso"
+      title={isEditing ? 'Editar egreso' : 'Agregar egreso'}
+      footer={
+        <Button className="w-full" onClick={handleSubmit}>
+          {isEditing ? 'Guardar cambios' : 'Agregar egreso'}
+        </Button>
+      }
+    >
       <div className="space-y-5">
 
         {/* Description */}
@@ -164,9 +172,6 @@ export function EgresoSheet() {
           <Switch checked={recurring} onCheckedChange={setRecurring} />
         </div>
 
-        <Button className="w-full" onClick={handleSubmit}>
-          {isEditing ? 'Guardar cambios' : 'Agregar egreso'}
-        </Button>
       </div>
     </SheetBase>
   )

@@ -28,7 +28,15 @@ export function BalanceSheet() {
   }
 
   return (
-    <SheetBase id="balance" title="Saldo inicial de cuenta">
+    <SheetBase
+      id="balance"
+      title="Saldo inicial de cuenta"
+      footer={
+        <Button className="w-full" onClick={handleSave}>
+          Guardar saldo inicial
+        </Button>
+      }
+    >
       <div className="space-y-4">
         {account && (
           <div className="text-sm text-muted-foreground">
@@ -45,9 +53,6 @@ export function BalanceSheet() {
           value={amt.display}
           onChange={amt.handleChange}
         />
-        <Button className="w-full" onClick={handleSave}>
-          Guardar saldo inicial
-        </Button>
       </div>
     </SheetBase>
   )

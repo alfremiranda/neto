@@ -67,7 +67,15 @@ export function IncomeSheet() {
   }
 
   return (
-    <SheetBase id="income" title={isEdit ? 'Editar ingreso' : 'Registrar ingreso'}>
+    <SheetBase
+      id="income"
+      title={isEdit ? 'Editar ingreso' : 'Registrar ingreso'}
+      footer={
+        <Button className="w-full" onClick={handleSubmit}>
+          {isEdit ? 'Guardar cambios' : 'Registrar ingreso'}
+        </Button>
+      }
+    >
       <div className="space-y-4">
         <div>
           <label className="field-label">Descripción</label>
@@ -152,9 +160,6 @@ export function IncomeSheet() {
           </div>
         )}
 
-        <Button className="w-full" onClick={handleSubmit}>
-          {isEdit ? 'Guardar cambios' : 'Registrar ingreso'}
-        </Button>
       </div>
     </SheetBase>
   )
