@@ -455,11 +455,15 @@
     font-size: 0.875rem;
   }
 }
-/* SelectTrigger touch target on mobile */
-@media (max-width: 639px) {
+/* SelectTrigger — match field-input height on mobile (wins over Tailwind data-[size=default]:h-10) */
+[data-slot="select-trigger"][data-size="default"] {
+  height: 2.75rem;
+  font-size: 16px;
+}
+@media (min-width: 640px) {
   [data-slot="select-trigger"][data-size="default"] {
-    height: 2.75rem;
-    font-size: 16px;
+    height: 2.25rem;
+    font-size: 0.875rem;
   }
 }
 .field-input::placeholder {
