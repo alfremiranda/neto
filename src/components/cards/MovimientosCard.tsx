@@ -27,22 +27,35 @@ function TransferRow({
   const fromAcc = accounts.find(a => a.id === t.from)
   const toAcc   = accounts.find(a => a.id === t.to)
   const title   = `${fromAcc?.label ?? t.from} → ${toAcc?.label ?? t.to}`
-  const subtitle = [
-    t.fromCurrency === 'USD' ? USD(t.amount) : COP(t.amount),
-    t.trm ? `TRM ${t.trm.toLocaleString('es-CO', { maximumFractionDigits: 2 })}` : null,
-    t.date ? fmtDate(t.date) : null,
-  ].filter(Boolean).join(' · ')
+
+  const primaryAmt   = t.fromCurrency === 'USD' ? USD(t.amount) : COP(t.amount)
+  const secondaryCOP = t.fromCurrency === 'USD' && t.trm ? COP(t.amount * t.trm) : null
+  const dateStr      = t.date ? fmtDate(t.date) : null
 
   return (
     <>
-      <div className="flex items-center gap-2 min-h-[52px] py-1.5 border-b border-[var(--border)] last:border-0">
-        <div className="flex-1 min-w-0">
-          <div className="text-sm font-medium truncate">{title}</div>
-          <div className="text-xs text-muted-foreground mt-0.5 truncate">{subtitle}</div>
+      <div className="flex items-center gap-2 py-[9px] border-b border-[var(--border)] last:border-0">
+        <div className="flex-1 min-w-0 flex flex-col">
+          <span className="text-xs font-medium leading-snug truncate">{title}</span>
+          <div className="flex items-center gap-1 mt-0.5 flex-wrap">
+            <span className="text-sm font-semibold tabular-nums font-mono">{primaryAmt}</span>
+            {secondaryCOP && (
+              <>
+                <span className="text-[11px] text-muted-foreground">·</span>
+                <span className="text-[11px] text-muted-foreground tabular-nums">{secondaryCOP}</span>
+              </>
+            )}
+            {dateStr && (
+              <>
+                <span className="text-[11px] text-muted-foreground">·</span>
+                <span className="text-[11px] text-muted-foreground">{dateStr}</span>
+              </>
+            )}
+          </div>
         </div>
 
         {/* Desktop actions */}
-        <div className="hidden sm:flex items-center gap-1 shrink-0">
+        <div className="hidden sm:flex items-center gap-0.5 shrink-0">
           <Button variant="ghost" size="icon-sm" onClick={onEdit} aria-label="Editar movimiento">
             <Pencil size={12} />
           </Button>
@@ -65,7 +78,7 @@ function TransferRow({
           onClick={() => setSheetOpen(true)}
           aria-label="Opciones"
         >
-          <MoreVertical size={16} />
+          <MoreVertical size={20} />
         </Button>
       </div>
 
@@ -73,7 +86,7 @@ function TransferRow({
         open={sheetOpen}
         onOpenChange={setSheetOpen}
         title={title}
-        subtitle={subtitle}
+        subtitle={primaryAmt}
         onEdit={onEdit}
         onDelete={onDelete}
       />

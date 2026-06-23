@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import { Home, ShoppingBasket, Monitor, CreditCard, Heart, Car, Users, Tag, Plane } from 'lucide-react'
+import { Home, ShoppingBasket, Monitor, CreditCard, Heart, Car, Users, Tag, Plane, Globe, ShieldPlus, Briefcase, PiggyBank, Landmark } from 'lucide-react'
 import type { Account } from '@/types'
 
 export const MONTHS = [
@@ -22,29 +22,34 @@ export interface EgresoCategoria {
 }
 
 export const EGRESO_CATEGORIAS: EgresoCategoria[] = [
-  { id: 'vivienda',     label: 'Vivienda',     color: '--cat-home',    bgColor: '--cat-home-bg',    icon: Home,           tipos: ['arriendo', 'servicios'] },
-  { id: 'alimentacion', label: 'Alimentación', color: '--cat-food',    bgColor: '--cat-food-bg',    icon: ShoppingBasket, tipos: ['mercado'] },
-  { id: 'tecnologia',   label: 'Tecnología',   color: '--cat-tech',    bgColor: '--cat-tech-bg',    icon: Monitor,        tipos: ['internet', 'streaming'] },
-  { id: 'bancario',     label: 'Bancario',     color: '--cat-bank',    bgColor: '--cat-bank-bg',    icon: CreditCard,     tipos: ['tarjetas'] },
-  { id: 'salud',        label: 'Salud',        color: '--cat-health',  bgColor: '--cat-health-bg',  icon: Heart,          tipos: ['salud'] },
-  { id: 'movilidad',    label: 'Movilidad',    color: '--cat-transit', bgColor: '--cat-transit-bg', icon: Car,            tipos: ['transporte'] },
-  { id: 'familia',      label: 'Familia',      color: '--cat-family',  bgColor: '--cat-family-bg',  icon: Users,          tipos: [] },
-  { id: 'viajes',       label: 'Viajes',       color: '--cat-travel',  bgColor: '--cat-travel-bg',  icon: Plane,          tipos: ['viaje'] },
-  { id: 'otro',         label: 'Otros',        color: '--cat-other',   bgColor: '--cat-other-bg',   icon: Tag,            tipos: ['pension_vol', 'otro'] },
+  { id: 'vivienda',        label: 'Vivienda',          color: '--cat-home',        bgColor: '--cat-home-bg',        icon: Home,           tipos: ['arriendo', 'servicios'] },
+  { id: 'alimentacion',    label: 'Alimentación',      color: '--cat-food',        bgColor: '--cat-food-bg',        icon: ShoppingBasket, tipos: ['mercado'] },
+  { id: 'bancario',        label: 'Deudas y Crédito',  color: '--cat-bank',        bgColor: '--cat-bank-bg',        icon: CreditCard,     tipos: ['tarjetas'] },
+  { id: 'salud',           label: 'Salud',             color: '--cat-health',      bgColor: '--cat-health-bg',      icon: Heart,          tipos: ['salud'] },
+  { id: 'movilidad',       label: 'Movilidad',         color: '--cat-transit',     bgColor: '--cat-transit-bg',     icon: Car,            tipos: ['transporte'] },
+  { id: 'tecnologia',      label: 'Conectividad',      color: '--cat-tech',        bgColor: '--cat-tech-bg',        icon: Globe,          tipos: ['internet'] },
+  { id: 'entretenimiento', label: 'Entretenimiento',   color: '--cat-recreation',  bgColor: '--cat-recreation-bg',  icon: Monitor,        tipos: ['streaming'] },
+  { id: 'trabajo',         label: 'Trabajo',           color: '--cat-work',        bgColor: '--cat-work-bg',        icon: Briefcase,      tipos: [] },
+  { id: 'familia',         label: 'Personas',          color: '--cat-family',      bgColor: '--cat-family-bg',      icon: Users,          tipos: [] },
+  { id: 'seguros',         label: 'Seguros',           color: '--cat-insurance',   bgColor: '--cat-insurance-bg',   icon: ShieldPlus,     tipos: [] },
+  { id: 'ahorro',          label: 'Ahorros e Inv.',    color: '--cat-savings',     bgColor: '--cat-savings-bg',     icon: PiggyBank,      tipos: ['pension_vol'] },
+  { id: 'viajes',          label: 'Viajes',            color: '--cat-travel',      bgColor: '--cat-travel-bg',      icon: Plane,          tipos: ['viaje'] },
+  { id: 'impuestos',       label: 'Impuestos',         color: '--cat-taxes',       bgColor: '--cat-taxes-bg',       icon: Landmark,       tipos: [] },
+  { id: 'otro',            label: 'Otros',             color: '--cat-other',       bgColor: '--cat-other-bg',       icon: Tag,            tipos: ['otro'] },
 ]
 
 export const EGRESO_TIPOS: { id: string; label: string; category: string }[] = [
-  { id: 'arriendo',    label: 'Arriendo',            category: 'vivienda'     },
-  { id: 'servicios',   label: 'Servicios públicos',  category: 'vivienda'     },
-  { id: 'mercado',     label: 'Mercado',             category: 'alimentacion' },
-  { id: 'internet',    label: 'Internet / cel',      category: 'tecnologia'   },
-  { id: 'streaming',   label: 'Streaming',           category: 'tecnologia'   },
-  { id: 'tarjetas',    label: 'Tarjetas',            category: 'bancario'     },
-  { id: 'salud',       label: 'Salud prepagada',     category: 'salud'        },
-  { id: 'transporte',  label: 'Transporte',          category: 'movilidad'    },
-  { id: 'viaje',       label: 'Viaje',               category: 'viajes'       },
-  { id: 'pension_vol', label: 'Pensión voluntaria',  category: 'otro'         },
-  { id: 'otro',        label: 'Otro',                category: 'otro'         },
+  { id: 'arriendo',    label: 'Arriendo',            category: 'vivienda'        },
+  { id: 'servicios',   label: 'Servicios públicos',  category: 'vivienda'        },
+  { id: 'mercado',     label: 'Mercado',             category: 'alimentacion'    },
+  { id: 'internet',    label: 'Internet / cel',      category: 'tecnologia'      },
+  { id: 'streaming',   label: 'Streaming',           category: 'entretenimiento' },
+  { id: 'tarjetas',    label: 'Tarjetas',            category: 'bancario'        },
+  { id: 'salud',       label: 'Salud prepagada',     category: 'salud'           },
+  { id: 'transporte',  label: 'Transporte',          category: 'movilidad'       },
+  { id: 'viaje',       label: 'Viaje',               category: 'viajes'          },
+  { id: 'pension_vol', label: 'Pensión voluntaria',  category: 'ahorro'          },
+  { id: 'otro',        label: 'Otro',                category: 'otro'            },
 ]
 
 export const TRANSFER_ACCOUNTS: Account[] = [

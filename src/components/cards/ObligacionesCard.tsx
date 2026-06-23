@@ -144,41 +144,46 @@ interface ItemRowProps {
   label: string
   amount: number
   badge: string
-  color: string
   trm: number
   showUSD: boolean
   dim?: boolean
 }
 
-function ItemRow({ label, amount, badge, color, trm, showUSD, dim }: ItemRowProps) {
+function ItemRow({ label, amount, badge, trm, showUSD, dim }: ItemRowProps) {
   return (
     <div className={cn(
-      'flex items-center gap-2.5 py-2 border-b border-[var(--border)] last:border-0',
+      'flex items-center gap-2 py-[9px] border-b border-[var(--border)] last:border-0',
       dim && 'opacity-35'
     )}>
-      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: `var(${color})` }} />
-      <span className="text-sm text-foreground flex-1 truncate">{label}</span>
+      <span className="flex-1 min-w-0 text-sm text-foreground">{label}</span>
       <span className="text-[10px] text-muted-foreground tabular-nums font-mono shrink-0">{badge}</span>
-      <div className="text-right shrink-0 min-w-[6.5rem]">
-        <div className="text-sm font-semibold tabular-nums font-heading">{COP(amount)}</div>
+      <div className="w-[104px] shrink-0 flex flex-col items-end">
+        <span className="text-sm font-semibold tabular-nums font-mono">{COP(amount)}</span>
         {showUSD && trm > 0 && (
-          <div className="text-[10px] text-muted-foreground tabular-nums">{USD(amount / trm)}</div>
+          <span className="text-[10px] tabular-nums font-mono text-muted-foreground">{USD(amount / trm)}</span>
         )}
       </div>
     </div>
   )
 }
 
-function GroupBox({ label, children, action, trmNote }: { label: string; children: React.ReactNode; action?: React.ReactNode; trmNote?: string }) {
+function GroupBox({ label, children, action, trmNote, ibcRow }: { label: string; children: React.ReactNode; action?: React.ReactNode; trmNote?: string; ibcRow?: React.ReactNode }) {
   return (
     <div className="rounded-lg bg-muted overflow-hidden">
-      <div className="px-3 pt-2 pb-0.5 flex items-center gap-1">
-        <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70">{label}</span>
-        {action}
+      <div className="px-3 pt-2 pb-0.5 flex items-center gap-4">
+        <div className="flex items-center gap-1">
+          <span className="text-[10px] font-semibold uppercase tracking-[1px] text-muted-foreground/70">{label}</span>
+          {action}
+        </div>
         {trmNote && (
           <span className="ml-auto text-[10px] tabular-nums text-muted-foreground/50">{trmNote}</span>
         )}
       </div>
+      {ibcRow && (
+        <div className="px-3 pt-2 pb-[13px] border-b border-[var(--border)]">
+          {ibcRow}
+        </div>
+      )}
       <div className="px-3">
         {children}
       </div>
@@ -241,16 +246,6 @@ export function ObligacionesCard() {
   return (
     <SectionCard icon={Landmark} title="Obligaciones tributarias" action={totalAction}>
 
-      {/* IBC context line */}
-      <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-3 pb-3 border-b border-[var(--border)]">
-        <span className="font-medium">IBC</span>
-        <span className="text-muted-foreground/40">·</span>
-        <span className="font-mono font-semibold tabular-nums text-foreground">{COP(ibc)}</span>
-        <span className="ml-auto text-[10px] text-muted-foreground/60">
-          {ibcIsMin ? 'mínimo SMMLV' : '40% servicios'}
-        </span>
-      </div>
-
       <div className="space-y-2">
         {/* SS group */}
         {res.ssItems.length > 0 && (
@@ -258,6 +253,18 @@ export function ObligacionesCard() {
             label="Seguridad Social"
             action={<SSScheduleDialog year={y} month={m} />}
             trmNote={showUSD ? trmNote : undefined}
+            ibcRow={
+              <div className="border border-[var(--border)] rounded-lg px-2 py-1 flex items-center gap-1.5">
+                <span className="text-xs font-medium text-muted-foreground">IBC</span>
+                <span className="text-[10px] text-muted-foreground">·</span>
+                <span className="text-[10px] text-muted-foreground">
+                  {ibcIsMin ? 'mínimo SMMLV' : '40% servicios'}
+                </span>
+                <span className="flex-1 text-right text-xs font-semibold font-mono tabular-nums text-muted-foreground">
+                  {COP(ibc)}
+                </span>
+              </div>
+            }
           >
             {res.ssItems.map(item => (
               <ItemRow
@@ -265,7 +272,6 @@ export function ObligacionesCard() {
                 label={item.label}
                 amount={item.amount}
                 badge={`${item.pct}%`}
-                color={item.color}
                 trm={transferTRM}
                 showUSD={showUSD}
               />
@@ -276,7 +282,7 @@ export function ObligacionesCard() {
         {/* Retención group */}
         {retefuente.length > 0 && (
           <GroupBox
-            label="Retención en la fuente"
+            label="Retenciones"
             trmNote={showUSD ? trmNote : undefined}
           >
             {retefuente.map(item => (
@@ -285,7 +291,6 @@ export function ObligacionesCard() {
                 label={item.label}
                 amount={item.amount}
                 badge={`${item.pct}%`}
-                color={item.color}
                 trm={transferTRM}
                 showUSD={showUSD}
               />

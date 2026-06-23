@@ -36,36 +36,43 @@ function IncomeRow({
     : accountLower.includes('bancol') ? 'bancol'
     : 'otro'
 
+  // Primary = original currency; secondary = equivalent in the other currency
+  const primaryAmt   = inc.currency === 'USD' ? USD(inc.amount) : COP(inc.amount)
+  const secondaryAmt = inc.currency === 'USD' ? COP(inc.amount * trm) : USD(inc.amount / trm)
+
+  const meta = (
+    <div className="flex items-center gap-1 flex-wrap">
+      <Badge variant={acctVariant}>{inc.account}</Badge>
+      {inc.applyProvisions === false && (
+        <>
+          <span className="text-[11px] text-muted-foreground">·</span>
+          <span className="text-[11px] text-muted-foreground">sin prov.</span>
+        </>
+      )}
+      <span className="text-[11px] text-muted-foreground">·</span>
+      <span className="text-[11px] text-muted-foreground">{inc.tipo}</span>
+      {inc.date && (
+        <>
+          <span className="text-[11px] text-muted-foreground">·</span>
+          <span className="text-[11px] text-muted-foreground">{fmtDate(inc.date)}</span>
+        </>
+      )}
+    </div>
+  )
+
   return (
     <>
-      <div className="flex items-center gap-2 min-h-[52px] py-1.5 border-b border-[var(--border)] last:border-0">
-        {/* Description + meta */}
-        <div className="flex-1 min-w-0">
-          <div className="text-sm font-medium truncate">{inc.desc}</div>
-          <div className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1 flex-wrap">
-            <Badge variant={acctVariant}>{inc.account}</Badge>
-            <span>· {inc.tipo}</span>
-            {inc.applyProvisions === false && (
-              <span className="text-muted-foreground/50">· sin prov.</span>
-            )}
-            {inc.date && <><span>·</span><span>{fmtDate(inc.date)}</span></>}
-          </div>
+      {/* Desktop */}
+      <div className="hidden sm:flex items-center gap-3 py-[9px] border-b border-[var(--border)] last:border-0">
+        <div className="flex-1 min-w-0 flex flex-col">
+          <div className="text-sm font-medium leading-snug truncate">{inc.desc}</div>
+          <div className="mt-0.5">{meta}</div>
         </div>
-
-        {/* Amount */}
-        <div className="text-right shrink-0">
-          <div className="text-sm font-semibold tabular-nums font-heading">
-            {inc.currency === 'USD' ? USD(inc.amount) : COP(inc.amount)}
-          </div>
-          {inc.currency === 'USD' && (
-            <div className="text-xs text-muted-foreground tabular-nums">
-              {COP(inc.amount * trm)}
-            </div>
-          )}
+        <div className="flex flex-col items-end shrink-0">
+          <span className="text-sm font-semibold tabular-nums font-mono leading-snug">{primaryAmt}</span>
+          <span className="text-[10px] tabular-nums font-mono text-muted-foreground">{secondaryAmt}</span>
         </div>
-
-        {/* Desktop actions */}
-        <div className="hidden sm:flex items-center gap-1 shrink-0">
+        <div className="flex items-center gap-0.5 shrink-0">
           <Button variant="ghost" size="icon-sm" onClick={onEdit} aria-label="Editar ingreso">
             <Pencil size={13} />
           </Button>
@@ -79,16 +86,26 @@ function IncomeRow({
             {isPending ? '¿Eliminar?' : <Trash2 size={13} />}
           </Button>
         </div>
+      </div>
 
-        {/* Mobile action */}
+      {/* Mobile */}
+      <div className="sm:hidden flex items-start gap-2 py-2 border-b border-[var(--border)] last:border-0">
+        <div className="flex-1 min-w-0 flex flex-col gap-1">
+          <div className="flex items-end gap-2">
+            <span className="text-base font-bold tabular-nums font-heading">{primaryAmt}</span>
+            <span className="text-[11px] font-semibold tabular-nums font-mono text-muted-foreground">{secondaryAmt}</span>
+          </div>
+          <div className="text-sm font-medium leading-snug truncate">{inc.desc}</div>
+          {meta}
+        </div>
         <Button
           variant="ghost"
           size="icon-sm"
-          className="sm:hidden shrink-0"
+          className="shrink-0 mt-0.5"
           onClick={() => setSheetOpen(true)}
           aria-label="Opciones"
         >
-          <MoreVertical size={16} />
+          <MoreVertical size={20} />
         </Button>
       </div>
 
@@ -115,7 +132,7 @@ export function IngresosCard() {
   const month = getCurrentMonth()
   const { totUSD } = calcTotales(month.incomes, month.trm)
   const displayTRM = liveTRM ?? month.trm
-  const { bruto }  = calcTotales(month.incomes, displayTRM)
+  const { bruto }  = calcTotales(month.incomes, month.trm)
   const hasIncomes = month.incomes.length > 0
 
   function handleEdit(id: number) {
@@ -185,13 +202,20 @@ export function IngresosCard() {
                 />
               ))}
 
-            <div className="mt-3 pt-3 border-t border-[var(--border)]">
+            <div className="mt-3">
               <MetricCard
                 label="Total bruto equiv. COP"
                 value={COP(bruto)}
-                sub={totUSD > 0
-                  ? `${USD(totUSD)} · ${liveTRM ? 'TRM hoy' : 'TRM mes'} ${displayTRM.toLocaleString('es-CO', { maximumFractionDigits: 2 })}`
-                  : undefined}
+                sub={totUSD > 0 ? (
+                  <span className="text-[0px]">
+                    <span className="font-heading font-semibold text-[12px] leading-[18px] tabular-nums">
+                      {USD(totUSD)}
+                    </span>
+                    <span className="font-sans font-normal text-[11px] leading-[17px]">
+                      {` · ${liveTRM ? 'TRM hoy' : 'TRM mes'} ${displayTRM.toLocaleString('es-CO', { maximumFractionDigits: 2 })}`}
+                    </span>
+                  </span>
+                ) : undefined}
               />
             </div>
           </div>

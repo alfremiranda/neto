@@ -8,195 +8,259 @@
 
 @layer base {
   :root {
-    /* ── Layer 2: shadcn base tokens (do not modify) ─────────────────────── */
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.148 0.004 228.8);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.148 0.004 228.8);
-    --muted: oklch(0.963 0.002 197.1);
-    --muted-foreground: oklch(0.56 0.021 213.5);
-    --border: oklch(0.925 0.005 214.3);
-    --input: oklch(0.925 0.005 214.3);
-    --primary: oklch(0.5 0.134 242.749);
-    --primary-foreground: oklch(0.977 0.013 236.62);
-    --secondary: oklch(0.967 0.001 286.375);
-    --secondary-foreground: oklch(0.21 0.006 285.885);
-    --accent: oklch(0.963 0.002 197.1);
-    --accent-foreground: oklch(0.218 0.008 223.9);
-    --destructive: oklch(0.577 0.245 27.325);
-    --destructive-foreground: oklch(0.977 0.013 236.62);
-    --ring: oklch(0.723 0.014 214.4);
-    --radius: 0.625rem;
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.148 0.004 228.8);
-    --chart-1: oklch(0.845 0.143 164.978);
-    --chart-2: oklch(0.696 0.17 162.48);
-    --chart-3: oklch(0.596 0.145 163.225);
-    --chart-4: oklch(0.508 0.118 165.612);
-    --chart-5: oklch(0.432 0.095 166.913);
-    --sidebar: oklch(0.987 0.002 197.1);
-    --sidebar-foreground: oklch(0.148 0.004 228.8);
-    --sidebar-primary: oklch(0.588 0.158 241.966);
-    --sidebar-primary-foreground: oklch(0.977 0.013 236.62);
-    --sidebar-accent: oklch(0.963 0.002 197.1);
-    --sidebar-accent-foreground: oklch(0.218 0.008 223.9);
-    --sidebar-border: oklch(0.925 0.005 214.3);
-    --sidebar-ring: oklch(0.723 0.014 214.4);
+    /* ── Figma token map: Light ──────────────────────────────────────────── */
 
-    /* ── Layer 3: Neto domain tokens ─────────────────────────────────────── */
+    /* Surfaces */
+    --background:          #f8fafc;   /* surface/wrap/default  */
+    --card:                #ffffff;   /* surface/wrap/card     */
+    --card-foreground:     #0f172a;
+    --muted:               #f1f5f9;   /* surface/wrap/subtle   */
+    --muted-foreground:    #64748b;   /* foreground/subtle     */
+    --accent:              #f1f5f9;
+    --accent-foreground:   #0f172a;
+    --popover:             #ffffff;
+    --popover-foreground:  #0f172a;
 
-    /* Tertiary text — dimmer than muted-foreground; icons, labels, placeholders */
-    --n-txt3: oklch(0.68 0.012 214);
+    /* Foreground */
+    --foreground:          #0f172a;   /* foreground/default    */
 
-    /* Ingresos — primary blue */
-    --color-income:     var(--primary);
-    --color-income-bg:  oklch(0.94 0.03 242);
-    --color-income-txt: oklch(0.28 0.10 242);
+    /* Border / input */
+    --border:              #e2e8f0;   /* border/default        */
+    --input:               #cbd5e1;   /* input/color/border    */
+    --ring:                #0891b2;
 
-    /* Egresos — rose/pink. Psicología: rojo = gasto, salida */
-    --color-expense:     oklch(0.56 0.22 13);   /* rose-500 */
-    --color-expense-bg:  oklch(0.95 0.05 13);
-    --color-expense-txt: oklch(0.35 0.16 13);
+    /* Primary — interactive/primary cyan */
+    --primary:             #0891b2;
+    --primary-foreground:  #ffffff;
 
-    /* Provisiones — emerald. Psicología: verde = ahorro, crecimiento */
-    --color-provision:     oklch(0.59 0.18 163); /* emerald-600 */
-    --color-provision-bg:  oklch(0.94 0.05 163);
-    --color-provision-txt: oklch(0.30 0.12 163);
+    /* Secondary */
+    --secondary:           #f1f5f9;
+    --secondary-foreground: #0f172a;
 
-    /* Obligaciones tributarias — amber. Psicología: amarillo = precaución */
-    --color-tax:     oklch(0.77 0.18 73);  /* amber-400 — fill/chart only */
-    --color-tax-txt: oklch(0.50 0.18 73);  /* amber-700 — WCAG AA 4.5:1 sobre blanco */
+    /* Destructive */
+    --destructive:         #ef4444;
+    --destructive-foreground: #ffffff;
 
-    /* Neto libre — cyan. Psicología: azul = resultado, claridad */
-    --color-net:     oklch(0.72 0.16 201); /* cyan-500 */
-    --color-net-bg:  oklch(0.94 0.05 201);
-    --color-net-txt: oklch(0.46 0.16 200); /* cyan-700 — WCAG AA 4.7:1 sobre blanco */
+    /* Radius — xl=12px base, lg=8px buttons, sm=6px inputs */
+    --radius:              0.75rem;
 
-    /* Estados */
-    --color-danger:     var(--destructive);
-    --color-danger-bg:  oklch(0.95 0.03 20);
-    --color-danger-txt: oklch(0.35 0.15 20);
+    /* Sidebar (nav/background = white, selected = cyan) */
+    --sidebar:                    #ffffff;
+    --sidebar-foreground:         #0f172a;   /* sidebar/item/foreground          */
+    --sidebar-primary:            #0891b2;   /* sidebar/item/background-selected */
+    --sidebar-primary-foreground: #ffffff;   /* sidebar/item/foreground-selected */
+    --sidebar-accent:             #f1f5f9;
+    --sidebar-accent-foreground:  #0f172a;
+    --sidebar-border:             #e2e8f0;   /* sidebar/border                   */
+    --sidebar-ring:               #0891b2;
 
-    /* Cuentas — badges */
-    --color-account-arq-bg:      oklch(0.94 0.03 242);
-    --color-account-arq-txt:     oklch(0.28 0.10 242);
-    --color-account-toptal-bg:   oklch(0.94 0.04 290);
-    --color-account-toptal-txt:  oklch(0.30 0.12 290);
-    --color-account-bancol-bg:   oklch(0.94 0.05 163);
-    --color-account-bancol-txt:  oklch(0.30 0.12 163);
-    --color-account-other-bg:    oklch(0.94 0.01 90);
-    --color-account-other-txt:   oklch(0.35 0.01 90);
+    /* Chart colors — match KPI palette */
+    --chart-1: #fbbf24;   /* tax / amber    */
+    --chart-2: #059669;   /* provision / emerald */
+    --chart-3: #ef4444;   /* expense / red  */
+    --chart-4: #0284c7;   /* net / sky      */
+    --chart-5: #0891b2;   /* income / cyan  */
 
-    /* ── Category palette — egreso categories ────────────────────────────── */
-    /* Vivid, distinct from KPI tokens, ≥3:1 on white */
-    --cat-home:       oklch(0.53 0.18 183);  /* teal-600     */
-    --cat-home-bg:    oklch(0.93 0.05 183);
-    --cat-food:       oklch(0.62 0.22 48);   /* orange-500   */
-    --cat-food-bg:    oklch(0.95 0.06 48);
-    --cat-tech:       oklch(0.48 0.26 265);  /* indigo-600   */
-    --cat-tech-bg:    oklch(0.93 0.07 265);
-    --cat-bank:       oklch(0.51 0.22 257);  /* blue-600     */
-    --cat-bank-bg:    oklch(0.93 0.05 257);
-    --cat-health:     oklch(0.56 0.26 17);   /* rose-600     */
-    --cat-health-bg:  oklch(0.94 0.06 17);
-    --cat-transit:    oklch(0.57 0.20 208);  /* sky-600      */
-    --cat-transit-bg: oklch(0.93 0.05 208);
-    --cat-family:     oklch(0.65 0.24 42);   /* orange-warm  */
-    --cat-family-bg:  oklch(0.95 0.06 42);
-    --cat-travel:     oklch(0.52 0.24 285);  /* violet-600   */
-    --cat-travel-bg:  oklch(0.94 0.06 285);
-    --cat-other:      oklch(0.51 0.08 265);  /* purple-gray  */
-    --cat-other-bg:   oklch(0.94 0.03 265);
+    /* ── Neto domain tokens — Light ─────────────────────────────────────── */
+
+    /* Tertiary text — dimmer than muted-foreground */
+    --n-txt3: #94a3b8;   /* foreground/placeholder */
+
+    /* Ingresos — cyan (primary) */
+    --color-income:     #0891b2;
+    --color-income-bg:  #ecfeff;   /* account/1/surface */
+    --color-income-txt: #0e7490;   /* account/1/foreground */
+
+    /* Egresos — red */
+    --color-expense:     #ef4444;   /* kpi/expense/default */
+    --color-expense-bg:  #fff1f2;   /* category/health/surface */
+    --color-expense-txt: #be123c;
+
+    /* Provisiones — emerald */
+    --color-provision:     #059669;   /* kpi/provision/default */
+    --color-provision-bg:  #ecfdf5;   /* account/3/surface     */
+    --color-provision-txt: #047857;   /* account/3/foreground  */
+
+    /* Obligaciones tributarias — amber */
+    --color-tax:     #fbbf24;   /* kpi/tax/default    */
+    --color-tax-txt: #b45309;   /* kpi/tax/foreground */
+    --color-tax-bg:  #fffbeb;
+
+    /* Neto libre — sky */
+    --color-net:     #0284c7;   /* kpi/net/default    */
+    --color-net-bg:  #f0f9ff;   /* category/work/surface */
+    --color-net-txt: #0369a1;   /* kpi/net/foreground */
+
+    /* Danger (delete, alerts) */
+    --color-danger:     #ef4444;
+    --color-danger-bg:  #fff1f2;
+    --color-danger-txt: #be123c;
+
+    /* Account badges */
+    --color-account-arq-bg:     #ecfeff;   /* account/1/surface    */
+    --color-account-arq-txt:    #0e7490;   /* account/1/foreground */
+    --color-account-toptal-bg:  #f5f3ff;   /* account/2/surface    */
+    --color-account-toptal-txt: #7c3aed;   /* account/2/foreground */
+    --color-account-bancol-bg:  #ecfdf5;   /* account/3/surface    */
+    --color-account-bancol-txt: #047857;   /* account/3/foreground */
+    --color-account-other-bg:   #f1f5f9;   /* account/4/surface    */
+    --color-account-other-txt:  #475569;   /* account/4/foreground */
+
+    /* Category palette — egreso categories */
+    --cat-home:          #0d9488;   /* category/home         teal-700  */
+    --cat-home-bg:       #f0fdfa;
+    --cat-food:          #ea580c;   /* category/food         orange-600 */
+    --cat-food-bg:       #fff7ed;
+    --cat-bank:          #2563eb;   /* category/bank         blue-600  */
+    --cat-bank-bg:       #eff6ff;
+    --cat-health:        #e11d48;   /* category/health       rose-600  */
+    --cat-health-bg:     #fff1f2;
+    --cat-transit:       #ca8a04;   /* category/transit      yellow-600 */
+    --cat-transit-bg:    #fefce8;
+    --cat-tech:          #4b5563;   /* category/connectivity gray-600  */
+    --cat-tech-bg:       #f9fafb;
+    --cat-recreation:    #4f46e5;   /* category/recreation   indigo-600 */
+    --cat-recreation-bg: #eef2ff;
+    --cat-work:          #0284c7;   /* category/work         sky-600   */
+    --cat-work-bg:       #f0f9ff;
+    --cat-family:        #db2777;   /* category/family       pink-600  */
+    --cat-family-bg:     #fdf2f8;
+    --cat-insurance:     #65a30d;   /* category/insurance    lime-600  */
+    --cat-insurance-bg:  #f7fee7;
+    --cat-savings:       #059669;   /* category/savings      emerald-600 */
+    --cat-savings-bg:    #ecfdf5;
+    --cat-travel:        #7c3aed;   /* category/travel       violet-700 */
+    --cat-travel-bg:     #f5f3ff;
+    --cat-taxes:         #d97706;   /* category/taxes        amber-600 */
+    --cat-taxes-bg:      #fffbeb;
+    --cat-other:         #64748b;   /* category/other        slate-500  */
+    --cat-other-bg:      #f1f5f9;
   }
 
   .dark {
-    /* ── Layer 2: shadcn base tokens dark ───────────────────────────────── */
-    --background: oklch(0.13 0.006 228.8);
-    --foreground: oklch(0.96 0.002 197.1);
-    --card: oklch(0.21 0.008 223.9);
-    --card-foreground: oklch(0.96 0.002 197.1);
-    --popover: oklch(0.21 0.008 223.9);
-    --popover-foreground: oklch(0.96 0.002 197.1);
-    --primary: oklch(0.55 0.13 240.79);
-    --primary-foreground: oklch(0.977 0.013 236.62);
-    --secondary: oklch(0.27 0.008 286.033);
-    --secondary-foreground: oklch(0.98 0 0);
-    --muted: oklch(0.27 0.01 216.9);
-    --muted-foreground: oklch(0.7 0.014 214.4);
-    --accent: oklch(0.27 0.01 216.9);
-    --accent-foreground: oklch(0.96 0.002 197.1);
-    --destructive: oklch(0.7 0.19 22.216);
-    --border: oklch(1 0 0 / 14%);
-    --input: oklch(1 0 0 / 18%);
-    --ring: oklch(0.56 0.021 213.5);
-    --chart-1: oklch(0.845 0.143 164.978);
-    --chart-2: oklch(0.696 0.17 162.48);
-    --chart-3: oklch(0.596 0.145 163.225);
-    --chart-4: oklch(0.508 0.118 165.612);
-    --chart-5: oklch(0.432 0.095 166.913);
-    --sidebar: oklch(0.21 0.008 223.9);
-    --sidebar-foreground: oklch(0.96 0.002 197.1);
-    --sidebar-primary: oklch(0.685 0.169 237.323);
-    --sidebar-primary-foreground: oklch(0.293 0.066 243.157);
-    --sidebar-accent: oklch(0.27 0.01 216.9);
-    --sidebar-accent-foreground: oklch(0.96 0.002 197.1);
-    --sidebar-border: oklch(1 0 0 / 14%);
-    --sidebar-ring: oklch(0.56 0.021 213.5);
+    /* ── Figma token map: Dark ───────────────────────────────────────────── */
 
-    /* ── Layer 3: Neto domain tokens dark ───────────────────────────────── */
+    /* Surfaces */
+    --background:          #020617;   /* surface/wrap/default   slate-950 */
+    --card:                #1e293b;   /* surface/wrap/card      slate-800 */
+    --card-foreground:     #f8fafc;
+    --muted:               #334155;   /* surface/wrap/subtle    slate-700 */
+    --muted-foreground:    #94a3b8;   /* foreground/subtle      */
+    --accent:              #334155;
+    --accent-foreground:   #f1f5f9;
+    --popover:             #1e293b;
+    --popover-foreground:  #f8fafc;
 
-    --n-txt3: oklch(0.52 0.012 214);
+    /* Foreground */
+    --foreground:          #f8fafc;   /* foreground/default     */
 
-    --color-income:     var(--primary);
-    --color-income-bg:  oklch(0.18 0.05 242);
-    --color-income-txt: oklch(0.75 0.10 242);
+    /* Border / input */
+    --border:              rgba(255,255,255,0.141);   /* border/default #ffffff24 */
+    --input:               #334155;
+    --ring:                #06b6d4;
 
-    --color-expense:     oklch(0.68 0.22 13);  /* rose-400 */
-    --color-expense-bg:  oklch(0.18 0.07 13);
-    --color-expense-txt: oklch(0.82 0.16 13);
+    /* Primary — interactive/primary cyan (brighter in dark) */
+    --primary:             #06b6d4;   /* interactive/primary    cyan-500 */
+    --primary-foreground:  #083344;   /* button/filled/foreground        */
 
-    --color-provision:     oklch(0.73 0.18 163); /* emerald-400 */
-    --color-provision-bg:  oklch(0.17 0.06 163);
-    --color-provision-txt: oklch(0.80 0.14 163);
+    /* Secondary */
+    --secondary:           #334155;
+    --secondary-foreground: #f1f5f9;
 
-    --color-tax:     oklch(0.83 0.18 73);  /* amber-300 — fill/chart */
-    --color-tax-txt: oklch(0.86 0.18 73);  /* WCAG AA sobre dark bg */
+    /* Destructive */
+    --destructive:         #f87171;   /* kpi/expense/default dark red-400 */
+    --destructive-foreground: #083344;
 
-    --color-net:     oklch(0.82 0.16 201); /* cyan-400 */
-    --color-net-bg:  oklch(0.18 0.06 201);
-    --color-net-txt: oklch(0.88 0.14 201);
+    /* Sidebar (dark nav) */
+    --sidebar:                    #0f172a;   /* nav/background dark  slate-900 */
+    --sidebar-foreground:         #f1f5f9;   /* sidebar/accent-foreground      */
+    --sidebar-primary:            #06b6d4;
+    --sidebar-primary-foreground: #083344;
+    --sidebar-accent:             #334155;
+    --sidebar-accent-foreground:  #f1f5f9;
+    --sidebar-border:             rgba(255,255,255,0.141);
+    --sidebar-ring:               #06b6d4;
 
-    --color-danger-bg:  oklch(0.18 0.05 20);
-    --color-danger-txt: oklch(0.80 0.12 20);
+    /* Chart colors dark */
+    --chart-1: #fcd34d;   /* tax / amber-300    */
+    --chart-2: #34d399;   /* provision / emerald-400 */
+    --chart-3: #f87171;   /* expense / red-400  */
+    --chart-4: #7dd3fc;   /* net / sky-300      */
+    --chart-5: #22d3ee;   /* income / cyan-400  */
 
-    --color-account-arq-bg:      oklch(0.18 0.05 242);
-    --color-account-arq-txt:     oklch(0.75 0.10 242);
-    --color-account-toptal-bg:   oklch(0.18 0.06 290);
-    --color-account-toptal-txt:  oklch(0.75 0.10 290);
-    --color-account-bancol-bg:   oklch(0.17 0.06 163);
-    --color-account-bancol-txt:  oklch(0.80 0.14 163);
-    --color-account-other-bg:    oklch(0.20 0.005 90);
-    --color-account-other-txt:   oklch(0.80 0.008 90);
+    /* ── Neto domain tokens — Dark ──────────────────────────────────────── */
 
-    /* Category palette dark — vivid, L≈0.73-0.80 */
-    --cat-home:       oklch(0.74 0.20 183);
-    --cat-home-bg:    oklch(0.18 0.07 183);
-    --cat-food:       oklch(0.78 0.22 48);
-    --cat-food-bg:    oklch(0.18 0.08 48);
-    --cat-tech:       oklch(0.73 0.22 265);
-    --cat-tech-bg:    oklch(0.18 0.08 265);
-    --cat-bank:       oklch(0.73 0.20 257);
-    --cat-bank-bg:    oklch(0.18 0.07 257);
-    --cat-health:     oklch(0.75 0.24 17);
-    --cat-health-bg:  oklch(0.18 0.08 17);
-    --cat-transit:    oklch(0.77 0.20 208);
-    --cat-transit-bg: oklch(0.18 0.07 208);
-    --cat-family:     oklch(0.80 0.22 42);
-    --cat-family-bg:  oklch(0.18 0.08 42);
-    --cat-travel:     oklch(0.74 0.22 285);  /* violet dark  */
-    --cat-travel-bg:  oklch(0.18 0.07 285);
-    --cat-other:      oklch(0.73 0.08 265);
-    --cat-other-bg:   oklch(0.18 0.03 265);
+    --n-txt3: #64748b;   /* slate-500 */
+
+    /* Ingresos */
+    --color-income:     #06b6d4;
+    --color-income-bg:  #083344;   /* account/1/surface dark  */
+    --color-income-txt: #67e8f9;   /* account/1/foreground dark */
+
+    /* Egresos */
+    --color-expense:     #f87171;   /* kpi/expense/default dark */
+    --color-expense-bg:  #450a0a;
+    --color-expense-txt: #fca5a5;
+
+    /* Provisiones */
+    --color-provision:     #34d399;   /* kpi/provision/default dark */
+    --color-provision-bg:  #022c22;   /* account/3/surface dark     */
+    --color-provision-txt: #6ee7b7;   /* account/3/foreground dark  */
+
+    /* Obligaciones */
+    --color-tax:     #fcd34d;   /* kpi/tax/default dark    amber-300 */
+    --color-tax-txt: #fcd34d;
+    --color-tax-bg:  #451a03;
+
+    /* Neto libre */
+    --color-net:     #7dd3fc;   /* kpi/net/default dark   sky-300 */
+    --color-net-bg:  #0c4a6e;   /* category/work/surface dark     */
+    --color-net-txt: #e0f2fe;   /* kpi/net/foreground dark        */
+
+    /* Danger */
+    --color-danger:     #f87171;
+    --color-danger-bg:  #450a0a;
+    --color-danger-txt: #fca5a5;
+
+    /* Account badges dark */
+    --color-account-arq-bg:     #083344;   /* account/1/surface dark    */
+    --color-account-arq-txt:    #67e8f9;   /* account/1/foreground dark */
+    --color-account-toptal-bg:  #4c1d95;   /* account/2/surface dark    */
+    --color-account-toptal-txt: #c4b5fd;   /* account/2/foreground dark */
+    --color-account-bancol-bg:  #022c22;   /* account/3/surface dark    */
+    --color-account-bancol-txt: #6ee7b7;   /* account/3/foreground dark */
+    --color-account-other-bg:   #334155;   /* account/4/surface dark    */
+    --color-account-other-txt:  #cbd5e1;   /* account/4/foreground dark */
+
+    /* Category palette dark */
+    --cat-home:          #5eead4;   /* teal-300    */
+    --cat-home-bg:       #134e4a;
+    --cat-food:          #fb923c;   /* orange-400  */
+    --cat-food-bg:       #431407;
+    --cat-bank:          #93c5fd;   /* blue-300    */
+    --cat-bank-bg:       #1e3a8a;
+    --cat-health:        #fda4af;   /* rose-300    */
+    --cat-health-bg:     #881337;
+    --cat-transit:       #fde047;   /* yellow-300  */
+    --cat-transit-bg:    #713f12;
+    --cat-tech:          #d1d5db;   /* gray-300    */
+    --cat-tech-bg:       #111827;
+    --cat-recreation:    #a5b4fc;   /* indigo-300  */
+    --cat-recreation-bg: #1e1b4b;
+    --cat-work:          #7dd3fc;   /* sky-300     */
+    --cat-work-bg:       #0c4a6e;
+    --cat-family:        #f9a8d4;   /* pink-300    */
+    --cat-family-bg:     #831843;
+    --cat-insurance:     #bef264;   /* lime-300    */
+    --cat-insurance-bg:  #1a2e05;
+    --cat-savings:       #6ee7b7;   /* emerald-300 */
+    --cat-savings-bg:    #022c22;
+    --cat-travel:        #c4b5fd;   /* violet-300  */
+    --cat-travel-bg:     #2e1065;
+    --cat-taxes:         #fcd34d;   /* amber-300   */
+    --cat-taxes-bg:      #451a03;
+    --cat-other:         #94a3b8;   /* slate-400   */
+    --cat-other-bg:      #1e293b;
   }
 
   * {
@@ -212,8 +276,8 @@
   }
 
   html {
-    --font-sans: 'Inter Variable', Inter, system-ui, sans-serif;
-    --font-mono: 'Geist Mono Variable', 'Geist Mono', monospace;
+    --font-sans:    'Inter Variable', Inter, system-ui, sans-serif;
+    --font-mono:    'Geist Mono Variable', 'Geist Mono', monospace;
     --font-heading: var(--font-mono);
     font-family: var(--font-sans);
   }
@@ -240,7 +304,7 @@
     }
   }
 
-  /* Typography hierarchy — headings use Geist Mono (--font-heading) */
+  /* Typography hierarchy */
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
     font-weight: 600;
@@ -255,16 +319,14 @@
   small { font-size: 0.75rem; color: var(--muted-foreground); }
   strong { font-weight: 600; }
 
-  /* Utility: tabular-nums + heading font for monetary displays */
   .font-heading {
     font-family: var(--font-heading);
   }
 }
 
 /*
-  Fix: Tailwind v3 wraps CSS variable colors in hsl() which is invalid for
-  oklch values. These overrides restore direct var() references.
-  Later in source order → wins over Tailwind-generated hsl() rules.
+  Fix: Tailwind v3 wraps CSS variable colors in hsl() — invalid for raw hex/oklch vars.
+  These overrides restore direct var() references.
 */
 .bg-background  { background-color: var(--background) !important; }
 .bg-foreground  { background-color: var(--foreground) !important; }
@@ -322,9 +384,9 @@
   width: 100%;
   height: 2.25rem;
   padding: 0 0.75rem;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  background-color: var(--background);
+  border-radius: calc(var(--radius) - 4px);   /* input/radius = 6px */
+  border: 1px solid var(--input);
+  background-color: var(--card);
   color: var(--foreground);
   font-size: 0.875rem;
   font-family: inherit;
@@ -340,7 +402,7 @@
 .field-input:focus,
 .field-select:focus {
   border-color: var(--ring);
-  box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 20%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 15%, transparent);
 }
 .field-input:disabled,
 .field-select:disabled {

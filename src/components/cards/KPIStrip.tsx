@@ -13,8 +13,8 @@ interface KPICardProps {
   label: string
   value: string
   sub?: string
-  accentToken?: string  // CSS var name e.g. '--color-income'; use for dynamic colors
-  accent?: string       // static Tailwind class e.g. 'text-[var(--color-net)]'
+  accentToken?: string
+  accent?: string
   detail?: DetailLine[]
 }
 
@@ -37,8 +37,8 @@ function KPITooltipContent({ lines }: { lines: DetailLine[] }) {
 
 function KPICard({ label, value, sub, accentToken, accent, detail }: KPICardProps) {
   const card = (
-    <Card className={cn('p-4 flex flex-col gap-1.5', detail && 'cursor-help')}>
-      <div className="text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
+    <Card className={cn('p-[17px] flex flex-col gap-1.5', detail && 'cursor-help')}>
+      <div className="text-[10px] font-semibold font-sans uppercase tracking-[1px] text-muted-foreground">
         {label}
       </div>
       <div
@@ -48,7 +48,7 @@ function KPICard({ label, value, sub, accentToken, accent, detail }: KPICardProp
         {value}
       </div>
       {sub && (
-        <div className="text-xs text-muted-foreground">{sub}</div>
+        <div className="text-[11px] text-muted-foreground">{sub}</div>
       )}
     </Card>
   )
@@ -149,40 +149,40 @@ export function KPIStrip() {
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-5">
-        <KPICard
-          label="Ingreso bruto"
-          value={COP(bruto)}
-          sub={bruto > 0 ? `TRM ${month.trm.toLocaleString('es-CO')}` : 'Sin ingresos este mes'}
-          detail={ingresoDetail.length > 0 ? ingresoDetail : undefined}
-        />
-        <KPICard
-          label="O. Tributarias"
-          value={COP(obligTotal)}
-          sub={pct(obligTotal)}
-          accentToken="--color-tax-txt"
-          detail={obligDetail.length > 0 ? obligDetail : undefined}
-        />
-        <KPICard
-          label="Provisiones"
-          value={COP(provTotal)}
-          sub={pct(provTotal)}
-          accentToken={provToken}
-          detail={provDetail.length > 0 ? provDetail : undefined}
-        />
-        <KPICard
-          label="Egresos"
-          value={COP(gast)}
-          sub={pct(gast)}
-          accent="text-[var(--color-expense)]"
-          detail={egresoDetail.length > 0 ? egresoDetail : undefined}
-        />
-        <KPICard
-          label="Neto libre"
-          value={COP(Math.max(res.netoLibre, 0))}
-          sub={pct(Math.max(res.netoLibre, 0))}
-          accent={res.netoLibre > 0 ? 'text-[var(--color-net-txt)]' : 'text-[var(--color-danger)]'}
-          detail={netoDetail.length > 0 ? netoDetail : undefined}
-        />
-      </div>
+      <KPICard
+        label="Ingreso bruto"
+        value={COP(bruto)}
+        sub={bruto > 0 ? `TRM ${month.trm.toLocaleString('es-CO')}` : 'Sin ingresos este mes'}
+        detail={ingresoDetail.length > 0 ? ingresoDetail : undefined}
+      />
+      <KPICard
+        label="O. Tributarias"
+        value={COP(obligTotal)}
+        sub={pct(obligTotal)}
+        accentToken="--color-tax-txt"
+        detail={obligDetail.length > 0 ? obligDetail : undefined}
+      />
+      <KPICard
+        label="Provisiones"
+        value={COP(provTotal)}
+        sub={pct(provTotal)}
+        accentToken={provToken}
+        detail={provDetail.length > 0 ? provDetail : undefined}
+      />
+      <KPICard
+        label="Egresos"
+        value={COP(gast)}
+        sub={pct(gast)}
+        accent="text-[var(--color-expense)]"
+        detail={egresoDetail.length > 0 ? egresoDetail : undefined}
+      />
+      <KPICard
+        label="Neto libre"
+        value={COP(Math.max(res.netoLibre, 0))}
+        sub={pct(Math.max(res.netoLibre, 0))}
+        accent={res.netoLibre > 0 ? 'text-[var(--color-net-txt)]' : 'text-[var(--color-danger)]'}
+        detail={netoDetail.length > 0 ? netoDetail : undefined}
+      />
+    </div>
   )
 }

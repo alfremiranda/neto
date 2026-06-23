@@ -1,8 +1,9 @@
-import { Sun, Moon, CalendarDays, LogOut } from 'lucide-react'
+import { Sun, Moon, CalendarDays, LogOut, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 import { useLiveTRM } from '@/hooks/useLiveTRM'
 import { useTheme } from '@/hooks/useTheme'
 import { useAuthStore } from '@/store/authStore'
+import { useSidebar } from '@/components/ui/sidebar'
 
 const DAYS  = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
 const MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
@@ -64,6 +65,20 @@ function UserAvatar() {
   )
 }
 
+function SidebarToggle() {
+  const { toggleSidebar, state } = useSidebar()
+  const collapsed = state === 'collapsed'
+  return (
+    <button
+      onClick={toggleSidebar}
+      aria-label={collapsed ? 'Expandir barra lateral' : 'Colapsar barra lateral'}
+      className="hidden sm:flex p-[9px] rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors border-0 bg-transparent cursor-pointer shrink-0"
+    >
+      {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+    </button>
+  )
+}
+
 export function Header() {
   const { trm, fresh } = useLiveTRM()
   const { theme, toggle } = useTheme()
@@ -73,13 +88,18 @@ export function Header() {
     : '—'
 
   return (
-    <header className="flex items-center justify-between gap-2 px-4 sm:px-5 h-14 shrink-0 bg-[var(--card)] border-b border-[var(--border)]">
-      <span className="text-base font-bold font-heading tracking-tight text-[var(--foreground)] select-none">Neto</span>
+    <header className="flex items-center justify-between gap-2 px-3 sm:px-4 h-[54px] shrink-0 bg-[var(--card)] border-b border-[var(--border)]">
+      {/* Left: sidebar toggle (desktop) + logo */}
+      <div className="flex items-center gap-3">
+        <SidebarToggle />
+        <span className="text-base font-bold font-heading tracking-tight text-[var(--foreground)] select-none">Neto</span>
+      </div>
 
+      {/* Right: chips + actions */}
       <div className="flex items-center gap-2">
-        {/* Date chip */}
-        <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[var(--muted)] text-[11px] font-medium text-[var(--muted-foreground)] whitespace-nowrap select-none">
-          <CalendarDays size={11} className="text-[var(--n-txt3)] shrink-0" />
+        {/* Date chip — desktop only */}
+        <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-[5px] rounded-lg border border-[var(--border)] text-[11px] text-[var(--muted-foreground)] whitespace-nowrap select-none">
+          <CalendarDays size={11} className="shrink-0" />
           <span>{todayLabel()}</span>
         </div>
 
@@ -87,9 +107,8 @@ export function Header() {
         {trm && (
           <div
             title={fresh ? 'TRM en vivo (Banco República)' : 'TRM desde caché (< 8h)'}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[var(--muted)] text-[11px] font-medium whitespace-nowrap select-none"
+            className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-[var(--muted)] text-[11px] whitespace-nowrap select-none"
           >
-            {/* Live pulse badge */}
             <span className="relative flex h-[7px] w-[7px] shrink-0">
               {fresh && (
                 <span className="absolute inline-flex h-full w-full rounded-full bg-[var(--color-provision)] opacity-75 animate-ping" />
@@ -99,18 +118,21 @@ export function Header() {
                 style={{ background: fresh ? 'var(--color-provision)' : 'var(--color-tax)' }}
               />
             </span>
-            <span className="text-[var(--n-txt3)]">TRM</span>
+            <span className="text-[var(--muted-foreground)]">TRM</span>
             <span className="text-[var(--muted-foreground)]">{trmFormatted}</span>
           </div>
         )}
+
+        {/* Divider */}
+        <span className="hidden sm:block w-px h-5 bg-[var(--border)]" />
 
         {/* Theme toggle */}
         <button
           onClick={toggle}
           aria-label={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-          className="p-2.5 rounded-lg text-[var(--n-txt3)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors border-0 bg-transparent cursor-pointer"
+          className="p-[9px] rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors border-0 bg-transparent cursor-pointer"
         >
-          {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+          {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
         </button>
 
         <UserAvatar />

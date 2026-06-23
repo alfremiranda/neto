@@ -49,13 +49,12 @@ export default function App() {
 
   return (
     <TooltipProvider>
-      <div className="h-screen overflow-hidden flex flex-col">
+      <SidebarProvider defaultOpen className="flex-col h-screen overflow-hidden">
+        {/* TopNav — full width, above sidebar and content */}
         <Header />
 
-        <SidebarProvider
-          defaultOpen
-          className="flex-1 min-h-0 overflow-hidden"
-        >
+        {/* Below header: sidebar + main content side by side */}
+        <div className="relative flex flex-row flex-1 min-h-0 overflow-hidden">
           <AppSidebar />
 
           <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-5 lg:p-6 pb-[calc(72px+env(safe-area-inset-bottom))] sm:pb-5 lg:pb-6 bg-[var(--background)] min-w-0">
@@ -66,7 +65,7 @@ export default function App() {
               {view === 'config'  && <ConfigView />}
             </div>
           </main>
-        </SidebarProvider>
+        </div>
 
         <Sidebar_MobileNav />
 
@@ -75,7 +74,7 @@ export default function App() {
         <BalanceSheet />
         <TransferSheet />
         <Toast />
-      </div>
+      </SidebarProvider>
     </TooltipProvider>
   )
 }

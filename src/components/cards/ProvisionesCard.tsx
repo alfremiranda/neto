@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { PiggyBank, Plus, Trash2, Pencil, Check, X, Calculator, Settings2 } from 'lucide-react'
+import { PiggyBank, Plus, Trash2, Pencil, Check, X, Calculator, Settings2, MoreVertical } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useLiveTRM } from '@/hooks/useLiveTRM'
@@ -7,6 +7,7 @@ import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase 
 import { COP, USD } from '@/lib/format'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Button } from '@/components/ui/button'
+import { RowActionsSheet } from '@/components/ui/RowActionsSheet'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useUIStore } from '@/store/uiStore'
@@ -82,6 +83,74 @@ function AddVoluntariaForm({
         <X size={12} />
       </button>
     </div>
+  )
+}
+
+// ─── Voluntary savings row (desktop + mobile) ─────────────────────────────────
+
+function VoluntariaRow({
+  v, amtCOP, showUSD, transferTRM,
+  onEdit, onDelete,
+}: {
+  v: { id: number; label: string; amount: number; currency: string }
+  amtCOP: number
+  showUSD: boolean
+  transferTRM: number
+  onEdit: () => void
+  onDelete: () => void
+}) {
+  const [sheetOpen, setSheetOpen] = useState(false)
+  const usdLabel = showUSD && transferTRM > 0 ? USD(amtCOP / transferTRM) : null
+
+  return (
+    <>
+      {/* Desktop */}
+      <div className="hidden sm:flex items-center gap-2 py-[9px] border-b border-[var(--border)] last:border-0">
+        <span className="flex-1 min-w-0 text-sm text-foreground truncate">{v.label}</span>
+        <div className="w-[104px] shrink-0 flex flex-col items-end">
+          <span className="text-sm font-semibold tabular-nums font-mono">{COP(amtCOP)}</span>
+          {usdLabel && <span className="text-[10px] tabular-nums font-mono text-muted-foreground">{usdLabel}</span>}
+        </div>
+        <Button variant="ghost" size="icon-sm" onClick={onEdit} aria-label="Editar">
+          <Pencil size={12} />
+        </Button>
+        <Button
+          variant="ghost" size="icon-sm" onClick={onDelete}
+          className="hover:bg-[var(--color-danger-bg)] hover:text-[var(--color-danger)]"
+          aria-label="Eliminar"
+        >
+          <Trash2 size={12} />
+        </Button>
+      </div>
+
+      {/* Mobile */}
+      <div className="sm:hidden flex items-start gap-2 py-2 border-b border-[var(--border)] last:border-0">
+        <div className="flex-1 min-w-0 flex flex-col gap-1">
+          <div className="flex items-end gap-2">
+            <span className="text-base font-bold tabular-nums font-heading">{COP(amtCOP)}</span>
+            {usdLabel && <span className="text-[11px] font-semibold tabular-nums font-mono text-muted-foreground">{usdLabel}</span>}
+          </div>
+          <span className="text-sm text-foreground">{v.label}</span>
+        </div>
+        <Button
+          variant="ghost" size="icon-sm"
+          className="shrink-0 mt-0.5"
+          onClick={() => setSheetOpen(true)}
+          aria-label="Opciones"
+        >
+          <MoreVertical size={20} />
+        </Button>
+      </div>
+
+      <RowActionsSheet
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+        title={v.label}
+        subtitle={COP(amtCOP)}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
+    </>
   )
 }
 
@@ -190,14 +259,13 @@ export function ProvisionesCard() {
                   : item.base === 'base_usd'  ? `${item.pct}% s/U$${item.amount ?? 0}`
                   : `${item.pct}%`
                 return (
-                  <div key={item.id} className="flex items-center gap-2.5 py-2 border-b border-[var(--border)] last:border-0">
-                    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: `var(${item.color})` }} />
-                    <span className="text-sm text-foreground flex-1 truncate">{item.label}</span>
+                  <div key={item.id} className="flex items-center gap-2 py-[9px] border-b border-[var(--border)] last:border-0">
+                    <span className="flex-1 min-w-0 text-sm text-foreground">{item.label}</span>
                     <span className="text-[10px] text-muted-foreground tabular-nums font-mono shrink-0">{badge}</span>
-                    <div className="text-right shrink-0 min-w-[6.5rem]">
-                      <div className="text-sm font-semibold tabular-nums font-heading">{COP(item.amount)}</div>
+                    <div className="w-[104px] shrink-0 flex flex-col items-end">
+                      <span className="text-sm font-semibold tabular-nums font-mono">{COP(item.amount)}</span>
                       {showUSD && transferTRM > 0 && (
-                        <div className="text-[10px] text-muted-foreground tabular-nums">{USD(item.amount / transferTRM)}</div>
+                        <span className="text-[10px] tabular-nums font-mono text-muted-foreground">{USD(item.amount / transferTRM)}</span>
                       )}
                     </div>
                   </div>
@@ -208,77 +276,62 @@ export function ProvisionesCard() {
         )}
 
         {/* Voluntary savings group */}
-        {(voluntarias.length > 0 || showForm) && (
-          <div className="rounded-lg bg-muted overflow-hidden">
-            <div className="px-3 pt-2 pb-0.5 flex items-center gap-1">
-              <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70">Ahorros voluntarios</span>
-              {showUSD && trmNote && (
-                <span className="ml-auto text-[10px] tabular-nums text-muted-foreground/50">{trmNote}</span>
-              )}
-            </div>
-            <div className="px-3">
-              {voluntarias.map(v => {
-                if (editingId === v.id) {
-                  return (
-                    <AddVoluntariaForm
-                      key={v.id}
-                      initial={v}
-                      onAdd={(label, amount, currency) => {
-                        updateVoluntaria({ id: v.id, label, amount, currency })
-                        setEditingId(null)
-                      }}
-                      onCancel={() => setEditingId(null)}
-                    />
-                  )
-                }
-                const amtCOP = v.currency === 'USD' ? v.amount * month.trm : v.amount
-                return (
-                  <div key={v.id} className="flex items-center gap-2.5 py-2 border-b border-[var(--border)] last:border-0">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-provision)] shrink-0" />
-                    <span className="text-sm text-foreground flex-1 truncate">{v.label}</span>
-                    <div className="text-right shrink-0 min-w-[6.5rem]">
-                      <div className="text-sm font-semibold tabular-nums font-heading">{COP(amtCOP)}</div>
-                      {showUSD && transferTRM > 0 && (
-                        <div className="text-[10px] text-muted-foreground tabular-nums">{USD(amtCOP / transferTRM)}</div>
-                      )}
-                    </div>
-                    <Button variant="ghost" size="icon-sm" onClick={() => setEditingId(v.id)} title="Editar">
-                      <Pencil size={12} />
-                    </Button>
-                    <Button
-                      variant="ghost" size="icon-sm"
-                      onClick={() => removeVoluntaria(v.id)}
-                      className="hover:bg-[var(--color-danger-bg)] hover:text-[var(--color-danger)]"
-                      title="Eliminar"
-                    >
-                      <Trash2 size={12} />
-                    </Button>
-                  </div>
-                )
-              })}
-
-              {showForm && (
-                <AddVoluntariaForm
-                  onAdd={handleAdd}
-                  onCancel={() => setShowForm(false)}
-                />
-              )}
-            </div>
+        <div className="rounded-lg bg-muted overflow-hidden">
+          <div className="px-3 pt-2 pb-0.5 flex items-center gap-1">
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70">Ahorros voluntarios</span>
+            {showUSD && trmNote && (
+              <span className="ml-auto text-[10px] tabular-nums text-muted-foreground/50">{trmNote}</span>
+            )}
           </div>
-        )}
+          <div className="px-3">
+            {voluntarias.map(v => {
+              if (editingId === v.id) {
+                return (
+                  <AddVoluntariaForm
+                    key={v.id}
+                    initial={v}
+                    onAdd={(label, amount, currency) => {
+                      updateVoluntaria({ id: v.id, label, amount, currency })
+                      setEditingId(null)
+                    }}
+                    onCancel={() => setEditingId(null)}
+                  />
+                )
+              }
+              const amtCOP = v.currency === 'USD' ? v.amount * month.trm : v.amount
+              return (
+                <VoluntariaRow
+                  key={v.id}
+                  v={v}
+                  amtCOP={amtCOP}
+                  showUSD={showUSD}
+                  transferTRM={transferTRM}
+                  onEdit={() => setEditingId(v.id)}
+                  onDelete={() => removeVoluntaria(v.id)}
+                />
+              )
+            })}
 
-        {/* Add voluntary savings — outside group if none exist yet */}
-        {!showForm && (
-          <button
-            type="button"
-            onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 w-full py-2 px-1 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer bg-transparent border-none group"
-          >
-            <span className="w-1.5 h-1.5 rounded-full border border-dashed border-muted-foreground/50 group-hover:border-foreground shrink-0 transition-colors" />
-            <Plus size={10} className="shrink-0" />
-            Agregar ahorro voluntario
-          </button>
-        )}
+            {showForm && (
+              <AddVoluntariaForm
+                onAdd={handleAdd}
+                onCancel={() => setShowForm(false)}
+              />
+            )}
+
+            {!showForm && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowForm(true)}
+                className="w-full justify-start text-muted-foreground hover:text-foreground gap-1.5 mt-0.5 mb-1"
+              >
+                <Plus size={12} />
+                Agregar ahorro voluntario
+              </Button>
+            )}
+          </div>
+        </div>
 
       </div>
     </SectionCard>

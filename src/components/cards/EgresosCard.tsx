@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Pencil, Trash2, Plus, Receipt, RefreshCw, Check, X, ChevronLeft, ChevronRight, ArrowUpDown, Clock, MoreVertical } from 'lucide-react'
+import { Pencil, Trash2, Plus, Receipt, RefreshCw, Check, X, ChevronLeft, ChevronRight, ArrowUpDown, Clock, MoreVertical, SlidersHorizontal } from 'lucide-react'
 import { RowActionsSheet } from '@/components/ui/RowActionsSheet'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { calcGastos } from '@/lib/calc'
-import { COP, USD, fmtDate, localToday } from '@/lib/format'
+import { COP, fmtDate, localToday } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { EGRESO_CATEGORIAS } from '@/data/defaults'
 import { EgresoSheet } from '@/components/sheets/EgresoSheet'
@@ -15,22 +15,27 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { DatePicker } from '@/components/ui/DatePicker'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty'
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import type { Egreso, Account } from '@/types'
 
 // ─── Category icon bubble ─────────────────────────────────────────────────────
 
-function CategoryIcon({ category }: { category: string }) {
+function CategoryIcon({ category, className }: { category: string; className?: string }) {
   const cat = EGRESO_CATEGORIAS.find(c => c.id === category)
   if (!cat) return null
   const Icon = cat.icon
   return (
     <span
-      className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+      className={cn('w-7 h-7 rounded-xl flex items-center justify-center shrink-0', className)}
       style={{ background: `var(${cat.bgColor})`, color: `var(${cat.color})` }}
     >
-      <Icon size={13} strokeWidth={2} />
+      <Icon size={12} strokeWidth={2} />
     </span>
   )
+}
+
+function fmtUSDSecondary(n: number) {
+  return `USD ${n.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 }
 
 // ─── Category distribution bar (Todos only) ───────────────────────────────────
@@ -119,42 +124,49 @@ function EgresoRow({
   const isUnconfirmed = egreso.confirmed === false
   const isScheduled   = !!egreso.date && egreso.date > localToday()
 
+  const usdAmount = egreso.currency === 'USD' ? egreso.amount : amtCOP / trm
+  const usdLabel  = fmtUSDSecondary(usdAmount)
+
+  const ScheduledBadge = () => (
+    <span className="inline-flex items-center gap-1 text-[10px] font-medium text-[var(--color-tax-txt)] border border-[#fdba74] px-1.5 py-0.5 rounded-full">
+      <Clock size={9} />
+      Programado
+    </span>
+  )
+
+  const MetaRow = () => (
+    <div className="flex items-center gap-1 mt-1 flex-wrap">
+      {acctLabel && <Badge variant={acctVariant}>{acctLabel}</Badge>}
+      {isScheduled && <ScheduledBadge />}
+      {dateStr && <span className="text-[11px] text-muted-foreground">·</span>}
+      {dateStr && <span className="text-[11px] text-muted-foreground tabular-nums">{dateStr}</span>}
+    </div>
+  )
+
   return (
     <>
-      <div className={cn('flex items-center gap-2 min-h-[52px] py-1.5 border-b border-[var(--border)] last:border-0', isScheduled && 'opacity-60')}>
+      {/* Desktop layout */}
+      <div className={cn('hidden sm:flex items-center gap-2 py-[9px] border-b border-[var(--border)] last:border-0', isScheduled && 'opacity-70')}>
         <CategoryIcon category={category} />
 
-        <div className="flex-1 min-w-0">
-          <span className="block text-sm truncate">{desc}</span>
-          <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-            {acctLabel && <Badge variant={acctVariant}>{acctLabel}</Badge>}
-            {isScheduled && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-medium text-[var(--color-tax-txt)] bg-[var(--color-tax)]/10 px-1.5 py-0.5 rounded-full">
-                <Clock size={9} />
-                Programado
-              </span>
-            )}
-            {dateStr && <span className="text-xs text-muted-foreground/60 tabular-nums">{dateStr}</span>}
-          </div>
+        <div className="flex-1 min-w-0 flex flex-col">
+          <span className="text-sm font-medium leading-snug truncate">{desc}</span>
+          <MetaRow />
         </div>
 
-        {/* Amount */}
-        <div className="shrink-0 flex items-center gap-1.5 text-right">
-          {egreso.recurring && (
-            <RefreshCw size={12} className={cn('shrink-0', isUnconfirmed ? 'text-[var(--color-tax-txt)]' : 'text-muted-foreground')} />
-          )}
-          <div>
-            <div className={cn('text-sm font-semibold tabular-nums font-heading', (isUnconfirmed || isScheduled) && 'text-muted-foreground')}>
-              {egreso.currency === 'USD' ? USD(egreso.amount) : COP(amtCOP)}
-            </div>
-            {egreso.currency === 'USD' && (
-              <div className="text-[10px] text-muted-foreground tabular-nums">{COP(amtCOP)}</div>
+        <div className="shrink-0 w-[104px] flex flex-col items-end">
+          <div className="flex items-center gap-1">
+            {egreso.recurring && (
+              <RefreshCw size={12} className={cn('shrink-0', isUnconfirmed ? 'text-[var(--color-tax-txt)]' : 'text-muted-foreground')} />
             )}
+            <span className={cn('text-sm font-semibold tabular-nums font-mono', (isUnconfirmed || isScheduled) && 'text-muted-foreground')}>
+              {COP(amtCOP)}
+            </span>
           </div>
+          <span className="text-[10px] tabular-nums font-mono text-muted-foreground">{usdLabel}</span>
         </div>
 
-        {/* Desktop actions */}
-        <div className="hidden sm:flex items-center shrink-0">
+        <div className="flex items-center gap-0.5 shrink-0">
           {isUnconfirmed && (
             <Button
               variant="ghost" size="icon-sm" onClick={onConfirm} aria-label="Confirmar monto"
@@ -177,16 +189,35 @@ function EgresoRow({
             {isPendingDelete ? '¿Eliminar?' : <Trash2 size={12} />}
           </Button>
         </div>
+      </div>
 
-        {/* Mobile action */}
+      {/* Mobile layout */}
+      <div className={cn('sm:hidden flex items-start gap-2 py-2 border-b border-[var(--border)] last:border-0')}>
+        <div className="flex-1 min-w-0 flex flex-col">
+          <div className={cn('flex items-center gap-2 mb-1', isScheduled && 'opacity-70')}>
+            <CategoryIcon category={category} />
+            {egreso.recurring && (
+              <RefreshCw size={14} className={cn('shrink-0', isUnconfirmed ? 'text-[var(--color-tax-txt)]' : 'text-muted-foreground')} />
+            )}
+            <span className={cn('text-base font-bold tabular-nums font-heading', (isUnconfirmed || isScheduled) && 'text-muted-foreground')}>
+              {COP(amtCOP)}
+            </span>
+            <span className="text-[11px] font-semibold tabular-nums font-mono text-muted-foreground shrink-0">
+              {usdLabel}
+            </span>
+          </div>
+          <span className="text-sm leading-snug">{desc}</span>
+          <MetaRow />
+        </div>
+
         <Button
           variant="ghost"
           size="icon-sm"
-          className="sm:hidden shrink-0"
+          className="shrink-0 -mr-1 mt-0.5"
           onClick={() => setSheetOpen(true)}
           aria-label="Opciones"
         >
-          <MoreVertical size={16} />
+          <MoreVertical size={20} />
         </Button>
       </div>
 
@@ -237,8 +268,9 @@ export function EgresosCard() {
   const [activeTab,     setActiveTab]     = useState('todos')
   const [filterAccount, setFilterAccount] = useState('')
   const [filterDate,    setFilterDate]    = useState('')
-  const [sortBy,        setSortBy]        = useState('date-desc')
-  const [confirmId,     setConfirmId]     = useState<number | null>(null)
+  const [sortBy,           setSortBy]           = useState('date-desc')
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false)
+  const [confirmId,        setConfirmId]        = useState<number | null>(null)
   const [canLeft,       setCanLeft]       = useState(false)
   const [canRight,      setCanRight]      = useState(false)
 
@@ -410,10 +442,56 @@ export function EgresosCard() {
                 )}
               </div>
 
-              {/* Filter bar — stacks vertically on mobile */}
-              <div className="px-4 py-2 flex flex-col gap-2 border-b border-[var(--border)] sm:flex-row sm:items-center">
-                {/* Row 1 on mobile: account + sort */}
-                <div className="flex items-center gap-2">
+              {/* Filter bar — mobile: sort + filter icon; desktop: all controls */}
+              <div className="border-b border-[var(--border)]">
+                {/* Mobile filter bar */}
+                <div className="sm:hidden px-4 py-2 flex items-center gap-2">
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger data-size="none" className="flex-1 h-8 gap-1.5 text-xs border-transparent bg-transparent hover:bg-[var(--accent)]">
+                      <ArrowUpDown size={12} className="text-muted-foreground shrink-0" />
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent align="start">
+                      <SelectItem value="date-desc">Fecha: más reciente</SelectItem>
+                      <SelectItem value="date-asc">Fecha: más antigua</SelectItem>
+                      <SelectItem value="amount-desc">Mayor monto</SelectItem>
+                      <SelectItem value="amount-asc">Menor monto</SelectItem>
+                      <SelectItem value="name-asc">Nombre A–Z</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <div className="relative shrink-0">
+                    <Button
+                      size="icon-sm"
+                      variant={hasFilters ? 'default' : 'outline'}
+                      onClick={() => setFilterDrawerOpen(true)}
+                      aria-label="Filtros"
+                    >
+                      <SlidersHorizontal size={14} />
+                    </Button>
+                    {hasFilters && (
+                      <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-[var(--primary)] rounded-full text-[9px] font-bold text-white flex items-center justify-center leading-none pointer-events-none">
+                        {[filterAccount, filterDate].filter(Boolean).length}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Desktop filter bar */}
+                <div className="hidden sm:flex px-4 py-2 items-center gap-2">
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger data-size="none" className="shrink-0 h-7 w-auto px-2 gap-1.5 text-xs border-transparent bg-transparent hover:bg-[var(--accent)]">
+                      <ArrowUpDown size={12} className="text-muted-foreground shrink-0" />
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent align="start">
+                      <SelectItem value="date-desc">Fecha: más reciente</SelectItem>
+                      <SelectItem value="date-asc">Fecha: más antigua</SelectItem>
+                      <SelectItem value="amount-desc">Mayor monto</SelectItem>
+                      <SelectItem value="amount-asc">Menor monto</SelectItem>
+                      <SelectItem value="name-asc">Nombre A–Z</SelectItem>
+                    </SelectContent>
+                  </Select>
+
                   <Select value={filterAccount || 'all'} onValueChange={v => setFilterAccount(v === 'all' ? '' : v)}>
                     <SelectTrigger data-size="none" className="min-w-0 flex-1 h-7 text-xs">
                       <SelectValue placeholder="Todas las cuentas" />
@@ -428,36 +506,76 @@ export function EgresosCard() {
                     </SelectContent>
                   </Select>
 
-                  <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger data-size="none" className="shrink-0 h-7 w-auto px-2 gap-1.5 text-xs border-transparent bg-transparent hover:bg-[var(--accent)]">
-                      <ArrowUpDown size={12} className="text-muted-foreground shrink-0" />
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent align="end">
-                      <SelectItem value="date-desc">Fecha: más reciente</SelectItem>
-                      <SelectItem value="date-asc">Fecha: más antigua</SelectItem>
-                      <SelectItem value="amount-desc">Mayor monto</SelectItem>
-                      <SelectItem value="amount-asc">Menor monto</SelectItem>
-                      <SelectItem value="name-asc">Nombre A–Z</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Row 2 on mobile: date picker */}
-                <div className="flex items-center gap-1 sm:flex-1 min-w-0">
-                  <DatePicker
-                    value={filterDate}
-                    onChange={setFilterDate}
-                    placeholder="Todas las fechas"
-                    className="h-7 text-xs flex-1 min-w-0"
-                  />
-                  {filterDate && (
-                    <Button size="icon-sm" variant="ghost" onClick={() => setFilterDate('')} title="Limpiar fecha">
-                      <X size={12} />
-                    </Button>
-                  )}
+                  <div className="flex items-center gap-1 flex-1 min-w-0">
+                    <DatePicker
+                      value={filterDate}
+                      onChange={setFilterDate}
+                      placeholder="Todas las fechas"
+                      className="h-7 text-xs flex-1 min-w-0"
+                    />
+                    {filterDate && (
+                      <Button size="icon-sm" variant="ghost" onClick={() => setFilterDate('')} title="Limpiar fecha">
+                        <X size={12} />
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
+
+              {/* Mobile filter drawer */}
+              <Drawer open={filterDrawerOpen} onOpenChange={setFilterDrawerOpen}>
+                <DrawerContent className="rounded-t-[20px] max-h-[80vh]">
+                  <DrawerHeader className="text-left pb-2">
+                    <DrawerTitle>Filtros</DrawerTitle>
+                  </DrawerHeader>
+                  <div className="px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] flex flex-col gap-4">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-medium text-muted-foreground">Cuenta</label>
+                      <Select value={filterAccount || 'all'} onValueChange={v => setFilterAccount(v === 'all' ? '' : v)}>
+                        <SelectTrigger data-size="none" className="h-10 text-sm">
+                          <SelectValue placeholder="Todas las cuentas" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Todas las cuentas</SelectItem>
+                          {accountOptions.map(a => (
+                            <SelectItem key={a} value={a}>
+                              {accounts.find(ac => ac.id === a)?.label ?? a}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-medium text-muted-foreground">Fecha</label>
+                      <div className="flex items-center gap-2">
+                        <DatePicker
+                          value={filterDate}
+                          onChange={setFilterDate}
+                          placeholder="Todas las fechas"
+                          className="h-10 text-sm flex-1"
+                        />
+                        {filterDate && (
+                          <Button size="icon-sm" variant="ghost" onClick={() => setFilterDate('')} aria-label="Limpiar fecha">
+                            <X size={14} />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                    {hasFilters && (
+                      <Button
+                        variant="outline"
+                        className="w-full mt-1"
+                        onClick={() => { setFilterAccount(''); setFilterDate(''); setFilterDrawerOpen(false) }}
+                      >
+                        Limpiar filtros
+                      </Button>
+                    )}
+                    <Button className="w-full" onClick={() => setFilterDrawerOpen(false)}>
+                      Aplicar
+                    </Button>
+                  </div>
+                </DrawerContent>
+              </Drawer>
 
               {/* Content */}
               <div className="px-4 pb-4">
