@@ -109,7 +109,7 @@ export function MovimientosCard() {
           <Button size="sm" onClick={() => openSheet('transfer')} className="hidden sm:flex">
             <Plus size={13} />Movimiento
           </Button>
-          <IconButton variant="filled" size="md" onClick={() => openSheet('transfer')} aria-label="Agregar movimiento" className="sm:hidden">
+          <IconButton variant="filled" size="xl" onClick={() => openSheet('transfer')} aria-label="Agregar movimiento" className="sm:hidden">
             <Plus />
           </IconButton>
         </>

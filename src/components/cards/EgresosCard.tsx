@@ -381,7 +381,7 @@ export function EgresosCard() {
             <Button size="sm" onClick={() => { setEditingEgreso(null); openSheet('egreso') }} className="hidden sm:flex">
               <Plus size={13} />Agregar
             </Button>
-            <IconButton variant="filled" size="md" onClick={() => { setEditingEgreso(null); openSheet('egreso') }} aria-label="Agregar egreso" className="sm:hidden">
+            <IconButton variant="filled" size="xl" onClick={() => { setEditingEgreso(null); openSheet('egreso') }} aria-label="Agregar egreso" className="sm:hidden">
               <Plus />
             </IconButton>
           </>

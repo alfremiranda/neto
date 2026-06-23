@@ -169,7 +169,7 @@ export function IngresosCard() {
             <Button size="sm" onClick={handleAdd} className="hidden sm:flex">
               <Plus size={13} />Registrar
             </Button>
-            <IconButton variant="filled" size="md" onClick={handleAdd} aria-label="Registrar ingreso" className="sm:hidden">
+            <IconButton variant="filled" size="xl" onClick={handleAdd} aria-label="Registrar ingreso" className="sm:hidden">
               <Plus />
             </IconButton>
           </>
