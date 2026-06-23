@@ -525,8 +525,8 @@ export function EgresosCard() {
               </div>
 
               {/* Mobile filter drawer */}
-              <Drawer open={filterDrawerOpen} onOpenChange={setFilterDrawerOpen}>
-                <DrawerContent className="rounded-t-[20px] max-h-[80vh]">
+              <Drawer open={filterDrawerOpen} onOpenChange={setFilterDrawerOpen} noBodyStyles>
+                <DrawerContent className="inset-x-0 bottom-0 rounded-t-2xl max-h-[80dvh]">
                   <DrawerHeader className="text-left pb-2">
                     <DrawerTitle>Filtros</DrawerTitle>
                   </DrawerHeader>
