@@ -41,7 +41,7 @@ export default function App() {
 
   return (
     <TooltipProvider>
-      <SidebarProvider defaultOpen className="flex-col h-full !min-h-0 overflow-hidden">
+      <SidebarProvider defaultOpen className="flex-col h-full !min-h-0 max-h-full overflow-hidden">
         {/* TopNav — full width, above sidebar and content */}
         <Header />
 
