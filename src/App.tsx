@@ -12,7 +12,6 @@ import { TransferSheet } from '@/components/sheets/TransferSheet'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { useUIStore } from '@/store/uiStore'
-import { useFinanceStore } from '@/store/financeStore'
 import { useAuthStore } from '@/store/authStore'
 import { LoginScreen } from '@/components/auth/LoginScreen'
 
