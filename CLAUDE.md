@@ -45,6 +45,21 @@ y obligaciones en COP (seguridad social colombiana, egresos de manutención).
 }
 ```
 
+## Ambientes (dev / prod)
+
+Dos proyectos Supabase separados para evitar contaminar datos de producción durante desarrollo.
+
+| Ambiente | URL | Credenciales |
+|---|---|---|
+| **Dev** (localhost) | `https://mgstntazthxrnvzejlxd.supabase.co` | `.env.local` (no committeado) |
+| **Prod** (GitHub Pages) | `https://fhpskefipslrgwkfzmng.supabase.co` | `.env.production` (committeado) |
+
+- `.env.local` — ignorado por git (`*.local` en `.gitignore`), apunta a Supabase dev
+- `.env.production` — committeado, apunta a Supabase prod
+- `src/lib/supabase.ts` lee `import.meta.env.VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY`
+- Dos GitHub OAuth Apps: "neto" (prod) y "neto-dev" (dev), cada una con su callback URL de Supabase
+- Sync es **manual** — no hay auto-push ni auto-pull; el usuario usa los botones en Configuración
+
 ## Roadmap
 1. ~~Refactor: migrar a React + Vite + TypeScript~~ ✓
 2. ~~Agregar gráfica de tendencia mensual~~ ✓

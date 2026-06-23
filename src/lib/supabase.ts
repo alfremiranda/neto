@@ -1,7 +1,7 @@
 import { createClient, type SupabaseClient, type User } from '@supabase/supabase-js'
 
-const SUPABASE_URL      = 'https://fhpskefipslrgwkfzmng.supabase.co'
-const SUPABASE_ANON_KEY = 'sb_publishable_PDdqSQoohDfQHqYnGa-VHg_GsFoKNX3'
+const SUPABASE_URL      = import.meta.env.VITE_SUPABASE_URL as string
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string
 
 let _sb: SupabaseClient | null = null
 
