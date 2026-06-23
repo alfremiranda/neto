@@ -87,6 +87,8 @@ interface FinanceState {
   prevMonth: () => void
   nextMonth: () => void
   deleteMonth: (key: string) => void
+  clearNonJuneEgresos: () => number
+  restoreJuneEgresos: () => void
 
   // sync
   syncFromCloud: () => Promise<void>
@@ -389,6 +391,50 @@ export const useFinanceStore = create<FinanceState>()(
         }
         set({ db: newDb, curKey: newCurKey })
         sbPush(key, null).catch(() => {})
+      },
+
+      restoreJuneEgresos: () => {
+        const { db } = get()
+        const now = new Date()
+        const todayKey = monthKey(now.getMonth(), now.getFullYear())
+        const base = Date.now()
+        const egresos: Egreso[] = [
+          { id: base+1,  desc: 'Poliza de Salud SURA',          amount: 1550000, currency: 'COP', date: '2026-06-30', category: 'salud',           account: 'Bancolombia',   recurring: true,  confirmed: false },
+          { id: base+2,  desc: 'Cuota Prestamo Vehicular BBVA', amount: 2880000, currency: 'COP', date: '2026-06-28', category: 'bancario',         account: 'Bancolombia',   recurring: true,  confirmed: false },
+          { id: base+3,  desc: 'Claude Max',                    amount: 100,     currency: 'USD', date: '2026-06-17', category: 'entretenimiento',  account: 'ARQ Prepaid',   recurring: true,  confirmed: true  },
+          { id: base+4,  desc: 'Pago Herme',                    amount: 130000,  currency: 'COP', date: '2026-06-17', category: 'vivienda',         account: 'Efectivo',      recurring: false, confirmed: true  },
+          { id: base+5,  desc: 'Pago Delcy',                    amount: 70000,   currency: 'COP', date: '2026-06-17', category: 'vivienda',         account: 'Efectivo',      recurring: false, confirmed: true  },
+          { id: base+6,  desc: 'Servicio Público - Triple A',   amount: 380643,  currency: 'COP', date: '2026-06-16', category: 'vivienda',         account: 'Bancolombia',   recurring: true,  confirmed: true  },
+          { id: base+7,  desc: 'Movistar Celular',              amount: 44990,   currency: 'COP', date: '2026-06-16', category: 'entretenimiento',  account: 'Bancolombia',   recurring: false, confirmed: true  },
+          { id: base+8,  desc: 'Copago Cita Pediatrica Felipe', amount: 50900,   currency: 'COP', date: '2026-06-16', category: 'vivienda',         account: 'Bancolombia',   recurring: false, confirmed: true  },
+          { id: base+9,  desc: 'Arriendo Intermobiliaria Junio',amount: 1750000, currency: 'COP', date: '2026-06-15', category: 'vivienda',         account: 'Bancolombia',   recurring: true,  confirmed: true  },
+          { id: base+10, desc: 'Apoyo Mamá',                    amount: 700000,  currency: 'COP', date: '2026-06-15', category: 'familia',          account: 'Bancolombia',   recurring: true,  confirmed: true  },
+          { id: base+11, desc: 'Compra Amazon',                 amount: 198.84,  currency: 'USD', date: '2026-06-13', category: 'otro',             account: 'ARQ Prepaid',   recurring: false, confirmed: true  },
+          { id: base+12, desc: 'Claro Hogar',                   amount: 130000,  currency: 'COP', date: '2026-06-10', category: 'entretenimiento',  account: 'Bancolombia',   recurring: false, confirmed: true  },
+          { id: base+13, desc: 'Tarjeta de Crédito Davibank',   amount: 650000,  currency: 'COP', date: '2026-06-09', category: 'bancario',         account: 'Bancolombia',   recurring: true,  confirmed: true  },
+          { id: base+14, desc: 'Prestamo LuloBank',             amount: 805000,  currency: 'COP', date: '2026-06-06', category: 'bancario',         account: 'Bancolombia',   recurring: true,  confirmed: true  },
+        ]
+        const month = (db[todayKey] ?? {}) as MonthData
+        const newDb: FinanceDB = { ...db, [todayKey]: { ...month, egresos } }
+        set({ db: newDb })
+      },
+
+      clearNonJuneEgresos: () => {
+        const { db } = get()
+        const now = new Date()
+        const todayKey = monthKey(now.getMonth(), now.getFullYear())
+        const newDb = { ...db }
+        let count = 0
+        Object.keys(newDb).forEach(key => {
+          if (key === '_settings' || key === todayKey) return
+          const month = newDb[key] as MonthData
+          if (month?.egresos?.length) {
+            count += month.egresos.length
+            newDb[key] = { ...month, egresos: [] }
+          }
+        })
+        set({ db: newDb })
+        return count
       },
 
       // ── sync ───────────────────────────────────────────────────────────────
