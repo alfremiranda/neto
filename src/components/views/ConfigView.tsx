@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { SlidersHorizontal, Sliders, LogOut, CloudUpload, RefreshCw, Trash2, RotateCcw } from 'lucide-react'
+import { SlidersHorizontal, Sliders, LogOut, CloudUpload, RefreshCw } from 'lucide-react'
 import { DeductionsPanel } from '@/components/settings/DeductionsPanel'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
@@ -53,9 +53,9 @@ function ParamsTab() {
 
 export function ConfigView() {
   const { user, signOut } = useAuthStore()
-  const { forcePushAll, syncFromCloud, clearNonJuneEgresos, restoreJuneEgresos } = useFinanceStore()
+  const { forcePushAll, syncFromCloud } = useFinanceStore()
   const { showToast } = useUIStore()
-  const [syncing, setSyncing] = useState<'push' | 'pull' | 'clean' | 'restore' | null>(null)
+  const [syncing, setSyncing] = useState<'push' | 'pull' | null>(null)
 
   async function handleForcePush() {
     setSyncing('push')
@@ -72,30 +72,6 @@ export function ConfigView() {
     try {
       await syncFromCloud()
       showToast('Datos actualizados desde la nube')
-    } finally {
-      setSyncing(null)
-    }
-  }
-
-  async function handleRestoreJune() {
-    setSyncing('restore')
-    try {
-      restoreJuneEgresos()
-      const { errors } = await forcePushAll()
-      showToast(errors > 0 ? `Egresos restaurados — ${errors} errores al sincronizar` : '14 egresos de junio restaurados y sincronizados')
-    } finally {
-      setSyncing(null)
-    }
-  }
-
-  async function handleClearNonJune() {
-    setSyncing('clean')
-    try {
-      const count = clearNonJuneEgresos()
-      const { errors } = await forcePushAll()
-      showToast(errors > 0
-        ? `${count} egresos borrados — ${errors} errores al sincronizar`
-        : `${count} egresos borrados y sincronizados`)
     } finally {
       setSyncing(null)
     }
@@ -166,36 +142,6 @@ export function ConfigView() {
             </div>
           </div>
 
-          {/* One-time cleanup */}
-          <div className="pt-2 border-t border-[var(--border)]">
-            <div className="text-xs font-medium text-muted-foreground mb-1">Limpieza de datos</div>
-            <p className="text-xs text-muted-foreground mb-2">Restaura los 14 egresos de junio (del screenshot) o borra egresos de meses que no son el mes actual.</p>
-            <div className="flex gap-2 flex-wrap">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleRestoreJune}
-                disabled={syncing !== null}
-              >
-                {syncing === 'restore'
-                  ? <RefreshCw size={13} className="animate-spin" />
-                  : <RotateCcw size={13} />}
-                Restaurar egresos de junio
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleClearNonJune}
-                disabled={syncing !== null}
-                className="text-destructive border-destructive/40 hover:bg-destructive/10 hover:text-destructive"
-              >
-                {syncing === 'clean'
-                  ? <RefreshCw size={13} className="animate-spin" />
-                  : <Trash2 size={13} />}
-                Borrar egresos de otros meses
-              </Button>
-            </div>
-          </div>
 
           {/* Account */}
           <div className="flex items-center justify-between pt-2 border-t border-[var(--border)]">
