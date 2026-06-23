@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { SlidersHorizontal, Sliders, LogOut, CloudUpload, RefreshCw, Trash2 } from 'lucide-react'
+import { SlidersHorizontal, Sliders, LogOut, CloudUpload, RefreshCw } from 'lucide-react'
 import { DeductionsPanel } from '@/components/settings/DeductionsPanel'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
@@ -53,51 +53,9 @@ function ParamsTab() {
 
 export function ConfigView() {
   const { user, signOut } = useAuthStore()
-  const { forcePushAll, syncFromCloud, nuclearResetCurrentMonth, deduplicateAllMonths, hardResetAllData, wipeCloudAndPush } = useFinanceStore()
+  const { forcePushAll, syncFromCloud } = useFinanceStore()
   const { showToast } = useUIStore()
-  const [syncing, setSyncing] = useState<'push' | 'pull' | 'nuclear' | 'dedup' | 'hard' | 'wipe' | null>(null)
-
-  async function handleWipeCloudAndPush() {
-    setSyncing('wipe')
-    try {
-      await wipeCloudAndPush()
-      showToast('Nube limpiada y datos locales re-subidos')
-    } finally {
-      setSyncing(null)
-    }
-  }
-
-  async function handleHardReset() {
-    setSyncing('hard')
-    try {
-      await hardResetAllData()
-      showToast('Reset total completado — todos los datos eliminados local y en la nube')
-    } finally {
-      setSyncing(null)
-    }
-  }
-
-  async function handleDedup() {
-    setSyncing('dedup')
-    try {
-      const removed = deduplicateAllMonths()
-      const { errors } = await forcePushAll()
-      showToast(errors > 0 ? `${removed} duplicados eliminados — ${errors} errores al subir` : `${removed} duplicados eliminados y subidos a la nube`)
-    } finally {
-      setSyncing(null)
-    }
-  }
-
-  async function handleNuclearReset() {
-    setSyncing('nuclear')
-    try {
-      nuclearResetCurrentMonth()
-      const { errors } = await forcePushAll()
-      showToast(errors > 0 ? `Reset completado — ${errors} errores` : 'Mes reiniciado: ingresos y movimientos borrados, 14 egresos restaurados')
-    } finally {
-      setSyncing(null)
-    }
-  }
+  const [syncing, setSyncing] = useState<'push' | 'pull' | null>(null)
 
   async function handleForcePush() {
     setSyncing('push')
@@ -181,82 +139,6 @@ export function ConfigView() {
                   : <RefreshCw size={13} />}
                 Jalar desde la nube
               </Button>
-            </div>
-          </div>
-
-
-          {/* Data recovery */}
-          <div className="pt-2 border-t border-[var(--border)]">
-            <div className="text-xs font-medium text-muted-foreground mb-1">Recuperación de datos</div>
-            <div className="flex flex-col gap-2">
-              <div>
-                <p className="text-xs text-muted-foreground mb-2">
-                  Borra la nube y re-sube solo los datos locales. Útil cuando otro dispositivo corrompió la nube.
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleWipeCloudAndPush}
-                  disabled={syncing !== null}
-                  className="text-destructive border-destructive/40 hover:bg-destructive/10 hover:text-destructive"
-                >
-                  {syncing === 'wipe'
-                    ? <RefreshCw size={13} className="animate-spin" />
-                    : <Trash2 size={13} />}
-                  Limpiar nube y re-sincronizar
-                </Button>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground mb-2">
-                  Elimina TODOS los datos de todos los meses, tanto local como en la nube. Irreversible.
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleHardReset}
-                  disabled={syncing !== null}
-                  className="text-destructive border-destructive/40 hover:bg-destructive/10 hover:text-destructive"
-                >
-                  {syncing === 'hard'
-                    ? <RefreshCw size={13} className="animate-spin" />
-                    : <Trash2 size={13} />}
-                  Reset total (borrar todo)
-                </Button>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground mb-2">
-                  Elimina entradas duplicadas en todos los meses (ingresos, egresos y movimientos) y sube los datos limpios a la nube.
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleDedup}
-                  disabled={syncing !== null}
-                  className="text-destructive border-destructive/40 hover:bg-destructive/10 hover:text-destructive"
-                >
-                  {syncing === 'dedup'
-                    ? <RefreshCw size={13} className="animate-spin" />
-                    : <Trash2 size={13} />}
-                  Deduplicar todos los meses
-                </Button>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground mb-2">
-                  Borra todos los ingresos y movimientos del mes actual. Restaura los 14 egresos conocidos de junio. Requiere re-ingresar ingresos manualmente.
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleNuclearReset}
-                  disabled={syncing !== null}
-                  className="text-destructive border-destructive/40 hover:bg-destructive/10 hover:text-destructive"
-                >
-                  {syncing === 'nuclear'
-                    ? <RefreshCw size={13} className="animate-spin" />
-                    : <Trash2 size={13} />}
-                  Reiniciar mes actual (nuclear)
-                </Button>
-              </div>
             </div>
           </div>
 
