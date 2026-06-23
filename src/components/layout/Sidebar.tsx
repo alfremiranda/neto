@@ -79,7 +79,7 @@ export function Sidebar_MobileNav() {
             aria-label={mobileLabel}
             aria-current={active ? 'page' : undefined}
             className={cn(
-              'flex-1 flex flex-col items-center justify-center gap-1 pt-3 pb-2',
+              'flex-1 flex flex-col items-center justify-center gap-1 pt-3 pb-1',
               'border-none bg-transparent cursor-pointer font-[inherit] transition-colors',
               active
                 ? 'text-[var(--sidebar-primary)]'

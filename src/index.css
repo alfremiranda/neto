@@ -313,7 +313,14 @@
     font-family: var(--font-sans);
   }
 
+  html {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
   body {
+    height: 100%;
+    overflow: hidden;
     font-size: 14px;
     background-color: var(--background);
     color: var(--foreground);
@@ -323,6 +330,7 @@
 
   #root {
     height: 100%;
+    overflow: hidden;
   }
 
   /* iOS: prevenir auto-zoom en inputs */
