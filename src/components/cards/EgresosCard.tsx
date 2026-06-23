@@ -11,6 +11,7 @@ import { EGRESO_CATEGORIAS } from '@/data/defaults'
 import { EgresoSheet } from '@/components/sheets/EgresoSheet'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Button } from '@/components/ui/button'
+import { IconButton } from '@/components/ui/icon-button'
 import { Badge } from '@/components/ui/Badge'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -167,19 +168,29 @@ function EgresoRow({
         </div>
 
         <div className="flex items-center gap-0.5 shrink-0">
-          <Button variant="ghost" size="icon-sm" onClick={onEdit} aria-label="Editar egreso">
+          <IconButton variant="ghost" size="md" onClick={onEdit} aria-label="Editar egreso">
             <Pencil size={12} />
-          </Button>
-          <Button
-            data-egreso-confirm={isPendingDelete ? 'true' : undefined}
-            variant={isPendingDelete ? 'destructive' : 'ghost'}
-            size={isPendingDelete ? 'sm' : 'icon-sm'}
-            onClick={onDelete}
-            aria-label={isPendingDelete ? 'Confirmar eliminación' : 'Eliminar egreso'}
-            className={!isPendingDelete ? 'hover:bg-[var(--color-danger-bg)] hover:text-[var(--color-danger)]' : ''}
-          >
-            {isPendingDelete ? '¿Eliminar?' : <Trash2 size={12} />}
-          </Button>
+          </IconButton>
+          {isPendingDelete ? (
+            <Button
+              data-egreso-confirm="true"
+              variant="destructive"
+              size="sm"
+              onClick={onDelete}
+              aria-label="Confirmar eliminación"
+            >
+              ¿Eliminar?
+            </Button>
+          ) : (
+            <IconButton
+              variant="ghost-danger"
+              size="md"
+              onClick={onDelete}
+              aria-label="Eliminar egreso"
+            >
+              <Trash2 size={12} />
+            </IconButton>
+          )}
         </div>
       </div>
 
@@ -501,9 +512,9 @@ export function EgresosCard() {
                       className="h-7 text-xs flex-1 min-w-0"
                     />
                     {filterDate && (
-                      <Button size="icon-sm" variant="ghost" onClick={() => setFilterDate('')} title="Limpiar fecha">
+                      <IconButton variant="ghost" size="md" onClick={() => setFilterDate('')} aria-label="Limpiar fecha">
                         <X size={12} />
-                      </Button>
+                      </IconButton>
                     )}
                   </div>
                 </div>
@@ -542,9 +553,9 @@ export function EgresosCard() {
                           className="h-10 text-sm flex-1"
                         />
                         {filterDate && (
-                          <Button size="icon-sm" variant="ghost" onClick={() => setFilterDate('')} aria-label="Limpiar fecha">
+                          <IconButton variant="ghost" size="md" onClick={() => setFilterDate('')} aria-label="Limpiar fecha">
                             <X size={14} />
-                          </Button>
+                          </IconButton>
                         )}
                       </div>
                     </div>

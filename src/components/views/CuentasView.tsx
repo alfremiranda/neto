@@ -8,6 +8,7 @@ import { COP, USD, fmtDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { CurrencyBadge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/button'
+import { IconButton } from '@/components/ui/icon-button'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty'
 import type { Account } from '@/types'
 import type { LedgerEntry } from '@/lib/calc'
@@ -74,18 +75,20 @@ function AccountCard({
       )}
 
       {/* Edit button */}
-      <button
+      <Button
+        size="xs"
+        variant="ghost"
         onClick={e => { e.stopPropagation(); setEditingAccount(account.id); openSheet('account-edit') }}
         className={cn(
-          'mt-auto self-start flex items-center gap-1 text-[11px] font-medium px-2 py-1 rounded-md border-none cursor-pointer transition-colors',
+          'mt-auto self-start gap-1 font-medium',
           selected
-            ? 'bg-[var(--primary)]/10 text-[var(--primary)] hover:bg-[var(--primary)]/20'
-            : 'bg-muted text-muted-foreground hover:text-foreground hover:bg-[var(--accent)]',
+            ? 'bg-primary/10 text-primary hover:bg-primary/20'
+            : 'bg-muted text-muted-foreground hover:text-foreground',
         )}
       >
         <Pencil size={10} strokeWidth={2.5} />
         Editar
-      </button>
+      </Button>
     </div>
   )
 }
@@ -174,19 +177,29 @@ function LedgerRow({ entry, account, accounts }: { entry: LedgerEntry; account: 
 
         {/* Desktop actions */}
         <div className="hidden sm:flex items-center gap-1 shrink-0">
-          <Button variant="ghost" size="icon-sm" onClick={handleEdit} aria-label="Editar">
+          <IconButton variant="ghost" size="md" onClick={handleEdit} aria-label="Editar">
             <Pencil size={12} />
-          </Button>
-          <Button
-            variant={pendingDelete ? 'destructive' : 'ghost'}
-            size={pendingDelete ? 'sm' : 'icon-sm'}
-            className={!pendingDelete ? 'hover:bg-[var(--color-danger-bg)] hover:text-[var(--color-danger)]' : ''}
-            onClick={handleDeleteDesktop}
-            onBlur={() => setPendingDelete(false)}
-            aria-label="Eliminar"
-          >
-            {pendingDelete ? '¿Eliminar?' : <Trash2 size={12} />}
-          </Button>
+          </IconButton>
+          {pendingDelete ? (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleDeleteDesktop}
+              onBlur={() => setPendingDelete(false)}
+              aria-label="Confirmar eliminación"
+            >
+              ¿Eliminar?
+            </Button>
+          ) : (
+            <IconButton
+              variant="ghost-danger"
+              size="md"
+              onClick={handleDeleteDesktop}
+              aria-label="Eliminar"
+            >
+              <Trash2 size={12} />
+            </IconButton>
+          )}
         </div>
 
         {/* Mobile action */}
@@ -249,10 +262,16 @@ export function CuentasView() {
       <div>
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Cuentas</h2>
-          <Button size="sm" onClick={() => { setEditingAccount(null); openSheet('account-edit') }}>
-            <Plus size={13} />
-            Nueva cuenta
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button size="sm" variant="outline" onClick={() => openSheet('transfer')}>
+              <ArrowLeftRight />
+              <span className="hidden xs:inline">Movimiento</span>
+            </Button>
+            <Button size="sm" onClick={() => { setEditingAccount(null); openSheet('account-edit') }}>
+              <Plus />
+              Nueva cuenta
+            </Button>
+          </div>
         </div>
 
         {accounts.length === 0 ? (

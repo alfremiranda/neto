@@ -4,6 +4,8 @@ import { useLiveTRM } from '@/hooks/useLiveTRM'
 import { useTheme } from '@/hooks/useTheme'
 import { useAuthStore } from '@/store/authStore'
 import { useSidebar } from '@/components/ui/sidebar'
+import { Button } from '@/components/ui/button'
+import { IconButton } from '@/components/ui/icon-button'
 
 const DAYS  = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
 const MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
@@ -52,13 +54,14 @@ function UserAvatar() {
             <div className="text-xs font-medium truncate">{name}</div>
             <div className="text-[11px] text-muted-foreground truncate">{user.email}</div>
           </div>
-          <button
+          <Button
+            variant="ghost"
             onClick={() => { setOpen(false); signOut() }}
-            className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-left hover:bg-[var(--muted)] transition-colors cursor-pointer border-0 bg-transparent text-foreground"
+            className="w-full justify-start gap-2 px-3 py-2.5 h-auto text-sm rounded-none"
           >
             <LogOut size={14} className="text-muted-foreground" />
             Cerrar sesión
-          </button>
+          </Button>
         </div>
       )}
     </div>
@@ -127,13 +130,14 @@ export function Header() {
         <span className="hidden sm:block w-px h-5 bg-[var(--border)]" />
 
         {/* Theme toggle */}
-        <button
+        <IconButton
+          variant="ghost"
+          size="md"
           onClick={toggle}
           aria-label={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-          className="p-[9px] rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors border-0 bg-transparent cursor-pointer"
         >
           {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-        </button>
+        </IconButton>
 
         <UserAvatar />
       </div>

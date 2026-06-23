@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Dialog as DialogPrimitive } from 'radix-ui'
 import { Pencil, Trash2 } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 
 interface ExtraAction {
   label: string
@@ -75,46 +77,50 @@ export function RowActionsSheet({
           {/* Action list */}
           <div className="p-3 flex flex-col gap-1">
             {extraActions?.map((a, i) => (
-              <button
+              <Button
                 key={i}
+                variant="ghost"
                 onClick={() => { close(); a.onClick() }}
-                className="flex items-center gap-3 w-full px-4 py-4 rounded-xl text-left text-sm font-medium hover:bg-[var(--accent)] transition-colors"
+                className="h-auto py-4 px-4 w-full justify-start gap-3 text-sm font-medium rounded-xl"
               >
                 {a.icon}
                 {a.label}
-              </button>
+              </Button>
             ))}
 
-            <button
+            <Button
+              variant="ghost"
               onClick={handleEdit}
-              className="flex items-center gap-3 w-full px-4 py-4 rounded-xl text-left text-sm font-medium hover:bg-[var(--accent)] transition-colors"
+              className="h-auto py-4 px-4 w-full justify-start gap-3 text-sm font-medium rounded-xl"
             >
               <Pencil size={18} className="text-muted-foreground shrink-0" />
               Editar
-            </button>
+            </Button>
 
-            <button
+            <Button
+              variant="ghost"
               onClick={handleDelete}
-              className={[
-                'flex items-center gap-3 w-full px-4 py-4 rounded-xl text-left text-sm font-medium transition-colors',
+              className={cn(
+                'h-auto py-4 px-4 w-full justify-start gap-3 text-sm font-medium rounded-xl',
                 confirming
-                  ? 'bg-[var(--color-danger-bg)] text-[var(--color-danger)]'
+                  ? 'bg-[var(--color-danger-bg)] text-[var(--color-danger)] hover:bg-[var(--color-danger-bg)] hover:text-[var(--color-danger)]'
                   : 'text-muted-foreground hover:bg-[var(--color-danger-bg)] hover:text-[var(--color-danger)]',
-              ].join(' ')}
+              )}
             >
               <Trash2 size={18} className="shrink-0" />
               {confirming ? 'Tocar para confirmar eliminación' : 'Eliminar'}
-            </button>
+            </Button>
           </div>
 
           {/* Cancel */}
           <div className="px-3 pt-1">
-            <button
+            <Button
+              variant="secondary"
               onClick={close}
-              className="w-full py-4 rounded-xl bg-[var(--muted)] text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--accent)] transition-colors"
+              className="h-auto py-4 w-full text-sm font-semibold rounded-xl"
             >
               Cancelar
-            </button>
+            </Button>
           </div>
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>

@@ -7,6 +7,7 @@ import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase 
 import { COP, USD } from '@/lib/format'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Button } from '@/components/ui/button'
+import { IconButton } from '@/components/ui/icon-button'
 import { RowActionsSheet } from '@/components/ui/RowActionsSheet'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -111,16 +112,12 @@ function VoluntariaRow({
           <span className="text-sm font-semibold tabular-nums font-mono">{COP(amtCOP)}</span>
           {usdLabel && <span className="text-[10px] tabular-nums font-mono text-muted-foreground">{usdLabel}</span>}
         </div>
-        <Button variant="ghost" size="icon-sm" onClick={onEdit} aria-label="Editar">
+        <IconButton variant="ghost" size="md" onClick={onEdit} aria-label="Editar">
           <Pencil size={12} />
-        </Button>
-        <Button
-          variant="ghost" size="icon-sm" onClick={onDelete}
-          className="hover:bg-[var(--color-danger-bg)] hover:text-[var(--color-danger)]"
-          aria-label="Eliminar"
-        >
+        </IconButton>
+        <IconButton variant="ghost-danger" size="md" onClick={onDelete} aria-label="Eliminar">
           <Trash2 size={12} />
-        </Button>
+        </IconButton>
       </div>
 
       {/* Mobile */}
@@ -322,11 +319,10 @@ export function ProvisionesCard() {
             {!showForm && (
               <Button
                 variant="ghost"
-                size="sm"
                 onClick={() => setShowForm(true)}
-                className="w-full justify-start text-muted-foreground hover:text-foreground gap-1.5 mt-0.5 mb-1"
+                className="w-full justify-center text-muted-foreground hover:text-foreground gap-2 my-2"
               >
-                <Plus size={12} />
+                <Plus size={16} />
                 Agregar ahorro voluntario
               </Button>
             )}

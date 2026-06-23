@@ -3,6 +3,7 @@ import { Plus, Trash2, RotateCcw, Pencil, X } from 'lucide-react'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useUIStore } from '@/store/uiStore'
 import { Button } from '@/components/ui/button'
+import { IconButton } from '@/components/ui/icon-button'
 import { Switch } from '@/components/ui/switch'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -150,9 +151,9 @@ function DeductionDrawer({
         <DrawerHeader>
           <DrawerTitle>{isEdit ? 'Editar deducción' : 'Nueva deducción'}</DrawerTitle>
           <DrawerClose asChild>
-            <button className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted border-none bg-transparent cursor-pointer transition-colors">
+            <IconButton variant="ghost" size="md" aria-label="Cerrar">
               <X size={16} />
-            </button>
+            </IconButton>
           </DrawerClose>
         </DrawerHeader>
 
@@ -327,32 +328,23 @@ function DeductionRow({
       />
 
       {/* Edit */}
-      <button
-        type="button"
-        onClick={onEdit}
-        className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted border-none bg-transparent cursor-pointer transition-colors shrink-0"
-        aria-label={`Editar ${d.label}`}
-      >
+      <IconButton variant="ghost" size="md" onClick={onEdit} aria-label={`Editar ${d.label}`}>
         <Pencil size={13} />
-      </button>
+      </IconButton>
 
       {/* Delete */}
       {!d.locked ? (
-        <button
-          type="button"
-          onClick={handleDelete}
-          className={[
-            'shrink-0 px-1.5 py-1 rounded-md text-xs border-none bg-transparent cursor-pointer transition-colors',
-            confirmDelete
-              ? 'bg-destructive text-destructive-foreground font-medium'
-              : 'text-muted-foreground hover:text-destructive hover:bg-[var(--color-danger-bg)]',
-          ].join(' ')}
-          aria-label={`Eliminar ${d.label}`}
-        >
-          {confirmDelete ? '¿Eliminar?' : <Trash2 size={13} />}
-        </button>
+        confirmDelete ? (
+          <Button variant="destructive" size="sm" onClick={handleDelete} aria-label={`Confirmar eliminación de ${d.label}`}>
+            ¿Eliminar?
+          </Button>
+        ) : (
+          <IconButton variant="ghost-danger" size="md" onClick={handleDelete} aria-label={`Eliminar ${d.label}`}>
+            <Trash2 size={13} />
+          </IconButton>
+        )
       ) : (
-        <div className="w-[22px]" />
+        <div className="w-7" />
       )}
     </div>
   )
@@ -384,15 +376,15 @@ export function DeductionsPanel() {
         <p className="text-xs text-muted-foreground">
           Activa deducciones y ajusta el tipo de cálculo, meses y monto desde el formulario de edición.
         </p>
-        <button
-          type="button"
+        <IconButton
+          variant="ghost"
+          size="md"
           onClick={handleReset}
-          title="Restablecer valores por defecto"
-          className="shrink-0 p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted border-none bg-transparent cursor-pointer transition-colors"
           aria-label="Restablecer deducciones"
+          title="Restablecer valores por defecto"
         >
           <RotateCcw size={13} />
-        </button>
+        </IconButton>
       </div>
 
       {DISPLAY_SECTIONS.map(section => {

@@ -134,6 +134,22 @@
     --cat-taxes-bg:      #fffbeb;
     --cat-other:         #64748b;   /* category/other        slate-500  */
     --cat-other-bg:      #f1f5f9;
+
+    /* ── Button component tokens — light (Figma 30:530) ─────────────────────── */
+    --btn-filled-bg:              #0891b2;               /* button/filled/background/default      */
+    --btn-filled-bg-hover:        #0e7490;               /* button/filled/background/hover        */
+    --btn-filled-fg:              #ffffff;               /* button/filled/foreground              */
+    --btn-danger-filled-bg:       #dc2626;               /* button/danger/filled/background       */
+    --btn-danger-filled-bg-hover: #b91c1c;               /* button/danger/filled/background-hover */
+    --btn-danger-filled-fg:       #ffffff;               /* button/danger/filled/foreground       */
+    --btn-outline-fg:             #1e293b;               /* button/outline/foreground             */
+    --btn-outline-border:         #e2e8f0;               /* button/outline/border                 */
+    --btn-outline-bg-hover:       rgba(100,116,139,0.10); /* button/outline/background-hover      */
+    --btn-danger-fg:              #b91c1c;               /* button/danger/foreground              */
+    --btn-danger-border:          #dc2626;               /* button/danger/border                  */
+    --btn-danger-bg-hover:        rgba(239,68,68,0.10);  /* button/danger/background-hover        */
+    --btn-ghost-fg:               #64748b;               /* button/ghost/foreground               */
+    --btn-ghost-bg-hover:         rgba(100,116,139,0.10); /* button/ghost/background-hover        */
   }
 
   .dark {
@@ -260,6 +276,22 @@
     --cat-taxes-bg:      #451a03;
     --cat-other:         #94a3b8;   /* slate-400   */
     --cat-other-bg:      #1e293b;
+
+    /* ── Button component tokens — dark (Figma 91:1925) ─────────────────────── */
+    --btn-filled-bg:              #22d3ee;               /* button/filled/background/default      */
+    --btn-filled-bg-hover:        #67e8f9;               /* button/filled/background/hover        */
+    --btn-filled-fg:              #083344;               /* button/filled/foreground              */
+    --btn-danger-filled-bg:       #f87171;               /* button/danger/filled/background       */
+    --btn-danger-filled-bg-hover: #fca5a5;               /* button/danger/filled/background-hover */
+    --btn-danger-filled-fg:       #450a0a;               /* button/danger/filled/foreground       */
+    --btn-outline-fg:             #f1f5f9;               /* button/outline/foreground             */
+    --btn-outline-border:         #475569;               /* button/outline/border                 */
+    --btn-outline-bg-hover:       rgba(100,116,139,0.30); /* button/outline/background-hover      */
+    --btn-danger-fg:              #fca5a5;               /* button/danger/foreground              */
+    --btn-danger-border:          #991b1b;               /* button/danger/border                  */
+    --btn-danger-bg-hover:        rgba(239,68,68,0.30);  /* button/danger/background-hover        */
+    --btn-ghost-fg:               #94a3b8;               /* button/ghost/foreground               */
+    --btn-ghost-bg-hover:         rgba(100,116,139,0.30); /* button/ghost/background-hover        */
   }
 
   * {
@@ -351,6 +383,22 @@
 .text-destructive          { color: var(--destructive) !important; }
 .text-popover-foreground   { color: var(--popover-foreground) !important; }
 .text-sidebar-foreground   { color: var(--sidebar-foreground) !important; }
+/* Button component token utilities */
+.bg-btn-filled              { background-color: var(--btn-filled-bg) !important; }
+.bg-btn-danger-filled       { background-color: var(--btn-danger-filled-bg) !important; }
+.text-btn-filled-fg         { color: var(--btn-filled-fg) !important; }
+.text-btn-danger-filled-fg  { color: var(--btn-danger-filled-fg) !important; }
+.text-btn-outline-fg        { color: var(--btn-outline-fg) !important; }
+.text-btn-ghost-fg          { color: var(--btn-ghost-fg) !important; }
+.text-btn-danger-fg         { color: var(--btn-danger-fg) !important; }
+.border-btn-outline         { border-color: var(--btn-outline-border) !important; }
+.border-btn-danger          { border-color: var(--btn-danger-border) !important; }
+/* hover states */
+.hover\:bg-btn-filled-hover:hover        { background-color: var(--btn-filled-bg-hover) !important; }
+.hover\:bg-btn-danger-filled-hover:hover { background-color: var(--btn-danger-filled-bg-hover) !important; }
+.hover\:bg-btn-outline-hover:hover       { background-color: var(--btn-outline-bg-hover) !important; }
+.hover\:bg-btn-ghost-hover:hover         { background-color: var(--btn-ghost-bg-hover) !important; }
+.hover\:bg-btn-danger-hover:hover        { background-color: var(--btn-danger-bg-hover) !important; }
 
 .border-border  { border-color: var(--border) !important; }
 .border-input   { border-color: var(--input) !important; }

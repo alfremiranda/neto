@@ -8,6 +8,7 @@ import { CurrencyBadge } from '@/components/ui/Badge'
 import { MONTHS } from '@/data/defaults'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Button } from '@/components/ui/button'
+import { IconButton } from '@/components/ui/icon-button'
 import { RowActionsSheet } from '@/components/ui/RowActionsSheet'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
 import type { Transfer, Account } from '@/types'
@@ -56,18 +57,12 @@ function TransferRow({
 
         {/* Desktop actions */}
         <div className="hidden sm:flex items-center gap-0.5 shrink-0">
-          <Button variant="ghost" size="icon-sm" onClick={onEdit} aria-label="Editar movimiento">
+          <IconButton variant="ghost" size="md" onClick={onEdit} aria-label="Editar movimiento">
             <Pencil size={12} />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            onClick={onDelete}
-            aria-label="Eliminar movimiento"
-            className="hover:bg-[var(--color-danger-bg)] hover:text-[var(--color-danger)]"
-          >
+          </IconButton>
+          <IconButton variant="ghost-danger" size="md" onClick={onDelete} aria-label="Eliminar movimiento">
             <Trash2 size={12} />
-          </Button>
+          </IconButton>
         </div>
 
         {/* Mobile action */}
@@ -145,13 +140,15 @@ export function MovimientosCard() {
                 <span className="text-xs text-muted-foreground font-medium truncate flex-1 min-w-0">{a.label}</span>
                 <div className="flex items-center gap-0.5 shrink-0">
                   <CurrencyBadge currency={a.currency} />
-                  <button
+                  <IconButton
+                    variant="ghost"
+                    size="sm"
                     onClick={e => { e.stopPropagation(); openEditAccount(a.id) }}
-                    className="border-none bg-transparent min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:p-[3px] flex items-center justify-center opacity-50 hover:opacity-100 rounded cursor-pointer text-foreground transition-opacity"
                     aria-label="Configurar cuenta"
+                    className="min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 opacity-50 hover:opacity-100"
                   >
                     <Settings2 size={11} />
-                  </button>
+                  </IconButton>
                 </div>
               </div>
               {numStr && <div className="text-2xs text-muted-foreground font-mono mb-1">{numStr}</div>}

@@ -9,6 +9,7 @@ import { COP, USD } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
+import { IconButton } from '@/components/ui/icon-button'
 
 // ─── SS Payment schedule data ─────────────────────────────────────────────────
 
@@ -65,12 +66,14 @@ function SSScheduleDialog({ year, month }: { year: number; month: number }) {
   return (
     <DialogPrimitive.Root open={open} onOpenChange={setOpen}>
       <DialogPrimitive.Trigger asChild>
-        <button
-          className="ml-1 text-muted-foreground/50 hover:text-muted-foreground transition-colors rounded-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        <IconButton
+          variant="ghost"
+          size="sm"
           aria-label="Ver fechas de pago de seguridad social"
+          className="ml-1 opacity-50 hover:opacity-100"
         >
           <Info size={12} />
-        </button>
+        </IconButton>
       </DialogPrimitive.Trigger>
 
       <DialogPrimitive.Portal>

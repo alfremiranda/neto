@@ -10,6 +10,7 @@ import { MetricCard } from '@/components/ui/MetricCard'
 import { IncomeSheet } from '@/components/sheets/IncomeSheet'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Button } from '@/components/ui/button'
+import { IconButton } from '@/components/ui/icon-button'
 import { RowActionsSheet } from '@/components/ui/RowActionsSheet'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty'
 import type { Income } from '@/types'
@@ -73,18 +74,18 @@ function IncomeRow({
           <span className="text-[10px] tabular-nums font-mono text-muted-foreground">{secondaryAmt}</span>
         </div>
         <div className="flex items-center gap-0.5 shrink-0">
-          <Button variant="ghost" size="icon-sm" onClick={onEdit} aria-label="Editar ingreso">
+          <IconButton variant="ghost" size="md" onClick={onEdit} aria-label="Editar ingreso">
             <Pencil size={13} />
-          </Button>
-          <Button
-            variant={isPending ? 'destructive' : 'ghost'}
-            size={isPending ? 'sm' : 'icon-sm'}
-            onClick={onDeleteDesktop}
-            aria-label={isPending ? 'Confirmar eliminación' : 'Eliminar ingreso'}
-            className={!isPending ? 'hover:bg-[var(--color-danger-bg)] hover:text-[var(--color-danger)]' : ''}
-          >
-            {isPending ? '¿Eliminar?' : <Trash2 size={13} />}
-          </Button>
+          </IconButton>
+          {isPending ? (
+            <Button variant="destructive" size="sm" onClick={onDeleteDesktop} aria-label="Confirmar eliminación">
+              ¿Eliminar?
+            </Button>
+          ) : (
+            <IconButton variant="ghost-danger" size="md" onClick={onDeleteDesktop} aria-label="Eliminar ingreso">
+              <Trash2 size={13} />
+            </IconButton>
+          )}
         </div>
       </div>
 
