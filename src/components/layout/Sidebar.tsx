@@ -68,7 +68,7 @@ export function Sidebar_MobileNav() {
   return (
     <nav
       className="sm:hidden fixed bottom-0 left-0 right-0 z-50 flex bg-[var(--card)] border-t border-[var(--border)]"
-      style={{ paddingBottom: 'max(0px, calc(env(safe-area-inset-bottom) - 12px))' }}
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       {NAV_ITEMS.map(({ id, mobileLabel, Icon }) => {
         const active = view === id
@@ -79,7 +79,7 @@ export function Sidebar_MobileNav() {
             aria-label={mobileLabel}
             aria-current={active ? 'page' : undefined}
             className={cn(
-              'flex-1 flex flex-col items-center justify-center gap-1 py-3',
+              'flex-1 flex flex-col items-center justify-center gap-1 pt-3 pb-2',
               'border-none bg-transparent cursor-pointer font-[inherit] transition-colors',
               active
                 ? 'text-[var(--sidebar-primary)]'
