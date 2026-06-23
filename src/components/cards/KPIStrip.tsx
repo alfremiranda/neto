@@ -24,10 +24,10 @@ function KPITooltipContent({ lines }: { lines: DetailLine[] }) {
     <div className="space-y-0.5">
       {lines.map((line, i) =>
         line.separator ? (
-          <div key={i} className="border-t border-[var(--border)] my-1.5" />
+          <div key={i} className="border-t border-white/20 my-1.5" />
         ) : (
           <div key={i} className={cn('flex items-baseline justify-between gap-3', line.dim && 'opacity-50')}>
-            <span className="text-[11px] text-muted-foreground truncate">{line.label}</span>
+            <span className="text-[11px] text-background/60 truncate">{line.label}</span>
             <span className="text-[11px] font-mono font-medium tabular-nums shrink-0">{line.value}</span>
           </div>
         )
@@ -37,8 +37,8 @@ function KPITooltipContent({ lines }: { lines: DetailLine[] }) {
 }
 
 function KPICard({ label, value, sub, accentToken, accent, detail }: KPICardProps) {
-  const card = (
-    <Card className={cn('p-[17px] flex flex-col gap-1.5', detail && 'cursor-help')}>
+  const inner = (
+    <>
       <div className="text-[10px] font-semibold font-sans uppercase tracking-[1px] text-muted-foreground">
         {label}
       </div>
@@ -51,14 +51,23 @@ function KPICard({ label, value, sub, accentToken, accent, detail }: KPICardProp
       {sub && (
         <div className="text-[11px] text-muted-foreground">{sub}</div>
       )}
-    </Card>
+    </>
   )
 
-  if (!detail || detail.length === 0) return card
+  if (!detail || detail.length === 0) {
+    return <Card className="p-[17px] flex flex-col gap-1.5">{inner}</Card>
+  }
 
   return (
     <Tooltip delayDuration={200}>
-      <TooltipTrigger asChild>{card}</TooltipTrigger>
+      <TooltipTrigger asChild>
+        <Card
+          tabIndex={0}
+          className="p-[17px] flex flex-col gap-1.5 cursor-help focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+        >
+          {inner}
+        </Card>
+      </TooltipTrigger>
       <TooltipContent side="bottom">
         <KPITooltipContent lines={detail} />
       </TooltipContent>
@@ -92,16 +101,24 @@ export function KPIStrip() {
                        + res.volItems.reduce((a, i) => a + i.amount, 0)
   const obligTotal     = res.ssTotal + retencionTotal
 
-  const provToken = provItems.find(i => i.applies)?.color ?? '--color-provision'
+  const TO_TXT: Record<string, string> = {
+    '--color-provision': '--color-provision-txt',
+    '--color-expense':   '--color-expense-txt',
+    '--color-tax':       '--color-tax-txt',
+    '--color-net':       '--color-net-txt',
+    '--color-income':    '--color-income-txt',
+    '--color-danger':    '--color-danger-txt',
+  }
+  const toTxt = (t: string) => TO_TXT[t] ?? t
+
+  const provToken = toTxt(provItems.find(i => i.applies)?.color ?? '--color-provision')
 
   // --- Breakdown details ---
 
   const ingresoDetail: DetailLine[] = month.incomes.length > 0
     ? month.incomes.map(inc => ({
         label: inc.desc || inc.account,
-        value: inc.currency === 'USD'
-          ? `${USD(inc.amount)} ≈ ${COP(inc.amount * month.trm)}`
-          : COP(inc.amount),
+        value: inc.currency === 'USD' ? USD(inc.amount) : COP(inc.amount),
       }))
     : []
 
@@ -174,14 +191,14 @@ export function KPIStrip() {
         label="Egresos"
         value={COP(gast)}
         sub={pct(gast)}
-        accent="text-[var(--color-expense)]"
+        accent="text-[var(--color-expense-txt)]"
         detail={egresoDetail.length > 0 ? egresoDetail : undefined}
       />
       <KPICard
         label="Neto libre"
         value={COP(Math.max(res.netoLibre, 0))}
         sub={pct(Math.max(res.netoLibre, 0))}
-        accent={res.netoLibre > 0 ? 'text-[var(--color-net-txt)]' : 'text-[var(--color-danger)]'}
+        accent={res.netoLibre > 0 ? 'text-[var(--color-net-txt)]' : 'text-[var(--color-danger-txt)]'}
         detail={netoDetail.length > 0 ? netoDetail : undefined}
       />
     </div>

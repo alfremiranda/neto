@@ -62,17 +62,21 @@ export function DistribucionCard() {
   return (
     <div className="mb-5">
       {/* Bar */}
-      <div className="flex h-4 rounded-full overflow-hidden gap-px">
+      <div role="img" aria-label={`Distribución: ${segments.map(s => `${s.label} ${Math.round(s.pct)}%`).join(', ')}`} className="flex h-4 rounded-full overflow-hidden gap-px">
         {segments.map(seg => (
-          <div
+          <button
             key={seg.id}
+            type="button"
+            aria-label={`${seg.label}: ${Math.round(seg.pct)}% — ${COP(seg.amount)}`}
             className={cn(
-              'transition-opacity duration-150 cursor-default',
+              'transition-opacity duration-150 focus-visible:outline-none focus-visible:brightness-125',
               hovered && hovered !== seg.id ? 'opacity-40' : 'opacity-100',
             )}
             style={{ width: `${seg.pct}%`, background: `var(${seg.color})` }}
             onMouseEnter={() => setHovered(seg.id)}
             onMouseLeave={() => setHovered(null)}
+            onFocus={() => setHovered(seg.id)}
+            onBlur={() => setHovered(null)}
           />
         ))}
       </div>
@@ -84,12 +88,15 @@ export function DistribucionCard() {
             <button
               key={seg.id}
               type="button"
+              aria-label={`${seg.label}: ${Math.round(seg.pct)}% del bruto — ${COP(seg.amount)}`}
               className={cn(
-                'flex items-center gap-1.5 bg-transparent border-none p-0 cursor-default transition-opacity',
+                'flex items-center gap-1.5 bg-transparent border-none p-0 cursor-default transition-opacity focus-visible:outline-none focus-visible:underline',
                 hovered && hovered !== seg.id ? 'opacity-40' : 'opacity-100',
               )}
               onMouseEnter={() => setHovered(seg.id)}
               onMouseLeave={() => setHovered(null)}
+              onFocus={() => setHovered(seg.id)}
+              onBlur={() => setHovered(null)}
             >
               <span className="w-2 h-2 rounded-full shrink-0" style={{ background: `var(${seg.color})` }} />
               <span className="text-xs text-muted-foreground">{seg.label}</span>
@@ -100,12 +107,10 @@ export function DistribucionCard() {
           ))}
         </div>
 
-        {/* Hovered segment detail */}
-        {hovSeg && (
-          <span className="text-xs font-mono font-semibold tabular-nums text-foreground ml-auto">
-            {COP(hovSeg.amount)}
-          </span>
-        )}
+        {/* Hovered/focused segment detail */}
+        <span aria-live="polite" aria-atomic="true" className="text-xs font-mono font-semibold tabular-nums text-foreground ml-auto min-h-[1em]">
+          {hovSeg ? COP(hovSeg.amount) : ''}
+        </span>
       </div>
     </div>
   )

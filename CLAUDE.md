@@ -7,11 +7,23 @@ y obligaciones en COP (seguridad social colombiana, egresos de manutención).
 
 ## Stack
 - Vite + React 19 + TypeScript
-- Tailwind CSS v3 + shadcn/ui (estilo radix-nova/mist)
+- **Tailwind CSS v3** + shadcn/ui (estilo radix-nova/mist)
 - Zustand para estado global
 - localStorage para storage local (`amd-finance`)
 - Supabase para sync entre dispositivos
 - Deploy: GitHub Pages → alfremiranda.github.io/neto
+
+## ⚠️ Tailwind v3 — restricciones críticas
+Este proyecto usa **Tailwind CSS v3**, NO v4. Cualquier sintaxis v4 es silenciosamente ignorada.
+
+**Prohibido (son sintaxis v4):**
+- `@utility` blocks
+- `@theme inline { ... }`
+- `tw-animate-css` (usa `@utility` internamente — no funciona en v3)
+
+**Para animaciones:** usar el plugin `tailwindcss-animate` (ya instalado, registrado en `tailwind.config.js`). Provee `animate-in`, `fade-in-0`, `zoom-in-95`, `data-[state=closed]:animate-out`, etc.
+
+**Para colores con opacidad:** usar `color-mix()` vía la función `cv()` definida en `tailwind.config.js`, no la sintaxis `bg-color/50` con oklch vars.
 
 ## Reglas del negocio
 - Salario fijo: $8,800 USD/mes — contrato con Observer Hub LLC (Net 30, llega semana 1-2 del mes siguiente), pagos recibidos en cuenta ARQ (Dollar App)
