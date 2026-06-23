@@ -47,9 +47,9 @@ export async function getUser(): Promise<User | null> {
   return user
 }
 
-export function onAuthStateChange(cb: (user: User | null) => void) {
-  const { data: { subscription } } = sbClient().auth.onAuthStateChange((_event, session) => {
-    cb(session?.user ?? null)
+export function onAuthStateChange(cb: (user: User | null, event: string) => void) {
+  const { data: { subscription } } = sbClient().auth.onAuthStateChange((event, session) => {
+    cb(session?.user ?? null, event)
   })
   return () => subscription.unsubscribe()
 }

@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import type { User } from '@supabase/supabase-js'
 import { getUser, onAuthStateChange, signInWithGitHub, signInWithGoogle, signOut as sbSignOut } from '@/lib/supabase'
+import { useFinanceStore } from '@/store/financeStore'
 
 interface AuthState {
   user: User | null
@@ -19,8 +20,13 @@ export const useAuthStore = create<AuthState>()((set) => ({
     // Seed initial user (handles OAuth callback on page load)
     getUser().then(user => set({ user, loading: false }))
 
-    // Subscribe to session changes (login / logout / refresh)
-    const unsub = onAuthStateChange(user => set({ user, loading: false }))
+    // Subscribe to session changes — auto-pull on SIGNED_IN (login + session restore)
+    const unsub = onAuthStateChange((user, event) => {
+      set({ user, loading: false })
+      if (event === 'SIGNED_IN' && user) {
+        useFinanceStore.getState().syncFromCloud()
+      }
+    })
     return unsub
   },
 
