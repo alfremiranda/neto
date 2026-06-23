@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Trash2, Settings2, Plus, ArrowLeftRight, Pencil, MoreVertical } from 'lucide-react'
+import { Trash2, Plus, ArrowLeftRight, Pencil, MoreVertical } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { COP, USD, fmtDate } from '@/lib/format'
@@ -93,12 +93,11 @@ function TransferRow({
 
 export function MovimientosCard() {
   const { db, getCurrentMonth, getAccounts, removeTransfer, curKey } = useFinanceStore()
-  const { openSheet, showToast, setEditingAccount, setEditingBalance, setEditingTransfer } = useUIStore()
+  const { openSheet, showToast, setEditingBalance, setEditingTransfer } = useUIStore()
   const month    = getCurrentMonth()
   const accounts = getAccounts()
   const [y, m] = curKey.split('-').map(Number)
 
-  function openEditAccount(id: string) { setEditingAccount(id); openSheet('account-edit') }
   function openBalance(id: string) { setEditingBalance(id); openSheet('balance') }
 
   return (
@@ -138,31 +137,30 @@ export function MovimientosCard() {
             <div
               key={a.id}
               onClick={() => openBalance(a.id)}
-              className="bg-muted rounded-lg p-3 cursor-pointer hover:bg-[var(--accent)] transition-colors min-w-0"
+              className="bg-muted rounded-xl p-3 cursor-pointer hover:bg-[var(--accent)] transition-colors min-w-0"
             >
-              <div className="flex justify-between items-start gap-1 mb-0.5">
-                <span className="text-xs text-muted-foreground font-medium truncate flex-1 min-w-0">{a.label}</span>
-                <div className="flex items-center gap-0.5 shrink-0">
+              <div className="flex items-center gap-1 mb-0.5">
+                <span className="text-[12px] font-medium leading-[18px] text-muted-foreground truncate flex-1 min-w-0">{a.label}</span>
+                <div className="flex items-center gap-1 shrink-0">
                   <CurrencyBadge currency={a.currency} />
                   <IconButton
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
-                    onClick={e => { e.stopPropagation(); openEditAccount(a.id) }}
-                    aria-label="Configurar cuenta"
-                    className="min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 opacity-50 hover:opacity-100"
+                    onClick={e => { e.stopPropagation(); openBalance(a.id) }}
+                    aria-label="Ajustar saldo"
                   >
-                    <Settings2 size={11} />
+                    <Plus />
                   </IconButton>
                 </div>
               </div>
-              {numStr && <div className="text-2xs text-muted-foreground font-mono mb-1">{numStr}</div>}
-              <div className="text-base font-semibold leading-tight mt-0.5">
+              {numStr && <div className="text-[10px] font-normal leading-[15px] text-muted-foreground font-mono mb-1">{numStr}</div>}
+              <div className="text-[16px] font-bold leading-[24px] font-mono mt-0.5">
                 {showBalance
                   ? fmt(balance)
                   : <span className="text-sm font-normal text-muted-foreground">Tocar para configurar</span>}
               </div>
               {monthlyInt > 0 && (
-                <div className="text-2xs text-[var(--color-provision)] mt-[3px]">
+                <div className="text-[10px] font-normal leading-[15px] text-[var(--color-provision)] mt-[3px]">
                   ≈ {fmt(monthlyInt)}/mes · {a.rate}% a.a.
                 </div>
               )}
