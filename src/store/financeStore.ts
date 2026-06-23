@@ -520,7 +520,7 @@ export const useFinanceStore = create<FinanceState>()(
 
       syncFromCloud: async () => {
         const rows = await sbPullAll()
-        if (!rows) return
+        if (!rows || rows.length === 0) return
 
         // Cloud is authoritative: replace local with cloud data entirely.
         // Merging by ID caused duplicates when IDs changed across sessions.
