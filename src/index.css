@@ -444,7 +444,7 @@
   font-size: 16px; /* 16px on mobile prevents iOS auto-zoom on focus */
   font-family: inherit;
   outline: none;
-  transition: border-color 150ms, box-shadow 150ms;
+  transition: border-color 150ms, border-width 100ms;
   appearance: none;
   -webkit-appearance: none;
 }
@@ -470,8 +470,8 @@
 }
 .field-input:focus,
 .field-select:focus {
-  border-color: var(--ring);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 15%, transparent);
+  border-width: 2px;
+  border-color: var(--foreground);
 }
 .field-input:disabled,
 .field-select:disabled {
