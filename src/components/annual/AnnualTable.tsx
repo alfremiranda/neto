@@ -39,7 +39,7 @@ export function AnnualTable({ year }: AnnualTableProps) {
   const totSS    = filled.reduce((a, r) => a + (r.ssTot ?? 0), 0)
   const totRet   = filled.reduce((a, r) => a + (r.ret ?? 0), 0)
   const totOblig = totSS + totRet
-  const totProv  = filled.reduce((a, r) => a + (r.prim ?? 0), 0)
+  const totProv  = filled.reduce((a, r) => a + (r.provTotal ?? r.prim ?? 0), 0)
   const totGast  = filled.reduce((a, r) => a + (r.gast ?? 0), 0)
   const totNeto  = filled.reduce((a, r) => a + Math.max(r.netoLibre ?? 0, 0), 0)
   const totUSD   = filled.reduce((a, r) => a + (r.totUSD ?? 0), 0)
@@ -116,7 +116,7 @@ export function AnnualTable({ year }: AnnualTableProps) {
                   </td>
                   <td className="py-[7px] px-[6px] text-right tabular-nums">{COP(r.bruto ?? 0)}</td>
                   <td className="hidden sm:table-cell py-[7px] px-[6px] text-right tabular-nums" style={{ color: `var(${obligColor})` }}>{COP(oblig)}</td>
-                  <td className="hidden sm:table-cell py-[7px] px-[6px] text-right tabular-nums" style={{ color: `var(${provColor})` }}>{COP(r.prim ?? 0)}</td>
+                  <td className="hidden sm:table-cell py-[7px] px-[6px] text-right tabular-nums" style={{ color: `var(${provColor})` }}>{COP(r.provTotal ?? r.prim ?? 0)}</td>
                   <td className="hidden xs:table-cell py-[7px] px-[6px] text-right tabular-nums text-[var(--color-expense)]">{COP(r.gast ?? 0)}</td>
                   <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold text-[var(--color-net-txt)]">
                     {COP(Math.max(r.netoLibre ?? 0, 0))}

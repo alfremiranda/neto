@@ -168,14 +168,16 @@ export function buildAnnualData(
     const ibc     = calcIBC(incomes, trm, smmlvFn(year))
     const gast    = calcGastos(egresos, trm)
 
-    let ssTot: number, ret: number, prim: number, netoLibre: number
+    let ssTot: number, ret: number, prim: number, provTotal: number, netoLibre: number
 
     if (deductions) {
       const provBase = calcProvisionBase(incomes, trm, ibc)
       const res = calcAllDeductions(bruto, ibc, m, deductions, gast, trm, d.voluntarias, provBase)
       ssTot     = res.ssTotal
-      ret  = res.provItems.find(i => i.id === 'retencion')?.amount ?? 0
-      prim = res.provItems.find(i => i.id === 'primas')?.amount ?? 0
+      ret       = res.provItems.find(i => i.id === 'retencion')?.amount ?? 0
+      prim      = res.provItems.find(i => i.id === 'primas')?.amount ?? 0
+      provTotal = res.provItems.filter(i => i.id !== 'retencion').reduce((a, i) => a + i.amount, 0)
+               + res.volItems.reduce((a, i) => a + i.amount, 0)
       netoLibre = res.netoLibre
     } else {
       const ss = calcSS(ibc)
@@ -183,10 +185,11 @@ export function buildAnnualData(
       const dist = calcDistribucion(bruto, ssTot, gast)
       ret       = dist.ret
       prim      = dist.prim
+      provTotal = prim
       netoLibre = dist.netoLibre
     }
 
-    rows.push({ m, hasData: true, bruto, totUSD, totCOP, ssTot, gast, ret, prim, netoLibre })
+    rows.push({ m, hasData: true, bruto, totUSD, totCOP, ssTot, gast, ret, prim, provTotal, netoLibre })
   }
 
   return rows

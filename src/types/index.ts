@@ -115,6 +115,7 @@ export interface AnnualRow {
   gast?: number
   ret?: number
   prim?: number
+  provTotal?: number
   netoLibre?: number
 }
 
