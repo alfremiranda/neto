@@ -434,6 +434,7 @@
 }
 .field-input,
 .field-select {
+  display: block; /* override browser inline-block default to prevent baseline alignment gaps */
   width: 100%;
   height: 2.75rem; /* 44px — minimum touch target on mobile */
   padding: 0 0.75rem;
