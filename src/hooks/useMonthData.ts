@@ -1,21 +1,11 @@
-import { useFinanceStore, monthKey } from '@/store/financeStore'
-import { useLiveTRM } from './useLiveTRM'
+import { useFinanceStore } from '@/store/financeStore'
 
 /**
- * Returns the current month data with the effective TRM resolved:
- * - Current month: live TRM (falls back to stored if unavailable)
- * - Past months: stored month.trm
+ * Returns the current month data with the stored TRM.
+ * Live TRM is informational only (header display) — calculations always use
+ * the manually-set stored TRM so monthly and annual views stay consistent.
  */
 export function useMonthData() {
-  const { getCurrentMonth, curKey } = useFinanceStore()
-  const { trm: liveTRM } = useLiveTRM()
-  const month = getCurrentMonth()
-
-  const now = new Date()
-  const todayKey = monthKey(now.getMonth(), now.getFullYear())
-  const isCurrentMonth = curKey === todayKey
-
-  const trm = isCurrentMonth && liveTRM ? liveTRM : month.trm
-
-  return { ...month, trm }
+  const { getCurrentMonth } = useFinanceStore()
+  return getCurrentMonth()
 }

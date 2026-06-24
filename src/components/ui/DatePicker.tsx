@@ -11,6 +11,7 @@ interface DatePickerProps {
   onChange: (iso: string) => void
   className?: string
   placeholder?: string
+  id?: string
 }
 
 function isoToDate(iso: string): Date | undefined {
@@ -25,13 +26,14 @@ function dateToISO(d: Date): string {
   return `${y}-${mo}-${da}`
 }
 
-export function DatePicker({ value, onChange, className, placeholder = 'Seleccionar fecha' }: DatePickerProps) {
+export function DatePicker({ value, onChange, className, placeholder = 'Seleccionar fecha', id }: DatePickerProps) {
   const selected = isoToDate(value)
 
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button
+          id={id}
           variant="outline"
           className={cn(
             'w-full justify-start text-left font-normal h-11 sm:h-9',

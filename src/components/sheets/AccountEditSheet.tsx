@@ -137,8 +137,9 @@ export function AccountEditSheet() {
         )}
 
         <div>
-          <label className="field-label">Nombre</label>
+          <label htmlFor="acc-name" className="field-label">Nombre</label>
           <input
+            id="acc-name"
             type="text"
             value={label}
             onChange={e => setLabel(e.target.value)}
@@ -151,9 +152,9 @@ export function AccountEditSheet() {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="field-label">Moneda</label>
+            <label htmlFor="acc-cur" className="field-label">Moneda</label>
             <Select value={currency} onValueChange={v => { setCurrency(v as 'USD' | 'COP'); balanceAmt.setValue(0) }} disabled={isLocked}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger id="acc-cur" className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -165,8 +166,9 @@ export function AccountEditSheet() {
 
           {!isCash && (
             <div>
-              <label className="field-label">Tasa anual % (opcional)</label>
+              <label htmlFor="acc-rate" className="field-label">Tasa anual % (opcional)</label>
               <input
+                id="acc-rate"
                 type="text"
                 inputMode="decimal"
                 value={rate}
@@ -180,8 +182,9 @@ export function AccountEditSheet() {
 
         {!isCash && (
           <div>
-            <label className="field-label">Número de cuenta — últimos 4 dígitos (opcional)</label>
+            <label htmlFor="acc-num" className="field-label">Número de cuenta — últimos 4 dígitos (opcional)</label>
             <input
+              id="acc-num"
               type="text"
               value={number}
               onChange={e => setNumber(e.target.value)}

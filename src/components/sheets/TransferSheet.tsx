@@ -216,18 +216,18 @@ export function TransferSheet() {
         {/* From / To accounts */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="field-label">Desde</label>
+            <label htmlFor="tr-from" className="field-label">Desde</label>
             <Select value={fromId} onValueChange={setFromId}>
-              <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+              <SelectTrigger id="tr-from" className="w-full"><SelectValue /></SelectTrigger>
               <SelectContent>
                 {accounts.map(a => <SelectItem key={a.id} value={a.id}>{a.label} ({a.currency})</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
           <div>
-            <label className="field-label">Hacia</label>
+            <label htmlFor="tr-to" className="field-label">Hacia</label>
             <Select value={toId} onValueChange={setToId}>
-              <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+              <SelectTrigger id="tr-to" className="w-full"><SelectValue /></SelectTrigger>
               <SelectContent>
                 {accounts.map(a => <SelectItem key={a.id} value={a.id}>{a.label} ({a.currency})</SelectItem>)}
               </SelectContent>
@@ -238,7 +238,7 @@ export function TransferSheet() {
         {/* Sent amount */}
         <div>
           <div className="flex items-center justify-between mb-0.5">
-            <label className="field-label">Monto enviado{from ? ` (${from.currency})` : ''}</label>
+            <label htmlFor="tr-amt" className="field-label">Monto enviado{from ? ` (${from.currency})` : ''}</label>
             {!isEditing && fromBalance > 0 && (
               <button
                 type="button"
@@ -249,14 +249,14 @@ export function TransferSheet() {
               </button>
             )}
           </div>
-          <MoneyInput value={amt.display} onChange={amt.handleChange} />
+          <MoneyInput id="tr-amt" value={amt.display} onChange={amt.handleChange} />
         </div>
 
         {/* Received amount — only for cross-currency transfers */}
         {isCross && (
           <div>
             <div className="flex items-center justify-between mb-0.5">
-              <label className="field-label">
+              <label htmlFor="tr-recv" className="field-label">
                 Monto recibido{to ? ` (${to.currency})` : ''}
                 <span className="ml-1 text-muted-foreground/60 font-normal">— opcional</span>
               </label>
@@ -270,7 +270,7 @@ export function TransferSheet() {
                 </button>
               )}
             </div>
-            <MoneyInput
+            <MoneyInput id="tr-recv"
               value={amtReceived.display}
               onChange={amtReceived.handleChange}
               placeholder={
@@ -288,8 +288,8 @@ export function TransferSheet() {
 
         {/* Date */}
         <div>
-          <label className="field-label">Fecha</label>
-          <DatePicker value={date} onChange={setDate} />
+          <label htmlFor="tr-date" className="field-label">Fecha</label>
+          <DatePicker id="tr-date" value={date} onChange={setDate} />
         </div>
 
         {/* TRM field — hidden when received amount overrides it */}

@@ -83,8 +83,9 @@ export function EgresoSheet() {
 
         {/* Description */}
         <div>
-          <label className="field-label">Descripción</label>
+          <label htmlFor="eg-desc" className="field-label">Descripción</label>
           <input
+            id="eg-desc"
             type="text"
             value={desc}
             onChange={e => setDesc(e.target.value)}
@@ -96,9 +97,9 @@ export function EgresoSheet() {
 
         {/* Category select */}
         <div>
-          <label className="field-label">Categoría</label>
+          <label htmlFor="eg-cat" className="field-label">Categoría</label>
           <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger id="eg-cat" className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -120,9 +121,9 @@ export function EgresoSheet() {
         {/* Amount + Currency */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="field-label">Moneda</label>
+            <label htmlFor="eg-cur" className="field-label">Moneda</label>
             <Select value={currency} onValueChange={v => { setCurrency(v as 'USD' | 'COP'); amt.setValue(0) }}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger id="eg-cur" className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -132,6 +133,7 @@ export function EgresoSheet() {
             </Select>
           </div>
           <MoneyInput
+            id="eg-amt"
             label="Monto"
             currency={currency}
             value={amt.display}
@@ -141,15 +143,15 @@ export function EgresoSheet() {
 
         {/* Date */}
         <div>
-          <label className="field-label">Fecha</label>
-          <DatePicker value={date} onChange={setDate} />
+          <label htmlFor="eg-date" className="field-label">Fecha</label>
+          <DatePicker id="eg-date" value={date} onChange={setDate} />
         </div>
 
         {/* Account (optional) */}
         <div>
-          <label className="field-label">Cuenta que paga <span className="text-muted-foreground font-normal">(opcional)</span></label>
+          <label htmlFor="eg-acc" className="field-label">Cuenta que paga <span className="text-muted-foreground font-normal">(opcional)</span></label>
           <Select value={account || '_none'} onValueChange={v => setAccount(v === '_none' ? '' : v)}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger id="eg-acc" className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

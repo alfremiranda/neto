@@ -78,8 +78,9 @@ export function IncomeSheet() {
     >
       <div className="space-y-4">
         <div>
-          <label className="field-label">Descripción</label>
+          <label htmlFor="inc-desc" className="field-label">Descripción</label>
           <input
+            id="inc-desc"
             type="text"
             value={desc}
             onChange={e => setDesc(e.target.value)}
@@ -90,9 +91,9 @@ export function IncomeSheet() {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="field-label">Moneda</label>
+            <label htmlFor="inc-cur" className="field-label">Moneda</label>
             <Select value={currency} onValueChange={v => { setCurrency(v as 'USD' | 'COP'); amt.setValue(0) }}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger id="inc-cur" className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -112,7 +113,7 @@ export function IncomeSheet() {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="field-label">Cuenta</label>
+            <label htmlFor="inc-acc" className="field-label">Cuenta</label>
             <Select value={account} onValueChange={v => {
               const selected = accounts.find(a => a.id === v)
               setAccount(v)
@@ -121,7 +122,7 @@ export function IncomeSheet() {
                 amt.setValue(0)
               }
             }}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger id="inc-acc" className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -132,9 +133,9 @@ export function IncomeSheet() {
             </Select>
           </div>
           <div>
-            <label className="field-label">Tipo</label>
+            <label htmlFor="inc-tipo" className="field-label">Tipo</label>
             <Select value={tipo} onValueChange={v => setTipo(v as 'servicios' | 'otro')}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger id="inc-tipo" className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -146,8 +147,8 @@ export function IncomeSheet() {
         </div>
 
         <div>
-          <label className="field-label">Fecha de ingreso</label>
-          <DatePicker value={date} onChange={setDate} />
+          <label htmlFor="inc-date" className="field-label">Fecha de ingreso</label>
+          <DatePicker id="inc-date" value={date} onChange={setDate} />
         </div>
 
         {tipo === 'servicios' && (
