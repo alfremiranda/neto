@@ -73,13 +73,16 @@ export function SheetBase({ id, title, children, footer }: SheetBaseProps) {
     ? 'inset-y-0 right-0 w-[420px] shadow-2xl rounded-l-2xl'
     : 'inset-x-0 bottom-0 rounded-t-2xl'
 
-  // On mobile, fix the drawer to exactly the available height so short forms
-  // fill the same space as long ones. vaul animates via transform:translateY,
-  // so changing bottom/height is safe and doesn't conflict with its animation.
-  const contentStyle = !isDesktop ? {
+  // On mobile, clamp the drawer to exactly the available height.
+  // vaul overrides `height` via JS after render, but it does not touch
+  // min-height or max-height. Setting both to the same value forces the
+  // drawer height regardless of what vaul injects.
+  const sheetH = !isDesktop ? `calc(${baseMaxH} - ${keyboardOffset}px)` : undefined
+  const contentStyle = sheetH ? {
     bottom: keyboardOffset,
-    height: `calc(${baseMaxH} - ${keyboardOffset}px)`,
-    transition: 'bottom 0.25s cubic-bezier(0.32,0.72,0,1), height 0.25s cubic-bezier(0.32,0.72,0,1)',
+    minHeight: sheetH,
+    maxHeight: sheetH,
+    transition: 'bottom 0.25s cubic-bezier(0.32,0.72,0,1)',
   } : undefined
 
   return (
