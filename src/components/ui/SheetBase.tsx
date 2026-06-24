@@ -23,6 +23,28 @@ function useIsDesktop() {
   return isDesktop
 }
 
+// Tracks how many px the keyboard is covering from the bottom of the layout viewport.
+// On iOS PWA, position:fixed elements anchor to the layout viewport (full screen),
+// so the keyboard overlaps the drawer from below without resizing it.
+function useKeyboardOffset(active: boolean): number {
+  const [offset, setOffset] = useState(0)
+  useEffect(() => {
+    if (!active || !window.visualViewport) { setOffset(0); return }
+    const vv = window.visualViewport
+    function update() {
+      setOffset(Math.max(0, window.innerHeight - vv.height - vv.offsetTop))
+    }
+    vv.addEventListener('resize', update)
+    vv.addEventListener('scroll', update)
+    update()
+    return () => {
+      vv.removeEventListener('resize', update)
+      vv.removeEventListener('scroll', update)
+    }
+  }, [active])
+  return offset
+}
+
 interface SheetBaseProps {
   id: SheetId
   title: ReactNode
@@ -34,13 +56,21 @@ export function SheetBase({ id, title, children, footer }: SheetBaseProps) {
   const { activeSheet, closeSheet } = useUIStore()
   const open = activeSheet === id
   const isDesktop = useIsDesktop()
+  const keyboardOffset = useKeyboardOffset(!isDesktop && open)
 
   const direction = isDesktop ? 'right' : 'bottom'
 
-  // Direction-specific classes passed directly to DrawerContent
   const contentCls = isDesktop
     ? 'inset-y-0 right-0 w-[420px] shadow-2xl rounded-l-2xl'
-    : 'inset-x-0 bottom-0 max-h-[92dvh] rounded-t-2xl'
+    : 'inset-x-0 bottom-0 rounded-t-2xl'
+
+  // On mobile, push the drawer above the keyboard using visualViewport offset.
+  // vaul animates via transform:translateY so changing bottom/maxHeight is safe.
+  const contentStyle = !isDesktop ? {
+    bottom: keyboardOffset,
+    maxHeight: `calc(92dvh - ${keyboardOffset}px)`,
+    transition: 'bottom 0.25s cubic-bezier(0.32,0.72,0,1), max-height 0.25s cubic-bezier(0.32,0.72,0,1)',
+  } : undefined
 
   return (
     <Drawer
@@ -49,7 +79,7 @@ export function SheetBase({ id, title, children, footer }: SheetBaseProps) {
       direction={direction}
       noBodyStyles
     >
-      <DrawerContent className={contentCls}>
+      <DrawerContent className={contentCls} style={contentStyle}>
         {/* Drag handle — mobile only */}
         {!isDesktop && (
           <div className="mx-auto mt-3 mb-1 h-1 w-10 rounded-full bg-[var(--border)] shrink-0" />
