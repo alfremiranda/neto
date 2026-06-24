@@ -115,7 +115,7 @@ export function RowActionsSheet({
           {/* Cancel */}
           <div className="px-3 pt-1">
             <Button
-              variant="secondary"
+              variant="outline"
               onClick={close}
               className="h-auto py-4 w-full text-sm font-semibold rounded-xl"
             >
