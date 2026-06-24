@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useState } from 'react'
+import { type ReactNode, useEffect, useMemo, useState } from 'react'
 import { X } from 'lucide-react'
 import { useUIStore } from '@/store/uiStore'
 import type { SheetId } from '@/types'
@@ -58,6 +58,15 @@ export function SheetBase({ id, title, children, footer }: SheetBaseProps) {
   const isDesktop = useIsDesktop()
   const keyboardOffset = useKeyboardOffset(!isDesktop && open)
 
+  // On iOS PWA standalone, dvh/vh/innerHeight are all wrong — use screen.height.
+  // Same root cause as the app height fix; gated on navigator.standalone.
+  const baseMaxH = useMemo(() => {
+    if ((window.navigator as Navigator & { standalone?: boolean }).standalone) {
+      return `${Math.floor(window.screen.height * 0.92)}px`
+    }
+    return '92dvh'
+  }, [])
+
   const direction = isDesktop ? 'right' : 'bottom'
 
   const contentCls = isDesktop
@@ -68,7 +77,7 @@ export function SheetBase({ id, title, children, footer }: SheetBaseProps) {
   // vaul animates via transform:translateY so changing bottom/maxHeight is safe.
   const contentStyle = !isDesktop ? {
     bottom: keyboardOffset,
-    maxHeight: `calc(92dvh - ${keyboardOffset}px)`,
+    maxHeight: `calc(${baseMaxH} - ${keyboardOffset}px)`,
     transition: 'bottom 0.25s cubic-bezier(0.32,0.72,0,1), max-height 0.25s cubic-bezier(0.32,0.72,0,1)',
   } : undefined
 
