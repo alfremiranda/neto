@@ -92,7 +92,7 @@ export function Header() {
 
   return (
     <header
-      className="flex items-center justify-between gap-2 px-3 sm:px-4 shrink-0 bg-[var(--card)] border-b border-[var(--border)]"
+      className="flex items-center justify-between gap-2 px-4 shrink-0 bg-[var(--card)] border-b border-[var(--border)]"
       style={{ paddingTop: 'env(safe-area-inset-top)', height: 'calc(54px + env(safe-area-inset-top))' }}
     >
       {/* Left: sidebar toggle (desktop) + logo */}
@@ -113,7 +113,7 @@ export function Header() {
         {trm && (
           <div
             title={fresh ? 'TRM en vivo (Banco República)' : 'TRM desde caché (< 8h)'}
-            className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-[var(--muted)] text-[11px] whitespace-nowrap select-none"
+            className="flex items-center gap-1 px-2 py-1 rounded-lg bg-[var(--muted)] text-[11px] whitespace-nowrap select-none"
           >
             <span className="relative flex h-[7px] w-[7px] shrink-0">
               {fresh && (
@@ -124,18 +124,18 @@ export function Header() {
                 style={{ background: fresh ? 'var(--color-provision)' : 'var(--color-tax)' }}
               />
             </span>
-            <span className="text-[var(--muted-foreground)]">TRM</span>
+            <span className="text-[var(--muted-foreground)] opacity-70">TRM</span>
             <span className="text-[var(--muted-foreground)]">{trmFormatted}</span>
           </div>
         )}
 
         {/* Divider */}
-        <span className="hidden sm:block w-px h-5 bg-[var(--border)]" />
+        <span className="block w-px h-5 bg-[var(--border)]" />
 
         {/* Theme toggle */}
         <IconButton
           variant="ghost"
-          size="md"
+          size="lg"
           onClick={toggle}
           aria-label={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
         >
