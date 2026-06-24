@@ -32,7 +32,7 @@ export function BalanceSheet() {
       id="balance"
       title="Saldo inicial de cuenta"
       footer={
-        <Button className="w-full" onClick={handleSave}>
+        <Button size="xl" className="w-full" onClick={handleSave}>
           Guardar saldo inicial
         </Button>
       }

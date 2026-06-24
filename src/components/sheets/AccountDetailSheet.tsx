@@ -162,7 +162,7 @@ export function AccountDetailSheet() {
       id="account-detail"
       title={titleNode}
       footer={
-        <Button className="w-full" onClick={() => openSheet('transfer')}>
+        <Button size="xl" className="w-full" onClick={() => openSheet('transfer')}>
           <ArrowLeftRight size={14} />
           Agregar movimiento
         </Button>

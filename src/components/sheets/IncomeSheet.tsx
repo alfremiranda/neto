@@ -71,7 +71,7 @@ export function IncomeSheet() {
       id="income"
       title={isEdit ? 'Editar ingreso' : 'Registrar ingreso'}
       footer={
-        <Button className="w-full" onClick={handleSubmit}>
+        <Button size="xl" className="w-full" onClick={handleSubmit}>
           {isEdit ? 'Guardar cambios' : 'Registrar ingreso'}
         </Button>
       }

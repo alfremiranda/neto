@@ -86,11 +86,11 @@ export function AccountEditSheet() {
       title={isEditing ? 'Editar' : 'Nuevo bolsillo'}
       footer={
         <div className="space-y-2">
-          <Button className="w-full" onClick={handleSave}>
+          <Button size="xl" className="w-full" onClick={handleSave}>
             {isEditing ? 'Guardar cambios' : (isCash ? 'Agregar bolsillo' : 'Agregar cuenta')}
           </Button>
           {isEditing && !isLocked && (
-            <Button variant="outline-danger" className="w-full" onClick={handleDelete}>
+            <Button size="xl" variant="outline-danger" className="w-full" onClick={handleDelete}>
               <Trash2 size={14} />
               Eliminar
             </Button>
