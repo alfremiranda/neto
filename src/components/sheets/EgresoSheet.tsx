@@ -91,7 +91,6 @@ export function EgresoSheet() {
             onChange={e => setDesc(e.target.value)}
             placeholder="Ej. Netflix, Rappi, Arriendo Laureles…"
             className="field-input"
-            autoFocus
           />
         </div>
 

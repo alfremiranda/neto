@@ -146,7 +146,6 @@ export function AccountEditSheet() {
             placeholder={isCash ? 'Ej: Billetera, Menudo…' : 'Ej: Bancolombia Ahorros'}
             className="field-input"
             disabled={isLocked}
-            autoFocus
           />
         </div>
 
