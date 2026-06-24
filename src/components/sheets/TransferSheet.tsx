@@ -54,7 +54,7 @@ function BalanceRow({
 }
 
 export function TransferSheet() {
-  const { getAccounts, getCurrentMonth, addTransfer, updateTransfer, db, curKey } = useFinanceStore()
+  const { getAccounts, getCurrentMonth, addTransfer, updateTransfer, removeTransfer, db, curKey } = useFinanceStore()
   const { closeSheet, showToast, activeSheet, editingTransferId } = useUIStore()
   const liveTRM = useLiveTRM()
 
@@ -150,6 +150,13 @@ export function TransferSheet() {
     return from.currency === 'USD' ? `→ ${USD(toAmt)}` : `→ ${COP(toAmt)}`
   }
 
+  function handleDelete() {
+    if (editingTransferId == null) return
+    removeTransfer(editingTransferId)
+    showToast('Movimiento eliminado')
+    closeSheet()
+  }
+
   function handleSubmit() {
     if (!amt.numericValue) { showToast('Ingresa el monto'); return }
     if (fromId === toId)   { showToast('Las cuentas deben ser distintas'); return }
@@ -185,9 +192,16 @@ export function TransferSheet() {
       id="transfer"
       title={isEditing ? 'Editar movimiento' : 'Nuevo movimiento'}
       footer={
-        <Button size="xl" className="w-full" onClick={handleSubmit}>
-          {isEditing ? 'Guardar cambios' : 'Registrar movimiento'}
-        </Button>
+        <div className="space-y-2">
+          <Button size="xl" className="w-full" onClick={handleSubmit}>
+            {isEditing ? 'Guardar cambios' : 'Registrar movimiento'}
+          </Button>
+          {isEditing && (
+            <Button size="xl" variant="outline-danger" className="w-full" onClick={handleDelete}>
+              Eliminar movimiento
+            </Button>
+          )}
+        </div>
       }
     >
       <div className="space-y-4">

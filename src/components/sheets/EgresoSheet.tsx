@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DatePicker } from '@/components/ui/DatePicker'
 
 export function EgresoSheet() {
-  const { addEgreso, updateEgreso, getCurrentMonth, getAccounts } = useFinanceStore()
+  const { addEgreso, updateEgreso, removeEgreso, getCurrentMonth, getAccounts } = useFinanceStore()
   const { closeSheet, showToast, editingEgresoId, setEditingEgreso, activeSheet } = useUIStore()
 
   const isEditing = editingEgresoId !== null
@@ -53,6 +53,14 @@ export function EgresoSheet() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSheet, editingEgresoId])
 
+  function handleDelete() {
+    if (editingEgresoId === null) return
+    removeEgreso(editingEgresoId)
+    showToast('Egreso eliminado')
+    setEditingEgreso(null)
+    closeSheet()
+  }
+
   function handleSubmit() {
     if (!desc.trim()) { showToast('Escribe una descripción'); return }
     if (!amt.numericValue && !isEditing) { showToast('Ingresa el valor'); return }
@@ -74,9 +82,16 @@ export function EgresoSheet() {
       id="egreso"
       title={isEditing ? 'Editar egreso' : 'Agregar egreso'}
       footer={
-        <Button size="xl" className="w-full" onClick={handleSubmit}>
-          {isEditing ? 'Guardar cambios' : 'Agregar egreso'}
-        </Button>
+        <div className="space-y-2">
+          <Button size="xl" className="w-full" onClick={handleSubmit}>
+            {isEditing ? 'Guardar cambios' : 'Agregar egreso'}
+          </Button>
+          {isEditing && (
+            <Button size="xl" variant="outline-danger" className="w-full" onClick={handleDelete}>
+              Eliminar egreso
+            </Button>
+          )}
+        </div>
       }
     >
       <div className="space-y-5">

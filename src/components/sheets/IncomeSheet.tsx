@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DatePicker } from '@/components/ui/DatePicker'
 
 export function IncomeSheet() {
-  const { addIncome, updateIncome, getCurrentMonth, getAccounts } = useFinanceStore()
+  const { addIncome, updateIncome, removeIncome, getCurrentMonth, getAccounts } = useFinanceStore()
   const { closeSheet, showToast, editingIncomeId } = useUIStore()
 
   const isEdit = editingIncomeId !== null
@@ -50,6 +50,13 @@ export function IncomeSheet() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editingIncomeId])
 
+  function handleDelete() {
+    if (editingIncomeId === null) return
+    removeIncome(editingIncomeId)
+    showToast('Ingreso eliminado')
+    closeSheet()
+  }
+
   function handleSubmit() {
     if (!desc.trim() || !amt.numericValue) {
       showToast('Ingresa descripción y monto')
@@ -71,9 +78,16 @@ export function IncomeSheet() {
       id="income"
       title={isEdit ? 'Editar ingreso' : 'Registrar ingreso'}
       footer={
-        <Button size="xl" className="w-full" onClick={handleSubmit}>
-          {isEdit ? 'Guardar cambios' : 'Registrar ingreso'}
-        </Button>
+        <div className="space-y-2">
+          <Button size="xl" className="w-full" onClick={handleSubmit}>
+            {isEdit ? 'Guardar cambios' : 'Registrar ingreso'}
+          </Button>
+          {isEdit && (
+            <Button size="xl" variant="outline-danger" className="w-full" onClick={handleDelete}>
+              Eliminar ingreso
+            </Button>
+          )}
+        </div>
       }
     >
       <div className="space-y-4">
