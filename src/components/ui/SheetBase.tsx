@@ -73,12 +73,13 @@ export function SheetBase({ id, title, children, footer }: SheetBaseProps) {
     ? 'inset-y-0 right-0 w-[420px] shadow-2xl rounded-l-2xl'
     : 'inset-x-0 bottom-0 rounded-t-2xl'
 
-  // On mobile, push the drawer above the keyboard using visualViewport offset.
-  // vaul animates via transform:translateY so changing bottom/maxHeight is safe.
+  // On mobile, fix the drawer to exactly the available height so short forms
+  // fill the same space as long ones. vaul animates via transform:translateY,
+  // so changing bottom/height is safe and doesn't conflict with its animation.
   const contentStyle = !isDesktop ? {
     bottom: keyboardOffset,
-    maxHeight: `calc(${baseMaxH} - ${keyboardOffset}px)`,
-    transition: 'bottom 0.25s cubic-bezier(0.32,0.72,0,1), max-height 0.25s cubic-bezier(0.32,0.72,0,1)',
+    height: `calc(${baseMaxH} - ${keyboardOffset}px)`,
+    transition: 'bottom 0.25s cubic-bezier(0.32,0.72,0,1), height 0.25s cubic-bezier(0.32,0.72,0,1)',
   } : undefined
 
   return (
