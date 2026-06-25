@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 import type { User } from '@supabase/supabase-js'
 import { getUser, onAuthStateChange, signInWithGitHub, signInWithGoogle, signOut as sbSignOut } from '@/lib/supabase'
-import { useFinanceStore } from '@/store/financeStore'
 
 interface AuthState {
   user: User | null
