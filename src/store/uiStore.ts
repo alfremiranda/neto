@@ -12,6 +12,7 @@ interface UIState {
   editingAccountId: string | null
   editingBalanceId: string | null
   editingTransferId: number | null
+  editingVoluntariaId: number | null
   sidebarCollapsed: boolean
 
   setView: (v: ViewType) => void
@@ -24,6 +25,7 @@ interface UIState {
   setEditingAccount: (id: string | null) => void
   setEditingBalance: (id: string | null) => void
   setEditingTransfer: (id: number | null) => void
+  setEditingVoluntaria: (id: number | null) => void
   toggleSidebar: () => void
 }
 
@@ -39,6 +41,7 @@ export const useUIStore = create<UIState>()(persist((set) => ({
   editingAccountId: null,
   editingBalanceId: null,
   editingTransferId: null,
+  editingVoluntariaId: null,
   sidebarCollapsed: false,
 
   setView: (view) => set({ view }),
@@ -52,6 +55,7 @@ export const useUIStore = create<UIState>()(persist((set) => ({
     editingAccountId: null,
     editingBalanceId: null,
     editingTransferId: null,
+    editingVoluntariaId: null,
   }),
 
   setPendingDelete: (id) => set({ pendingDeleteId: id }),
@@ -67,6 +71,7 @@ export const useUIStore = create<UIState>()(persist((set) => ({
   setEditingAccount: (id) => set({ editingAccountId: id }),
   setEditingBalance: (id) => set({ editingBalanceId: id }),
   setEditingTransfer: (id) => set({ editingTransferId: id }),
+  setEditingVoluntaria: (id) => set({ editingVoluntariaId: id }),
   toggleSidebar: () => set(s => ({ sidebarCollapsed: !s.sidebarCollapsed })),
 }), {
   name: 'neto-ui',

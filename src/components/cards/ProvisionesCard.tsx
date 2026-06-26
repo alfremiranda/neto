@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { PiggyBank, Plus, Trash2, Pencil, Check, X, Calculator, Settings2, MoreVertical } from 'lucide-react'
+import { PiggyBank, Plus, Trash2, Pencil, Calculator, Settings2, MoreVertical } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useLiveTRM } from '@/hooks/useLiveTRM'
@@ -10,82 +9,8 @@ import { Button } from '@/components/ui/button'
 import { IconButton } from '@/components/ui/icon-button'
 import { RowActionsSheet } from '@/components/ui/RowActionsSheet'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useUIStore } from '@/store/uiStore'
-
-const INPUT_CLS = 'h-7 text-xs border border-[var(--border)] rounded px-2 bg-[var(--background)] text-[var(--foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--ring)]'
-
-function AddVoluntariaForm({
-  onAdd,
-  onCancel,
-  initial,
-}: {
-  onAdd: (label: string, amount: number, currency: 'COP' | 'USD') => void
-  onCancel: () => void
-  initial?: { label: string; amount: number; currency: 'COP' | 'USD' }
-}) {
-  const [label, setLabel]       = useState(initial?.label ?? '')
-  const [amount, setAmount]     = useState(initial ? String(initial.amount) : '')
-  const [currency, setCurrency] = useState<'COP' | 'USD'>(initial?.currency ?? 'COP')
-
-  function handleSubmit() {
-    const n = parseFloat(amount.replace(/\./g, '').replace(',', '.'))
-    if (!label.trim() || isNaN(n) || n <= 0) return
-    onAdd(label.trim(), n, currency)
-  }
-
-  return (
-    <div className="flex items-center gap-1.5 py-1.5">
-      <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-provision)] shrink-0" />
-      <input
-        type="text"
-        value={label}
-        onChange={e => setLabel(e.target.value)}
-        placeholder="Descripción"
-        aria-label="Descripción del ahorro"
-        className={`flex-1 min-w-0 ${INPUT_CLS}`}
-        autoFocus
-        onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-      />
-      <input
-        type="number"
-        min="0"
-        value={amount}
-        onChange={e => setAmount(e.target.value)}
-        placeholder="0"
-        aria-label="Monto"
-        className={`w-24 font-mono text-right ${INPUT_CLS}`}
-        onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-      />
-      <Select value={currency} onValueChange={v => setCurrency(v as 'COP' | 'USD')}>
-        <SelectTrigger className="w-auto" aria-label="Moneda">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="COP">COP</SelectItem>
-          <SelectItem value="USD">USD</SelectItem>
-        </SelectContent>
-      </Select>
-      <button
-        type="button"
-        onClick={handleSubmit}
-        disabled={!label.trim() || !amount}
-        className="h-7 w-7 flex items-center justify-center rounded bg-[var(--primary)] text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-opacity shrink-0"
-        aria-label="Confirmar"
-      >
-        <Check size={12} />
-      </button>
-      <button
-        type="button"
-        onClick={onCancel}
-        className="h-7 w-7 flex items-center justify-center rounded hover:bg-muted text-muted-foreground cursor-pointer transition-colors shrink-0"
-        aria-label="Cancelar"
-      >
-        <X size={12} />
-      </button>
-    </div>
-  )
-}
+import { useState } from 'react'
 
 // ─── Voluntary savings row (desktop + mobile) ─────────────────────────────────
 
@@ -129,12 +54,7 @@ function VoluntariaRow({
           </div>
           <span className="text-sm text-foreground">{v.label}</span>
         </div>
-        <Button
-          variant="ghost" size="icon-sm"
-          className="shrink-0 mt-0.5"
-          onClick={() => setSheetOpen(true)}
-          aria-label="Opciones"
-        >
+        <Button variant="ghost" size="icon-sm" className="shrink-0 mt-0.5" onClick={() => setSheetOpen(true)} aria-label="Opciones">
           <MoreVertical size={20} />
         </Button>
       </div>
@@ -144,20 +64,18 @@ function VoluntariaRow({
         onOpenChange={setSheetOpen}
         title={v.label}
         subtitle={COP(amtCOP)}
-        onEdit={onEdit}
-        onDelete={onDelete}
+        onEdit={() => { setSheetOpen(false); onEdit() }}
+        onDelete={() => { setSheetOpen(false); onDelete() }}
       />
     </>
   )
 }
 
 export function ProvisionesCard() {
-  const { getCurrentMonth, getSMMLV, curKey, addVoluntaria, updateVoluntaria, removeVoluntaria } = useFinanceStore()
+  const { getCurrentMonth, getSMMLV, curKey, removeVoluntaria } = useFinanceStore()
   const deductions = useSettingsStore(s => s.deductions)
   const { trm: liveTRM } = useLiveTRM()
-  const { setView } = useUIStore()
-  const [showForm, setShowForm]     = useState(false)
-  const [editingId, setEditingId]   = useState<number | null>(null)
+  const { setView, openSheet, setEditingVoluntaria } = useUIStore()
 
   const month = getCurrentMonth()
   const [y, m] = curKey.split('-').map(Number)
@@ -184,10 +102,8 @@ export function ProvisionesCard() {
 
   const provColor = res.provItems.find(i => i.id !== 'retencion' && i.applies)?.color ?? '--color-tax'
 
-  function handleAdd(label: string, amount: number, currency: 'COP' | 'USD') {
-    addVoluntaria({ label, amount, currency })
-    setShowForm(false)
-  }
+  function openAdd() { setEditingVoluntaria(null); openSheet('voluntaria') }
+  function openEdit(id: number) { setEditingVoluntaria(id); openSheet('voluntaria') }
 
   const totalAction = grandTotal > 0 ? (
     <div className="text-right">
@@ -214,7 +130,7 @@ export function ProvisionesCard() {
     )
   }
 
-  if (provItems.length === 0 && voluntarias.length === 0 && !showForm) {
+  if (provItems.length === 0 && voluntarias.length === 0) {
     return (
       <SectionCard icon={PiggyBank} title="Provisiones">
         <Empty className="border-0 py-2">
@@ -227,7 +143,7 @@ export function ProvisionesCard() {
             <Button size="sm" variant="outline" onClick={() => setView('config')}>
               <Settings2 size={13} /> Configuración
             </Button>
-            <Button size="sm" variant="ghost" onClick={() => setShowForm(true)}>
+            <Button size="sm" variant="ghost" onClick={openAdd}>
               <Plus size={13} /> Ahorro voluntario
             </Button>
           </EmptyContent>
@@ -282,19 +198,6 @@ export function ProvisionesCard() {
           </div>
           <div className="px-3">
             {voluntarias.map(v => {
-              if (editingId === v.id) {
-                return (
-                  <AddVoluntariaForm
-                    key={v.id}
-                    initial={v}
-                    onAdd={(label, amount, currency) => {
-                      updateVoluntaria({ id: v.id, label, amount, currency })
-                      setEditingId(null)
-                    }}
-                    onCancel={() => setEditingId(null)}
-                  />
-                )
-              }
               const amtCOP = v.currency === 'USD' ? v.amount * month.trm : v.amount
               return (
                 <VoluntariaRow
@@ -303,29 +206,20 @@ export function ProvisionesCard() {
                   amtCOP={amtCOP}
                   showUSD={showUSD}
                   transferTRM={transferTRM}
-                  onEdit={() => setEditingId(v.id)}
+                  onEdit={() => openEdit(v.id)}
                   onDelete={() => removeVoluntaria(v.id)}
                 />
               )
             })}
 
-            {showForm && (
-              <AddVoluntariaForm
-                onAdd={handleAdd}
-                onCancel={() => setShowForm(false)}
-              />
-            )}
-
-            {!showForm && (
-              <Button
-                variant="ghost"
-                onClick={() => setShowForm(true)}
-                className="w-full justify-center text-muted-foreground hover:text-foreground gap-2 my-2"
-              >
-                <Plus size={16} />
-                Agregar ahorro voluntario
-              </Button>
-            )}
+            <Button
+              variant="ghost"
+              onClick={openAdd}
+              className="w-full justify-center text-muted-foreground hover:text-foreground gap-2 my-2"
+            >
+              <Plus size={16} />
+              Agregar ahorro voluntario
+            </Button>
           </div>
         </div>
 
