@@ -8,7 +8,6 @@ import { COP } from '@/lib/format'
 import { MONTHS, DEFAULTS } from '@/data/defaults'
 import { useTheme } from '@/hooks/useTheme'
 import { SectionCard } from '@/components/ui/SectionCard'
-import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
 
 const M = 1_000_000
 
@@ -242,19 +241,8 @@ export function TrendChart() {
     })
   }, [data, dark, curKey, setCurKey, containerW, series])
 
-  const hasData = data.some(d => d.oblig > 0 || d.prov > 0 || d.egres > 0 || d.neto > 0)
-
   return (
     <SectionCard icon={TrendingUp} title="Tendencia (últimos 8 meses)">
-      {!hasData ? (
-        <Empty className="border-0 py-2">
-          <EmptyHeader>
-            <EmptyMedia variant="icon"><TrendingUp size={14} /></EmptyMedia>
-            <EmptyTitle>Sin datos todavía</EmptyTitle>
-            <EmptyDescription>Registra ingresos en el mes actual para ver la tendencia aquí</EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-      ) : (
       <div ref={containerRef} className="relative select-none">
         <svg ref={svgRef} className="w-full block" />
         {tooltip && (
@@ -283,7 +271,6 @@ export function TrendChart() {
           </div>
         )}
       </div>
-      )}
     </SectionCard>
   )
 }

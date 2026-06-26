@@ -1,5 +1,6 @@
-import { useState } from 'react'
-import { LayoutDashboard, WalletCards, Landmark, Wallet, CalendarRange, Download } from 'lucide-react'
+import { useState, useMemo } from 'react'
+import { WalletCards, Landmark, Wallet, CalendarRange, Download } from 'lucide-react'
+import type { MonthData } from '@/types'
 import { TrendChart } from '@/components/annual/TrendChart'
 import { EgresosCategoryChart } from '@/components/annual/EgresosCategoryChart'
 import { EgresosBreakdown } from '@/components/annual/EgresosBreakdown'
@@ -113,23 +114,46 @@ export function DashboardView() {
   const { showToast } = useUIStore()
   const currentYear = new Date().getFullYear()
 
-  const years = [...new Set([
-    ...Object.keys(db).filter(k => k !== '_settings').map(k => k.split('-')[0]),
+  const monthKeys = useMemo(
+    () => Object.keys(db).filter(k => k !== '_settings'),
+    [db],
+  )
+
+  const years = useMemo(() => [...new Set([
+    ...monthKeys.map(k => k.split('-')[0]),
     String(currentYear),
-  ])].sort().reverse()
+  ])].sort().reverse(), [monthKeys, currentYear])
 
   const [year,      setYear]      = useState(currentYear)
   const [exporting, setExporting] = useState(false)
 
+  const yearMonthKeys = useMemo(
+    () => monthKeys.filter(k => k.startsWith(String(year))),
+    [monthKeys, year],
+  )
+
+  const hasYearData = useMemo(
+    () => yearMonthKeys.some(k => {
+      const m = db[k] as MonthData
+      return (m.incomes?.length ?? 0) > 0 || (m.egresos?.length ?? 0) > 0
+    }),
+    [yearMonthKeys, db],
+  )
+
+  const hasYearEgresos = useMemo(
+    () => yearMonthKeys.some(k => ((db[k] as MonthData).egresos?.length ?? 0) > 0),
+    [yearMonthKeys, db],
+  )
+
+  const hasTrendData = useMemo(
+    () => monthKeys.some(k => ((db[k] as MonthData).incomes?.length ?? 0) > 0),
+    [monthKeys, db],
+  )
+
   function handleExport() {
     setExporting(true)
     try {
-      exportAnnualCSV(
-        db as Record<string, import('@/types').MonthData>,
-        year,
-        getSMMLV,
-        deductions,
-      )
+      exportAnnualCSV(db as Record<string, MonthData>, year, getSMMLV, deductions)
       showToast(`CSV ${year} descargado`)
     } catch {
       showToast('Error al exportar')
@@ -141,42 +165,42 @@ export function DashboardView() {
   return (
     <div className="space-y-4">
 
-      {/* Accounts */}
       <AccountsOverview />
 
-      {/* Annual summary */}
-      <SectionCard
-        icon={CalendarRange}
-        title="Resumen anual"
-        action={
-          <div className="flex items-center gap-2">
-            <Select value={String(year)} onValueChange={v => setYear(parseInt(v))}>
-              <SelectTrigger size="sm" className="w-auto">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {years.map(y => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
-              </SelectContent>
-            </Select>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handleExport}
-              disabled={exporting}
-              title={`Exportar ${year} como CSV`}
-            >
-              <Download size={12} />
-              CSV
-            </Button>
-          </div>
-        }
-      >
-        <AnnualTable year={year} />
-      </SectionCard>
+      {hasYearData && (
+        <SectionCard
+          icon={CalendarRange}
+          title="Resumen anual"
+          action={
+            <div className="flex items-center gap-2">
+              <Select value={String(year)} onValueChange={v => setYear(parseInt(v))}>
+                <SelectTrigger size="sm" className="w-auto">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {years.map(y => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleExport}
+                disabled={exporting}
+                title={`Exportar ${year} como CSV`}
+              >
+                <Download size={12} />
+                CSV
+              </Button>
+            </div>
+          }
+        >
+          <AnnualTable year={year} />
+        </SectionCard>
+      )}
 
-      <TrendChart />
-      <EgresosBreakdown year={year} />
-      <EgresosCategoryChart year={year} />
+      {hasTrendData && <TrendChart />}
+      {hasYearEgresos && <EgresosBreakdown year={year} />}
+      {hasYearEgresos && <EgresosCategoryChart year={year} />}
 
     </div>
   )
