@@ -80,7 +80,7 @@ export function IncomeSheet() {
       id="income"
       title={isEdit ? 'Editar ingreso' : 'Registrar ingreso'}
       footer={
-        <div className="space-y-3">
+        <div className="space-y-4 sm:space-y-3">
           <Button size="xl" className="w-full" onClick={handleSubmit}>
             {isEdit ? 'Guardar cambios' : 'Registrar ingreso'}
           </Button>

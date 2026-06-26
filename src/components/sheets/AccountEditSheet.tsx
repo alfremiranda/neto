@@ -85,7 +85,7 @@ export function AccountEditSheet() {
       id="account-edit"
       title={isEditing ? 'Editar' : 'Nuevo bolsillo'}
       footer={
-        <div className="space-y-3">
+        <div className="space-y-4 sm:space-y-3">
           <Button size="xl" className="w-full" onClick={handleSave}>
             {isEditing ? 'Guardar cambios' : (isCash ? 'Agregar bolsillo' : 'Agregar cuenta')}
           </Button>

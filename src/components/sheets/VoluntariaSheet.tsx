@@ -67,7 +67,7 @@ export function VoluntariaSheet() {
       id="voluntaria"
       title={isEditing ? 'Editar ahorro voluntario' : 'Agregar ahorro voluntario'}
       footer={
-        <div className="space-y-3">
+        <div className="space-y-4 sm:space-y-3">
           <Button size="xl" className="w-full" onClick={handleSubmit}>
             {isEditing ? 'Guardar cambios' : 'Agregar ahorro'}
           </Button>

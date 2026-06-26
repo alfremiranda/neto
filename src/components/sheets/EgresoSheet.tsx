@@ -84,7 +84,7 @@ export function EgresoSheet() {
       id="egreso"
       title={isEditing ? 'Editar egreso' : 'Agregar egreso'}
       footer={
-        <div className="space-y-3">
+        <div className="space-y-4 sm:space-y-3">
           <Button size="xl" className="w-full" onClick={handleSubmit}>
             {isEditing ? 'Guardar cambios' : 'Agregar egreso'}
           </Button>
