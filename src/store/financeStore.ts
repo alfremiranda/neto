@@ -688,7 +688,7 @@ export const useFinanceStore = create<FinanceState>()(
     }),
     {
       name: 'amd-finance', // mismo localStorage key — datos existentes sobreviven
-      partialize: (state) => ({ db: state.db, curKey: state.curKey }),
+      partialize: (state) => ({ db: state.db }),
       onRehydrateStorage: () => (state) => {
         state?.migrate()
         // Ensure current month exists
