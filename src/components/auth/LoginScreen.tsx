@@ -47,8 +47,8 @@ export function LoginScreen() {
 
         {/* Logo */}
         <div className="flex flex-col items-center gap-3">
-          <div className="w-16 h-16 rounded-2xl bg-foreground flex items-center justify-center shadow-lg">
-            <span className="text-background font-heading font-black text-3xl leading-none select-none">N</span>
+          <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-lg">
+            <img src="/neto/icon.svg" alt="Neto" className="w-full h-full" />
           </div>
           <div className="text-center">
             <h1 className="text-2xl font-bold font-heading">Neto</h1>
