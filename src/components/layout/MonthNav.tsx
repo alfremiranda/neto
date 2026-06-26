@@ -10,18 +10,18 @@ export function MonthNav() {
     <div className="flex items-center gap-2 mx-auto w-fit">
       <button
         onClick={prevMonth}
-        disabled={m === 0}
+        disabled={m === 1}
         aria-label="Mes anterior"
         className="w-11 h-11 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg border border-[var(--border)] bg-transparent text-[var(--foreground)] hover:bg-[var(--muted)] disabled:opacity-25 disabled:pointer-events-none transition-colors active:scale-95"
       >
         <ChevronLeft size={16} />
       </button>
       <h1 className="text-[17px] font-bold font-heading whitespace-nowrap min-w-[148px] text-center">
-        {MONTHS[m]} {y}
+        {MONTHS[m - 1]} {y}
       </h1>
       <button
         onClick={nextMonth}
-        disabled={m === 11}
+        disabled={m === 12}
         aria-label="Mes siguiente"
         className="w-11 h-11 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg border border-[var(--border)] bg-transparent text-[var(--foreground)] hover:bg-[var(--muted)] disabled:opacity-25 disabled:pointer-events-none transition-colors active:scale-95"
       >
