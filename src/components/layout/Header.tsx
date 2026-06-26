@@ -99,6 +99,13 @@ export function Header() {
       <div className="flex items-center gap-3">
         <SidebarToggle />
         <span className="text-base font-bold font-heading tracking-tight text-[var(--foreground)] select-none">Neto</span>
+        <span className={
+          import.meta.env.DEV
+            ? 'text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-amber-500/15 text-amber-500 select-none'
+            : 'text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[var(--color-income)]/15 text-[var(--color-income-txt)] select-none'
+        }>
+          {import.meta.env.DEV ? 'dev' : 'prod'}
+        </span>
       </div>
 
       {/* Right: chips + actions */}
