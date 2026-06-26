@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef } from 'react'
 import { ArrowDown } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { AppSidebar, Sidebar_MobileNav } from '@/components/layout/Sidebar'
+import { FAB } from '@/components/layout/FAB'
 import { MesView } from '@/components/views/MesView'
 import { DashboardView } from '@/components/views/DashboardView'
 import { ConfigView } from '@/components/views/ConfigView'
@@ -115,6 +116,7 @@ export default function App() {
         </div>
 
         <Sidebar_MobileNav />
+        <FAB />
 
         {/* Global sheets */}
         <AccountEditSheet />
