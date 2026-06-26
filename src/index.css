@@ -132,6 +132,8 @@
     --cat-travel-bg:     #f5f3ff;
     --cat-taxes:         #d97706;   /* category/taxes        amber-600 */
     --cat-taxes-bg:      #fffbeb;
+    --cat-shopping:      #9333ea;   /* category/shopping     purple-600 */
+    --cat-shopping-bg:   #faf5ff;
     --cat-other:         #64748b;   /* category/other        slate-500  */
     --cat-other-bg:      #f1f5f9;
 
@@ -274,6 +276,8 @@
     --cat-travel-bg:     #2e1065;
     --cat-taxes:         #fcd34d;   /* amber-300   */
     --cat-taxes-bg:      #451a03;
+    --cat-shopping:      #d8b4fe;   /* purple-300  */
+    --cat-shopping-bg:   #581c87;
     --cat-other:         #94a3b8;   /* slate-400   */
     --cat-other-bg:      #1e293b;
 

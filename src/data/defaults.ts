@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import { Home, ShoppingBasket, Monitor, CreditCard, Heart, Car, Users, Tag, Plane, Globe, ShieldPlus, Briefcase, PiggyBank, Landmark } from 'lucide-react'
+import { Home, ShoppingBasket, ShoppingCart, Monitor, CreditCard, Heart, Car, Users, Tag, Plane, Globe, ShieldPlus, Briefcase, PiggyBank, Landmark } from 'lucide-react'
 import type { Account } from '@/types'
 
 export const MONTHS = [
@@ -35,6 +35,7 @@ export const EGRESO_CATEGORIAS: EgresoCategoria[] = [
   { id: 'ahorro',          label: 'Ahorros e Inv.',    color: '--cat-savings',     bgColor: '--cat-savings-bg',     icon: PiggyBank,      tipos: ['pension_vol'] },
   { id: 'viajes',          label: 'Viajes',            color: '--cat-travel',      bgColor: '--cat-travel-bg',      icon: Plane,          tipos: ['viaje'] },
   { id: 'impuestos',       label: 'Impuestos',         color: '--cat-taxes',       bgColor: '--cat-taxes-bg',       icon: Landmark,       tipos: [] },
+  { id: 'compras',         label: 'Compras',           color: '--cat-shopping',    bgColor: '--cat-shopping-bg',    icon: ShoppingCart,   tipos: ['compras'] },
   { id: 'otro',            label: 'Otros',             color: '--cat-other',       bgColor: '--cat-other-bg',       icon: Tag,            tipos: ['otro'] },
 ]
 
@@ -49,6 +50,7 @@ export const EGRESO_TIPOS: { id: string; label: string; category: string }[] = [
   { id: 'transporte',  label: 'Transporte',          category: 'movilidad'       },
   { id: 'viaje',       label: 'Viaje',               category: 'viajes'          },
   { id: 'pension_vol', label: 'Pensión voluntaria',  category: 'ahorro'          },
+  { id: 'compras',     label: 'Compras',             category: 'compras'         },
   { id: 'otro',        label: 'Otro',                category: 'otro'            },
 ]
 
