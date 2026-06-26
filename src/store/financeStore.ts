@@ -691,9 +691,13 @@ export const useFinanceStore = create<FinanceState>()(
       partialize: (state) => ({ db: state.db }),
       onRehydrateStorage: () => (state) => {
         state?.migrate()
-        // Ensure current month exists
-        const key = state?.curKey
-        if (key && state && !state.db[key]) {
+        if (!state) return
+        // Always reset curKey to actual current month on load
+        const now = new Date()
+        const key = monthKey(now.getMonth(), now.getFullYear())
+        state.curKey = key
+        // Ensure current month record exists
+        if (!state.db[key]) {
           const existingKeys = Object.keys(state.db).filter(k => k !== '_settings').sort()
           const prev = existingKeys.length > 0
             ? (state.db[existingKeys[existingKeys.length - 1]] as MonthData)
