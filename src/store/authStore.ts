@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import type { User } from '@supabase/supabase-js'
 import { getUser, onAuthStateChange, signInWithGitHub, signInWithGoogle, signOut as sbSignOut } from '@/lib/supabase'
+import { useFinanceStore } from '@/store/financeStore'
 
 interface AuthState {
   user: User | null
@@ -19,9 +20,13 @@ export const useAuthStore = create<AuthState>()((set) => ({
     // Seed initial user (handles OAuth callback on page load)
     getUser().then(user => set({ user, loading: false }))
 
-    // Subscribe to session changes — sync is manual only (no auto-pull)
-    const unsub = onAuthStateChange((user) => {
+    // In prod: auto-pull on SIGNED_IN so a second device gets the latest data.
+    // Safe now that every mutation auto-pushes — cloud is always up to date.
+    const unsub = onAuthStateChange((user, event) => {
       set({ user, loading: false })
+      if (event === 'SIGNED_IN' && user && !import.meta.env.DEV) {
+        useFinanceStore.getState().syncFromCloud()
+      }
     })
     return unsub
   },

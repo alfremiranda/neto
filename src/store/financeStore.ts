@@ -6,6 +6,14 @@ import type { FinanceDB, MonthData, Account, Settings, Income, Egreso, Transfer,
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
+// In prod, push the month to Supabase after every local mutation so changes
+// made on one device are available on others without a manual sync.
+function autoPush(key: string, data: unknown) {
+  if (!import.meta.env.DEV) {
+    sbPush(key, data).catch(() => {})
+  }
+}
+
 export function monthKey(m: number, y: number): string {
   return `${y}-${String(m).padStart(2, '0')}`
 }
@@ -166,6 +174,7 @@ export const useFinanceStore = create<FinanceState>()(
           incomes: [...d.incomes, { ...income, id: Date.now() }],
         }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
+        autoPush(curKey, updated)
       },
 
       updateIncome: (id, patch) => {
@@ -176,6 +185,7 @@ export const useFinanceStore = create<FinanceState>()(
           incomes: d.incomes.map(i => i.id === id ? { ...i, ...patch } : i),
         }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
+        autoPush(curKey, updated)
       },
 
       removeIncome: (id) => {
@@ -183,6 +193,7 @@ export const useFinanceStore = create<FinanceState>()(
         const d = db[curKey] ?? emptyMonth()
         const updated: MonthData = { ...d, incomes: d.incomes.filter(i => i.id !== id) }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
+        autoPush(curKey, updated)
       },
 
       addEgreso: (egreso) => {
@@ -193,6 +204,7 @@ export const useFinanceStore = create<FinanceState>()(
           egresos: [...(d.egresos || []), { ...egreso, id: Date.now(), confirmed: true }],
         }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
+        autoPush(curKey, updated)
       },
 
       updateEgreso: (id, patch) => {
@@ -203,6 +215,7 @@ export const useFinanceStore = create<FinanceState>()(
           egresos: (d.egresos || []).map(e => e.id === id ? { ...e, ...patch, confirmed: true } : e),
         }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
+        autoPush(curKey, updated)
       },
 
       confirmEgreso: (id) => {
@@ -213,6 +226,7 @@ export const useFinanceStore = create<FinanceState>()(
           egresos: (d.egresos || []).map(e => e.id === id ? { ...e, confirmed: true } : e),
         }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
+        autoPush(curKey, updated)
       },
 
       removeEgreso: (id) => {
@@ -220,6 +234,7 @@ export const useFinanceStore = create<FinanceState>()(
         const d = db[curKey] ?? emptyMonth()
         const updated: MonthData = { ...d, egresos: (d.egresos || []).filter(e => e.id !== id) }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
+        autoPush(curKey, updated)
       },
 
       addTransfer: (transfer) => {
@@ -229,10 +244,10 @@ export const useFinanceStore = create<FinanceState>()(
         const updated: MonthData = {
           ...d,
           transfers: [...(d.transfers || []), newTransfer],
-          // update TRM if cross-currency
           trm: transfer.trm ?? d.trm,
         }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
+        autoPush(curKey, updated)
       },
 
       updateTransfer: (id, transfer) => {
@@ -243,6 +258,7 @@ export const useFinanceStore = create<FinanceState>()(
           transfers: (d.transfers || []).map(t => t.id === id ? { ...transfer, id } : t),
         }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
+        autoPush(curKey, updated)
       },
 
       removeTransfer: (id) => {
@@ -253,6 +269,7 @@ export const useFinanceStore = create<FinanceState>()(
           transfers: (d.transfers || []).filter(t => t.id !== id),
         }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
+        autoPush(curKey, updated)
       },
 
       addVoluntaria: (item) => {
@@ -263,6 +280,7 @@ export const useFinanceStore = create<FinanceState>()(
           voluntarias: [...(d.voluntarias ?? []), { ...item, id: Date.now() }],
         }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
+        autoPush(curKey, updated)
       },
 
       updateVoluntaria: (item) => {
@@ -273,6 +291,7 @@ export const useFinanceStore = create<FinanceState>()(
           voluntarias: (d.voluntarias ?? []).map(v => v.id === item.id ? item : v),
         }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
+        autoPush(curKey, updated)
       },
 
       removeVoluntaria: (id) => {
@@ -283,6 +302,7 @@ export const useFinanceStore = create<FinanceState>()(
           voluntarias: (d.voluntarias ?? []).filter(v => v.id !== id),
         }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
+        autoPush(curKey, updated)
       },
 
       reorderEgresos: (orderedIds) => {
@@ -294,6 +314,7 @@ export const useFinanceStore = create<FinanceState>()(
           egresos: orderedIds.map(id => byId.get(id)!).filter(Boolean),
         }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
+        autoPush(curKey, updated)
       },
 
       setStartingBalance: (accountId, amount) => {
@@ -319,7 +340,9 @@ export const useFinanceStore = create<FinanceState>()(
       setTRM: (trm) => {
         const { curKey, db } = get()
         const existing = db[curKey] ?? initMonth(curKey, db)
-        set(state => ({ db: { ...state.db, [curKey]: { ...existing, trm } } }))
+        const updated = { ...existing, trm }
+        set(state => ({ db: { ...state.db, [curKey]: updated } }))
+        autoPush(curKey, updated)
       },
 
       saveSMMLV: (year, value) => {
