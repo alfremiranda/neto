@@ -2,7 +2,7 @@ import { useRef, useEffect, useState, useMemo } from 'react'
 import * as d3 from 'd3'
 import { ShoppingBag } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
-import { MONTHS, DEFAULTS } from '@/data/defaults'
+import { MONTHS, DEFAULTS, EGRESO_CATEGORIAS } from '@/data/defaults'
 import { COP } from '@/lib/format'
 import { useTheme } from '@/hooks/useTheme'
 import { SectionCard } from '@/components/ui/SectionCard'
@@ -12,20 +12,26 @@ interface EgresosCategoryChartProps {
   year: number
 }
 
+interface CatAmount {
+  id: string
+  label: string
+  color: string
+  amount: number
+}
 
 interface Datum {
   label: string
   monthKey: string
   total: number
   hasData: boolean
+  cats: CatAmount[]
 }
 
 interface Tooltip {
   x: number
   y: number
-  label: string
-  total: number
-  delta: number | null
+  datum: Datum
+  avg: number
 }
 
 function getCSSVar(v: string) {
@@ -48,19 +54,35 @@ export function EgresosCategoryChart({ year }: EgresosCategoryChartProps) {
       const key = `${year}-${String(m).padStart(2, '0')}`
       const d   = db[key]
       const trm = d?.trm || DEFAULTS.trm
-      const total = (d?.egresos || []).reduce(
+      const egresos = d?.egresos || []
+      const total = egresos.reduce(
         (a, e) => a + (e.currency === 'USD' ? e.amount * trm : e.amount), 0
       )
-      return { label: name.slice(0, 3), monthKey: key, total, hasData: total > 0 }
+      const cats: CatAmount[] = EGRESO_CATEGORIAS
+        .map(cat => ({
+          id: cat.id,
+          label: cat.label,
+          color: cat.color,
+          amount: egresos
+            .filter(e => (e.category || 'otro') === cat.id)
+            .reduce((a, e) => a + (e.currency === 'USD' ? e.amount * trm : e.amount), 0),
+        }))
+        .filter(c => c.amount > 0)
+        .sort((a, b) => b.amount - a.amount)
+      return { label: name.slice(0, 3), monthKey: key, total, hasData: total > 0, cats }
     }),
   [db, year])
 
   const hasData = data.some(d => d.hasData)
 
+  // Only render months that have egreso data
+  const visibleData = useMemo(() => data.filter(d => d.hasData), [data])
+
   const avg = useMemo(() => {
-    const filled = data.filter(d => d.hasData)
-    return filled.length > 0 ? filled.reduce((a, d) => a + d.total, 0) / filled.length : 0
-  }, [data])
+    return visibleData.length > 0
+      ? visibleData.reduce((a, d) => a + d.total, 0) / visibleData.length
+      : 0
+  }, [visibleData])
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -74,14 +96,13 @@ export function EgresosCategoryChart({ year }: EgresosCategoryChartProps) {
 
     const W  = containerRef.current.clientWidth
     const H  = 220
-    const mg = { top: 8, right: 12, bottom: 40, left: 46 }
+    const mg = { top: 8, right: 12, bottom: 40, left: 52 }
     const w  = W - mg.left - mg.right
     const h  = H - mg.top - mg.bottom
 
     const tickColor  = getCSSVar('--muted-foreground')
     const gridColor  = dark ? 'oklch(1 0 0 / 8%)' : 'oklch(0 0 0 / 5%)'
     const hlColor    = dark ? 'oklch(1 0 0 / 5%)' : 'oklch(0 0 0 / 3%)'
-    const barColor   = getCSSVar('--color-expense')
     const emptyColor = dark ? 'oklch(1 0 0 / 6%)' : 'oklch(0 0 0 / 4%)'
     const avgColor   = dark ? 'oklch(1 0 0 / 30%)' : 'oklch(0 0 0 / 25%)'
 
@@ -91,10 +112,10 @@ export function EgresosCategoryChart({ year }: EgresosCategoryChartProps) {
 
     const g = svg.append('g').attr('transform', `translate(${mg.left},${mg.top})`)
 
-    const maxVal = d3.max(data, d => d.total) ?? 1
+    const maxVal = d3.max(visibleData, d => d.total) ?? 1
 
     const xScale = d3.scaleBand<string>()
-      .domain(data.map(d => d.label))
+      .domain(visibleData.map(d => d.label))
       .range([0, w])
       .padding(0.28)
 
@@ -111,11 +132,12 @@ export function EgresosCategoryChart({ year }: EgresosCategoryChartProps) {
         .attr('stroke', gridColor)
         .attr('stroke-dasharray', '3,3'))
 
-    // Y axis
+    // Y axis — divide by 1M for readable labels
     g.append('g')
-      .call(d3.axisLeft(yScale).ticks(4).tickFormat(
-        v => `$${(v as number).toLocaleString('es-CO', { maximumFractionDigits: 1 })}M`
-      ))
+      .call(d3.axisLeft(yScale).ticks(4).tickFormat(v => {
+        const m = (v as number) / 1_000_000
+        return `$${m.toLocaleString('es-CO', { maximumFractionDigits: 1 })}M`
+      }))
       .call(ax => ax.select('.domain').remove())
       .call(ax => ax.selectAll('.tick line').remove())
       .call(ax => ax.selectAll('text').attr('fill', tickColor).attr('font-size', '10.5px'))
@@ -127,8 +149,8 @@ export function EgresosCategoryChart({ year }: EgresosCategoryChartProps) {
       .call(ax => ax.select('.domain').attr('stroke', gridColor))
       .call(ax => ax.selectAll('text').attr('fill', tickColor).attr('font-size', '10.5px').attr('dy', '1.2em'))
 
-    // Current month highlight column (same pattern as TrendChart)
-    const curDatum = data.find(d => d.monthKey === curKey)
+    // Current month highlight column
+    const curDatum = visibleData.find(d => d.monthKey === curKey)
     if (curDatum) {
       g.append('rect')
         .attr('x', (xScale(curDatum.label) ?? 0) - 3)
@@ -154,41 +176,53 @@ export function EgresosCategoryChart({ year }: EgresosCategoryChartProps) {
         .text('promedio')
     }
 
-    // Bars — no transition to avoid replay bugs
-    g.selectAll<SVGRectElement, Datum>('.bar')
-      .data(data)
-      .join('rect')
-      .attr('class', 'bar')
-      .attr('x', d => xScale(d.label) ?? 0)
-      .attr('width', xScale.bandwidth())
-      .attr('rx', 3)
-      .attr('y', d => d.hasData ? yScale(d.total) : h - 4)
-      .attr('height', d => d.hasData ? Math.max(1, h - yScale(d.total)) : 4)
-      .attr('fill', d => d.hasData ? barColor : emptyColor)
+    // Stacked bars by category
+    visibleData.forEach(d => {
+      const x = xScale(d.label) ?? 0
+      const bw = xScale.bandwidth()
 
-    // Invisible hover targets (full column height) — avoids .raise() bug
+      if (!d.hasData) {
+        g.append('rect')
+          .attr('x', x).attr('width', bw).attr('rx', 3)
+          .attr('y', h - 4).attr('height', 4)
+          .attr('fill', emptyColor)
+        return
+      }
+
+      let yOffset = 0
+      d.cats.forEach((cat, i) => {
+        const barH = Math.max(1, h - yScale(cat.amount) - (h - yScale(d.total - yOffset)))
+        const catH = Math.max(1, yScale(yOffset) - yScale(yOffset + cat.amount))
+        const catY = yScale(yOffset + cat.amount)
+        const isFirst = i === 0
+        const isLast  = i === d.cats.length - 1
+
+        g.append('rect')
+          .attr('x', x).attr('width', bw)
+          .attr('y', catY).attr('height', Math.max(1, catH))
+          .attr('fill', `var(${cat.color})`)
+          // round top corners on topmost segment, bottom on last
+          .attr('rx', isFirst || isLast ? 3 : 0)
+
+        void barH
+        yOffset += cat.amount
+      })
+    })
+
+    // Invisible hover targets
     g.selectAll<SVGRectElement, Datum>('.hover-target')
-      .data(data)
+      .data(visibleData)
       .join('rect')
       .attr('class', 'hover-target')
       .attr('x', d => xScale(d.label) ?? 0)
       .attr('width', xScale.bandwidth())
-      .attr('y', 0)
-      .attr('height', h)
+      .attr('y', 0).attr('height', h)
       .attr('fill', 'transparent')
       .style('cursor', d => d.hasData ? 'pointer' : 'default')
       .on('mouseenter', function(event: MouseEvent, d) {
         if (!d.hasData) return
         const rect = containerRef.current!.getBoundingClientRect()
-        const idx  = data.indexOf(d)
-        const prev = data.slice(0, idx).reverse().find(m => m.hasData)
-        setTooltip({
-          x: event.clientX - rect.left,
-          y: event.clientY - rect.top,
-          label: d.label,
-          total: d.total,
-          delta: prev ? d.total - prev.total : null,
-        })
+        setTooltip({ x: event.clientX - rect.left, y: event.clientY - rect.top, datum: d, avg })
       })
       .on('mousemove', function(event: MouseEvent) {
         const rect = containerRef.current!.getBoundingClientRect()
@@ -197,7 +231,7 @@ export function EgresosCategoryChart({ year }: EgresosCategoryChartProps) {
       .on('mouseleave', () => setTooltip(null))
       .on('click', (_: MouseEvent, d) => { if (d.hasData) setCurKey(d.monthKey) })
 
-  }, [data, dark, curKey, containerW, hasData, avg, setCurKey, year])
+  }, [visibleData, dark, curKey, containerW, hasData, avg, setCurKey, year])
 
   if (!hasData) {
     return (
@@ -213,51 +247,35 @@ export function EgresosCategoryChart({ year }: EgresosCategoryChartProps) {
     )
   }
 
-  const isCurYear = curKey.startsWith(`${year}-`)
-
   return (
-    <SectionCard
-      icon={ShoppingBag}
-      title="Egresos mensuales"
-      action={
-        isCurYear ? (
-          <span className="text-[11px] text-muted-foreground flex items-center gap-1.5">
-            <span
-              className="inline-block w-2.5 h-2.5 rounded-sm"
-              style={{ background: `var(--color-provision)` }}
-            />
-            mes actual
-          </span>
-        ) : undefined
-      }
-    >
+    <SectionCard icon={ShoppingBag} title="Egresos mensuales">
       <div ref={containerRef} className="relative select-none">
         <svg ref={svgRef} className="w-full block" />
         {tooltip && (
           <div
-            className="absolute z-10 pointer-events-none rounded-lg border border-[var(--border)] bg-[var(--popover)] shadow-lg px-3 py-2.5 text-[11px] min-w-[150px]"
+            className="absolute z-10 pointer-events-none rounded-lg border border-[var(--border)] bg-[var(--popover)] shadow-lg px-3 py-2.5 text-[11px] min-w-[180px]"
             style={{
               left: tooltip.x + 14,
-              top:  tooltip.y - 80,
+              top:  tooltip.y - 100,
               transform: tooltip.x > (containerRef.current?.clientWidth ?? 400) * 0.6
                 ? 'translateX(calc(-100% - 28px))'
                 : 'none',
             }}
           >
-            <div className="font-heading font-semibold text-[12px] mb-1.5">
-              {tooltip.label} — {COP(tooltip.total)}
+            <div className="font-heading font-semibold text-[12px] mb-2">
+              {tooltip.datum.label} — {COP(tooltip.datum.total)}
             </div>
-            {tooltip.delta !== null && (
-              <div className={tooltip.delta > 0 ? 'text-[var(--color-danger)]' : 'text-[var(--color-provision)]'}>
-                {tooltip.delta > 0 ? '▲' : '▼'}
-                {' '}{COP(Math.abs(tooltip.delta))} vs mes anterior
-              </div>
-            )}
-            {tooltip.delta === null && (
-              <div className="text-muted-foreground">primer mes registrado</div>
-            )}
-            <div className="text-muted-foreground mt-1">
-              Promedio: {COP(avg)}
+            <div className="space-y-1">
+              {tooltip.datum.cats.map(cat => (
+                <div key={cat.id} className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: `var(${cat.color})` }} />
+                  <span className="text-muted-foreground flex-1">{cat.label}</span>
+                  <span className="font-mono tabular-nums">{COP(cat.amount)}</span>
+                </div>
+              ))}
+            </div>
+            <div className="text-muted-foreground mt-2 pt-2 border-t border-[var(--border)]">
+              Promedio: {COP(tooltip.avg)}
             </div>
           </div>
         )}
