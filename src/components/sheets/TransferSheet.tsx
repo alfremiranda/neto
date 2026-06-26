@@ -194,7 +194,7 @@ export function TransferSheet() {
       id="transfer"
       title={isEditing ? 'Editar movimiento' : 'Nuevo movimiento'}
       footer={
-        <div className="space-y-2">
+        <div className="space-y-3">
           <Button size="xl" className="w-full" onClick={handleSubmit}>
             {isEditing ? 'Guardar cambios' : 'Registrar movimiento'}
           </Button>

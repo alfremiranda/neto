@@ -63,12 +63,14 @@ function Calendar({
         day: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20",
         day_button: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-8 w-8 p-0 font-normal aria-selected:opacity-100"
+          "h-8 w-8 p-0 font-normal",
         ),
+        // In DayPicker v10, aria-selected + data-selected are on the Day (td/gridcell)
+        // Apply all visual state directly here so ARIA attribute and visual are co-located
         selected:
-          "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground rounded-md",
-        today: "bg-accent text-accent-foreground rounded-md",
-        outside: "text-muted-foreground opacity-50",
+          "rounded-md bg-primary text-primary-foreground [&>button]:hover:bg-primary/90 [&>button]:hover:text-primary-foreground [&>button]:focus-visible:bg-primary",
+        today: "rounded-md bg-accent [&>button]:text-accent-foreground",
+        outside: "text-muted-foreground/40",
         disabled: "text-muted-foreground opacity-50",
         range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
         hidden: "invisible",
