@@ -25,44 +25,75 @@ function keyForDate(date: string, fallback: string): string {
   return monthKey(d.getMonth() + 1, d.getFullYear())
 }
 
-// Move every record to the month key matching its date field.
-// Safe to run on any db object (local or cloud). Returns a new db and
-// a `changed` flag so callers know whether to push the result.
+// Apply all pending migrations. Safe to run on any db object (local or cloud).
+// Returns a new db and a `changed` flag so callers know whether to push the result.
+// Bump CURRENT_DB_VERSION when adding a new migration step.
+const CURRENT_DB_VERSION = 2
+
 function applyDateMigration(db: Record<string, unknown>): { db: Record<string, unknown>; changed: boolean } {
   const settings = (db['_settings'] ?? {}) as Settings & { dbMigrationVersion?: number }
-  if ((settings.dbMigrationVersion ?? 0) >= 1) return { db, changed: false }
+  const version = settings.dbMigrationVersion ?? 0
+  if (version >= CURRENT_DB_VERSION) return { db, changed: false }
 
-  // Seed destination months from all existing months, preserving TRM/other fields but clearing arrays
-  const newDb: Record<string, MonthData> = {}
-  for (const key of Object.keys(db)) {
-    if (key === '_settings') continue
-    const m = db[key] as MonthData
-    newDb[key] = { ...m, incomes: [], transfers: [], egresos: [] }
+  let current = { ...db }
+
+  // ── v1: move records to the month key matching their date field ─────────────
+  if (version < 1) {
+    const newDb: Record<string, MonthData> = {}
+    for (const key of Object.keys(current)) {
+      if (key === '_settings') continue
+      const m = current[key] as MonthData
+      newDb[key] = { ...m, incomes: [], transfers: [], egresos: [] }
+    }
+    for (const key of Object.keys(current)) {
+      if (key === '_settings') continue
+      const m = current[key] as MonthData
+      for (const income of (m.incomes ?? [])) {
+        const dest = income.date ? keyForDate(income.date, key) : key
+        newDb[dest] ??= { trm: (current[dest] as MonthData | undefined)?.trm ?? m.trm, incomes: [], transfers: [], egresos: [] }
+        newDb[dest].incomes.push(income)
+      }
+      for (const egreso of (m.egresos ?? [])) {
+        const dest = egreso.date ? keyForDate(egreso.date, key) : key
+        newDb[dest] ??= { trm: (current[dest] as MonthData | undefined)?.trm ?? m.trm, incomes: [], transfers: [], egresos: [] }
+        newDb[dest].egresos.push(egreso)
+      }
+      for (const transfer of (m.transfers ?? [])) {
+        const dest = transfer.date ? keyForDate(transfer.date, key) : key
+        newDb[dest] ??= { trm: (current[dest] as MonthData | undefined)?.trm ?? m.trm, incomes: [], transfers: [], egresos: [] }
+        newDb[dest].transfers.push(transfer)
+      }
+    }
+    current = { ...current, ...newDb }
   }
 
-  // Redistribute records into their date-based month
-  for (const key of Object.keys(db)) {
-    if (key === '_settings') continue
-    const m = db[key] as MonthData
-    for (const income of (m.incomes ?? [])) {
-      const dest = income.date ? keyForDate(income.date, key) : key
-      newDb[dest] ??= { trm: (db[dest] as MonthData | undefined)?.trm ?? m.trm, incomes: [], transfers: [], egresos: [] }
-      newDb[dest].incomes.push(income)
-    }
-    for (const egreso of (m.egresos ?? [])) {
-      const dest = egreso.date ? keyForDate(egreso.date, key) : key
-      newDb[dest] ??= { trm: (db[dest] as MonthData | undefined)?.trm ?? m.trm, incomes: [], transfers: [], egresos: [] }
-      newDb[dest].egresos.push(egreso)
-    }
-    for (const transfer of (m.transfers ?? [])) {
-      const dest = transfer.date ? keyForDate(transfer.date, key) : key
-      newDb[dest] ??= { trm: (db[dest] as MonthData | undefined)?.trm ?? m.trm, incomes: [], transfers: [], egresos: [] }
-      newDb[dest].transfers.push(transfer)
+  // ── v2: move orphaned voluntarias to the next calendar month ────────────────
+  // Voluntarias have no date field, so v1 left them in place. If a month ends
+  // up with only voluntarias (no incomes/egresos/transfers) it's an orphan from
+  // the old curKey display bug — move them forward one month.
+  if (version < 2) {
+    for (const key of Object.keys(current).filter(k => k !== '_settings').sort()) {
+      const m = current[key] as MonthData
+      if (
+        m.incomes.length === 0 &&
+        m.egresos.length === 0 &&
+        m.transfers.length === 0 &&
+        (m.voluntarias?.length ?? 0) > 0
+      ) {
+        const [ky, km] = key.split('-').map(Number)
+        const nextKey = km === 12 ? monthKey(1, ky + 1) : monthKey(km + 1, ky)
+        const next = (current[nextKey] as MonthData | undefined) ?? { trm: m.trm, incomes: [], transfers: [], egresos: [] }
+        current[nextKey] = {
+          ...next,
+          voluntarias: [...(next.voluntarias ?? []), ...(m.voluntarias ?? [])],
+        }
+        current[key] = { ...m, voluntarias: [] }
+      }
     }
   }
 
-  newDb['_settings'] = { ...(db['_settings'] ?? {}), dbMigrationVersion: 1 } as unknown as MonthData
-  return { db: newDb as Record<string, unknown>, changed: true }
+  current['_settings'] = { ...(current['_settings'] ?? {}), dbMigrationVersion: CURRENT_DB_VERSION } as unknown as MonthData
+  return { db: current, changed: true }
 }
 
 function emptyMonth(trm = DEFAULTS.trm): MonthData {
