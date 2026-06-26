@@ -18,6 +18,13 @@ export function monthKey(m: number, y: number): string {
   return `${y}-${String(m).padStart(2, '0')}`
 }
 
+// Derive month key from an ISO date string (e.g. "2026-06-08" → "2026-06")
+function keyForDate(date: string, fallback: string): string {
+  const d = new Date(date)
+  if (isNaN(d.getTime())) return fallback
+  return monthKey(d.getMonth() + 1, d.getFullYear())
+}
+
 function emptyMonth(trm = DEFAULTS.trm): MonthData {
   return { trm, incomes: [], transfers: [], egresos: [] }
 }
@@ -177,13 +184,14 @@ export const useFinanceStore = create<FinanceState>()(
 
       addIncome: (income) => {
         const { curKey, db } = get()
-        const d = db[curKey] ?? initMonth(curKey, db)
+        const key = income.date ? keyForDate(income.date, curKey) : curKey
+        const d = db[key] ?? initMonth(key, db)
         const updated: MonthData = {
           ...d,
           incomes: [...d.incomes, { ...income, id: Date.now() }],
         }
-        set(state => ({ db: { ...state.db, [curKey]: updated } }))
-        autoPush(curKey, updated)
+        set(state => ({ db: { ...state.db, [key]: updated } }))
+        autoPush(key, updated)
       },
 
       updateIncome: (id, patch) => {
@@ -207,13 +215,14 @@ export const useFinanceStore = create<FinanceState>()(
 
       addEgreso: (egreso) => {
         const { curKey, db } = get()
-        const d = db[curKey] ?? initMonth(curKey, db)
+        const key = egreso.date ? keyForDate(egreso.date, curKey) : curKey
+        const d = db[key] ?? initMonth(key, db)
         const updated: MonthData = {
           ...d,
           egresos: [...(d.egresos || []), { ...egreso, id: Date.now(), confirmed: true }],
         }
-        set(state => ({ db: { ...state.db, [curKey]: updated } }))
-        autoPush(curKey, updated)
+        set(state => ({ db: { ...state.db, [key]: updated } }))
+        autoPush(key, updated)
       },
 
       updateEgreso: (id, patch) => {
@@ -248,15 +257,16 @@ export const useFinanceStore = create<FinanceState>()(
 
       addTransfer: (transfer) => {
         const { curKey, db } = get()
-        const d = db[curKey] ?? initMonth(curKey, db)
+        const key = transfer.date ? keyForDate(transfer.date, curKey) : curKey
+        const d = db[key] ?? initMonth(key, db)
         const newTransfer: Transfer = { ...transfer, id: Date.now() }
         const updated: MonthData = {
           ...d,
           transfers: [...(d.transfers || []), newTransfer],
           trm: transfer.trm ?? d.trm,
         }
-        set(state => ({ db: { ...state.db, [curKey]: updated } }))
-        autoPush(curKey, updated)
+        set(state => ({ db: { ...state.db, [key]: updated } }))
+        autoPush(key, updated)
       },
 
       updateTransfer: (id, transfer) => {
@@ -692,6 +702,40 @@ export const useFinanceStore = create<FinanceState>()(
       onRehydrateStorage: () => (state) => {
         state?.migrate()
         if (!state) return
+
+        // ── One-time migration: move records to their date-based month key ──
+        const settings = (state.db._settings ?? {}) as Settings & { dbMigrationVersion?: number }
+        if ((settings.dbMigrationVersion ?? 0) < 1) {
+          const newDb: Record<string, MonthData> = {}
+          for (const key of Object.keys(state.db)) {
+            if (key === '_settings') continue
+            const month = state.db[key] as MonthData
+            // Keep the shell (TRM, seeded flags) in the original month
+            newDb[key] ??= { trm: month.trm, incomes: [], transfers: [], egresos: [] }
+
+            for (const income of (month.incomes ?? [])) {
+              const dest = income.date ? keyForDate(income.date, key) : key
+              newDb[dest] ??= { trm: month.trm, incomes: [], transfers: [], egresos: [] }
+              newDb[dest].incomes.push(income)
+            }
+            for (const egreso of (month.egresos ?? [])) {
+              const dest = egreso.date ? keyForDate(egreso.date, key) : key
+              newDb[dest] ??= { trm: month.trm, incomes: [], transfers: [], egresos: [] }
+              newDb[dest].egresos.push(egreso)
+            }
+            for (const transfer of (month.transfers ?? [])) {
+              const dest = transfer.date ? keyForDate(transfer.date, key) : key
+              newDb[dest] ??= { trm: month.trm, incomes: [], transfers: [], egresos: [] }
+              newDb[dest].transfers.push(transfer)
+            }
+          }
+          newDb['_settings'] = {
+            ...(state.db._settings ?? {}),
+            dbMigrationVersion: 1,
+          } as unknown as MonthData
+          state.db = { ...state.db, ...newDb }
+        }
+
         // Always reset curKey to actual current month on load
         const now = new Date()
         const key = monthKey(now.getMonth() + 1, now.getFullYear())
