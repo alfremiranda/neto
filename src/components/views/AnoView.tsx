@@ -45,8 +45,6 @@ export function AnoView() {
 
   return (
     <div className="space-y-4">
-      <TrendChart />
-
       <SectionCard
         icon={CalendarRange}
         title="Resumen anual"
@@ -76,6 +74,7 @@ export function AnoView() {
         <AnnualTable year={year} />
       </SectionCard>
 
+      <TrendChart />
       <EgresosCategoryChart year={year} />
       <EgresosBreakdown year={year} />
 
