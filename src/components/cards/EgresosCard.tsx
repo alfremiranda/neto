@@ -57,6 +57,7 @@ function EgresosBar({ egresos, trm }: { egresos: Egreso[]; trm: number }) {
       return { id: cat.id, label: cat.label, color: cat.color, amount, pct: (amount / total) * 100 }
     })
     .filter(s => s.amount > 0)
+    .sort((a, b) => b.pct - a.pct)
 
   return (
     <div className="mt-3 pt-3 border-t border-[var(--border)]">
@@ -82,7 +83,7 @@ function EgresosBar({ egresos, trm }: { egresos: Egreso[]; trm: number }) {
           >
             <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: `var(${seg.color})` }} />
             <span className="text-xs text-muted-foreground">{seg.label}</span>
-            <span className="text-xs font-mono font-semibold tabular-nums">{Math.round(seg.pct)}%</span>
+            <span className="text-xs font-mono font-semibold tabular-nums">{seg.pct.toLocaleString('es-CO', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%</span>
           </button>
         ))}
         {hovered && (
