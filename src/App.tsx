@@ -18,6 +18,7 @@ import { useAuthStore } from '@/store/authStore'
 import { useFinanceStore } from '@/store/financeStore'
 import { usePullToRefresh, PTR_THRESHOLD } from '@/hooks/usePullToRefresh'
 import { LoginScreen } from '@/components/auth/LoginScreen'
+import { OnboardingView } from '@/components/onboarding/OnboardingView'
 
 function PullIndicator({ pullY, refreshing, isPulling }: { pullY: number; refreshing: boolean; isPulling: boolean }) {
   const progress = Math.min(pullY / PTR_THRESHOLD, 1)
@@ -54,8 +55,9 @@ function PullIndicator({ pullY, refreshing, isPulling }: { pullY: number; refres
 export default function App() {
   const view = useUIStore(s => s.view)
   const { showToast } = useUIStore()
-  const { user, loading, initialize } = useAuthStore()
-  const { syncFromCloud } = useFinanceStore()
+  const { user, loading, cloudReady, initialize } = useAuthStore()
+  const { syncFromCloud, isOnboardingDone } = useFinanceStore()
+  const onboardingDone = useFinanceStore(s => (s.db._settings as import('@/types').Settings | undefined)?.onboardingDone === true)
   const mainRef = useRef<HTMLElement>(null)
 
   // Initialize auth listener once on mount
@@ -70,9 +72,9 @@ export default function App() {
     showToast('Sincronizado')
   }, [syncFromCloud, showToast])
 
-  const { pullY, refreshing, isPulling } = usePullToRefresh(mainRef, handleRefresh, !user)
+  const { pullY, refreshing, isPulling } = usePullToRefresh(mainRef, handleRefresh, !user || !onboardingDone)
 
-  if (loading) {
+  if (loading || !cloudReady) {
     return (
       <div className="min-h-[100dvh] flex items-center justify-center bg-[var(--background)]">
         <div className="w-6 h-6 border-2 border-[var(--border)] border-t-foreground rounded-full animate-spin" />
@@ -82,6 +84,10 @@ export default function App() {
 
   if (!user) {
     return <LoginScreen />
+  }
+
+  if (!onboardingDone) {
+    return <OnboardingView />
   }
 
   return (

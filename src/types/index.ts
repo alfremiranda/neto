@@ -64,7 +64,8 @@ export interface MonthData {
 export interface Settings {
   smmlv?: Record<string, number>
   accounts?: Account[]
-  ssAccount?: string  // account ID that pays SS each month
+  ssAccount?: string       // account ID that pays SS each month
+  onboardingDone?: boolean // set to true after first-run wizard is completed
 }
 
 export type FinanceDB = { _settings?: Settings } & Record<string, MonthData>

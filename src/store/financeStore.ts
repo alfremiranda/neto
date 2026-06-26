@@ -66,6 +66,7 @@ interface FinanceState {
   getCurrentMonth: () => MonthData
   getSMMLV: (year: number) => number
   getAccounts: () => Account[]
+  isOnboardingDone: () => boolean
 
   // mutations
   setCurKey: (key: string) => void
@@ -90,6 +91,7 @@ interface FinanceState {
   setTRM: (trm: number) => void
   saveSMMLV: (year: string, value: number) => void
   saveAccountsConfig: (accounts: Account[]) => void
+  completeOnboarding: () => void
 
   // navigation
   prevMonth: () => void
@@ -136,11 +138,18 @@ export const useFinanceStore = create<FinanceState>()(
         return s?.smmlv?.[String(year)] ?? DEFAULTS.smmlv
       },
 
+      isOnboardingDone: () => {
+        const s = get().db._settings as Settings | undefined
+        // Existing users who have accounts already configured bypass the wizard.
+        return s?.onboardingDone === true || (s?.accounts != null && s.accounts.length > 0)
+      },
+
       getAccounts: () => {
         const s = get().db._settings as Settings | undefined
+        // New users start with only Efectivo; onboarding lets them add more.
         const base: Account[] = s?.accounts && s.accounts.length > 0
           ? s.accounts
-          : TRANSFER_ACCOUNTS.map(a => ({ ...a, number: '', rate: a.id === 'ARQ' ? 3.5 : 0 }))
+          : TRANSFER_ACCOUNTS.filter(a => a.locked)
         const lockedDefaults = TRANSFER_ACCOUNTS.filter(a => a.locked)
         const storedIds = new Set(base.map(a => a.id))
         const missing = lockedDefaults.filter(a => !storedIds.has(a.id))
@@ -368,6 +377,19 @@ export const useFinanceStore = create<FinanceState>()(
             db: {
               ...state.db,
               _settings: { ...settings, accounts },
+            } as FinanceDB,
+          }
+        })
+        sbPush('_settings', get().db._settings).catch(() => {})
+      },
+
+      completeOnboarding: () => {
+        set(state => {
+          const settings = (state.db._settings ?? {}) as Settings
+          return {
+            db: {
+              ...state.db,
+              _settings: { ...settings, onboardingDone: true },
             } as FinanceDB,
           }
         })
