@@ -20,14 +20,14 @@ export function usePullToRefresh(
     if (!el || disabled) return
 
     function onTouchStart(e: TouchEvent) {
-      if (el.scrollTop > 2) return
+      if ((e.currentTarget as HTMLElement).scrollTop > 2) return
       startY.current = e.touches[0].clientY
       active.current = true
     }
 
     function onTouchMove(e: TouchEvent) {
       if (!active.current) return
-      if (el.scrollTop > 2) { active.current = false; return }
+      if ((e.currentTarget as HTMLElement).scrollTop > 2) { active.current = false; return }
       const dy = e.touches[0].clientY - startY.current
       if (dy <= 0) {
         active.current = false
