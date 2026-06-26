@@ -7,17 +7,23 @@ interface Action {
   label: string
   Icon: React.ElementType
   onTrigger: () => void
+  delay: number
 }
 
-function FABAction({ label, Icon, onTrigger }: Action) {
+function FABAction({ label, Icon, onTrigger, delay }: Action) {
   return (
     <button
       onClick={onTrigger}
+      style={{ animationDelay: `${delay}ms` }}
       className={cn(
         'flex items-center gap-2.5 h-11 pl-3.5 pr-4 rounded-full shadow-lg',
         'bg-[var(--card)] border border-[var(--border)]',
         'text-sm font-medium text-[var(--foreground)]',
-        'active:scale-95 transition-transform',
+        // Press feedback
+        'active:scale-95 transition-transform duration-100',
+        // Entrance: fade + scale up from slightly below — fill-mode-backwards holds
+        // the initial keyframe state during the delay so items stay hidden
+        'animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-2 fill-mode-backwards duration-200',
       )}
     >
       <span className="text-[var(--primary)]"><Icon size={16} /></span>
@@ -30,7 +36,6 @@ export function FAB() {
   const [open, setOpen] = useState(false)
   const { view, openSheet, setEditingIncome, setEditingEgreso, setEditingTransfer, setEditingVoluntaria } = useUIStore()
 
-  // Close on view change
   useEffect(() => { setOpen(false) }, [view])
 
   const visible = view === 'mes' || view === 'dashboard' || view === 'cuentas'
@@ -38,11 +43,10 @@ export function FAB() {
 
   function trigger(action: () => void) {
     setOpen(false)
-    // Small delay so overlay dismisses before sheet opens
     setTimeout(action, 50)
   }
 
-  const actions: Action[] = [
+  const actions = [
     {
       label: 'Ingreso',
       Icon: TrendingUp,
@@ -67,24 +71,34 @@ export function FAB() {
 
   return (
     <>
-      {/* Tap-outside overlay */}
-      {open && (
-        <div
-          className="sm:hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
-          onClick={() => setOpen(false)}
-        />
-      )}
+      {/* Overlay — always in DOM, fade controlled via opacity so the transition runs
+          in both directions. backdrop-blur-sm is invisible at opacity-0. */}
+      <div
+        aria-hidden
+        className={cn(
+          'sm:hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-sm',
+          'transition-opacity duration-200',
+          open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none',
+        )}
+        onClick={() => setOpen(false)}
+      />
 
       {/* FAB + speed-dial */}
       <div
         className="sm:hidden fixed right-4 z-50 flex flex-col items-end gap-3"
         style={{ bottom: 'calc(env(safe-area-inset-bottom) + 72px)' }}
       >
-        {/* Actions (visible when open) */}
+        {/* Actions — stagger from closest to the FAB (bottom) outward.
+            Ahorro (last in array, visually bottom) gets delay 0;
+            Ingreso (first in array, visually top) gets the longest delay. */}
         {open && (
           <div className="flex flex-col items-end gap-2.5">
-            {actions.map(a => (
-              <FABAction key={a.label} {...a} />
+            {actions.map((a, i) => (
+              <FABAction
+                key={a.label}
+                {...a}
+                delay={(actions.length - 1 - i) * 40}
+              />
             ))}
           </div>
         )}
@@ -96,13 +110,14 @@ export function FAB() {
           className={cn(
             'w-14 h-14 rounded-full shadow-xl flex items-center justify-center',
             'bg-[var(--primary)] text-[var(--primary-foreground)]',
-            'active:scale-95 transition-transform',
+            'active:scale-90 transition-transform duration-100',
           )}
         >
           <Plus
             size={26}
             strokeWidth={2}
-            className={cn('transition-transform duration-200', open && 'rotate-45')}
+            style={{ transition: 'transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+            className={cn(open ? 'rotate-45' : 'rotate-0')}
           />
         </button>
       </div>
