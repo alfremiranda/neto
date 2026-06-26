@@ -121,7 +121,7 @@ export const useFinanceStore = create<FinanceState>()(
       db: {},
       curKey: (() => {
         const now = new Date()
-        return monthKey(now.getMonth(), now.getFullYear())
+        return monthKey(now.getMonth() + 1, now.getFullYear())
       })(),
 
       // ── selectors ──────────────────────────────────────────────────────────
@@ -430,7 +430,7 @@ export const useFinanceStore = create<FinanceState>()(
       restoreJuneEgresos: () => {
         const { db } = get()
         const now = new Date()
-        const todayKey = monthKey(now.getMonth(), now.getFullYear())
+        const todayKey = monthKey(now.getMonth() + 1, now.getFullYear())
         const base = Date.now()
         const egresos: Egreso[] = [
           { id: base+1,  desc: 'Poliza de Salud SURA',          amount: 1550000, currency: 'COP', date: '2026-06-30', category: 'salud',           account: 'Bancolombia',   recurring: true,  confirmed: false },
@@ -456,7 +456,7 @@ export const useFinanceStore = create<FinanceState>()(
       nuclearResetCurrentMonth: () => {
         const { db } = get()
         const now = new Date()
-        const todayKey = monthKey(now.getMonth(), now.getFullYear())
+        const todayKey = monthKey(now.getMonth() + 1, now.getFullYear())
         const existing = (db[todayKey] ?? {}) as MonthData
         const base = Date.now()
         const egresos: Egreso[] = [
@@ -513,7 +513,7 @@ export const useFinanceStore = create<FinanceState>()(
       clearNonJuneEgresos: () => {
         const { db } = get()
         const now = new Date()
-        const todayKey = monthKey(now.getMonth(), now.getFullYear())
+        const todayKey = monthKey(now.getMonth() + 1, now.getFullYear())
         const newDb = { ...db }
         let count = 0
         Object.keys(newDb).forEach(key => {
@@ -694,7 +694,7 @@ export const useFinanceStore = create<FinanceState>()(
         if (!state) return
         // Always reset curKey to actual current month on load
         const now = new Date()
-        const key = monthKey(now.getMonth(), now.getFullYear())
+        const key = monthKey(now.getMonth() + 1, now.getFullYear())
         state.curKey = key
         // Ensure current month record exists
         if (!state.db[key]) {
