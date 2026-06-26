@@ -10,8 +10,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import type { ViewType } from '@/types'
 
 const NAV_ITEMS: Array<{ id: ViewType; label: string; mobileLabel: string; Icon: typeof CalendarDays }> = [
-  { id: 'mes',     label: 'Mes actual',    mobileLabel: 'Mes',           Icon: CalendarDays },
   { id: 'dashboard', label: 'Dashboard',    mobileLabel: 'Dashboard',     Icon: LayoutDashboard },
+  { id: 'mes',     label: 'Mes actual',    mobileLabel: 'Mes',           Icon: CalendarDays },
   { id: 'cuentas', label: 'Cuentas',       mobileLabel: 'Cuentas',       Icon: WalletCards },
   { id: 'config',  label: 'Configuración', mobileLabel: 'Configuración', Icon: Settings2 },
 ]
