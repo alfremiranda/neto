@@ -75,8 +75,8 @@ export function AnoView() {
       </SectionCard>
 
       <TrendChart />
-      <EgresosCategoryChart year={year} />
       <EgresosBreakdown year={year} />
+      <EgresosCategoryChart year={year} />
 
     </div>
   )
