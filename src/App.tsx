@@ -56,8 +56,11 @@ export default function App() {
   const view = useUIStore(s => s.view)
   const { showToast } = useUIStore()
   const { user, loading, cloudReady, initialize } = useAuthStore()
-  const { syncFromCloud, isOnboardingDone } = useFinanceStore()
-  const onboardingDone = useFinanceStore(s => (s.db._settings as import('@/types').Settings | undefined)?.onboardingDone === true)
+  const { syncFromCloud } = useFinanceStore()
+  const onboardingDone = useFinanceStore(s => {
+    const settings = s.db._settings as import('@/types').Settings | undefined
+    return settings?.onboardingDone === true || (settings?.accounts != null && settings.accounts.length > 0)
+  })
   const mainRef = useRef<HTMLElement>(null)
 
   // Initialize auth listener once on mount

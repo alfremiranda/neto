@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty'
 import { CurrencyBadge } from '@/components/ui/Badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { buildLedger, computeAccountBalance } from '@/lib/calc'
+import { computeAccountBalance } from '@/lib/calc'
 import { COP, USD } from '@/lib/format'
 import { exportAnnualCSV } from '@/lib/export'
 import { cn } from '@/lib/utils'
@@ -53,7 +53,7 @@ function AccountsOverview() {
     )
   }
 
-  const ledger = buildLedger(db)
+  const latestKey = Object.keys(db).filter(k => k !== '_settings').sort().at(-1) ?? ''
 
   return (
     <SectionCard
@@ -67,7 +67,7 @@ function AccountsOverview() {
     >
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
         {accounts.map(a => {
-          const balance    = computeAccountBalance(a, ledger)
+          const balance    = computeAccountBalance(a.id, a, db, latestKey)
           const hasBalance = a.startingBalance != null
           const fmt        = a.currency === 'USD' ? USD : COP
           const TypeIcon   = a.type === 'cash' ? Wallet : Landmark
