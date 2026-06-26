@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 // Figma: Icon Button — node 30:259
 // Sizes: SM=24px/10px-r/12px-icon, MD=28px/12px-r/12px-icon, LG=36px/14px-r/16px-icon, XL=44px/16px-r/20px-icon
 const iconButtonVariants = cva(
-  "inline-flex shrink-0 items-center justify-center border border-transparent transition-all outline-none select-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-60 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "inline-flex shrink-0 items-center justify-center border border-transparent transition-all duration-100 active:scale-95 outline-none select-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-60 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {

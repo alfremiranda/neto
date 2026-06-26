@@ -12,7 +12,7 @@ export function MonthNav() {
         onClick={prevMonth}
         disabled={m === 1}
         aria-label="Mes anterior"
-        className="w-11 h-11 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg border border-[var(--border)] bg-transparent text-[var(--foreground)] hover:bg-[var(--muted)] disabled:opacity-25 disabled:pointer-events-none transition-colors active:scale-95"
+        className="w-11 h-11 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg border border-[var(--border)] bg-transparent text-[var(--foreground)] hover:bg-[var(--muted)] disabled:opacity-25 disabled:pointer-events-none transition-all duration-100 active:scale-95"
       >
         <ChevronLeft size={16} />
       </button>
@@ -23,7 +23,7 @@ export function MonthNav() {
         onClick={nextMonth}
         disabled={m === 12}
         aria-label="Mes siguiente"
-        className="w-11 h-11 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg border border-[var(--border)] bg-transparent text-[var(--foreground)] hover:bg-[var(--muted)] disabled:opacity-25 disabled:pointer-events-none transition-colors active:scale-95"
+        className="w-11 h-11 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg border border-[var(--border)] bg-transparent text-[var(--foreground)] hover:bg-[var(--muted)] disabled:opacity-25 disabled:pointer-events-none transition-all duration-100 active:scale-95"
       >
         <ChevronRight size={16} />
       </button>
