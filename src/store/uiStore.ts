@@ -4,6 +4,7 @@ import type { SheetId, ViewType } from '@/types'
 
 interface UIState {
   view: ViewType
+  prevView: ViewType | null
   activeSheet: SheetId
   pendingDeleteId: number | null
   toastMsg: string | null
@@ -16,6 +17,7 @@ interface UIState {
   sidebarCollapsed: boolean
 
   setView: (v: ViewType) => void
+  goBack: () => void
   openSheet: (id: SheetId) => void
   closeSheet: () => void
   setPendingDelete: (id: number | null) => void
@@ -33,6 +35,7 @@ let toastTimer: ReturnType<typeof setTimeout> | null = null
 
 export const useUIStore = create<UIState>()(persist((set) => ({
   view: 'mes',
+  prevView: null,
   activeSheet: null,
   pendingDeleteId: null,
   toastMsg: null,
@@ -44,7 +47,8 @@ export const useUIStore = create<UIState>()(persist((set) => ({
   editingVoluntariaId: null,
   sidebarCollapsed: false,
 
-  setView: (view) => set({ view }),
+  setView: (view) => set(s => ({ prevView: s.view, view })),
+  goBack: () => set(s => ({ view: s.prevView ?? 'mes', prevView: null })),
 
   openSheet: (id) => set({ activeSheet: id }),
 

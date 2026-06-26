@@ -70,7 +70,7 @@ export interface Settings {
 
 export type FinanceDB = { _settings?: Settings } & Record<string, MonthData>
 
-export type ViewType = 'mes' | 'dashboard' | 'cuentas' | 'config'
+export type ViewType = 'mes' | 'dashboard' | 'cuentas' | 'config' | 'profile'
 
 export type SheetId = 'income' | 'egreso' | 'transfer' | 'voluntaria' | 'account-edit' | 'balance' | 'account-detail' | null
 

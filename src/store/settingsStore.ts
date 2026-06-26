@@ -5,17 +5,28 @@ import type { DeductionConfig } from '@/types'
 
 interface SettingsState {
   deductions: DeductionConfig[]
+  displayName: string
+  primaryCurrency: 'COP' | 'USD'
+  secondaryCurrency: 'COP' | 'USD' | null
 
   setDeduction: (id: string, patch: Partial<DeductionConfig>) => void
   addDeduction:  (d: Omit<DeductionConfig, 'id'>) => void
   removeDeduction: (id: string) => void
   resetDeductions: () => void
+  setDisplayName: (name: string) => void
+  setDisplayCurrency: (primary: 'COP' | 'USD', secondary: 'COP' | 'USD' | null) => void
 }
 
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set) => ({
       deductions: DEFAULT_DEDUCTIONS,
+      displayName: '',
+      primaryCurrency: 'COP' as const,
+      secondaryCurrency: 'USD' as const,
+
+      setDisplayName: (name) => set({ displayName: name }),
+      setDisplayCurrency: (primary, secondary) => set({ primaryCurrency: primary, secondaryCurrency: secondary }),
 
       setDeduction: (id, patch) =>
         set(s => ({
@@ -95,7 +106,14 @@ export const useSettingsStore = create<SettingsState>()(
 
         const storedIds = new Set(migrated.map((d: DeductionConfig) => d.id))
         const newDefaults = DEFAULT_DEDUCTIONS.filter(d => !storedIds.has(d.id))
-        return { ...current, deductions: [...migrated, ...newDefaults] }
+        return {
+          ...current,
+          deductions: [...migrated, ...newDefaults],
+          // Preserve user preferences stored in previous sessions
+          displayName: p.displayName ?? current.displayName,
+          primaryCurrency: p.primaryCurrency ?? current.primaryCurrency,
+          secondaryCurrency: p.secondaryCurrency !== undefined ? p.secondaryCurrency : current.secondaryCurrency,
+        }
       },
     },
   ),

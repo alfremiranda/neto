@@ -1,8 +1,10 @@
-import { Sun, Moon, CalendarDays, LogOut, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { Sun, Moon, CalendarDays, LogOut, PanelLeftClose, PanelLeftOpen, UserRound } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 import { useLiveTRM } from '@/hooks/useLiveTRM'
 import { useTheme } from '@/hooks/useTheme'
 import { useAuthStore } from '@/store/authStore'
+import { useSettingsStore } from '@/store/settingsStore'
+import { useUIStore } from '@/store/uiStore'
 import { useSidebar } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
 import { IconButton } from '@/components/ui/icon-button'
@@ -17,6 +19,8 @@ function todayLabel() {
 
 function UserAvatar() {
   const { user, signOut } = useAuthStore()
+  const displayName = useSettingsStore(s => s.displayName)
+  const { setView } = useUIStore()
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -31,9 +35,10 @@ function UserAvatar() {
 
   if (!user) return null
 
-  const avatarUrl = user.user_metadata?.avatar_url as string | undefined
-  const name = (user.user_metadata?.full_name ?? user.user_metadata?.user_name ?? user.email ?? '') as string
-  const initials = name.split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase()
+  const avatarUrl  = user.user_metadata?.avatar_url as string | undefined
+  const oauthName  = (user.user_metadata?.full_name ?? user.user_metadata?.user_name ?? user.email ?? '') as string
+  const name       = displayName.trim() || oauthName
+  const initials   = name.split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase()
 
   return (
     <div ref={ref} className="relative">
@@ -56,10 +61,18 @@ function UserAvatar() {
           </div>
           <Button
             variant="ghost"
-            onClick={() => { setOpen(false); signOut() }}
+            onClick={() => { setOpen(false); setView('profile') }}
             className="w-full justify-start gap-2 px-3 py-2.5 h-auto text-sm rounded-none"
           >
-            <LogOut size={14} className="text-muted-foreground" />
+            <UserRound size={14} className="text-muted-foreground" />
+            Mi perfil
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => { setOpen(false); signOut() }}
+            className="w-full justify-start gap-2 px-3 py-2.5 h-auto text-sm rounded-none text-btn-danger-fg hover:bg-btn-danger-hover"
+          >
+            <LogOut size={14} />
             Cerrar sesión
           </Button>
         </div>

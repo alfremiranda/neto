@@ -6,6 +6,7 @@ import { FAB } from '@/components/layout/FAB'
 import { MesView } from '@/components/views/MesView'
 import { DashboardView } from '@/components/views/DashboardView'
 import { ConfigView } from '@/components/views/ConfigView'
+import { ProfileView } from '@/components/views/ProfileView'
 import { CuentasView } from '@/components/views/CuentasView'
 import { Toast } from '@/components/ui/Toast'
 import { AccountEditSheet } from '@/components/sheets/AccountEditSheet'
@@ -112,6 +113,7 @@ export default function App() {
               {view === 'dashboard' && <DashboardView />}
               {view === 'cuentas'   && <CuentasView />}
               {view === 'config'    && <ConfigView />}
+              {view === 'profile'   && <ProfileView />}
             </div>
           </main>
         </div>

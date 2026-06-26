@@ -118,36 +118,38 @@ export function ConfigView() {
               No uses "Jalar desde la nube" o perderás los datos locales.
             </div>
           )}
-          {/* Sync actions */}
-          <div>
-            <div className="text-xs font-medium text-muted-foreground mb-2">Sincronización</div>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleForcePush}
-                disabled={syncing !== null}
-                className="flex-1"
-              >
-                {syncing === 'push'
-                  ? <RefreshCw size={13} className="animate-spin" />
-                  : <CloudUpload size={13} />}
-                Subir todo a la nube
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handlePull}
-                disabled={syncing !== null}
-                className="flex-1"
-              >
-                {syncing === 'pull'
-                  ? <RefreshCw size={13} className="animate-spin" />
-                  : <RefreshCw size={13} />}
-                Jalar desde la nube
-              </Button>
+          {/* Sync actions — dev only; pull-to-refresh handles sync in prod */}
+          {import.meta.env.DEV && (
+            <div>
+              <div className="text-xs font-medium text-muted-foreground mb-2">Sincronización</div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleForcePush}
+                  disabled={syncing !== null}
+                  className="flex-1"
+                >
+                  {syncing === 'push'
+                    ? <RefreshCw size={13} className="animate-spin" />
+                    : <CloudUpload size={13} />}
+                  Subir todo a la nube
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handlePull}
+                  disabled={syncing !== null}
+                  className="flex-1"
+                >
+                  {syncing === 'pull'
+                    ? <RefreshCw size={13} className="animate-spin" />
+                    : <RefreshCw size={13} />}
+                  Jalar desde la nube
+                </Button>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Account */}
           <div className="flex items-center justify-between pt-2 border-t border-[var(--border)]">
