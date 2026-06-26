@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import type { SheetId, ViewType } from '@/types'
 
 interface UIState {
@@ -28,7 +29,7 @@ interface UIState {
 
 let toastTimer: ReturnType<typeof setTimeout> | null = null
 
-export const useUIStore = create<UIState>()((set) => ({
+export const useUIStore = create<UIState>()(persist((set) => ({
   view: 'mes',
   activeSheet: null,
   pendingDeleteId: null,
@@ -67,4 +68,7 @@ export const useUIStore = create<UIState>()((set) => ({
   setEditingBalance: (id) => set({ editingBalanceId: id }),
   setEditingTransfer: (id) => set({ editingTransferId: id }),
   toggleSidebar: () => set(s => ({ sidebarCollapsed: !s.sidebarCollapsed })),
+}), {
+  name: 'neto-ui',
+  partialize: (s) => ({ view: s.view, sidebarCollapsed: s.sidebarCollapsed }),
 }))
