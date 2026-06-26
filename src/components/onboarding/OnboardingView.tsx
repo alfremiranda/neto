@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils'
 import { TRANSFER_ACCOUNTS } from '@/data/defaults'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
+import { useUIStore } from '@/store/uiStore'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import type { Account, DeductionConfig } from '@/types'
@@ -242,6 +243,7 @@ const TOTAL_STEPS = 4  // 0=welcome, 1=accounts, 2=deductions, 3=done
 export function OnboardingView() {
   const { saveAccountsConfig, completeOnboarding } = useFinanceStore()
   const { deductions, setDeduction } = useSettingsStore()
+  const { setView } = useUIStore()
 
   const [step,  setStep]  = useState(0)
   const [added, setAdded] = useState<NewAccount[]>([])
@@ -269,6 +271,7 @@ export function OnboardingView() {
       saveAccountsConfig(accounts)
     }
     if (step === TOTAL_STEPS - 1) {
+      setView('dashboard')
       completeOnboarding()
       return
     }

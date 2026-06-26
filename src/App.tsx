@@ -3,7 +3,7 @@ import { ArrowDown } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { AppSidebar, Sidebar_MobileNav } from '@/components/layout/Sidebar'
 import { MesView } from '@/components/views/MesView'
-import { AnoView } from '@/components/views/AnoView'
+import { DashboardView } from '@/components/views/DashboardView'
 import { ConfigView } from '@/components/views/ConfigView'
 import { CuentasView } from '@/components/views/CuentasView'
 import { Toast } from '@/components/ui/Toast'
@@ -103,10 +103,10 @@ export default function App() {
           <main ref={mainRef} className="flex-1 overflow-y-auto overflow-x-hidden bg-[var(--background)] min-w-0 flex flex-col">
             <PullIndicator pullY={pullY} refreshing={refreshing} isPulling={isPulling} />
             <div className="max-w-5xl mx-auto w-full p-4 sm:p-5 lg:p-6 pb-4 sm:pb-5 lg:pb-6">
-              {view === 'mes'     && <MesView />}
-              {view === 'ano'     && <AnoView />}
-              {view === 'cuentas' && <CuentasView />}
-              {view === 'config'  && <ConfigView />}
+              {view === 'mes'       && <MesView />}
+              {view === 'dashboard' && <DashboardView />}
+              {view === 'cuentas'   && <CuentasView />}
+              {view === 'config'    && <ConfigView />}
             </div>
           </main>
         </div>
