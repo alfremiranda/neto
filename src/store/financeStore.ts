@@ -25,6 +25,46 @@ function keyForDate(date: string, fallback: string): string {
   return monthKey(d.getMonth() + 1, d.getFullYear())
 }
 
+// Move every record to the month key matching its date field.
+// Safe to run on any db object (local or cloud). Returns a new db and
+// a `changed` flag so callers know whether to push the result.
+function applyDateMigration(db: Record<string, unknown>): { db: Record<string, unknown>; changed: boolean } {
+  const settings = (db['_settings'] ?? {}) as Settings & { dbMigrationVersion?: number }
+  if ((settings.dbMigrationVersion ?? 0) >= 1) return { db, changed: false }
+
+  // Seed destination months from all existing months, preserving TRM/other fields but clearing arrays
+  const newDb: Record<string, MonthData> = {}
+  for (const key of Object.keys(db)) {
+    if (key === '_settings') continue
+    const m = db[key] as MonthData
+    newDb[key] = { ...m, incomes: [], transfers: [], egresos: [] }
+  }
+
+  // Redistribute records into their date-based month
+  for (const key of Object.keys(db)) {
+    if (key === '_settings') continue
+    const m = db[key] as MonthData
+    for (const income of (m.incomes ?? [])) {
+      const dest = income.date ? keyForDate(income.date, key) : key
+      newDb[dest] ??= { trm: (db[dest] as MonthData | undefined)?.trm ?? m.trm, incomes: [], transfers: [], egresos: [] }
+      newDb[dest].incomes.push(income)
+    }
+    for (const egreso of (m.egresos ?? [])) {
+      const dest = egreso.date ? keyForDate(egreso.date, key) : key
+      newDb[dest] ??= { trm: (db[dest] as MonthData | undefined)?.trm ?? m.trm, incomes: [], transfers: [], egresos: [] }
+      newDb[dest].egresos.push(egreso)
+    }
+    for (const transfer of (m.transfers ?? [])) {
+      const dest = transfer.date ? keyForDate(transfer.date, key) : key
+      newDb[dest] ??= { trm: (db[dest] as MonthData | undefined)?.trm ?? m.trm, incomes: [], transfers: [], egresos: [] }
+      newDb[dest].transfers.push(transfer)
+    }
+  }
+
+  newDb['_settings'] = { ...(db['_settings'] ?? {}), dbMigrationVersion: 1 } as unknown as MonthData
+  return { db: newDb as Record<string, unknown>, changed: true }
+}
+
 function emptyMonth(trm = DEFAULTS.trm): MonthData {
   return { trm, incomes: [], transfers: [], egresos: [] }
 }
@@ -579,13 +619,21 @@ export const useFinanceStore = create<FinanceState>()(
 
         // Cloud is authoritative: replace local with cloud data entirely.
         // Merging by ID caused duplicates when IDs changed across sessions.
-        const newDb: FinanceDB = {}
-
+        const rawDb: Record<string, unknown> = {}
         for (const { key, data } of rows) {
-          (newDb as Record<string, unknown>)[key] = data
+          rawDb[key] = data
         }
 
-        set({ db: newDb })
+        // Apply date-based migration to cloud data — cloud may be un-migrated
+        // if it was last written by an older client.
+        const { db: migratedDb, changed } = applyDateMigration(rawDb)
+        set({ db: migratedDb as FinanceDB })
+
+        // Push migrated data back so the cloud is also up to date.
+        if (changed) {
+          const finalDb = get().db
+          await Promise.all(Object.keys(finalDb).map(k => sbPush(k, finalDb[k]).catch(() => {})))
+        }
       },
 
       // ── migration ──────────────────────────────────────────────────────────
@@ -704,37 +752,8 @@ export const useFinanceStore = create<FinanceState>()(
         if (!state) return
 
         // ── One-time migration: move records to their date-based month key ──
-        const settings = (state.db._settings ?? {}) as Settings & { dbMigrationVersion?: number }
-        if ((settings.dbMigrationVersion ?? 0) < 1) {
-          const newDb: Record<string, MonthData> = {}
-          for (const key of Object.keys(state.db)) {
-            if (key === '_settings') continue
-            const month = state.db[key] as MonthData
-            // Keep the shell (TRM, seeded flags) in the original month
-            newDb[key] ??= { trm: month.trm, incomes: [], transfers: [], egresos: [] }
-
-            for (const income of (month.incomes ?? [])) {
-              const dest = income.date ? keyForDate(income.date, key) : key
-              newDb[dest] ??= { trm: month.trm, incomes: [], transfers: [], egresos: [] }
-              newDb[dest].incomes.push(income)
-            }
-            for (const egreso of (month.egresos ?? [])) {
-              const dest = egreso.date ? keyForDate(egreso.date, key) : key
-              newDb[dest] ??= { trm: month.trm, incomes: [], transfers: [], egresos: [] }
-              newDb[dest].egresos.push(egreso)
-            }
-            for (const transfer of (month.transfers ?? [])) {
-              const dest = transfer.date ? keyForDate(transfer.date, key) : key
-              newDb[dest] ??= { trm: month.trm, incomes: [], transfers: [], egresos: [] }
-              newDb[dest].transfers.push(transfer)
-            }
-          }
-          newDb['_settings'] = {
-            ...(state.db._settings ?? {}),
-            dbMigrationVersion: 1,
-          } as unknown as MonthData
-          state.db = { ...state.db, ...newDb }
-        }
+        const { db: migratedDb, changed } = applyDateMigration(state.db as Record<string, unknown>)
+        if (changed) state.db = migratedDb as FinanceDB
 
         // Always reset curKey to actual current month on load
         const now = new Date()
