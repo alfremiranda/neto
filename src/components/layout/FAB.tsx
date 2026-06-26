@@ -70,7 +70,7 @@ export function FAB() {
       {/* Tap-outside overlay */}
       {open && (
         <div
-          className="sm:hidden fixed inset-0 z-40 bg-black/20"
+          className="sm:hidden fixed inset-0 z-40 bg-black/10 supports-backdrop-filter:backdrop-blur-xs"
           onClick={() => setOpen(false)}
         />
       )}
