@@ -100,14 +100,15 @@ function EgresosBar({ egresos, trm }: { egresos: Egreso[]; trm: number }) {
 
 function EgresoRow({
   egreso, trm, accounts,
-  onEdit, onDelete,
+  onEdit, onDelete, onDeleteDirect,
   isPendingDelete,
 }: {
   egreso: Egreso
   trm: number
   accounts: Account[]
   onEdit: () => void
-  onDelete: () => void
+  onDelete: () => void        // desktop: goes through confirmId double-tap
+  onDeleteDirect: () => void  // mobile sheet: RowActionsSheet already confirms
   isPendingDelete: boolean
 }) {
   const [sheetOpen, setSheetOpen] = useState(false)
@@ -231,7 +232,7 @@ function EgresoRow({
         title={desc}
         subtitle={[acctLabel, dateStr].filter(Boolean).join(' · ')}
         onEdit={onEdit}
-        onDelete={onDelete}
+        onDelete={onDeleteDirect}
       />
     </>
   )
@@ -596,6 +597,7 @@ export function EgresosCard() {
                         accounts={accounts}
                         onEdit={() => handleEdit(e.id)}
                         onDelete={() => handleDelete(e.id)}
+                        onDeleteDirect={() => { removeEgreso(e.id); showToast('Egreso eliminado') }}
                         isPendingDelete={confirmId === e.id}
                       />
                     ))}
