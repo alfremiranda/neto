@@ -24,6 +24,7 @@ export function IncomeSheet() {
   const [tipo, setTipo]             = useState<'servicios' | 'otro'>('servicios')
   const [date, setDate]             = useState(localToday())
   const [applyProvisions, setApply] = useState(true)
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
   const decimals = currency === 'USD' ? 2 : 0
   const amt = useMoneyInput({ decimals })
 
@@ -47,6 +48,7 @@ export function IncomeSheet() {
       setApply(true)
       amt.setValue(0)
     }
+    setConfirmingDelete(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editingIncomeId])
 
@@ -82,10 +84,20 @@ export function IncomeSheet() {
           <Button size="xl" className="w-full" onClick={handleSubmit}>
             {isEdit ? 'Guardar cambios' : 'Registrar ingreso'}
           </Button>
-          {isEdit && (
-            <Button size="xl" variant="outline-danger" className="w-full" onClick={handleDelete}>
+          {isEdit && !confirmingDelete && (
+            <Button size="xl" variant="outline-danger" className="w-full" onClick={() => setConfirmingDelete(true)}>
               Eliminar ingreso
             </Button>
+          )}
+          {isEdit && confirmingDelete && (
+            <div className="flex gap-2">
+              <Button size="xl" variant="ghost" className="flex-1" onClick={() => setConfirmingDelete(false)}>
+                Cancelar
+              </Button>
+              <Button size="xl" variant="destructive" className="flex-1" onClick={handleDelete}>
+                Confirmar
+              </Button>
+            </div>
           )}
         </div>
       }

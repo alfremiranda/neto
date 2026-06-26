@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, Trash2, Pencil, Banknote, Receipt, MoreVertical } from 'lucide-react'
+import { Plus, Trash2, Pencil, Banknote, Receipt } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useMonthData } from '@/hooks/useMonthData'
 import { useUIStore } from '@/store/uiStore'
@@ -11,7 +11,6 @@ import { IncomeSheet } from '@/components/sheets/IncomeSheet'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Button } from '@/components/ui/button'
 import { IconButton } from '@/components/ui/icon-button'
-import { RowActionsSheet } from '@/components/ui/RowActionsSheet'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty'
 import type { Income } from '@/types'
 
@@ -19,18 +18,15 @@ import type { Income } from '@/types'
 
 function IncomeRow({
   inc, trm,
-  onEdit, onDelete,
+  onEdit,
   isPending, onDeleteDesktop,
 }: {
   inc: Income
   trm: number
   onEdit: () => void
-  onDelete: () => void
   isPending: boolean
   onDeleteDesktop: () => void
 }) {
-  const [sheetOpen, setSheetOpen] = useState(false)
-
   const accountLower = inc.account.toLowerCase()
   const acctVariant = accountLower.includes('arq')    ? 'arq'
     : accountLower.includes('toptal') ? 'toptal'
@@ -89,8 +85,11 @@ function IncomeRow({
         </div>
       </div>
 
-      {/* Mobile */}
-      <div className="sm:hidden flex items-start gap-2 py-2 border-b border-[var(--border)] last:border-0">
+      {/* Mobile — tappable row opens edit sheet directly */}
+      <button
+        className="sm:hidden w-full text-left flex items-start gap-2 py-2 border-b border-[var(--border)] last:border-0 active:bg-muted/50 transition-colors"
+        onClick={onEdit}
+      >
         <div className="flex-1 min-w-0 flex flex-col gap-1">
           <div className="flex items-end gap-2">
             <span className="text-base font-bold tabular-nums font-heading">{primaryAmt}</span>
@@ -99,25 +98,7 @@ function IncomeRow({
           <div className="text-sm font-medium leading-snug truncate">{inc.desc}</div>
           {meta}
         </div>
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          className="shrink-0 mt-0.5"
-          onClick={() => setSheetOpen(true)}
-          aria-label="Opciones"
-        >
-          <MoreVertical size={20} />
-        </Button>
-      </div>
-
-      <RowActionsSheet
-        open={sheetOpen}
-        onOpenChange={setSheetOpen}
-        title={inc.desc}
-        subtitle={`${inc.account} · ${inc.tipo}`}
-        onEdit={onEdit}
-        onDelete={onDelete}
-      />
+      </button>
     </>
   )
 }
@@ -198,7 +179,6 @@ export function IngresosCard() {
                   inc={inc}
                   trm={month.trm}
                   onEdit={() => handleEdit(inc.id)}
-                  onDelete={() => handleDelete(inc.id)}
                   isPending={confirmId === inc.id}
                   onDeleteDesktop={() => handleDeleteDesktop(inc.id)}
                 />

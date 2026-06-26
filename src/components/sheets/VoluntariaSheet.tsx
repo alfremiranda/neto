@@ -14,8 +14,9 @@ export function VoluntariaSheet() {
 
   const isEditing = editingVoluntariaId !== null
 
-  const [label, setLabel]       = useState('')
-  const [currency, setCurrency] = useState<'COP' | 'USD'>('COP')
+  const [label, setLabel]           = useState('')
+  const [currency, setCurrency]     = useState<'COP' | 'USD'>('COP')
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
 
   const decimals = currency === 'USD' ? 2 : 0
   const amt = useMoneyInput({ decimals })
@@ -34,6 +35,7 @@ export function VoluntariaSheet() {
       setCurrency('COP')
       amt.setValue(0)
     }
+    setConfirmingDelete(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSheet, editingVoluntariaId])
 
@@ -69,10 +71,20 @@ export function VoluntariaSheet() {
           <Button size="xl" className="w-full" onClick={handleSubmit}>
             {isEditing ? 'Guardar cambios' : 'Agregar ahorro'}
           </Button>
-          {isEditing && (
-            <Button size="xl" variant="outline-danger" className="w-full" onClick={handleDelete}>
+          {isEditing && !confirmingDelete && (
+            <Button size="xl" variant="outline-danger" className="w-full" onClick={() => setConfirmingDelete(true)}>
               Eliminar ahorro
             </Button>
+          )}
+          {isEditing && confirmingDelete && (
+            <div className="flex gap-2">
+              <Button size="xl" variant="ghost" className="flex-1" onClick={() => setConfirmingDelete(false)}>
+                Cancelar
+              </Button>
+              <Button size="xl" variant="destructive" className="flex-1" onClick={handleDelete}>
+                Confirmar
+              </Button>
+            </div>
           )}
         </div>
       }

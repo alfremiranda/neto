@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { Trash2, Plus, ArrowLeftRight, Pencil, MoreVertical } from 'lucide-react'
+import { Trash2, Plus, ArrowLeftRight, Pencil } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { COP, USD, fmtDate } from '@/lib/format'
@@ -9,7 +8,6 @@ import { MONTHS } from '@/data/defaults'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Button } from '@/components/ui/button'
 import { IconButton } from '@/components/ui/icon-button'
-import { RowActionsSheet } from '@/components/ui/RowActionsSheet'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
 import type { Transfer, Account } from '@/types'
 
@@ -24,7 +22,6 @@ function TransferRow({
   onEdit: () => void
   onDelete: () => void
 }) {
-  const [sheetOpen, setSheetOpen] = useState(false)
   const fromAcc = accounts.find(a => a.id === t.from)
   const toAcc   = accounts.find(a => a.id === t.to)
   const title   = `${fromAcc?.label ?? t.from} → ${toAcc?.label ?? t.to}`
@@ -33,30 +30,33 @@ function TransferRow({
   const secondaryCOP = t.fromCurrency === 'USD' && t.trm ? COP(t.amount * t.trm) : null
   const dateStr      = t.date ? fmtDate(t.date) : null
 
+  const content = (
+    <div className="flex-1 min-w-0 flex flex-col">
+      <span className="text-xs font-medium leading-snug truncate">{title}</span>
+      <div className="flex items-center gap-1 mt-0.5 flex-wrap">
+        <span className="text-sm font-semibold tabular-nums font-mono">{primaryAmt}</span>
+        {secondaryCOP && (
+          <>
+            <span className="text-[11px] text-muted-foreground">·</span>
+            <span className="text-[11px] text-muted-foreground tabular-nums">{secondaryCOP}</span>
+          </>
+        )}
+        {dateStr && (
+          <>
+            <span className="text-[11px] text-muted-foreground">·</span>
+            <span className="text-[11px] text-muted-foreground">{dateStr}</span>
+          </>
+        )}
+      </div>
+    </div>
+  )
+
   return (
     <>
-      <div className="flex items-center gap-2 py-[9px] border-b border-[var(--border)] last:border-0">
-        <div className="flex-1 min-w-0 flex flex-col">
-          <span className="text-xs font-medium leading-snug truncate">{title}</span>
-          <div className="flex items-center gap-1 mt-0.5 flex-wrap">
-            <span className="text-sm font-semibold tabular-nums font-mono">{primaryAmt}</span>
-            {secondaryCOP && (
-              <>
-                <span className="text-[11px] text-muted-foreground">·</span>
-                <span className="text-[11px] text-muted-foreground tabular-nums">{secondaryCOP}</span>
-              </>
-            )}
-            {dateStr && (
-              <>
-                <span className="text-[11px] text-muted-foreground">·</span>
-                <span className="text-[11px] text-muted-foreground">{dateStr}</span>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Desktop actions */}
-        <div className="hidden sm:flex items-center gap-0.5 shrink-0">
+      {/* Desktop */}
+      <div className="hidden sm:flex items-center gap-2 py-[9px] border-b border-[var(--border)] last:border-0">
+        {content}
+        <div className="flex items-center gap-0.5 shrink-0">
           <IconButton variant="ghost" size="md" onClick={onEdit} aria-label="Editar movimiento">
             <Pencil size={12} />
           </IconButton>
@@ -64,27 +64,15 @@ function TransferRow({
             <Trash2 size={12} />
           </IconButton>
         </div>
-
-        {/* Mobile action */}
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          className="sm:hidden shrink-0"
-          onClick={() => setSheetOpen(true)}
-          aria-label="Opciones"
-        >
-          <MoreVertical size={20} />
-        </Button>
       </div>
 
-      <RowActionsSheet
-        open={sheetOpen}
-        onOpenChange={setSheetOpen}
-        title={title}
-        subtitle={primaryAmt}
-        onEdit={onEdit}
-        onDelete={onDelete}
-      />
+      {/* Mobile — tappable row opens edit sheet directly */}
+      <button
+        className="sm:hidden w-full text-left flex items-center gap-2 py-[9px] border-b border-[var(--border)] last:border-0 active:bg-muted/50 transition-colors"
+        onClick={onEdit}
+      >
+        {content}
+      </button>
     </>
   )
 }

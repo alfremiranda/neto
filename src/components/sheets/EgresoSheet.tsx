@@ -24,6 +24,7 @@ export function EgresoSheet() {
   const [date, setDate]           = useState(localToday())
   const [recurring, setRecurring] = useState(false)
   const [account, setAccount]     = useState('')
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
 
   const decimals = currency === 'USD' ? 2 : 0
   const amt = useMoneyInput({ decimals })
@@ -50,6 +51,7 @@ export function EgresoSheet() {
       setAccount('')
       amt.setValue(0)
     }
+    setConfirmingDelete(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSheet, editingEgresoId])
 
@@ -86,10 +88,20 @@ export function EgresoSheet() {
           <Button size="xl" className="w-full" onClick={handleSubmit}>
             {isEditing ? 'Guardar cambios' : 'Agregar egreso'}
           </Button>
-          {isEditing && (
-            <Button size="xl" variant="outline-danger" className="w-full" onClick={handleDelete}>
+          {isEditing && !confirmingDelete && (
+            <Button size="xl" variant="outline-danger" className="w-full" onClick={() => setConfirmingDelete(true)}>
               Eliminar egreso
             </Button>
+          )}
+          {isEditing && confirmingDelete && (
+            <div className="flex gap-2">
+              <Button size="xl" variant="ghost" className="flex-1" onClick={() => setConfirmingDelete(false)}>
+                Cancelar
+              </Button>
+              <Button size="xl" variant="destructive" className="flex-1" onClick={handleDelete}>
+                Confirmar
+              </Button>
+            </div>
           )}
         </div>
       }

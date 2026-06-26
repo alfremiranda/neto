@@ -67,6 +67,7 @@ export function TransferSheet() {
   const [date,        setDate]        = useState(localToday())
   const [trmDisplay,  setTrmDisplay]  = useState('')
   const [trmManual,   setTrmManual]   = useState(false)
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
 
   const from = accounts.find(a => a.id === fromId)
   const to   = accounts.find(a => a.id === toId)
@@ -125,6 +126,7 @@ export function TransferSheet() {
     amtReceived.setValue(0)
     setTrmDisplay(trmStr)
     setTrmManual(false)
+    setConfirmingDelete(false)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSheet, editingTransferId])
 
@@ -196,10 +198,20 @@ export function TransferSheet() {
           <Button size="xl" className="w-full" onClick={handleSubmit}>
             {isEditing ? 'Guardar cambios' : 'Registrar movimiento'}
           </Button>
-          {isEditing && (
-            <Button size="xl" variant="outline-danger" className="w-full" onClick={handleDelete}>
+          {isEditing && !confirmingDelete && (
+            <Button size="xl" variant="outline-danger" className="w-full" onClick={() => setConfirmingDelete(true)}>
               Eliminar movimiento
             </Button>
+          )}
+          {isEditing && confirmingDelete && (
+            <div className="flex gap-2">
+              <Button size="xl" variant="ghost" className="flex-1" onClick={() => setConfirmingDelete(false)}>
+                Cancelar
+              </Button>
+              <Button size="xl" variant="destructive" className="flex-1" onClick={handleDelete}>
+                Confirmar
+              </Button>
+            </div>
           )}
         </div>
       }

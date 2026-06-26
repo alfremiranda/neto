@@ -1,4 +1,4 @@
-import { PiggyBank, Plus, Trash2, Pencil, Calculator, Settings2, MoreVertical } from 'lucide-react'
+import { PiggyBank, Plus, Trash2, Pencil, Calculator, Settings2 } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useLiveTRM } from '@/hooks/useLiveTRM'
@@ -7,10 +7,8 @@ import { COP, USD } from '@/lib/format'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Button } from '@/components/ui/button'
 import { IconButton } from '@/components/ui/icon-button'
-import { RowActionsSheet } from '@/components/ui/RowActionsSheet'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty'
 import { useUIStore } from '@/store/uiStore'
-import { useState } from 'react'
 
 // ─── Voluntary savings row (desktop + mobile) ─────────────────────────────────
 
@@ -25,7 +23,6 @@ function VoluntariaRow({
   onEdit: () => void
   onDelete: () => void
 }) {
-  const [sheetOpen, setSheetOpen] = useState(false)
   const usdLabel = showUSD && transferTRM > 0 ? USD(amtCOP / transferTRM) : null
 
   return (
@@ -45,8 +42,11 @@ function VoluntariaRow({
         </IconButton>
       </div>
 
-      {/* Mobile */}
-      <div className="sm:hidden flex items-start gap-2 py-2 border-b border-[var(--border)] last:border-0">
+      {/* Mobile — tappable row opens edit sheet directly */}
+      <button
+        className="sm:hidden w-full text-left flex items-start gap-2 py-2 border-b border-[var(--border)] last:border-0 active:bg-muted/50 transition-colors"
+        onClick={onEdit}
+      >
         <div className="flex-1 min-w-0 flex flex-col gap-1">
           <div className="flex items-end gap-2">
             <span className="text-base font-bold tabular-nums font-heading">{COP(amtCOP)}</span>
@@ -54,19 +54,7 @@ function VoluntariaRow({
           </div>
           <span className="text-sm text-foreground">{v.label}</span>
         </div>
-        <Button variant="ghost" size="icon-sm" className="shrink-0 mt-0.5" onClick={() => setSheetOpen(true)} aria-label="Opciones">
-          <MoreVertical size={20} />
-        </Button>
-      </div>
-
-      <RowActionsSheet
-        open={sheetOpen}
-        onOpenChange={setSheetOpen}
-        title={v.label}
-        subtitle={COP(amtCOP)}
-        onEdit={() => { setSheetOpen(false); onEdit() }}
-        onDelete={() => { setSheetOpen(false); onDelete() }}
-      />
+      </button>
     </>
   )
 }

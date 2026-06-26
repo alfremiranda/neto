@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Pencil, Trash2, Plus, Receipt, RefreshCw, X, ChevronLeft, ChevronRight, ArrowUpDown, Clock, MoreVertical, SlidersHorizontal } from 'lucide-react'
-import { RowActionsSheet } from '@/components/ui/RowActionsSheet'
+import { Pencil, Trash2, Plus, Receipt, RefreshCw, X, ChevronLeft, ChevronRight, ArrowUpDown, Clock, SlidersHorizontal } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useMonthData } from '@/hooks/useMonthData'
 import { useUIStore } from '@/store/uiStore'
@@ -100,18 +99,16 @@ function EgresosBar({ egresos, trm }: { egresos: Egreso[]; trm: number }) {
 
 function EgresoRow({
   egreso, trm, accounts,
-  onEdit, onDelete, onDeleteDirect,
+  onEdit, onDelete,
   isPendingDelete,
 }: {
   egreso: Egreso
   trm: number
   accounts: Account[]
   onEdit: () => void
-  onDelete: () => void        // desktop: goes through confirmId double-tap
-  onDeleteDirect: () => void  // mobile sheet: RowActionsSheet already confirms
+  onDelete: () => void
   isPendingDelete: boolean
 }) {
-  const [sheetOpen, setSheetOpen] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const desc      = egreso.desc || (egreso as any).tipo || '—'
   const category  = egreso.category || 'otro'
@@ -196,8 +193,11 @@ function EgresoRow({
         </div>
       </div>
 
-      {/* Mobile layout */}
-      <div className={cn('sm:hidden flex items-start gap-2 py-2 border-b border-[var(--border)] last:border-0')}>
+      {/* Mobile — tappable row opens edit sheet directly */}
+      <button
+        className={cn('sm:hidden w-full text-left flex items-start gap-2 py-2 border-b border-[var(--border)] last:border-0 active:bg-muted/50 transition-colors')}
+        onClick={onEdit}
+      >
         <div className="flex-1 min-w-0 flex flex-col">
           <div className="flex items-center gap-2 mb-1">
             <CategoryIcon category={category} />
@@ -214,26 +214,7 @@ function EgresoRow({
           <span className="text-sm leading-snug">{desc}</span>
           <MetaRow />
         </div>
-
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          className="shrink-0 -mr-1 mt-0.5"
-          onClick={() => setSheetOpen(true)}
-          aria-label="Opciones"
-        >
-          <MoreVertical size={20} />
-        </Button>
-      </div>
-
-      <RowActionsSheet
-        open={sheetOpen}
-        onOpenChange={setSheetOpen}
-        title={desc}
-        subtitle={[acctLabel, dateStr].filter(Boolean).join(' · ')}
-        onEdit={onEdit}
-        onDelete={onDeleteDirect}
-      />
+      </button>
     </>
   )
 }
@@ -597,7 +578,6 @@ export function EgresosCard() {
                         accounts={accounts}
                         onEdit={() => handleEdit(e.id)}
                         onDelete={() => handleDelete(e.id)}
-                        onDeleteDirect={() => { removeEgreso(e.id); showToast('Egreso eliminado') }}
                         isPendingDelete={confirmId === e.id}
                       />
                     ))}
