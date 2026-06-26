@@ -71,7 +71,11 @@ export function TrendChart() {
   }, [db, curKey, deductions, getSMMLV])
 
   const allKeys = [...new Set([
-    ...Object.keys(db).filter(k => k !== '_settings').sort(),
+    ...Object.keys(db).filter(k => {
+      if (k === '_settings') return false
+      const m = db[k]
+      return (m?.incomes?.length ?? 0) > 0 || (m?.egresos?.length ?? 0) > 0
+    }).sort(),
     curKey,
   ])]
   const monthKeys = allKeys.slice(-8)
