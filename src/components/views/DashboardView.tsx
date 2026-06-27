@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { WalletCards, Landmark, Wallet, CalendarRange, Download } from 'lucide-react'
+import { WalletCards, Landmark, Wallet, CalendarRange, Download, Plus, ChevronDown, TrendingUp, TrendingDown, ArrowLeftRight, PiggyBank } from 'lucide-react'
 import type { MonthData } from '@/types'
 import { TrendChart } from '@/components/annual/TrendChart'
 import { EgresosCategoryChart } from '@/components/annual/EgresosCategoryChart'
@@ -7,16 +7,76 @@ import { EgresosBreakdown } from '@/components/annual/EgresosBreakdown'
 import { AnnualTable } from '@/components/annual/AnnualTable'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
+import { useAuthStore } from '@/store/authStore'
 import { useUIStore } from '@/store/uiStore'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Button } from '@/components/ui/button'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty'
 import { CurrencyBadge } from '@/components/ui/Badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { computeAccountBalance } from '@/lib/calc'
 import { COP, USD } from '@/lib/format'
 import { exportAnnualCSV } from '@/lib/export'
 import { cn } from '@/lib/utils'
+
+// ─── Greeting + desktop add button ───────────────────────────────────────────
+
+function greeting() {
+  const h = new Date().getHours()
+  return h < 12 ? 'Buenos días' : h < 18 ? 'Buenas tardes' : 'Buenas noches'
+}
+
+function DashboardHeader() {
+  const user = useAuthStore(s => s.user)
+  const displayName = useSettingsStore(s => s.displayName)
+  const { openSheet, setEditingIncome, setEditingEgreso, setEditingTransfer, setEditingVoluntaria } = useUIStore()
+  const [open, setOpen] = useState(false)
+
+  const oauthName = (user?.user_metadata?.full_name ?? user?.user_metadata?.user_name ?? '') as string
+  const firstName = (displayName.trim() || oauthName).split(' ')[0]
+
+  const actions = [
+    { label: 'Ingreso',           Icon: TrendingUp,      onClick: () => { setEditingIncome(null);     openSheet('income')     } },
+    { label: 'Egreso',            Icon: TrendingDown,    onClick: () => { setEditingEgreso(null);     openSheet('egreso')     } },
+    { label: 'Movimiento',        Icon: ArrowLeftRight,  onClick: () => { setEditingTransfer(null);   openSheet('transfer')   } },
+    { label: 'Ahorro voluntario', Icon: PiggyBank,       onClick: () => { setEditingVoluntaria(null); openSheet('voluntaria') } },
+  ]
+
+  return (
+    <div className="flex items-center justify-between gap-4 pb-1">
+      <div>
+        <h1 className="text-xl font-bold font-heading leading-tight">
+          {greeting()}{firstName ? `, ${firstName}` : ''}
+        </h1>
+      </div>
+
+      {/* Desktop-only add button — FAB covers mobile */}
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button size="sm" className="hidden sm:inline-flex gap-1.5 shrink-0">
+            <Plus size={13} />
+            Agregar
+            <ChevronDown size={11} className={cn('transition-transform duration-150', open && 'rotate-180')} />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent align="end" className="w-44 p-1">
+          {actions.map(({ label, Icon, onClick }) => (
+            <button
+              key={label}
+              type="button"
+              onClick={() => { setOpen(false); setTimeout(onClick, 50) }}
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm hover:bg-[var(--muted)] transition-colors text-left"
+            >
+              <Icon size={13} className="text-[var(--primary)] shrink-0" />
+              {label}
+            </button>
+          ))}
+        </PopoverContent>
+      </Popover>
+    </div>
+  )
+}
 
 // ─── Accounts overview ────────────────────────────────────────────────────────
 
@@ -165,6 +225,7 @@ export function DashboardView() {
   return (
     <div className="space-y-4">
 
+      <DashboardHeader />
       <AccountsOverview />
 
       {hasYearData && (
