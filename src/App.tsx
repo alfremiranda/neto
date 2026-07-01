@@ -59,7 +59,7 @@ export default function App() {
   const view = useUIStore(s => s.view)
   const { showToast } = useUIStore()
   const { user, loading, cloudReady, initialize } = useAuthStore()
-  const { syncFromCloud } = useFinanceStore()
+  const { syncFromCloud, seedCurrentMonth } = useFinanceStore()
   const onboardingDone = useFinanceStore(s => {
     const settings = s.db._settings as import('@/types').Settings | undefined
     return settings?.onboardingDone === true || (settings?.accounts != null && settings.accounts.length > 0)
@@ -72,6 +72,13 @@ export default function App() {
     return unsub
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Seed the current month with recurring egresos from the previous month
+  // if it hasn't been written to yet (so they appear without needing a first write).
+  useEffect(() => {
+    if (user && onboardingDone) seedCurrentMonth()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, onboardingDone])
 
   const handleRefresh = useCallback(async () => {
     await syncFromCloud()

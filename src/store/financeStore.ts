@@ -143,6 +143,7 @@ interface FinanceState {
   getMonth: (key: string) => MonthData
   getCurrentMonth: () => MonthData
   getSMMLV: (year: number) => number
+  seedCurrentMonth: () => void
   getAccounts: () => Account[]
   isOnboardingDone: () => boolean
 
@@ -210,6 +211,16 @@ export const useFinanceStore = create<FinanceState>()(
       },
 
       getCurrentMonth: () => get().getMonth(get().curKey),
+
+      // Seed the current month from the previous one if it hasn't been written yet.
+      // Call once on mount so recurring egresos appear without needing a first write.
+      seedCurrentMonth: () => {
+        const { curKey, db } = get()
+        if (!db[curKey]) {
+          const seeded = initMonth(curKey, db)
+          set(s => ({ db: { ...s.db, [curKey]: seeded } }))
+        }
+      },
 
       getSMMLV: (year) => {
         const s = get().db._settings as Settings | undefined
@@ -487,10 +498,16 @@ export const useFinanceStore = create<FinanceState>()(
       },
 
       nextMonth: () => {
-        const { curKey } = get()
+        const { curKey, db } = get()
         const [y, m] = curKey.split('-').map(Number)
         if (m === 12) return
-        set({ curKey: monthKey(m + 1, y) })
+        const newKey = monthKey(m + 1, y)
+        if (!db[newKey]) {
+          const seeded = initMonth(newKey, db)
+          set({ curKey: newKey, db: { ...db, [newKey]: seeded } })
+        } else {
+          set({ curKey: newKey })
+        }
       },
 
       deleteMonth: (key) => {
