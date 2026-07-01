@@ -181,46 +181,49 @@ const FSS_BRACKETS = [
 
 function FSSRow({ amount, pct, trm, showUSD }: { amount: number; pct: number; trm: number; showUSD: boolean }) {
   return (
-    <div className="flex items-center gap-2 py-[7px] border-b border-[var(--border)] last:border-0 pl-3">
-      <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30 shrink-0" />
-      <span className="flex-1 min-w-0 text-xs text-muted-foreground">Fondo de Solidaridad</span>
-      <Popover>
-        <PopoverTrigger asChild>
-          <button
-            type="button"
-            className="p-0.5 rounded text-muted-foreground/50 hover:text-muted-foreground transition-colors shrink-0"
-            aria-label="Ver tabla Fondo de Solidaridad y Subsistencia"
-          >
-            <Info size={11} />
-          </button>
-        </PopoverTrigger>
-        <PopoverContent side="left" align="start" className="w-64 p-0 text-xs">
-          <div className="px-3 pt-3 pb-2">
-            <p className="font-semibold text-[11px]">Fondo de Solidaridad y Subsistencia</p>
-            <p className="text-muted-foreground text-[10px] mt-0.5 leading-relaxed">
-              Ley 100 de 1993, art. 25. Aplica cuando el IBC supera 4 SMMLV.
-            </p>
-          </div>
-          <div className="border-t border-[var(--border)]">
-            <div className="grid grid-cols-2 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground bg-muted">
-              <span>IBC entre</span>
-              <span className="text-right">Aporte</span>
+    <div className="py-2 border-b border-[var(--border)] last:border-0">
+      <div className="border border-[var(--border)] rounded-lg px-2 py-1 flex items-center gap-1.5">
+        <span className="text-xs font-medium text-muted-foreground">FSS</span>
+        <span className="text-[10px] text-muted-foreground">·</span>
+        <span className="text-[10px] text-muted-foreground">Fondo de Solidaridad</span>
+        <Popover>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className="p-0.5 rounded text-muted-foreground/40 hover:text-muted-foreground transition-colors shrink-0"
+              aria-label="Ver tabla Fondo de Solidaridad y Subsistencia"
+            >
+              <Info size={10} />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent side="left" align="start" className="w-64 p-0 text-xs">
+            <div className="px-3 pt-3 pb-2">
+              <p className="font-semibold text-[11px]">Fondo de Solidaridad y Subsistencia</p>
+              <p className="text-muted-foreground text-[10px] mt-0.5 leading-relaxed">
+                Ley 100 de 1993, art. 25. Aplica cuando el IBC supera 4 SMMLV.
+              </p>
             </div>
-            {FSS_BRACKETS.map(b => (
-              <div key={b.range} className="grid grid-cols-2 px-3 py-1.5 border-t border-[var(--border)]">
-                <span className="text-muted-foreground">{b.range}</span>
-                <span className="text-right font-mono">{b.pct}</span>
+            <div className="border-t border-[var(--border)]">
+              <div className="grid grid-cols-2 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground bg-muted">
+                <span>IBC entre</span>
+                <span className="text-right">Aporte</span>
               </div>
-            ))}
-          </div>
-        </PopoverContent>
-      </Popover>
-      <span className="text-[10px] text-muted-foreground tabular-nums font-mono shrink-0">{pct}%</span>
-      <div className="w-[104px] shrink-0 flex flex-col items-end">
-        <span className="text-xs font-semibold tabular-nums font-mono text-muted-foreground">{COP(amount)}</span>
-        {showUSD && trm > 0 && (
-          <span className="text-[10px] tabular-nums font-mono text-muted-foreground/60">{USD(amount / trm)}</span>
-        )}
+              {FSS_BRACKETS.map(b => (
+                <div key={b.range} className="grid grid-cols-2 px-3 py-1.5 border-t border-[var(--border)]">
+                  <span className="text-muted-foreground">{b.range}</span>
+                  <span className="text-right font-mono">{b.pct}</span>
+                </div>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
+        <span className="text-[10px] text-muted-foreground tabular-nums font-mono shrink-0">{pct}%</span>
+        <div className="flex-1 flex flex-col items-end">
+          <span className="text-xs font-semibold tabular-nums font-mono text-muted-foreground">{COP(amount)}</span>
+          {showUSD && trm > 0 && (
+            <span className="text-[10px] tabular-nums font-mono text-muted-foreground/60">{USD(amount / trm)}</span>
+          )}
+        </div>
       </div>
     </div>
   )
