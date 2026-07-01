@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Pencil, Trash2, Receipt, RefreshCw, X, ChevronLeft, ChevronRight, ArrowUpDown, Clock, SlidersHorizontal } from 'lucide-react'
+import { useHasHydrated } from '@/hooks/useHasHydrated'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useFinanceStore } from '@/store/financeStore'
 import { useMonthData } from '@/hooks/useMonthData'
 import { useUIStore } from '@/store/uiStore'
@@ -243,7 +245,37 @@ const TAB_CLS = [
   'data-[state=active]:!shadow-none data-[state=active]:text-foreground whitespace-nowrap',
 ].join(' ')
 
+function EgresosCardSkeleton() {
+  return (
+    <SectionCard icon={Receipt} title="Egresos del mes">
+      <div className="flex gap-2 mb-3">
+        {[48, 36, 52].map((w, i) => <Skeleton key={i} className="h-7 rounded-full" style={{ width: w }} />)}
+      </div>
+      <div className="space-y-0">
+        {[55, 70, 45, 60].map((w, i) => (
+          <div key={i} className="flex items-center gap-3 py-[9px] border-b border-[var(--border)] last:border-0">
+            <Skeleton className="h-8 w-8 rounded-lg shrink-0" />
+            <div className="flex-1 space-y-1.5">
+              <Skeleton style={{ width: `${w}%` }} className="h-3.5" />
+              <Skeleton className="h-3 w-20" />
+            </div>
+            <div className="flex flex-col items-end gap-1 shrink-0">
+              <Skeleton className="h-3.5 w-20" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </SectionCard>
+  )
+}
+
 export function EgresosCard() {
+  const hydrated = useHasHydrated()
+  if (!hydrated) return <EgresosCardSkeleton />
+  return <EgresosCardContent />
+}
+
+function EgresosCardContent() {
   const { removeEgreso, getAccounts } = useFinanceStore()
   const { openSheet, showToast, setEditingEgreso } = useUIStore()
 

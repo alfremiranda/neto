@@ -12,8 +12,33 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <link rel="manifest" href="/neto/manifest.json" />
     <title>Neto</title>
+    <style>
+      #splash {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: #0f0f0f;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.25s ease;
+      }
+      #splash img {
+        width: 80px;
+        height: 80px;
+        border-radius: 20px;
+        animation: splash-pulse 1.4s ease-in-out infinite;
+      }
+      @keyframes splash-pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50%       { opacity: 0.55; transform: scale(0.94); }
+      }
+    </style>
   </head>
   <body>
+    <div id="splash">
+      <img src="/neto/icon.svg" alt="Neto" />
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

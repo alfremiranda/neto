@@ -1,4 +1,6 @@
 import { PiggyBank, Trash2, Pencil, Calculator, Settings2 } from 'lucide-react'
+import { useHasHydrated } from '@/hooks/useHasHydrated'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useLiveTRM } from '@/hooks/useLiveTRM'
@@ -59,7 +61,34 @@ function VoluntariaRow({
   )
 }
 
+function ProvisionesCardSkeleton() {
+  return (
+    <SectionCard icon={PiggyBank} title="Provisiones">
+      <div className="rounded-lg bg-muted overflow-hidden">
+        <div className="px-3 pt-2 pb-0.5">
+          <Skeleton className="h-2.5 w-32" />
+        </div>
+        <div className="px-3">
+          {[0, 1, 2].map(i => (
+            <div key={i} className="flex items-center gap-2 py-[9px] border-b border-[var(--border)] last:border-0">
+              <Skeleton className="h-3.5 flex-1" />
+              <Skeleton className="h-3 w-8" />
+              <Skeleton className="h-3.5 w-24" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </SectionCard>
+  )
+}
+
 export function ProvisionesCard() {
+  const hydrated = useHasHydrated()
+  if (!hydrated) return <ProvisionesCardSkeleton />
+  return <ProvisionesCardContent />
+}
+
+function ProvisionesCardContent() {
   const { getCurrentMonth, getSMMLV, curKey, removeVoluntaria } = useFinanceStore()
   const deductions = useSettingsStore(s => s.deductions)
   const { trm: liveTRM } = useLiveTRM()

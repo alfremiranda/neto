@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { Trash2, Pencil, Banknote, Receipt } from 'lucide-react'
+import { useHasHydrated } from '@/hooks/useHasHydrated'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useFinanceStore } from '@/store/financeStore'
 import { useMonthData } from '@/hooks/useMonthData'
 import { useUIStore } from '@/store/uiStore'
@@ -105,7 +107,37 @@ function IncomeRow({
 
 // ─── Card ─────────────────────────────────────────────────────────────────────
 
+function IngresosCardSkeleton() {
+  return (
+    <SectionCard icon={Banknote} title="Ingresos del mes">
+      <div className="space-y-0">
+        {[60, 40, 50].map((w, i) => (
+          <div key={i} className="flex items-center gap-3 py-[9px] border-b border-[var(--border)] last:border-0">
+            <div className="flex-1 space-y-1.5">
+              <Skeleton className={`h-3.5 w-${w}%`} style={{ width: `${w}%` }} />
+              <div className="flex gap-1.5">
+                <Skeleton className="h-3 w-12" />
+                <Skeleton className="h-3 w-10" />
+              </div>
+            </div>
+            <div className="flex flex-col items-end gap-1 shrink-0">
+              <Skeleton className="h-3.5 w-20" />
+              <Skeleton className="h-3 w-14" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </SectionCard>
+  )
+}
+
 export function IngresosCard() {
+  const hydrated = useHasHydrated()
+  if (!hydrated) return <IngresosCardSkeleton />
+  return <IngresosCardContent />
+}
+
+function IngresosCardContent() {
   const { removeIncome } = useFinanceStore()
   const { openSheet, setPendingDelete, showToast, setEditingIncome } = useUIStore()
   const [confirmId, setConfirmId] = useState<number | null>(null)

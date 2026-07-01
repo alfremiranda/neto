@@ -1,4 +1,6 @@
 import { Trash2, ArrowLeftRight, Pencil } from 'lucide-react'
+import { useHasHydrated } from '@/hooks/useHasHydrated'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { COP, USD, fmtDate } from '@/lib/format'
@@ -78,7 +80,43 @@ function TransferRow({
 
 // ─── Card ─────────────────────────────────────────────────────────────────────
 
+function MovimientosCardSkeleton() {
+  return (
+    <SectionCard icon={ArrowLeftRight} title="Movimientos entre cuentas">
+      <div className="grid grid-cols-2 gap-2 mb-[10px]">
+        {[0, 1, 2, 3].map(i => (
+          <div key={i} className="bg-muted rounded-xl p-3 space-y-2">
+            <div className="flex items-center gap-1">
+              <Skeleton className="h-3 flex-1" />
+              <Skeleton className="h-4 w-10 rounded-full" />
+            </div>
+            <Skeleton className="h-3 w-16" />
+            <Skeleton className="h-5 w-28" />
+          </div>
+        ))}
+      </div>
+      <div className="space-y-0">
+        {[0, 1].map(i => (
+          <div key={i} className="flex items-center gap-2 py-2.5 border-b border-[var(--border)] last:border-0">
+            <div className="flex-1 space-y-1.5">
+              <Skeleton className="h-3.5 w-40" />
+              <Skeleton className="h-3 w-24" />
+            </div>
+            <Skeleton className="h-3.5 w-20" />
+          </div>
+        ))}
+      </div>
+    </SectionCard>
+  )
+}
+
 export function MovimientosCard() {
+  const hydrated = useHasHydrated()
+  if (!hydrated) return <MovimientosCardSkeleton />
+  return <MovimientosCardContent />
+}
+
+function MovimientosCardContent() {
   const { db, getCurrentMonth, getAccounts, removeTransfer, curKey } = useFinanceStore()
   const { openSheet, showToast, setEditingBalance, setEditingTransfer } = useUIStore()
   const month    = getCurrentMonth()

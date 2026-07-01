@@ -66,6 +66,15 @@ export default function App() {
   })
   const mainRef = useRef<HTMLElement>(null)
 
+  // Remove splash screen on first render
+  useEffect(() => {
+    const splash = document.getElementById('splash')
+    if (!splash) return
+    splash.style.opacity = '0'
+    const t = setTimeout(() => splash.remove(), 260)
+    return () => clearTimeout(t)
+  }, [])
+
   // Initialize auth listener once on mount
   useEffect(() => {
     const unsub = initialize()
