@@ -1,4 +1,4 @@
-import { Trash2, Plus, ArrowLeftRight, Pencil } from 'lucide-react'
+import { Trash2, ArrowLeftRight, Pencil } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { COP, USD, fmtDate } from '@/lib/format'
@@ -6,7 +6,6 @@ import { computeAccountBalance } from '@/lib/calc'
 import { CurrencyBadge } from '@/components/ui/Badge'
 import { MONTHS } from '@/data/defaults'
 import { SectionCard } from '@/components/ui/SectionCard'
-import { Button } from '@/components/ui/button'
 import { IconButton } from '@/components/ui/icon-button'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
 import type { Transfer, Account } from '@/types'
@@ -92,16 +91,6 @@ export function MovimientosCard() {
     <SectionCard
       icon={ArrowLeftRight}
       title="Movimientos entre cuentas"
-      action={
-        <>
-          <Button size="sm" onClick={() => openSheet('transfer')} className="hidden sm:flex">
-            <Plus size={13} />Movimiento
-          </Button>
-          <IconButton variant="filled" size="xl" onClick={() => openSheet('transfer')} aria-label="Agregar movimiento" className="sm:hidden">
-            <Plus />
-          </IconButton>
-        </>
-      }
     >
       {/* Account Scorecards */}
       <div className="grid gap-2 mb-[10px]"

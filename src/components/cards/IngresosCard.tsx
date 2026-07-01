@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, Trash2, Pencil, Banknote, Receipt } from 'lucide-react'
+import { Trash2, Pencil, Banknote, Receipt } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useMonthData } from '@/hooks/useMonthData'
 import { useUIStore } from '@/store/uiStore'
@@ -11,7 +11,7 @@ import { IncomeSheet } from '@/components/sheets/IncomeSheet'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Button } from '@/components/ui/button'
 import { IconButton } from '@/components/ui/icon-button'
-import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty'
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
 import type { Income } from '@/types'
 
 // ─── Income row ───────────────────────────────────────────────────────────────
@@ -135,26 +135,11 @@ export function IngresosCard() {
     }
   }
 
-  function handleAdd() {
-    setEditingIncome(null)
-    openSheet('income')
-  }
-
   return (
     <>
       <SectionCard
         icon={Banknote}
         title="Ingresos del mes"
-        action={
-          <>
-            <Button size="sm" onClick={handleAdd} className="hidden sm:flex">
-              <Plus size={13} />Registrar
-            </Button>
-            <IconButton variant="filled" size="xl" onClick={handleAdd} aria-label="Registrar ingreso" className="sm:hidden">
-              <Plus />
-            </IconButton>
-          </>
-        }
       >
         {!hasIncomes ? (
           <Empty className="border-0 py-4">
@@ -163,11 +148,6 @@ export function IngresosCard() {
               <EmptyTitle>Sin ingresos</EmptyTitle>
               <EmptyDescription>Registra el primer ingreso del mes</EmptyDescription>
             </EmptyHeader>
-            <EmptyContent>
-              <Button size="sm" variant="outline" onClick={handleAdd}>
-                <Plus size={13} />Registrar ingreso
-              </Button>
-            </EmptyContent>
           </Empty>
         ) : (
           <div>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Pencil, Trash2, Plus, Receipt, RefreshCw, X, ChevronLeft, ChevronRight, ArrowUpDown, Clock, SlidersHorizontal } from 'lucide-react'
+import { Pencil, Trash2, Receipt, RefreshCw, X, ChevronLeft, ChevronRight, ArrowUpDown, Clock, SlidersHorizontal } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useMonthData } from '@/hooks/useMonthData'
 import { useUIStore } from '@/store/uiStore'
@@ -15,7 +15,7 @@ import { Badge } from '@/components/ui/Badge'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { DatePicker } from '@/components/ui/DatePicker'
-import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty'
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import type { Egreso, Account } from '@/types'
 
@@ -360,16 +360,6 @@ export function EgresosCard() {
       <SectionCard
         icon={Receipt}
         title="Egresos del mes"
-        action={
-          <>
-            <Button size="sm" onClick={() => { setEditingEgreso(null); openSheet('egreso') }} className="hidden sm:flex">
-              <Plus size={13} />Agregar
-            </Button>
-            <IconButton variant="filled" size="xl" onClick={() => { setEditingEgreso(null); openSheet('egreso') }} aria-label="Agregar egreso" className="sm:hidden">
-              <Plus />
-            </IconButton>
-          </>
-        }
       >
         {egresos.length === 0 ? (
           <Empty className="border-0 py-4">
@@ -378,11 +368,6 @@ export function EgresosCard() {
               <EmptyTitle>Sin egresos</EmptyTitle>
               <EmptyDescription>No hay gastos registrados este mes</EmptyDescription>
             </EmptyHeader>
-            <EmptyContent>
-              <Button size="sm" variant="outline" onClick={() => { setEditingEgreso(null); openSheet('egreso') }}>
-                <Plus size={13} />Agregar egreso
-              </Button>
-            </EmptyContent>
           </Empty>
         ) : (
           <div ref={cardRef} className="-mx-4 -mb-4">

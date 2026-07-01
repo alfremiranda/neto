@@ -1,4 +1,4 @@
-import { PiggyBank, Plus, Trash2, Pencil, Calculator, Settings2 } from 'lucide-react'
+import { PiggyBank, Trash2, Pencil, Calculator, Settings2 } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useLiveTRM } from '@/hooks/useLiveTRM'
@@ -90,7 +90,7 @@ export function ProvisionesCard() {
 
   const provColor = res.provItems.find(i => i.id !== 'retencion' && i.applies)?.color ?? '--color-tax'
 
-  function openAdd() { setEditingVoluntaria(null); openSheet('voluntaria') }
+
   function openEdit(id: number) { setEditingVoluntaria(id); openSheet('voluntaria') }
 
   const totalAction = grandTotal > 0 ? (
@@ -130,9 +130,6 @@ export function ProvisionesCard() {
           <EmptyContent>
             <Button size="sm" variant="outline" onClick={() => setView('config')}>
               <Settings2 size={13} /> Configuración
-            </Button>
-            <Button size="sm" variant="ghost" onClick={openAdd}>
-              <Plus size={13} /> Ahorro voluntario
             </Button>
           </EmptyContent>
         </Empty>
@@ -200,14 +197,6 @@ export function ProvisionesCard() {
               )
             })}
 
-            <Button
-              variant="ghost"
-              onClick={openAdd}
-              className="w-full justify-center text-muted-foreground hover:text-foreground gap-2 my-2"
-            >
-              <Plus size={16} />
-              Agregar ahorro voluntario
-            </Button>
           </div>
         </div>
 
