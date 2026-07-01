@@ -73,7 +73,7 @@ export function ProvisionesCard() {
   const ibc  = calcIBC(month.incomes, month.trm, smmlv)
   const gast = calcGastos(month.egresos || [], month.trm)
   const provBase = calcProvisionBase(month.incomes, month.trm, ibc)
-  const res  = calcAllDeductions(bruto, ibc, m, deductions, gast, month.trm, month.voluntarias, provBase)
+  const res  = calcAllDeductions(bruto, ibc, m, deductions, gast, month.trm, month.voluntarias, provBase, smmlv)
 
   const showUSD      = totUSD > 0
   const transferTRM  = liveTRM ?? month.trm

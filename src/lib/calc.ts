@@ -51,6 +51,18 @@ export function calcProvisionBase(incomes: Income[], trm: number, ibc: number): 
   return Math.max(base - ibc, 0)
 }
 
+export function calcFSS(ibc: number, smmlv: number): { amount: number; pct: number } {
+  const x = ibc / smmlv
+  let pct = 0
+  if      (x >= 20) pct = 2
+  else if (x >= 19) pct = 1.8
+  else if (x >= 18) pct = 1.6
+  else if (x >= 17) pct = 1.4
+  else if (x >= 16) pct = 1.2
+  else if (x >= 4)  pct = 1
+  return { amount: ibc * (pct / 100), pct }
+}
+
 export function calcGastos(egresos: Egreso[], trm: number): number {
   return (egresos || [])
     .reduce((a, e) => a + (e.currency === 'USD' ? e.amount * (trm || DEFAULTS.trm) : e.amount), 0)
@@ -78,6 +90,7 @@ export function calcAllDeductions(
   trm:            number,
   voluntarias?:   VoluntariaItem[],
   provisionBase?: number,  // base for neto_ibc; computed from selected incomes by caller
+  smmlv?:         number,  // when provided, FSS (Fondo de Solidaridad) is injected after pension
 ): AllDeductionsResult {
   const provBase = provisionBase ?? Math.max(bruto - ibc, 0)
 
@@ -113,7 +126,23 @@ export function calcAllDeductions(
   }
 
   const enabled = deductions.filter(d => d.enabled)
-  const ssItems   = enabled.filter(d => d.group === 'ss').map(toResult)
+  const ssItems: DeductionResult[]  = enabled.filter(d => d.group === 'ss').map(toResult)
+
+  // Inject FSS after pension when smmlv provided and IBC ≥ 4 SMMLV
+  if (smmlv && smmlv > 0) {
+    const fss = calcFSS(ibc, smmlv)
+    if (fss.pct > 0) {
+      const pensionIdx = ssItems.findIndex(i => i.id === 'pension')
+      const fssItem: DeductionResult = {
+        id: 'fss', label: 'Fondo de Solidaridad', group: 'ss',
+        amount: fss.amount, pct: fss.pct, base: 'ibc',
+        color: '--color-tax', applies: true,
+      }
+      if (pensionIdx >= 0) ssItems.splice(pensionIdx + 1, 0, fssItem)
+      else ssItems.push(fssItem)
+    }
+  }
+
   const provItems = enabled.filter(d => d.group === 'provision').map(toResult)
   const volItems: DeductionResult[] = (voluntarias ?? []).map(v => ({
     id:     String(v.id),
@@ -176,7 +205,7 @@ export function buildAnnualData(
 
     if (deductions) {
       const provBase = calcProvisionBase(incomes, trm, ibc)
-      const res = calcAllDeductions(bruto, ibc, m, deductions, gast, trm, d.voluntarias, provBase)
+      const res = calcAllDeductions(bruto, ibc, m, deductions, gast, trm, d.voluntarias, provBase, smmlvFn(year))
       ssTot     = res.ssTotal
       ret       = res.provItems.find(i => i.id === 'retencion')?.amount ?? 0
       prim      = res.provItems.find(i => i.id === 'primas')?.amount ?? 0

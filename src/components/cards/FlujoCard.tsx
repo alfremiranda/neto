@@ -19,7 +19,7 @@ export function FlujoCard() {
   const ibc   = calcIBC(month.incomes, month.trm, smmlv)
   const gast  = calcGastos(month.egresos || [], month.trm)
   const provBase = calcProvisionBase(month.incomes, month.trm, ibc)
-  const res   = calcAllDeductions(bruto, ibc, m, deductions, gast, month.trm, month.voluntarias, provBase)
+  const res   = calcAllDeductions(bruto, ibc, m, deductions, gast, month.trm, month.voluntarias, provBase, smmlv)
 
   // COP obligations → Bancolombia (SS + egresos)
   const aBancolCOP = res.ssTotal + gast

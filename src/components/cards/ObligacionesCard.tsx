@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Landmark, Info, ExternalLink, X } from 'lucide-react'
 import { Dialog as DialogPrimitive } from 'radix-ui'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useLiveTRM } from '@/hooks/useLiveTRM'
@@ -169,6 +170,62 @@ function ItemRow({ label, amount, badge, trm, showUSD, dim }: ItemRowProps) {
   )
 }
 
+const FSS_BRACKETS = [
+  { range: '4 y 16 SMMLV',    pct: '1%'   },
+  { range: '16 y 17 SMMLV',   pct: '1.2%' },
+  { range: '17 y 18 SMMLV',   pct: '1.4%' },
+  { range: '18 y 19 SMMLV',   pct: '1.6%' },
+  { range: '19 y 20 SMMLV',   pct: '1.8%' },
+  { range: 'Más de 20 SMMLV', pct: '2%'   },
+]
+
+function FSSRow({ amount, pct, trm, showUSD }: { amount: number; pct: number; trm: number; showUSD: boolean }) {
+  return (
+    <div className="flex items-center gap-2 py-[7px] border-b border-[var(--border)] last:border-0 pl-3">
+      <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30 shrink-0" />
+      <span className="flex-1 min-w-0 text-xs text-muted-foreground">Fondo de Solidaridad</span>
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className="p-0.5 rounded text-muted-foreground/50 hover:text-muted-foreground transition-colors shrink-0"
+            aria-label="Ver tabla Fondo de Solidaridad y Subsistencia"
+          >
+            <Info size={11} />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent side="left" align="start" className="w-64 p-0 text-xs">
+          <div className="px-3 pt-3 pb-2">
+            <p className="font-semibold text-[11px]">Fondo de Solidaridad y Subsistencia</p>
+            <p className="text-muted-foreground text-[10px] mt-0.5 leading-relaxed">
+              Ley 100 de 1993, art. 25. Aplica cuando el IBC supera 4 SMMLV.
+            </p>
+          </div>
+          <div className="border-t border-[var(--border)]">
+            <div className="grid grid-cols-2 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground bg-muted">
+              <span>IBC entre</span>
+              <span className="text-right">Aporte</span>
+            </div>
+            {FSS_BRACKETS.map(b => (
+              <div key={b.range} className="grid grid-cols-2 px-3 py-1.5 border-t border-[var(--border)]">
+                <span className="text-muted-foreground">{b.range}</span>
+                <span className="text-right font-mono">{b.pct}</span>
+              </div>
+            ))}
+          </div>
+        </PopoverContent>
+      </Popover>
+      <span className="text-[10px] text-muted-foreground tabular-nums font-mono shrink-0">{pct}%</span>
+      <div className="w-[104px] shrink-0 flex flex-col items-end">
+        <span className="text-xs font-semibold tabular-nums font-mono text-muted-foreground">{COP(amount)}</span>
+        {showUSD && trm > 0 && (
+          <span className="text-[10px] tabular-nums font-mono text-muted-foreground/60">{USD(amount / trm)}</span>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function GroupBox({ label, children, action, trmNote, ibcRow }: { label: string; children: React.ReactNode; action?: React.ReactNode; trmNote?: string; ibcRow?: React.ReactNode }) {
   return (
     <div className="rounded-lg bg-muted overflow-hidden">
@@ -207,7 +264,7 @@ export function ObligacionesCard() {
   const ibc  = calcIBC(month.incomes, month.trm, smmlv)
   const gast = calcGastos(month.egresos || [], month.trm)
   const provBase = calcProvisionBase(month.incomes, month.trm, ibc)
-  const res  = calcAllDeductions(bruto, ibc, m, deductions, gast, month.trm, month.voluntarias, provBase)
+  const res  = calcAllDeductions(bruto, ibc, m, deductions, gast, month.trm, month.voluntarias, provBase, smmlv)
 
   const ibcIsMin   = ibc <= smmlv * 1.001
   const showUSD    = totUSD > 0
@@ -257,14 +314,16 @@ export function ObligacionesCard() {
             }
           >
             {res.ssItems.map(item => (
-              <ItemRow
-                key={item.id}
-                label={item.label}
-                amount={item.amount}
-                badge={`${item.pct}%`}
-                trm={transferTRM}
-                showUSD={showUSD}
-              />
+              item.id === 'fss'
+                ? <FSSRow key="fss" amount={item.amount} pct={item.pct} trm={transferTRM} showUSD={showUSD} />
+                : <ItemRow
+                    key={item.id}
+                    label={item.label}
+                    amount={item.amount}
+                    badge={`${item.pct}%`}
+                    trm={transferTRM}
+                    showUSD={showUSD}
+                  />
             ))}
           </GroupBox>
         )}
