@@ -4,8 +4,6 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { COP, USD, fmtDate } from '@/lib/format'
-import { computeAccountBalance } from '@/lib/calc'
-import { CurrencyBadge } from '@/components/ui/Badge'
 import { MONTHS } from '@/data/defaults'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { IconButton } from '@/components/ui/icon-button'
@@ -83,20 +81,8 @@ function TransferRow({
 function MovimientosCardSkeleton() {
   return (
     <SectionCard icon={ArrowLeftRight} title="Movimientos entre cuentas">
-      <div className="grid grid-cols-2 gap-2 mb-[10px]">
-        {[0, 1, 2, 3].map(i => (
-          <div key={i} className="bg-muted rounded-xl p-3 space-y-2">
-            <div className="flex items-center gap-1">
-              <Skeleton className="h-3 flex-1" />
-              <Skeleton className="h-4 w-10 rounded-full" />
-            </div>
-            <Skeleton className="h-3 w-16" />
-            <Skeleton className="h-5 w-28" />
-          </div>
-        ))}
-      </div>
       <div className="space-y-0">
-        {[0, 1].map(i => (
+        {[0, 1, 2].map(i => (
           <div key={i} className="flex items-center gap-2 py-2.5 border-b border-[var(--border)] last:border-0">
             <div className="flex-1 space-y-1.5">
               <Skeleton className="h-3.5 w-40" />
@@ -117,63 +103,17 @@ export function MovimientosCard() {
 }
 
 function MovimientosCardContent() {
-  const { db, getCurrentMonth, getAccounts, removeTransfer, curKey } = useFinanceStore()
-  const { openSheet, showToast, setEditingBalance, setEditingTransfer } = useUIStore()
+  const { getCurrentMonth, getAccounts, removeTransfer, curKey } = useFinanceStore()
+  const { openSheet, showToast, setEditingTransfer } = useUIStore()
   const month    = getCurrentMonth()
   const accounts = getAccounts()
   const [y, m] = curKey.split('-').map(Number)
-
-  function openDetail(id: string) { setEditingBalance(id); openSheet('account-detail') }
 
   return (
     <SectionCard
       icon={ArrowLeftRight}
       title="Movimientos entre cuentas"
     >
-      {/* Account Scorecards */}
-      <div className="grid gap-2 mb-[10px]"
-        style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(148px, 1fr))' }}>
-        {accounts.map(a => {
-          const balance = computeAccountBalance(a.id, a, db, curKey)
-          const hasStarting = a.startingBalance != null
-          const hasActivity = Object.keys(db).some(k => {
-            if (k === '_settings') return false
-            const mo = db[k] as import('@/types').MonthData
-            return (mo?.incomes || []).some(i => i.account === a.id)
-              || (mo?.egresos || []).some(e => e.account === a.id)
-              || (mo?.transfers || []).some(t => t.from === a.id || t.to === a.id)
-          })
-          const showBalance = hasStarting || hasActivity
-          const monthlyInt = showBalance && a.rate > 0 ? balance * (a.rate / 100) / 12 : 0
-          const numStr = a.number ? `•••• ${String(a.number).slice(-4)}` : null
-          const fmt = (n: number) => a.currency === 'USD' ? USD(n) : COP(n)
-
-          return (
-            <div
-              key={a.id}
-              onClick={() => openDetail(a.id)}
-              className="bg-muted rounded-xl p-3 cursor-pointer hover:bg-[var(--accent)] transition-colors min-w-0"
-            >
-              <div className="flex items-center gap-1 mb-0.5">
-                <span className="text-[12px] font-medium leading-[18px] text-muted-foreground truncate flex-1 min-w-0">{a.label}</span>
-                <CurrencyBadge currency={a.currency} />
-              </div>
-              {numStr && <div className="text-[10px] font-normal leading-[15px] text-muted-foreground font-mono mb-1">{numStr}</div>}
-              <div className="text-[16px] font-bold leading-[24px] font-mono mt-0.5">
-                {showBalance
-                  ? fmt(balance)
-                  : <span className="text-sm font-normal text-muted-foreground">Tocar para configurar</span>}
-              </div>
-              {monthlyInt > 0 && (
-                <div className="text-[10px] font-normal leading-[15px] text-[var(--color-provision)] mt-[3px]">
-                  ≈ {fmt(monthlyInt)}/mes · {a.rate}% a.a.
-                </div>
-              )}
-            </div>
-          )
-        })}
-      </div>
-
       {/* Transfers list */}
       {(month.transfers || []).length === 0 ? (
         <Empty className="border-0 py-3">
