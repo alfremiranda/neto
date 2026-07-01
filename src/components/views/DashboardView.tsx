@@ -172,10 +172,13 @@ export function DashboardView() {
   const { db, getSMMLV } = useFinanceStore()
   const deductions = useSettingsStore(s => s.deductions)
   const { showToast } = useUIStore()
-  const currentYear = new Date().getFullYear()
+  const now = new Date()
+  const currentYear = now.getFullYear()
+  const todayKey = `${currentYear}-${String(now.getMonth() + 1).padStart(2, '0')}`
 
   const monthKeys = useMemo(
-    () => Object.keys(db).filter(k => k !== '_settings'),
+    () => Object.keys(db).filter(k => k !== '_settings' && k <= todayKey),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [db],
   )
 

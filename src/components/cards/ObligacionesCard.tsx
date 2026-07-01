@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Landmark, ShieldCheck, Info, ExternalLink, X } from 'lucide-react'
+import { Landmark, Info, ExternalLink, X } from 'lucide-react'
 import { Dialog as DialogPrimitive } from 'radix-ui'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
@@ -8,7 +8,6 @@ import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase 
 import { COP, USD } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { SectionCard } from '@/components/ui/SectionCard'
-import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
 import { IconButton } from '@/components/ui/icon-button'
 
 // ─── SS Payment schedule data ─────────────────────────────────────────────────
@@ -221,19 +220,7 @@ export function ObligacionesCard() {
     ? `TRM hoy · ${liveTRM.toLocaleString('es-CO', { maximumFractionDigits: 0 })}`
     : undefined
 
-  if (bruto === 0) {
-    return (
-      <SectionCard icon={Landmark} title="Obligaciones tributarias">
-        <Empty className="border-0 py-2">
-          <EmptyHeader>
-            <EmptyMedia variant="icon"><ShieldCheck size={14} /></EmptyMedia>
-            <EmptyTitle>Sin obligaciones</EmptyTitle>
-            <EmptyDescription>Registra ingresos para calcular SS y retención</EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-      </SectionCard>
-    )
-  }
+  // bruto === 0 but IBC is always at least SMMLV by law — still show SS obligations
 
   const totalAction = (
     <div className="text-right">

@@ -17,7 +17,8 @@ export function calcTotales(incomes: Income[], trm: number): Totales {
 
 export function calcIBC(incomes: Income[], trm: number, smmlv: number): number {
   const serviciosIncomes = incomes.filter(i => (i.tipo || 'servicios') === 'servicios')
-  if (serviciosIncomes.length === 0) return 0
+  // By law, IBC is always at least SMMLV — even with no incomes registered yet
+  if (serviciosIncomes.length === 0) return smmlv
   const totalServicios = serviciosIncomes
     .reduce((a, i) => a + (i.currency === 'USD' ? i.amount * trm : i.amount), 0)
   return Math.max(totalServicios * DEFAULTS.ibc_factor, smmlv)
@@ -150,8 +151,11 @@ export function buildAnnualData(
   deductions?: DeductionConfig[],
 ): AnnualRow[] {
   const rows: AnnualRow[] = []
+  const now = new Date()
+  // For the current year, cap at the current month so future months don't appear
+  const maxMonth = year === now.getFullYear() ? now.getMonth() + 1 : 12
 
-  for (let m = 1; m <= 12; m++) {
+  for (let m = 1; m <= maxMonth; m++) {
     const k = `${year}-${String(m).padStart(2, '0')}`
     const d = db[k]
     const incomes = d?.incomes || []

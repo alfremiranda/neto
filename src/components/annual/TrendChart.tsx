@@ -70,13 +70,17 @@ export function TrendChart() {
     ]
   }, [db, curKey, deductions, getSMMLV])
 
+  const now = new Date()
+  const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+
   const allKeys = [...new Set([
     ...Object.keys(db).filter(k => {
       if (k === '_settings') return false
+      if (k > todayKey) return false  // exclude future months
       const m = db[k]
       return (m?.incomes?.length ?? 0) > 0 || (m?.egresos?.length ?? 0) > 0
     }).sort(),
-    curKey,
+    curKey <= todayKey ? curKey : todayKey,
   ])]
   const monthKeys = allKeys.slice(-8)
 
