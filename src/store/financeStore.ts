@@ -20,15 +20,18 @@ export function monthKey(m: number, y: number): string {
 
 // Derive month key from an ISO date string (e.g. "2026-06-08" → "2026-06")
 function keyForDate(date: string, fallback: string): string {
-  const d = new Date(date)
-  if (isNaN(d.getTime())) return fallback
-  return monthKey(d.getMonth() + 1, d.getFullYear())
+  // Parse YYYY-MM directly — new Date('YYYY-MM-DD') is UTC midnight which shifts to
+  // the previous month in UTC-5 (Colombia), causing transfers to land in the wrong month.
+  const parts = date.split('-')
+  const y = parseInt(parts[0]), m = parseInt(parts[1])
+  if (!y || !m || isNaN(y) || isNaN(m)) return fallback
+  return monthKey(m, y)
 }
 
 // Apply all pending migrations. Safe to run on any db object (local or cloud).
 // Returns a new db and a `changed` flag so callers know whether to push the result.
 // Bump CURRENT_DB_VERSION when adding a new migration step.
-const CURRENT_DB_VERSION = 2
+const CURRENT_DB_VERSION = 3
 
 function applyDateMigration(db: Record<string, unknown>): { db: Record<string, unknown>; changed: boolean } {
   const settings = (db['_settings'] ?? {}) as Settings & { dbMigrationVersion?: number }
@@ -90,6 +93,40 @@ function applyDateMigration(db: Record<string, unknown>): { db: Record<string, u
         current[key] = { ...m, voluntarias: [] }
       }
     }
+  }
+
+  // ── v3: re-run date-based relocation to fix timezone bug in keyForDate ────────
+  // keyForDate used new Date('YYYY-MM-DD') which parses as UTC midnight, shifting
+  // dates to the previous month in UTC-5 (Colombia). Items added after v1 ran were
+  // stored in the wrong month. Re-running the same relocation (now with the fixed
+  // keyForDate) moves them to the correct month.
+  if (version < 3) {
+    const newDb: Record<string, MonthData> = {}
+    for (const key of Object.keys(current)) {
+      if (key === '_settings') continue
+      const m = current[key] as MonthData
+      newDb[key] = { ...m, incomes: [], transfers: [], egresos: [] }
+    }
+    for (const key of Object.keys(current)) {
+      if (key === '_settings') continue
+      const m = current[key] as MonthData
+      for (const income of (m.incomes ?? [])) {
+        const dest = income.date ? keyForDate(income.date, key) : key
+        newDb[dest] ??= { trm: (current[dest] as MonthData | undefined)?.trm ?? m.trm, incomes: [], transfers: [], egresos: [] }
+        newDb[dest].incomes.push(income)
+      }
+      for (const egreso of (m.egresos ?? [])) {
+        const dest = egreso.date ? keyForDate(egreso.date, key) : key
+        newDb[dest] ??= { trm: (current[dest] as MonthData | undefined)?.trm ?? m.trm, incomes: [], transfers: [], egresos: [] }
+        newDb[dest].egresos.push(egreso)
+      }
+      for (const transfer of (m.transfers ?? [])) {
+        const dest = transfer.date ? keyForDate(transfer.date, key) : key
+        newDb[dest] ??= { trm: (current[dest] as MonthData | undefined)?.trm ?? m.trm, incomes: [], transfers: [], egresos: [] }
+        newDb[dest].transfers.push(transfer)
+      }
+    }
+    current = { ...current, ...newDb }
   }
 
   current['_settings'] = { ...(current['_settings'] ?? {}), dbMigrationVersion: CURRENT_DB_VERSION } as unknown as MonthData
