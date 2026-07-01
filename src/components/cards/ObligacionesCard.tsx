@@ -150,13 +150,15 @@ interface ItemRowProps {
   trm: number
   showUSD: boolean
   dim?: boolean
+  noBorder?: boolean
 }
 
-function ItemRow({ label, amount, badge, trm, showUSD, dim }: ItemRowProps) {
+function ItemRow({ label, amount, badge, trm, showUSD, dim, noBorder }: ItemRowProps) {
   return (
     <div className={cn(
       'flex items-center gap-2 py-[9px] border-b border-[var(--border)] last:border-0',
-      dim && 'opacity-35'
+      dim && 'opacity-35',
+      noBorder && 'border-b-0',
     )}>
       <span className="flex-1 min-w-0 text-sm text-foreground">{label}</span>
       <span className="text-[10px] text-muted-foreground tabular-nums font-mono shrink-0">{badge}</span>
@@ -181,7 +183,7 @@ const FSS_BRACKETS = [
 
 function FSSRow({ amount, pct, trm, showUSD }: { amount: number; pct: number; trm: number; showUSD: boolean }) {
   return (
-    <div className="py-2 border-b border-[var(--border)] last:border-0">
+    <div className="pt-0 pb-2 border-b border-[var(--border)] last:border-0">
       <div className="border border-[var(--border)] rounded-lg px-2 py-1 flex items-center gap-1.5">
         <span className="text-xs font-medium text-muted-foreground">FSS</span>
         <span className="text-[10px] text-muted-foreground">·</span>
@@ -316,7 +318,7 @@ export function ObligacionesCard() {
               </div>
             }
           >
-            {res.ssItems.map(item => (
+            {res.ssItems.map((item, idx) => (
               item.id === 'fss'
                 ? <FSSRow key="fss" amount={item.amount} pct={item.pct} trm={transferTRM} showUSD={showUSD} />
                 : <ItemRow
@@ -326,6 +328,7 @@ export function ObligacionesCard() {
                     badge={`${item.pct}%`}
                     trm={transferTRM}
                     showUSD={showUSD}
+                    noBorder={res.ssItems[idx + 1]?.id === 'fss'}
                   />
             ))}
           </GroupBox>
