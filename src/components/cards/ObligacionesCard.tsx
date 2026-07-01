@@ -184,7 +184,7 @@ const FSS_BRACKETS = [
 function FSSRow({ amount, pct, trm, showUSD }: { amount: number; pct: number; trm: number; showUSD: boolean }) {
   return (
     <div className="pt-0 pb-2 border-b border-[var(--border)] last:border-0">
-      <div className="border border-[var(--border)] rounded-lg px-2 py-1 flex items-center gap-1.5">
+      <div className="rounded-lg px-2 py-1 flex items-center gap-1.5 bg-background/60">
         <span className="text-xs font-medium text-muted-foreground">FSS</span>
         <span className="text-[10px] text-muted-foreground">·</span>
         <span className="text-[10px] text-muted-foreground">Fondo de Solidaridad</span>
