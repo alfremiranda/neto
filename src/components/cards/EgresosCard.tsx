@@ -166,7 +166,7 @@ function EgresoRow({
                     <RefreshCw size={12} className={cn('shrink-0 cursor-default', isUnconfirmed ? 'text-[var(--color-tax-txt)]' : 'text-muted-foreground')} />
                   </TooltipTrigger>
                   <TooltipContent side="left" className="max-w-[200px] text-center text-xs">
-                    {isUnconfirmed
+                    {isScheduled
                       ? 'Programado — no se suma al total hasta que llegue la fecha'
                       : 'Recurrente — se copia al siguiente mes'}
                   </TooltipContent>
