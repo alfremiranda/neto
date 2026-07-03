@@ -9,7 +9,6 @@ import { calcTotales } from '@/lib/calc'
 import { COP, USD, fmtDate } from '@/lib/format'
 import { Badge } from '@/components/ui/Badge'
 import { MetricCard } from '@/components/ui/MetricCard'
-import { IncomeSheet } from '@/components/sheets/IncomeSheet'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Button } from '@/components/ui/button'
 import { IconButton } from '@/components/ui/icon-button'
@@ -168,55 +167,51 @@ function IngresosCardContent() {
   }
 
   return (
-    <>
-      <SectionCard
-        icon={Banknote}
-        title="Ingresos del mes"
-      >
-        {!hasIncomes ? (
-          <Empty className="border-0 py-4">
-            <EmptyHeader>
-              <EmptyMedia variant="icon"><Receipt size={14} /></EmptyMedia>
-              <EmptyTitle>Sin ingresos</EmptyTitle>
-              <EmptyDescription>Registra el primer ingreso del mes</EmptyDescription>
-            </EmptyHeader>
-          </Empty>
-        ) : (
-          <div>
-            {[...month.incomes]
-              .sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''))
-              .map(inc => (
-                <IncomeRow
-                  key={inc.id}
-                  inc={inc}
-                  trm={month.trm}
-                  onEdit={() => handleEdit(inc.id)}
-                  isPending={confirmId === inc.id}
-                  onDeleteDesktop={() => handleDeleteDesktop(inc.id)}
-                />
-              ))}
-
-            <div className="mt-3">
-              <MetricCard
-                label="Total bruto equiv. COP"
-                value={COP(bruto)}
-                sub={totUSD > 0 ? (
-                  <span className="text-[0px]">
-                    <span className="font-heading font-semibold text-[12px] leading-[18px] tabular-nums">
-                      {USD(totUSD)}
-                    </span>
-                    <span className="font-sans font-normal text-[11px] leading-[17px]">
-                      {` · TRM mes ${month.trm.toLocaleString('es-CO', { maximumFractionDigits: 2 })}`}
-                    </span>
-                  </span>
-                ) : undefined}
+    <SectionCard
+      icon={Banknote}
+      title="Ingresos del mes"
+    >
+      {!hasIncomes ? (
+        <Empty className="border-0 py-4">
+          <EmptyHeader>
+            <EmptyMedia variant="icon"><Receipt size={14} /></EmptyMedia>
+            <EmptyTitle>Sin ingresos</EmptyTitle>
+            <EmptyDescription>Registra el primer ingreso del mes</EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      ) : (
+        <div>
+          {[...month.incomes]
+            .sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''))
+            .map(inc => (
+              <IncomeRow
+                key={inc.id}
+                inc={inc}
+                trm={month.trm}
+                onEdit={() => handleEdit(inc.id)}
+                isPending={confirmId === inc.id}
+                onDeleteDesktop={() => handleDeleteDesktop(inc.id)}
               />
-            </div>
-          </div>
-        )}
-      </SectionCard>
+            ))}
 
-      <IncomeSheet />
-    </>
+          <div className="mt-3">
+            <MetricCard
+              label="Total bruto equiv. COP"
+              value={COP(bruto)}
+              sub={totUSD > 0 ? (
+                <span className="text-[0px]">
+                  <span className="font-heading font-semibold text-[12px] leading-[18px] tabular-nums">
+                    {USD(totUSD)}
+                  </span>
+                  <span className="font-sans font-normal text-[11px] leading-[17px]">
+                    {` · TRM mes ${month.trm.toLocaleString('es-CO', { maximumFractionDigits: 2 })}`}
+                  </span>
+                </span>
+              ) : undefined}
+            />
+          </div>
+        </div>
+      )}
+    </SectionCard>
   )
 }

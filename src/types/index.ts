@@ -49,6 +49,10 @@ export interface VoluntariaItem {
   label: string
   amount: number
   currency: 'USD' | 'COP'
+  account?: string
+  date?: string
+  recurring?: boolean
+  egresoId?: number
 }
 
 export interface MonthData {

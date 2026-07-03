@@ -9,7 +9,6 @@ import { calcGastos } from '@/lib/calc'
 import { COP, fmtDate, localToday } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { EGRESO_CATEGORIAS } from '@/data/defaults'
-import { EgresoSheet } from '@/components/sheets/EgresoSheet'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Button } from '@/components/ui/button'
 import { IconButton } from '@/components/ui/icon-button'
@@ -388,11 +387,10 @@ function EgresosCardContent() {
     : `Total ${activeCats.find(c => c.id === activeTab)?.label ?? activeTab}`
 
   return (
-    <>
-      <SectionCard
-        icon={Receipt}
-        title="Egresos del mes"
-      >
+    <SectionCard
+      icon={Receipt}
+      title="Egresos del mes"
+    >
         {egresos.length === 0 ? (
           <Empty className="border-0 py-4">
             <EmptyHeader>
@@ -626,9 +624,6 @@ function EgresosCardContent() {
             </Tabs>
           </div>
         )}
-      </SectionCard>
-
-      <EgresoSheet />
-    </>
+    </SectionCard>
   )
 }

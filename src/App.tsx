@@ -14,6 +14,8 @@ import { AccountDetailSheet } from '@/components/sheets/AccountDetailSheet'
 import { BalanceSheet } from '@/components/sheets/BalanceSheet'
 import { TransferSheet } from '@/components/sheets/TransferSheet'
 import { VoluntariaSheet } from '@/components/sheets/VoluntariaSheet'
+import { IncomeSheet } from '@/components/sheets/IncomeSheet'
+import { EgresoSheet } from '@/components/sheets/EgresoSheet'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { useUIStore } from '@/store/uiStore'
@@ -138,6 +140,8 @@ export default function App() {
         <FAB />
 
         {/* Global sheets */}
+        <IncomeSheet />
+        <EgresoSheet />
         <AccountEditSheet />
         <AccountDetailSheet />
         <BalanceSheet />

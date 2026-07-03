@@ -331,6 +331,15 @@ export function ObligacionesCard() {
                     noBorder={res.ssItems[idx + 1]?.id === 'fss'}
                   />
             ))}
+            <div className="flex items-center gap-2 py-[9px]">
+              <span className="flex-1 min-w-0 text-xs font-semibold text-foreground">Total SS</span>
+              <div className="w-[104px] shrink-0 flex flex-col items-end">
+                <span className="text-sm font-bold tabular-nums font-mono">{COP(res.ssTotal)}</span>
+                {showUSD && transferTRM > 0 && (
+                  <span className="text-[10px] tabular-nums font-mono text-muted-foreground">{USD(res.ssTotal / transferTRM)}</span>
+                )}
+              </div>
+            </div>
           </GroupBox>
         )}
 

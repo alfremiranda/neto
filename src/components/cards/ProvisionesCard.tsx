@@ -18,7 +18,7 @@ function VoluntariaRow({
   v, amtCOP, showUSD, transferTRM,
   onEdit, onDelete,
 }: {
-  v: { id: number; label: string; amount: number; currency: string }
+  v: { id: number; label: string; amount: number; currency: string; account?: string; date?: string }
   amtCOP: number
   showUSD: boolean
   transferTRM: number
@@ -89,7 +89,7 @@ export function ProvisionesCard() {
 }
 
 function ProvisionesCardContent() {
-  const { getCurrentMonth, getSMMLV, curKey, removeVoluntaria } = useFinanceStore()
+  const { getCurrentMonth, getSMMLV, curKey, removeVoluntaria, removeEgreso } = useFinanceStore()
   const deductions = useSettingsStore(s => s.deductions)
   const { trm: liveTRM } = useLiveTRM()
   const { setView, openSheet, setEditingVoluntaria } = useUIStore()
@@ -221,7 +221,7 @@ function ProvisionesCardContent() {
                   showUSD={showUSD}
                   transferTRM={transferTRM}
                   onEdit={() => openEdit(v.id)}
-                  onDelete={() => removeVoluntaria(v.id)}
+                  onDelete={() => { if (v.egresoId) removeEgreso(v.egresoId); removeVoluntaria(v.id) }}
                 />
               )
             })}

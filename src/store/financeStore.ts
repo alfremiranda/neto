@@ -191,7 +191,7 @@ interface FinanceState {
   addIncome: (income: Omit<Income, 'id'>) => void
   updateIncome: (id: number, patch: Partial<Omit<Income, 'id'>>) => void
   removeIncome: (id: number) => void
-  addEgreso: (egreso: Omit<Egreso, 'id'>) => void
+  addEgreso: (egreso: Omit<Egreso, 'id'>, targetKey?: string) => number
   updateEgreso: (id: number, egreso: Partial<Egreso>) => void
   removeEgreso: (id: number) => void
   confirmEgreso: (id: number) => void
@@ -254,7 +254,7 @@ export const useFinanceStore = create<FinanceState>()(
       seedCurrentMonth: () => {
         const { curKey, db } = get()
         if (!db[curKey]) {
-          const seeded = initMonth(curKey, db)
+          const seeded: MonthData = { ...initMonth(curKey, db), egresosSeeded: true }
           set(s => ({ db: { ...s.db, [curKey]: seeded } }))
         }
       },
@@ -332,16 +332,18 @@ export const useFinanceStore = create<FinanceState>()(
         autoPush(curKey, updated)
       },
 
-      addEgreso: (egreso) => {
+      addEgreso: (egreso, targetKey) => {
         const { curKey, db } = get()
-        const key = egreso.date ? keyForDate(egreso.date, curKey) : curKey
+        const key = targetKey ?? (egreso.date ? keyForDate(egreso.date, curKey) : curKey)
         const d = db[key] ?? initMonth(key, db)
+        const id = Date.now()
         const updated: MonthData = {
           ...d,
-          egresos: [...(d.egresos || []), { ...egreso, id: Date.now(), confirmed: true }],
+          egresos: [...(d.egresos || []), { ...egreso, id, confirmed: true }],
         }
         set(state => ({ db: { ...state.db, [key]: updated } }))
         autoPush(key, updated)
+        return id
       },
 
       updateEgreso: (id, patch) => {
@@ -539,9 +541,24 @@ export const useFinanceStore = create<FinanceState>()(
         const [y, m] = curKey.split('-').map(Number)
         if (m === 12) return
         const newKey = monthKey(m + 1, y)
-        if (!db[newKey]) {
-          const seeded = initMonth(newKey, db)
+        const existing = db[newKey]
+        if (!existing) {
+          const seeded: MonthData = { ...initMonth(newKey, db), egresosSeeded: true }
           set({ curKey: newKey, db: { ...db, [newKey]: seeded } })
+        } else if (!existing.egresosSeeded) {
+          // Month exists but recurring egresos may not have been seeded yet
+          // (happens when the month was visited before egresos were marked recurring).
+          // Merge in fresh recurring egresos, deduplicating by desc+amount.
+          const prev = db[curKey] as MonthData | undefined
+          const toSeed = prev ? shiftRecurring(prev.egresos || [], newKey) : []
+          const existingKeys = new Set((existing.egresos || []).map(e => `${e.desc}|${e.amount}`))
+          const fresh = toSeed.filter(e => !existingKeys.has(`${e.desc}|${e.amount}`))
+          const updated: MonthData = {
+            ...existing,
+            egresos: [...(existing.egresos || []), ...fresh],
+            egresosSeeded: true,
+          }
+          set({ curKey: newKey, db: { ...db, [newKey]: updated } })
         } else {
           set({ curKey: newKey })
         }
