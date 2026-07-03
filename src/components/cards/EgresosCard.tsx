@@ -18,6 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DatePicker } from '@/components/ui/DatePicker'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import type { Egreso, Account } from '@/types'
 
 // ─── Category icon bubble ─────────────────────────────────────────────────────
@@ -159,7 +160,18 @@ function EgresoRow({
         <div className="shrink-0 w-[104px] flex flex-col items-end">
           <div className="flex items-center gap-1">
             {egreso.recurring && (
-              <RefreshCw size={12} className={cn('shrink-0', isUnconfirmed ? 'text-[var(--color-tax-txt)]' : 'text-muted-foreground')} />
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <RefreshCw size={12} className={cn('shrink-0 cursor-default', isUnconfirmed ? 'text-[var(--color-tax-txt)]' : 'text-muted-foreground')} />
+                  </TooltipTrigger>
+                  <TooltipContent side="left" className="max-w-[200px] text-center text-xs">
+                    {isUnconfirmed
+                      ? 'Programado — no se suma al total hasta que llegue la fecha'
+                      : 'Recurrente — se copia al siguiente mes'}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             )}
             <span className={cn('text-sm font-semibold tabular-nums font-mono', isUnconfirmed && 'text-muted-foreground')}>
               {COP(amtCOP)}

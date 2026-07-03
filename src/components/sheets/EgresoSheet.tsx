@@ -195,7 +195,7 @@ export function EgresoSheet() {
         <div className="flex items-center justify-between py-1">
           <div>
             <div className="text-sm font-medium">Recurrente</div>
-            <div className="text-xs text-muted-foreground">Se copiará automáticamente al siguiente mes</div>
+            <div className="text-xs text-muted-foreground">Se copiará al siguiente mes · si tiene fecha futura, no se suma al total hasta que llegue</div>
           </div>
           <Switch checked={recurring} onCheckedChange={setRecurring} />
         </div>
