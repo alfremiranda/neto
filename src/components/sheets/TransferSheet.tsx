@@ -76,19 +76,18 @@ export function TransferSheet() {
   const amt         = useMoneyInput({ decimals: from?.currency === 'USD' ? 2 : 0 })
   const amtReceived = useMoneyInput({ decimals: to?.currency === 'USD' ? 2 : 0 })
 
-  // TRM for the selected date's month (fallback to current month)
-  const dateMK  = date ? date.slice(0, 7) : curKey
-  const dateTRM = (db[dateMK] as { trm?: number } | undefined)?.trm || month.trm
+  // Month key for the selected date — used for balance preview
+  const dateMK = date ? date.slice(0, 7) : curKey
 
-  // Auto-sync trmDisplay to the date's month TRM when date changes (unless manually overridden)
+  // When live TRM loads after the sheet is already open, adopt it (unless user typed manually or editing)
   useEffect(() => {
-    if (trmManual) return
-    setTrmDisplay(dateTRM.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
+    if (trmManual || isEditing || !liveTRM.trm) return
+    setTrmDisplay(liveTRM.trm.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dateMK, dateTRM])
+  }, [liveTRM.trm])
 
   // Effective TRM when both amounts are known
-  const officialTRM = parseMoney(trmDisplay) || dateTRM
+  const officialTRM = parseMoney(trmDisplay) || liveTRM.trm || month.trm
   const hasReceived = isCross && amtReceived.numericValue > 0 && amt.numericValue > 0
   const effectiveTRM = hasReceived
     ? (from?.currency === 'USD'
@@ -101,8 +100,6 @@ export function TransferSheet() {
   // Load existing transfer when editing
   useEffect(() => {
     if (activeSheet !== 'transfer') return
-    const trm = month.trm
-    const trmStr = trm.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
     if (isEditing) {
       const t = (month.transfers || []).find(t => t.id === editingTransferId)
@@ -112,19 +109,22 @@ export function TransferSheet() {
         setDate(t.date)
         amt.setValue(t.amount)
         amtReceived.setValue(t.toAmount !== t.amount ? t.toAmount : 0)
+        // Show the BanRep TRM that was in effect when the transfer was saved
         setTrmDisplay(t.trm
           ? t.trm.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-          : trmStr)
+          : month.trm.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
+        setTrmManual(true)
         return
       }
     }
-    // Defaults for new transfer
+    // Defaults for new transfer — use live BanRep TRM as the reference rate
+    const defaultTRM = liveTRM.trm ?? month.trm
     setFromId(accounts[0]?.id || '')
     setToId(accounts[1]?.id || accounts[0]?.id || '')
     setDate(localToday())
     amt.setValue(0)
     amtReceived.setValue(0)
-    setTrmDisplay(trmStr)
+    setTrmDisplay(defaultTRM.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
     setTrmManual(false)
     setConfirmingDelete(false)
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -337,7 +337,7 @@ export function TransferSheet() {
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-xs text-muted-foreground">TRM oficial</span>
+              <span className="text-xs text-muted-foreground">TRM BanRep</span>
               <span className="text-xs tabular-nums text-muted-foreground">
                 {officialTRM.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>

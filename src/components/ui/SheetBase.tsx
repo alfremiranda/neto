@@ -91,11 +91,12 @@ export function SheetBase({ id, title, children, footer }: SheetBaseProps) {
       onOpenChange={v => { if (!v) closeSheet() }}
       direction={direction}
       noBodyStyles
+      handleOnly={isDesktop}
     >
       <DrawerContent className={contentCls} style={contentStyle}>
-        {/* Drag handle — mobile only */}
+        {/* Drag handle — mobile only; data-vaul-handle restricts drag to this element */}
         {!isDesktop && (
-          <div className="mx-auto mt-3 mb-1 h-1 w-10 rounded-full bg-[var(--border)] shrink-0" />
+          <div data-vaul-handle className="mx-auto mt-3 mb-1 h-1 w-10 rounded-full bg-[var(--border)] shrink-0" />
         )}
 
         <DrawerHeader>
