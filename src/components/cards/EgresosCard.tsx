@@ -163,7 +163,7 @@ function EgresoRow({
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <RefreshCw size={12} className={cn('shrink-0 cursor-default', isUnconfirmed ? 'text-[var(--color-tax-txt)]' : 'text-muted-foreground')} />
+                    <RefreshCw size={12} className={cn('shrink-0 cursor-default', isScheduled ? 'text-[var(--color-tax-txt)]' : 'text-muted-foreground')} />
                   </TooltipTrigger>
                   <TooltipContent side="left" className="max-w-[200px] text-center text-xs">
                     {isScheduled
@@ -173,7 +173,7 @@ function EgresoRow({
                 </Tooltip>
               </TooltipProvider>
             )}
-            <span className={cn('text-sm font-semibold tabular-nums font-mono', isUnconfirmed && 'text-muted-foreground')}>
+            <span className={cn('text-sm font-semibold tabular-nums font-mono', isScheduled && 'text-muted-foreground')}>
               {COP(amtCOP)}
             </span>
           </div>
@@ -216,9 +216,9 @@ function EgresoRow({
           <div className="flex items-center gap-2 mb-1">
             <CategoryIcon category={category} />
             {egreso.recurring && (
-              <RefreshCw size={14} className={cn('shrink-0', isUnconfirmed ? 'text-[var(--color-tax-txt)]' : 'text-muted-foreground')} />
+              <RefreshCw size={14} className={cn('shrink-0', isScheduled ? 'text-[var(--color-tax-txt)]' : 'text-muted-foreground')} />
             )}
-            <span className={cn('text-base font-bold tabular-nums font-heading', isUnconfirmed && 'text-muted-foreground')}>
+            <span className={cn('text-base font-bold tabular-nums font-heading', isScheduled && 'text-muted-foreground')}>
               {COP(amtCOP)}
             </span>
             <span className="text-[11px] font-semibold tabular-nums font-mono text-muted-foreground shrink-0">
