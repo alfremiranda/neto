@@ -352,10 +352,14 @@ function EgresosCardContent() {
       }
     })
 
+  const today = localToday()
   const subtotal = visible.reduce(
-    (a, e) => a + (e.currency === 'USD' ? e.amount * month.trm : e.amount), 0
+    (a, e) => {
+      if (e.date && e.date > today) return a
+      return a + (e.currency === 'USD' ? e.amount * month.trm : e.amount)
+    }, 0
   )
-  const grandTotal = calcGastos(egresos, month.trm)
+  const grandTotal = calcGastos(egresos, month.trm, today)
 
   function scrollTabs(dir: 'left' | 'right') {
     scrollRef.current?.scrollBy({ left: dir === 'left' ? -140 : 140, behavior: 'smooth' })
@@ -614,9 +618,9 @@ function EgresosCardContent() {
                       </div>
                     </div>
 
-                    {/* Category bar — only in Todos without filters */}
+                    {/* Category bar — only in Todos without filters; exclude future-dated */}
                     {activeTab === 'todos' && !hasFilters && (
-                      <EgresosBar egresos={egresos} trm={month.trm} />
+                      <EgresosBar egresos={egresos.filter(e => !e.date || e.date <= today)} trm={month.trm} />
                     )}
                   </>
                 )}

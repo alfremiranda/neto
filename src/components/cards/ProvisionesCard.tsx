@@ -5,7 +5,7 @@ import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useLiveTRM } from '@/hooks/useLiveTRM'
 import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase } from '@/lib/calc'
-import { COP, USD } from '@/lib/format'
+import { COP, USD, localToday } from '@/lib/format'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Button } from '@/components/ui/button'
 import { IconButton } from '@/components/ui/icon-button'
@@ -100,7 +100,7 @@ function ProvisionesCardContent() {
 
   const { totUSD, bruto } = calcTotales(month.incomes, month.trm)
   const ibc  = calcIBC(month.incomes, month.trm, smmlv)
-  const gast = calcGastos(month.egresos || [], month.trm)
+  const gast = calcGastos(month.egresos || [], month.trm, localToday())
   const provBase = calcProvisionBase(month.incomes, month.trm, ibc)
   const res  = calcAllDeductions(bruto, ibc, m, deductions, gast, month.trm, month.voluntarias, provBase, smmlv)
 

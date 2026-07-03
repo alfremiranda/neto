@@ -3,7 +3,7 @@ import { useFinanceStore } from '@/store/financeStore'
 import { useMonthData } from '@/hooks/useMonthData'
 import { useSettingsStore } from '@/store/settingsStore'
 import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase } from '@/lib/calc'
-import { COP, USD } from '@/lib/format'
+import { COP, USD, localToday } from '@/lib/format'
 import { Badge } from '@/components/ui/Badge'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { DEFAULTS } from '@/data/defaults'
@@ -17,7 +17,7 @@ export function FlujoCard() {
 
   const { totUSD, bruto } = calcTotales(month.incomes, month.trm)
   const ibc   = calcIBC(month.incomes, month.trm, smmlv)
-  const gast  = calcGastos(month.egresos || [], month.trm)
+  const gast  = calcGastos(month.egresos || [], month.trm, localToday())
   const provBase = calcProvisionBase(month.incomes, month.trm, ibc)
   const res   = calcAllDeductions(bruto, ibc, m, deductions, gast, month.trm, month.voluntarias, provBase, smmlv)
 

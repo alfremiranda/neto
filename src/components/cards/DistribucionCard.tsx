@@ -3,7 +3,7 @@ import { useFinanceStore } from '@/store/financeStore'
 import { useMonthData } from '@/hooks/useMonthData'
 import { useSettingsStore } from '@/store/settingsStore'
 import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase } from '@/lib/calc'
-import { COP } from '@/lib/format'
+import { COP, localToday } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 interface Segment {
@@ -25,7 +25,7 @@ export function DistribucionCard() {
 
   const { bruto } = calcTotales(month.incomes, month.trm)
   const ibc  = calcIBC(month.incomes, month.trm, smmlv)
-  const gast = calcGastos(month.egresos || [], month.trm)
+  const gast = calcGastos(month.egresos || [], month.trm, localToday())
   const provBase = calcProvisionBase(month.incomes, month.trm, ibc)
   const res  = calcAllDeductions(bruto, ibc, m, deductions, gast, month.trm, month.voluntarias, provBase, smmlv)
 

@@ -63,8 +63,9 @@ export function calcFSS(ibc: number, smmlv: number): { amount: number; pct: numb
   return { amount: ibc * (pct / 100), pct }
 }
 
-export function calcGastos(egresos: Egreso[], trm: number): number {
+export function calcGastos(egresos: Egreso[], trm: number, cutoffDate?: string): number {
   return (egresos || [])
+    .filter(e => !cutoffDate || !e.date || e.date <= cutoffDate)
     .reduce((a, e) => a + (e.currency === 'USD' ? e.amount * (trm || DEFAULTS.trm) : e.amount), 0)
 }
 
