@@ -31,7 +31,7 @@ function keyForDate(date: string, fallback: string): string {
 // Apply all pending migrations. Safe to run on any db object (local or cloud).
 // Returns a new db and a `changed` flag so callers know whether to push the result.
 // Bump CURRENT_DB_VERSION when adding a new migration step.
-const CURRENT_DB_VERSION = 3
+const CURRENT_DB_VERSION = 4
 
 function applyDateMigration(db: Record<string, unknown>): { db: Record<string, unknown>; changed: boolean } {
   const settings = (db['_settings'] ?? {}) as Settings & { dbMigrationVersion?: number }
@@ -129,6 +129,30 @@ function applyDateMigration(db: Record<string, unknown>): { db: Record<string, u
     current = { ...current, ...newDb }
   }
 
+  // ── v4: fix off-by-one month on seeded recurring egresos ──────────────────────
+  // shiftRecurring had a bug: it treated the 1-indexed month from monthKey as
+  // 0-indexed and added +1, producing dates one month ahead (e.g. July egresos
+  // were dated in August). Fix: for each month, find unconfirmed recurring egresos
+  // whose date doesn't match the month key and correct the year/month.
+  if (version < 4) {
+    for (const key of Object.keys(current).filter(k => k !== '_settings')) {
+      const m = current[key] as MonthData
+      if (!(m.egresos?.length)) continue
+      const [ky, km] = key.split('-').map(Number)
+      const fixed = m.egresos.map(e => {
+        if (!e.recurring || e.confirmed !== false) return e
+        if (!e.date || e.date.slice(0, 7) === key) return e
+        // Date belongs to wrong month — recompute with correct month
+        const day     = parseInt(e.date.split('-')[2] ?? '1', 10)
+        const lastDay = new Date(ky, km, 0).getDate()
+        const d       = Math.min(day, lastDay)
+        const correctedDate = `${ky}-${String(km).padStart(2, '0')}-${String(d).padStart(2, '0')}`
+        return { ...e, date: correctedDate }
+      })
+      current[key] = { ...m, egresos: fixed }
+    }
+  }
+
   current['_settings'] = { ...(current['_settings'] ?? {}), dbMigrationVersion: CURRENT_DB_VERSION } as unknown as MonthData
   return { db: current, changed: true }
 }
@@ -152,18 +176,19 @@ function initMonth(key: string, db: FinanceDB): MonthData {
 
 // Copy recurring egresos into a new month key, adjusting the date's month/year.
 function shiftRecurring(egresos: Egreso[], newKey: string): Egreso[] {
-  const [y, m0] = newKey.split('-').map(Number) // m0 is 0-indexed
-  const isoM = m0 + 1                           // convert to 1-indexed for ISO dates
-  const base  = Date.now()
+  const [y, m] = newKey.split('-').map(Number) // m is 1-indexed (Jul=7)
+  const base   = Date.now()
   return egresos
     .filter(e => e.recurring)
     .map((e, i) => {
       let date = ''
       if (e.date) {
         const day     = parseInt(e.date.split('-')[2] ?? '1', 10)
-        const lastDay = new Date(y, isoM, 0).getDate()
+        // new Date(y, m, 0): JS months are 0-indexed so passing m (1-based) gives
+        // the next month in 0-based, and day=0 yields the last day of month m. ✓
+        const lastDay = new Date(y, m, 0).getDate()
         const d       = Math.min(day, lastDay)
-        date = `${y}-${String(isoM).padStart(2, '0')}-${String(d).padStart(2, '0')}`
+        date = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`
       }
       return { ...e, id: base + i, date, confirmed: false }
     })
