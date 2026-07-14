@@ -65,10 +65,11 @@ function Calendar({
           buttonVariants({ variant: "ghost" }),
           "h-8 w-8 p-0 font-normal",
         ),
-        // In DayPicker v10, aria-selected + data-selected are on the Day (td/gridcell)
-        // Apply all visual state directly here so ARIA attribute and visual are co-located
-        selected:
-          "rounded-md bg-primary text-primary-foreground [&>button]:hover:bg-primary/90 [&>button]:hover:text-primary-foreground [&>button]:focus-visible:bg-primary",
+        // data-selected sits on the Day (td). The number is rendered by the ghost
+        // day_button, whose own bg/text would win over Tailwind arbitrary variants
+        // here — so the selected button styling lives in a plain CSS rule in
+        // index.css ([data-selected="true"] > button). This just marks the cell.
+        selected: "rdp-selected-day",
         today: "rounded-md bg-accent [&>button]:text-accent-foreground",
         outside: "text-muted-foreground/40",
         disabled: "text-muted-foreground opacity-50",

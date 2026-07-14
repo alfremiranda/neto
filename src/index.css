@@ -515,3 +515,17 @@
 *::-webkit-scrollbar-thumb:hover {
   background: var(--muted-foreground);
 }
+
+/* react-day-picker: selected day.
+   The number is rendered by a ghost button whose own bg/text win over Tailwind
+   arbitrary variants on the cell, so style the button directly here. Uses
+   var(--primary)/--primary-foreground so contrast holds in light and dark. */
+[data-selected="true"] > button {
+  background-color: var(--primary) !important;   /* project color utilities are !important */
+  color: var(--primary-foreground) !important;
+  border-radius: 0.5rem;
+}
+[data-selected="true"] > button:hover {
+  background-color: color-mix(in oklab, var(--primary) 90%, transparent) !important;
+  color: var(--primary-foreground) !important;
+}
