@@ -37,11 +37,16 @@ export interface Account {
   id: string
   label: string
   currency: 'USD' | 'COP'
-  type?: 'account' | 'cash'  // default 'account'; cash hides number/rate fields
+  type?: 'account' | 'cash' | 'credit'  // default 'account'; cash hides number/rate; credit is a liability
   number: string
   rate: number
-  startingBalance?: number  // one-time base; balance rolls forward from here
+  startingBalance?: number  // one-time base; balance rolls forward from here.
+                            // For credit cards this is ≤ 0 and represents −debt (so balance stays negative = amount owed).
   locked?: boolean          // system accounts — cannot be deleted
+  // ── Credit-card only ──
+  creditLimit?: number      // cupo total (in the account's currency)
+  cutoffDay?: number        // día de corte (1–31)
+  dueDay?: number           // día límite de pago (1–31)
 }
 
 export interface VoluntariaItem {

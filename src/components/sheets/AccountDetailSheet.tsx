@@ -40,6 +40,8 @@ function LedgerRow({ entry, account, accounts }: { entry: LedgerEntry; account: 
   const fmt = (n: number) => account.currency === 'USD' ? USD(n) : COP(n)
   const { Icon, color, bg } = ENTRY_ICONS[entry.type]
   const isCredit = entry.convertedAmount >= 0
+  const acctIsCredit = account.type === 'credit'
+  const runningBalance = acctIsCredit ? Math.max(-entry.balance, 0) : entry.balance
 
   const counterpart = entry.counterpartId
     ? accounts.find(a => a.id === entry.counterpartId)?.label ?? entry.counterpartId
@@ -92,7 +94,7 @@ function LedgerRow({ entry, account, accounts }: { entry: LedgerEntry; account: 
           <div className={cn('text-sm font-semibold tabular-nums font-heading', isCredit ? 'text-[var(--color-provision)]' : 'text-foreground')}>
             {isCredit ? '+' : ''}{fmt(entry.convertedAmount)}
           </div>
-          <div className="text-[10px] text-muted-foreground tabular-nums">{fmt(entry.balance)}</div>
+          <div className="text-[10px] text-muted-foreground tabular-nums">{fmt(runningBalance)}</div>
         </div>
 
         {/* Desktop actions */}
@@ -144,6 +146,7 @@ export function AccountDetailSheet() {
   const ledgerDesc = [...ledger].reverse()
 
   const currentBalance = account ? computeAccountBalance(account.id, account, db, latestKey) : 0
+  const isCredit       = account?.type === 'credit'
   const fmt            = (n: number) => account?.currency === 'USD' ? USD(n) : COP(n)
   const totalCredits   = ledger.filter(e => e.convertedAmount > 0).reduce((s, e) => s + e.convertedAmount, 0)
   const totalDebits    = ledger.filter(e => e.convertedAmount < 0).reduce((s, e) => s + e.convertedAmount, 0)
@@ -179,16 +182,20 @@ export function AccountDetailSheet() {
           <div className="text-sm font-semibold tabular-nums">{fmt(totalDebits)}</div>
         </div>
         <div className="text-right">
-          <div className="text-[10px] text-muted-foreground">Saldo actual</div>
-          <div className="text-sm font-bold tabular-nums font-heading">{fmt(currentBalance)}</div>
+          <div className="text-[10px] text-muted-foreground">{isCredit ? 'Deuda actual' : 'Saldo actual'}</div>
+          <div className={cn('text-sm font-bold tabular-nums font-heading', isCredit && 'text-[var(--color-expense-txt)]')}>
+            {fmt(isCredit ? Math.max(-currentBalance, 0) : currentBalance)}
+          </div>
         </div>
       </div>
 
       {/* Starting balance row */}
       {account.startingBalance != null && (
         <div className="flex items-center justify-between text-xs py-2.5 mb-1 border-b border-[var(--border)]">
-          <span className="text-muted-foreground">Saldo inicial</span>
-          <span className="font-mono tabular-nums font-medium">{fmt(account.startingBalance)}</span>
+          <span className="text-muted-foreground">{isCredit ? 'Deuda inicial' : 'Saldo inicial'}</span>
+          <span className="font-mono tabular-nums font-medium">
+            {fmt(isCredit ? Math.max(-account.startingBalance, 0) : account.startingBalance)}
+          </span>
         </div>
       )}
 

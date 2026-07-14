@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { WalletCards, Landmark, Wallet, CalendarRange, Download, Plus, ChevronDown, TrendingUp, TrendingDown, ArrowLeftRight, PiggyBank } from 'lucide-react'
+import { WalletCards, Landmark, Wallet, CreditCard, CalendarRange, Download, Plus, ChevronDown, TrendingUp, TrendingDown, ArrowLeftRight, PiggyBank } from 'lucide-react'
 import type { MonthData } from '@/types'
 import { TrendChart } from '@/components/annual/TrendChart'
 import { EgresosCategoryChart } from '@/components/annual/EgresosCategoryChart'
@@ -128,9 +128,11 @@ function AccountsOverview() {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
         {accounts.map(a => {
           const balance    = computeAccountBalance(a.id, a, db, latestKey)
-          const hasBalance = a.startingBalance != null
+          const isCredit   = a.type === 'credit'
+          const hasBalance = isCredit ? a.creditLimit != null : a.startingBalance != null
           const fmt        = a.currency === 'USD' ? USD : COP
-          const TypeIcon   = a.type === 'cash' ? Wallet : Landmark
+          const TypeIcon   = isCredit ? CreditCard : a.type === 'cash' ? Wallet : Landmark
+          const debt       = isCredit ? Math.max(-balance, 0) : 0
 
           return (
             <button
@@ -144,16 +146,21 @@ function AccountsOverview() {
             >
               <div className="flex items-center gap-1.5 min-w-0">
                 <TypeIcon size={11} className="text-muted-foreground shrink-0" />
-                <span className="text-xs text-muted-foreground font-medium truncate flex-1">{a.label}</span>
+                <span className="text-xs text-muted-foreground font-medium truncate flex-1 min-w-0">{a.label}</span>
                 <CurrencyBadge currency={a.currency} />
               </div>
               <div className={cn(
                 'text-base font-bold tabular-nums font-heading leading-tight',
                 !hasBalance && 'text-sm font-normal text-muted-foreground',
+                hasBalance && isCredit && 'text-[var(--color-expense-txt)]',
               )}>
-                {hasBalance ? fmt(balance) : '—'}
+                {!hasBalance ? '—' : isCredit ? fmt(debt) : fmt(balance)}
               </div>
-              {!a.locked && a.rate > 0 && hasBalance && (
+              {isCredit && hasBalance ? (
+                <div className="text-[10px] text-muted-foreground tabular-nums -mt-1">
+                  {fmt(Math.max((a.creditLimit ?? 0) - debt, 0))} disponible
+                </div>
+              ) : !a.locked && a.rate > 0 && hasBalance && (
                 <div className="text-[10px] text-[var(--color-provision)] tabular-nums -mt-1">
                   {fmt(balance * (a.rate / 100) / 12)}/mes · {a.rate}% a.a.
                 </div>

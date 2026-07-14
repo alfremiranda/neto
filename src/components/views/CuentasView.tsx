@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, ShieldCheck, Pencil, Plus, Landmark, MoveRight, Trash2, Wallet, Clock, MoreVertical } from 'lucide-react'
+import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, ShieldCheck, Pencil, Plus, Landmark, MoveRight, Trash2, Wallet, CreditCard, Clock, MoreVertical } from 'lucide-react'
 import { RowActionsSheet } from '@/components/ui/RowActionsSheet'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
-import { buildLedger, computeAccountBalance } from '@/lib/calc'
+import { buildLedger, computeAccountBalance, creditCardStats } from '@/lib/calc'
 import { COP, USD, fmtDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { CurrencyBadge } from '@/components/ui/Badge'
@@ -34,9 +34,11 @@ function AccountCard({
 }) {
   const { setEditingAccount, openSheet } = useUIStore()
   const fmt = (n: number) => account.currency === 'USD' ? USD(n) : COP(n)
-  const hasConfig = account.startingBalance != null
   const isCash = account.type === 'cash'
-  const TypeIcon = isCash ? Wallet : Landmark
+  const isCredit = account.type === 'credit'
+  const hasConfig = isCredit ? account.creditLimit != null : account.startingBalance != null
+  const TypeIcon = isCredit ? CreditCard : isCash ? Wallet : Landmark
+  const cc = isCredit ? creditCardStats(account, balance) : null
 
   return (
     <div
@@ -54,24 +56,48 @@ function AccountCard({
     >
       {/* Header row */}
       <div className="flex items-center justify-between gap-1">
-        <div className="flex items-center gap-1.5 min-w-0">
+        <div className="flex items-center gap-1.5 min-w-0 flex-1">
           <TypeIcon size={12} className="text-[var(--n-txt3)] shrink-0" />
-          <span className="text-xs text-muted-foreground font-medium truncate">
+          <span className="text-xs text-muted-foreground font-medium truncate min-w-0">
             {account.label}
           </span>
         </div>
         <CurrencyBadge currency={account.currency} />
       </div>
 
-      {/* Balance */}
-      <div className="text-lg font-bold tabular-nums font-heading leading-tight">
-        {hasConfig ? fmt(balance) : <span className="text-sm font-normal text-muted-foreground">Sin configurar</span>}
-      </div>
-
-      {!isCash && account.rate > 0 && hasConfig && (
-        <div className="text-2xs text-[var(--color-provision)] tabular-nums -mt-1">
-          ≈ {fmt(balance * (account.rate / 100) / 12)}/mes · {account.rate}% a.a.
-        </div>
+      {/* Balance / debt */}
+      {isCredit ? (
+        !hasConfig ? (
+          <div className="text-lg font-bold font-heading leading-tight"><span className="text-sm font-normal text-muted-foreground">Sin configurar</span></div>
+        ) : (
+          <>
+            <div className="text-lg font-bold tabular-nums font-heading leading-tight text-[var(--color-expense-txt)]">
+              {fmt(cc!.debt)}
+              <span className="text-2xs font-normal text-muted-foreground ml-1">deuda</span>
+            </div>
+            <div className="text-2xs text-muted-foreground tabular-nums -mt-1">
+              {fmt(cc!.available)} disponible · {Math.round(cc!.utilization * 100)}% usado
+            </div>
+            {(account.cutoffDay || account.dueDay) && (
+              <div className="text-2xs text-muted-foreground tabular-nums">
+                {account.cutoffDay ? `Corte ${account.cutoffDay}` : ''}
+                {account.cutoffDay && account.dueDay ? ' · ' : ''}
+                {account.dueDay ? `Pago ${account.dueDay}` : ''}
+              </div>
+            )}
+          </>
+        )
+      ) : (
+        <>
+          <div className="text-lg font-bold tabular-nums font-heading leading-tight">
+            {hasConfig ? fmt(balance) : <span className="text-sm font-normal text-muted-foreground">Sin configurar</span>}
+          </div>
+          {!isCash && account.rate > 0 && hasConfig && (
+            <div className="text-2xs text-[var(--color-provision)] tabular-nums -mt-1">
+              ≈ {fmt(balance * (account.rate / 100) / 12)}/mes · {account.rate}% a.a.
+            </div>
+          )}
+        </>
       )}
 
       {/* Edit button */}
@@ -112,6 +138,9 @@ function LedgerRow({ entry, account, accounts }: { entry: LedgerEntry; account: 
   const fmt = (n: number) => account.currency === 'USD' ? USD(n) : COP(n)
   const { Icon, color, bg } = ENTRY_ICONS[entry.type]
   const isCredit = entry.convertedAmount >= 0
+  // On a credit-card account the running balance is ≤ 0 (−debt); show it as positive debt
+  const acctIsCredit = account.type === 'credit'
+  const runningBalance = acctIsCredit ? Math.max(-entry.balance, 0) : entry.balance
 
   const counterpart = entry.counterpartId
     ? accounts.find(a => a.id === entry.counterpartId)?.label ?? entry.counterpartId
@@ -172,7 +201,7 @@ function LedgerRow({ entry, account, accounts }: { entry: LedgerEntry; account: 
           <div className={cn('text-sm font-semibold tabular-nums font-heading', isCredit ? 'text-[var(--color-provision)]' : 'text-foreground')}>
             {isCredit ? '+' : ''}{fmt(entry.convertedAmount)}
           </div>
-          <div className="text-[10px] text-muted-foreground tabular-nums">{fmt(entry.balance)}</div>
+          <div className="text-[10px] text-muted-foreground tabular-nums">{fmt(runningBalance)}</div>
         </div>
 
         {/* Desktop actions */}
@@ -255,6 +284,7 @@ export function CuentasView() {
   const fmt = (n: number) => selectedAccount?.currency === 'USD' ? USD(n) : COP(n)
   const totalCredits = ledger.filter(e => e.convertedAmount > 0).reduce((s, e) => s + e.convertedAmount, 0)
   const totalDebits  = ledger.filter(e => e.convertedAmount < 0).reduce((s, e) => s + e.convertedAmount, 0)
+  const selIsCredit  = selectedAccount?.type === 'credit'
 
   return (
     <div className="space-y-5">
@@ -328,8 +358,10 @@ export function CuentasView() {
             {/* Saldo + action — always visible */}
             <div className="flex items-center gap-3 shrink-0">
               <div className="text-right">
-                <div className="text-[10px] text-muted-foreground">Saldo actual</div>
-                <div className="text-sm font-bold tabular-nums font-heading">{fmt(currentBalance)}</div>
+                <div className="text-[10px] text-muted-foreground">{selIsCredit ? 'Deuda actual' : 'Saldo actual'}</div>
+                <div className={cn('text-sm font-bold tabular-nums font-heading', selIsCredit && 'text-[var(--color-expense-txt)]')}>
+                  {fmt(selIsCredit ? Math.max(-currentBalance, 0) : currentBalance)}
+                </div>
               </div>
               <Button size="sm" variant="outline" onClick={() => openSheet('transfer')}>
                 <ArrowLeftRight size={13} />
@@ -341,8 +373,10 @@ export function CuentasView() {
           {/* Starting balance row */}
           {selectedAccount.startingBalance != null && (
             <div className="px-4 py-2 flex items-center justify-between bg-muted/50 border-b border-[var(--border)]">
-              <span className="text-xs text-muted-foreground">Saldo inicial</span>
-              <span className="text-xs font-mono tabular-nums font-medium">{fmt(selectedAccount.startingBalance)}</span>
+              <span className="text-xs text-muted-foreground">{selIsCredit ? 'Deuda inicial' : 'Saldo inicial'}</span>
+              <span className="text-xs font-mono tabular-nums font-medium">
+                {fmt(selIsCredit ? Math.max(-selectedAccount.startingBalance, 0) : selectedAccount.startingBalance)}
+              </span>
             </div>
           )}
 

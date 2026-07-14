@@ -352,6 +352,21 @@ export function buildLedger(
 }
 
 /**
+ * Derived credit-card figures from a card's rolling balance.
+ * A credit card's balance is ≤ 0 (it accumulates charges as debits and payments
+ * as credits), so debt = −balance. Available = limit − debt.
+ */
+export function creditCardStats(account: Account, balance: number): {
+  limit: number; debt: number; available: number; utilization: number
+} {
+  const limit = account.creditLimit ?? 0
+  const debt  = Math.max(-balance, 0)
+  const available = Math.max(limit - debt, 0)
+  const utilization = limit > 0 ? debt / limit : 0
+  return { limit, debt, available, utilization }
+}
+
+/**
  * Computes the rolling balance for an account up to (and including) upToKey.
  * Starting from account.startingBalance, it accumulates:
  *   + incomes credited to this account

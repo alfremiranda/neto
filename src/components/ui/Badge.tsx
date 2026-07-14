@@ -30,5 +30,5 @@ export function Badge({ variant = 'default', children, className }: BadgeProps) 
 }
 
 export function CurrencyBadge({ currency }: { currency: 'USD' | 'COP' }) {
-  return <Badge variant={currency.toLowerCase()}>{currency}</Badge>
+  return <Badge variant={currency.toLowerCase()} className="shrink-0">{currency}</Badge>
 }
