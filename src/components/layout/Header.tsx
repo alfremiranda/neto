@@ -1,13 +1,31 @@
-import { Sun, Moon, CalendarDays, LogOut, PanelLeftClose, PanelLeftOpen, UserRound } from 'lucide-react'
+import { Sun, Moon, CalendarDays, LogOut, PanelLeftClose, PanelLeftOpen, UserRound, Bell } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 import { useLiveTRM } from '@/hooks/useLiveTRM'
 import { useTheme } from '@/hooks/useTheme'
+import { useNotifications } from '@/hooks/useNotifications'
 import { useAuthStore } from '@/store/authStore'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useUIStore } from '@/store/uiStore'
 import { useSidebar } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
 import { IconButton } from '@/components/ui/icon-button'
+
+function NotificationBell() {
+  const { count } = useNotifications()
+  const openSheet = useUIStore(s => s.openSheet)
+  return (
+    <div className="relative">
+      <IconButton variant="ghost" size="lg" onClick={() => openSheet('notifications')} aria-label={count > 0 ? `Notificaciones (${count})` : 'Notificaciones'}>
+        <Bell size={16} />
+      </IconButton>
+      {count > 0 && (
+        <span className="absolute top-0.5 right-0.5 min-w-[15px] h-[15px] px-1 rounded-full bg-[var(--primary)] text-[var(--primary-foreground)] text-[9px] font-bold leading-none flex items-center justify-center pointer-events-none tabular-nums">
+          {count > 9 ? '9+' : count}
+        </span>
+      )}
+    </div>
+  )
+}
 
 const DAYS  = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
 const MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
@@ -146,6 +164,9 @@ export function Header() {
             <span className="text-[var(--muted-foreground)]">{trmFormatted}</span>
           </div>
         )}
+
+        {/* Notifications */}
+        <NotificationBell />
 
         {/* Divider */}
         <span className="block w-px h-5 bg-[var(--border)]" />
