@@ -8,6 +8,7 @@ import { useUIStore } from '@/store/uiStore'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { DatePicker } from '@/components/ui/DatePicker'
+import { Switch } from '@/components/ui/switch'
 import { cn } from '@/lib/utils'
 import type { Account } from '@/types'
 
@@ -51,6 +52,7 @@ export function AccountEditSheet() {
   const [dueDay, setDueDay]       = useState('')
   const [savingsKind, setSavingsKind] = useState<SavingsKind>('cuenta')
   const [maturity, setMaturity]       = useState('')
+  const [favorite, setFavorite]       = useState(false)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
 
   const decimals = currency === 'USD' ? 2 : 0
@@ -77,6 +79,7 @@ export function AccountEditSheet() {
         setDueDay(a.dueDay ? String(a.dueDay) : '')
         setSavingsKind(a.savingsKind ?? 'cuenta')
         setMaturity(a.maturityDate ?? '')
+        setFavorite(a.favorite ?? false)
         balanceAmt.setValue(a.startingBalance ?? 0)
         limitAmt.setValue(a.creditLimit ?? 0)
         // Credit balance is stored as −debt; show the positive debt to the user
@@ -86,6 +89,7 @@ export function AccountEditSheet() {
       setLabel(''); setCurrency('COP'); setType(newAccountType ?? 'account'); setNumber(''); setRate('')
       setCutoffDay(''); setDueDay('')
       setSavingsKind('cuenta'); setMaturity('')
+      setFavorite(false)
       balanceAmt.setValue(0); limitAmt.setValue(0); debtAmt.setValue(0)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -98,7 +102,7 @@ export function AccountEditSheet() {
 
     const payload: Partial<Account> = isCredit
       ? {
-          label: label.trim(), currency, type,
+          label: label.trim(), currency, type, favorite,
           number: number.trim(),
           rate: rateNum,
           creditLimit: limitAmt.numericValue,
@@ -108,7 +112,7 @@ export function AccountEditSheet() {
           dueDay: clampDay(dueDay),
         }
       : {
-          label: label.trim(), currency, type,
+          label: label.trim(), currency, type, favorite,
           number: isCash ? '' : number.trim(),
           rate: rateNum,
           startingBalance: balanceAmt.numericValue,
@@ -372,6 +376,15 @@ export function AccountEditSheet() {
             placeholder="0"
           />
         )}
+
+        {/* Favorite — pin to dashboard */}
+        <div className="flex items-center justify-between py-1 border-t border-[var(--border)] pt-4">
+          <div>
+            <div className="text-sm font-medium">Favorito</div>
+            <div className="text-xs text-muted-foreground">Fíjala en el dashboard como card compacto</div>
+          </div>
+          <Switch checked={favorite} onCheckedChange={setFavorite} />
+        </div>
 
       </div>
     </SheetBase>

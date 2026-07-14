@@ -43,6 +43,7 @@ export interface Account {
   startingBalance?: number  // one-time base; balance rolls forward from here.
                             // For credit cards this is ≤ 0 and represents −debt (so balance stays negative = amount owed).
   locked?: boolean          // system accounts — cannot be deleted
+  favorite?: boolean        // pinned to the dashboard as a compact card
   // ── Credit-card only ──
   creditLimit?: number      // cupo total (in the account's currency)
   cutoffDay?: number        // día de corte (1–31)
