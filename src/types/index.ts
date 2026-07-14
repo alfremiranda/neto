@@ -147,6 +147,7 @@ export interface DeductionConfig {
   enabled:  boolean
   color:    string          // CSS var token e.g. '--color-income'
   locked?:  boolean         // system default — can't delete
+  destAccount?: string      // provisions: account where the reserve is set aside (e.g. retención → ARQ Savings)
 }
 
 export interface DeductionResult {

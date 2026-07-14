@@ -55,7 +55,7 @@ function BalanceRow({
 
 export function TransferSheet() {
   const { getAccounts, getCurrentMonth, addTransfer, updateTransfer, removeTransfer, db, curKey } = useFinanceStore()
-  const { closeSheet, showToast, activeSheet, editingTransferId } = useUIStore()
+  const { closeSheet, showToast, activeSheet, editingTransferId, transferPreset } = useUIStore()
   const liveTRM = useLiveTRM()
 
   const accounts = getAccounts()
@@ -119,10 +119,12 @@ export function TransferSheet() {
     }
     // Defaults for new transfer — use live BanRep TRM as the reference rate
     const defaultTRM = liveTRM.trm ?? month.trm
-    setFromId(accounts[0]?.id || '')
-    setToId(accounts[1]?.id || accounts[0]?.id || '')
+    // Preset (e.g. provision aporte): destination + amount prefilled, origin left to the user
+    const presetTo = transferPreset?.to
+    setFromId(accounts.find(a => a.id !== presetTo)?.id || accounts[0]?.id || '')
+    setToId(presetTo || accounts[1]?.id || accounts[0]?.id || '')
     setDate(localToday())
-    amt.setValue(0)
+    amt.setValue(transferPreset?.amount ?? 0)
     amtReceived.setValue(0)
     setTrmDisplay(defaultTRM.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
     setTrmManual(false)

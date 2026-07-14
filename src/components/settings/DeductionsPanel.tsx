@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Plus, Trash2, RotateCcw, Pencil, X } from 'lucide-react'
 import { useSettingsStore } from '@/store/settingsStore'
+import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { Button } from '@/components/ui/button'
 import { IconButton } from '@/components/ui/icon-button'
@@ -105,16 +106,21 @@ function DeductionDrawer({
   onClose: () => void
 }) {
   const { addDeduction, setDeduction } = useSettingsStore()
+  const accounts = useFinanceStore(s => s.getAccounts())
 
   const d = state.deduction
   const isEdit = state.mode === 'edit' && d != null
   const locked = d?.locked ?? false
+  // Reserve destination applies to provisions (retención, primas, cesantías, vacaciones)
+  const isProvision = state.group === 'provision'
+  const destOptions = accounts.filter(a => a.type !== 'credit')
 
   const [label,  setLabel]  = useState(d?.label  ?? '')
   const [base,   setBase]   = useState<DeductionBase>(d?.base ?? 'bruto')
   const [pct,    setPct]    = useState(d?.pct    ?? 0)
   const [amount, setAmount] = useState(d?.amount ?? 0)
   const [months, setMonths] = useState<number[]>(d?.months ?? [])
+  const [destAccount, setDestAccount] = useState(d?.destAccount ?? '')
   const color = d?.color ?? '--color-provision'
 
   const isFixed   = base === 'fixed_cop' || base === 'fixed_usd'
@@ -124,10 +130,11 @@ function DeductionDrawer({
     if (!label.trim()) return
     const savePct    = isFixed ? 0 : pct
     const saveAmount = (isFixed || isBaseUsd) ? amount : undefined
+    const saveDest   = isProvision ? (destAccount || undefined) : undefined
     if (isEdit && d) {
-      setDeduction(d.id, { label: label.trim(), base, pct: savePct, amount: saveAmount, months, color })
+      setDeduction(d.id, { label: label.trim(), base, pct: savePct, amount: saveAmount, months, color, destAccount: saveDest })
     } else {
-      addDeduction({ label: label.trim(), group: state.group, base, pct: savePct, amount: saveAmount, months, enabled: true, color })
+      addDeduction({ label: label.trim(), group: state.group, base, pct: savePct, amount: saveAmount, months, enabled: true, color, destAccount: saveDest })
     }
     onClose()
   }
@@ -263,6 +270,27 @@ function DeductionDrawer({
             <label className="field-label">Meses en que aplica</label>
             <MonthPicker months={months} onChange={setMonths} />
           </div>
+
+          {/* Reserve destination — provisions only */}
+          {isProvision && (
+            <div className="space-y-1.5">
+              <label className="field-label">Cuenta de reserva (opcional)</label>
+              <Select value={destAccount || '_none'} onValueChange={v => setDestAccount(v === '_none' ? '' : v)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="_none">Sin cuenta de reserva</SelectItem>
+                  {destOptions.map(a => (
+                    <SelectItem key={a.id} value={a.id}>{a.label} ({a.currency})</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-[11px] text-muted-foreground">
+                Dónde apartas esta provisión (ej. Retención → ARQ Savings). Verás la reserva acumulada y podrás registrar aportes.
+              </p>
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex gap-2 pt-2">

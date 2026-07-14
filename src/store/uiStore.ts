@@ -14,6 +14,7 @@ interface UIState {
   editingBalanceId: string | null
   editingTransferId: number | null
   newAccountType: 'savings' | null   // preset type when creating a new account from a specific chapter
+  transferPreset: { to?: string; amount?: number } | null  // prefill for a new movimiento (e.g. provision aporte)
   sidebarCollapsed: boolean
 
   setView: (v: ViewType) => void
@@ -28,6 +29,7 @@ interface UIState {
   setEditingBalance: (id: string | null) => void
   setEditingTransfer: (id: number | null) => void
   setNewAccountType: (t: 'savings' | null) => void
+  setTransferPreset: (p: { to?: string; amount?: number } | null) => void
   toggleSidebar: () => void
 }
 
@@ -45,6 +47,7 @@ export const useUIStore = create<UIState>()(persist((set) => ({
   editingBalanceId: null,
   editingTransferId: null,
   newAccountType: null,
+  transferPreset: null,
   sidebarCollapsed: false,
 
   setView: (view) => set(s => ({ prevView: s.view, view })),
@@ -60,6 +63,7 @@ export const useUIStore = create<UIState>()(persist((set) => ({
     editingBalanceId: null,
     editingTransferId: null,
     newAccountType: null,
+    transferPreset: null,
   }),
 
   setPendingDelete: (id) => set({ pendingDeleteId: id }),
@@ -76,6 +80,7 @@ export const useUIStore = create<UIState>()(persist((set) => ({
   setEditingBalance: (id) => set({ editingBalanceId: id }),
   setEditingTransfer: (id) => set({ editingTransferId: id }),
   setNewAccountType: (t) => set({ newAccountType: t }),
+  setTransferPreset: (p) => set({ transferPreset: p }),
   toggleSidebar: () => set(s => ({ sidebarCollapsed: !s.sidebarCollapsed })),
 }), {
   name: 'neto-ui',
