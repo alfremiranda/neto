@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { PiggyBank, Plus, ArrowLeftRight, TrendingUp, CalendarClock, Landmark } from 'lucide-react'
+import { PiggyBank, Plus, ArrowLeftRight, TrendingUp, Landmark } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useUIStore } from '@/store/uiStore'
@@ -8,82 +8,9 @@ import { COP, USD, fmtDate } from '@/lib/format'
 import { DEFAULTS } from '@/data/defaults'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { CurrencyBadge } from '@/components/ui/Badge'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty'
-import type { Account } from '@/types'
-
-const KIND_LABEL: Record<string, string> = { cuenta: 'Cuenta', cdt: 'CDT', inversion: 'Inversión' }
-
-function daysUntil(dateStr: string): number {
-  const now = new Date()
-  const target = new Date(dateStr + 'T00:00:00')
-  return Math.ceil((target.getTime() - now.getTime()) / 86_400_000)
-}
-
-// ─── Savings account card ──────────────────────────────────────────────────────
-
-function SavingsCard({ account, balance, selected, onClick }: {
-  account: Account; balance: number; selected: boolean; onClick: () => void
-}) {
-  const { setEditingAccount, openSheet } = useUIStore()
-  const fmt = (n: number) => account.currency === 'USD' ? USD(n) : COP(n)
-  const kind = account.savingsKind ?? 'cuenta'
-  const monthlyYield = account.rate > 0 ? balance * (account.rate / 100) / 12 : 0
-  const maturityDays = account.maturityDate ? daysUntil(account.maturityDate) : null
-
-  return (
-    <div
-      role="button"
-      tabIndex={0}
-      aria-pressed={selected}
-      onClick={onClick}
-      onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onClick()}
-      className={cn(
-        'rounded-xl p-4 cursor-pointer transition-all border-2 flex flex-col gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]',
-        selected
-          ? 'border-[var(--primary)] bg-[var(--color-income-bg)]'
-          : 'border-[var(--border)] bg-card hover:border-[rgba(0,0,0,0.18)]',
-      )}
-    >
-      <div className="flex items-center justify-between gap-1">
-        <div className="flex items-center gap-1.5 min-w-0 flex-1">
-          <PiggyBank size={12} className="text-[var(--n-txt3)] shrink-0" />
-          <span className="text-xs text-muted-foreground font-medium truncate min-w-0">{account.label}</span>
-        </div>
-        <CurrencyBadge currency={account.currency} />
-      </div>
-
-      <div>
-        <div className="text-lg font-bold tabular-nums font-heading leading-tight text-[var(--color-net-txt)]">
-          {fmt(balance)}
-        </div>
-        <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide mt-0.5">{KIND_LABEL[kind]}</div>
-      </div>
-
-      {account.rate > 0 && (
-        <div className="text-2xs text-[var(--color-provision)] tabular-nums -mt-1">
-          ≈ {fmt(monthlyYield)}/mes · {account.rate}% E.A.
-        </div>
-      )}
-      {maturityDays != null && (
-        <div className="text-2xs text-muted-foreground tabular-nums flex items-center gap-1">
-          <CalendarClock size={10} className="shrink-0" />
-          {maturityDays >= 0 ? `Vence en ${maturityDays} d` : 'Vencido'} · {fmtDate(account.maturityDate!)}
-        </div>
-      )}
-
-      <Button
-        size="xs"
-        variant="ghost"
-        onClick={e => { e.stopPropagation(); setEditingAccount(account.id); openSheet('account-edit') }}
-        className={cn('mt-auto self-start gap-1 font-medium', selected ? 'bg-primary/10 text-primary hover:bg-primary/20' : 'bg-muted text-muted-foreground hover:text-foreground')}
-      >
-        Editar
-      </Button>
-    </div>
-  )
-}
+import { AccountCardView } from '@/components/cards/AccountCardView'
 
 // ─── View ────────────────────────────────────────────────────────────────────
 
@@ -157,12 +84,12 @@ export function AhorrosView() {
           </SectionCard>
 
           {/* Savings account cards */}
-          <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}>
+          <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}>
             {savings.map(a => (
-              <SavingsCard
+              <AccountCardView
                 key={a.id}
                 account={a}
-                balance={computeAccountBalance(a.id, a, db, latestKey)}
+                size="lg"
                 selected={selected?.id === a.id}
                 onClick={() => setSelectedId(a.id)}
               />

@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, ShieldCheck, Pencil, Plus, Landmark, MoveRight, Trash2, Wallet, CreditCard, PiggyBank, Clock, MoreVertical } from 'lucide-react'
+import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, ShieldCheck, Pencil, Plus, Landmark, MoveRight, Trash2, Clock, MoreVertical } from 'lucide-react'
 import { RowActionsSheet } from '@/components/ui/RowActionsSheet'
+import { AccountCardView } from '@/components/cards/AccountCardView'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
-import { buildLedger, computeAccountBalance, creditCardStats } from '@/lib/calc'
+import { buildLedger, computeAccountBalance } from '@/lib/calc'
 import { COP, USD, fmtDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
-import { CurrencyBadge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/button'
 import { IconButton } from '@/components/ui/icon-button'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty'
@@ -20,103 +20,6 @@ const MONTH_SHORT = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct'
 function fmtMonth(key: string): string {
   const [y, m0] = key.split('-').map(Number)
   return `${MONTH_SHORT[(m0 ?? 1) - 1] ?? ''} ${y}`
-}
-
-// ─── Account card ─────────────────────────────────────────────────────────────
-
-function AccountCard({
-  account, balance, selected, onClick,
-}: {
-  account: Account
-  balance: number
-  selected: boolean
-  onClick: () => void
-}) {
-  const { setEditingAccount, openSheet } = useUIStore()
-  const fmt = (n: number) => account.currency === 'USD' ? USD(n) : COP(n)
-  const isCash = account.type === 'cash'
-  const isCredit = account.type === 'credit'
-  const hasConfig = isCredit ? account.creditLimit != null : account.startingBalance != null
-  const TypeIcon = isCredit ? CreditCard : isCash ? Wallet : account.type === 'savings' ? PiggyBank : Landmark
-  const cc = isCredit ? creditCardStats(account, balance) : null
-
-  return (
-    <div
-      role="button"
-      tabIndex={0}
-      aria-pressed={selected}
-      onClick={onClick}
-      onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onClick()}
-      className={cn(
-        'rounded-xl p-4 cursor-pointer transition-all border-2 flex flex-col gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]',
-        selected
-          ? 'border-[var(--primary)] bg-[var(--color-income-bg)]'
-          : 'border-[var(--border)] bg-card hover:bg-[var(--card)] hover:border-[rgba(0,0,0,0.18)]',
-      )}
-    >
-      {/* Header row */}
-      <div className="flex items-center justify-between gap-1">
-        <div className="flex items-center gap-1.5 min-w-0 flex-1">
-          <TypeIcon size={12} className="text-[var(--n-txt3)] shrink-0" />
-          <span className="text-xs text-muted-foreground font-medium truncate min-w-0">
-            {account.label}
-          </span>
-        </div>
-        <CurrencyBadge currency={account.currency} />
-      </div>
-
-      {/* Balance / debt */}
-      {isCredit ? (
-        !hasConfig ? (
-          <div className="text-lg font-bold font-heading leading-tight"><span className="text-sm font-normal text-muted-foreground">Sin configurar</span></div>
-        ) : (
-          <>
-            <div className="text-lg font-bold tabular-nums font-heading leading-tight text-[var(--color-expense-txt)]">
-              {fmt(cc!.debt)}
-              <span className="text-2xs font-normal text-muted-foreground ml-1">deuda</span>
-            </div>
-            <div className="text-2xs text-muted-foreground tabular-nums -mt-1">
-              {fmt(cc!.available)} disponible · {Math.round(cc!.utilization * 100)}% usado
-            </div>
-            {(account.cutoffDay || account.dueDay) && (
-              <div className="text-2xs text-muted-foreground tabular-nums">
-                {account.cutoffDay ? `Corte ${account.cutoffDay}` : ''}
-                {account.cutoffDay && account.dueDay ? ' · ' : ''}
-                {account.dueDay ? `Pago ${account.dueDay}` : ''}
-              </div>
-            )}
-          </>
-        )
-      ) : (
-        <>
-          <div className="text-lg font-bold tabular-nums font-heading leading-tight">
-            {hasConfig ? fmt(balance) : <span className="text-sm font-normal text-muted-foreground">Sin configurar</span>}
-          </div>
-          {!isCash && account.rate > 0 && hasConfig && (
-            <div className="text-2xs text-[var(--color-provision)] tabular-nums -mt-1">
-              ≈ {fmt(balance * (account.rate / 100) / 12)}/mes · {account.rate}% a.a.
-            </div>
-          )}
-        </>
-      )}
-
-      {/* Edit button */}
-      <Button
-        size="xs"
-        variant="ghost"
-        onClick={e => { e.stopPropagation(); setEditingAccount(account.id); openSheet('account-edit') }}
-        className={cn(
-          'mt-auto self-start gap-1 font-medium',
-          selected
-            ? 'bg-primary/10 text-primary hover:bg-primary/20'
-            : 'bg-muted text-muted-foreground hover:text-foreground',
-        )}
-      >
-        <Pencil size={10} strokeWidth={2.5} />
-        Editar
-      </Button>
-    </div>
-  )
 }
 
 // ─── Ledger entry row ─────────────────────────────────────────────────────────
@@ -318,12 +221,12 @@ export function CuentasView() {
             </EmptyContent>
           </Empty>
         ) : (
-          <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}>
+          <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}>
             {accounts.map(a => (
-              <AccountCard
+              <AccountCardView
                 key={a.id}
                 account={a}
-                balance={computeAccountBalance(a.id, a, db, latestKey)}
+                size="lg"
                 selected={selectedId === a.id}
                 onClick={() => setSelectedId(a.id)}
               />

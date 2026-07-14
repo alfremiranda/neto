@@ -289,6 +289,7 @@ interface FinanceState {
   setSsAccount: (accountId: string | null) => void
   setTRM: (trm: number) => void
   saveAccountsConfig: (accounts: Account[]) => void
+  toggleAccountFavorite: (id: string) => void
   completeOnboarding: () => void
 
   // navigation
@@ -544,6 +545,11 @@ export const useFinanceStore = create<FinanceState>()(
           }
         })
         sbPush('_settings', get().db._settings).catch(() => {})
+      },
+
+      toggleAccountFavorite: (id) => {
+        const accounts = get().getAccounts().map(a => a.id === id ? { ...a, favorite: !a.favorite } : a)
+        get().saveAccountsConfig(accounts)
       },
 
       completeOnboarding: () => {

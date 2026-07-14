@@ -1,10 +1,11 @@
 import { useState, useMemo } from 'react'
-import { WalletCards, Landmark, Wallet, CreditCard, CalendarRange, Download, Plus, ChevronDown, TrendingUp, TrendingDown, ArrowLeftRight, PiggyBank, Star } from 'lucide-react'
+import { WalletCards, CalendarRange, Download, Plus, ChevronDown, TrendingUp, TrendingDown, ArrowLeftRight, Star } from 'lucide-react'
 import type { MonthData } from '@/types'
 import { TrendChart } from '@/components/annual/TrendChart'
 import { EgresosCategoryChart } from '@/components/annual/EgresosCategoryChart'
 import { EgresosBreakdown } from '@/components/annual/EgresosBreakdown'
 import { AnnualTable } from '@/components/annual/AnnualTable'
+import { AccountCardView } from '@/components/cards/AccountCardView'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useAuthStore } from '@/store/authStore'
@@ -12,11 +13,8 @@ import { useUIStore } from '@/store/uiStore'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Button } from '@/components/ui/button'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty'
-import { CurrencyBadge } from '@/components/ui/Badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { computeAccountBalance } from '@/lib/calc'
-import { COP, USD } from '@/lib/format'
 import { exportAnnualCSV } from '@/lib/export'
 import { cn } from '@/lib/utils'
 
@@ -80,7 +78,7 @@ function DashboardHeader() {
 // ─── Accounts overview ────────────────────────────────────────────────────────
 
 function AccountsOverview() {
-  const { db, getAccounts } = useFinanceStore()
+  const { getAccounts } = useFinanceStore()
   const { setView, openSheet, setEditingAccount } = useUIStore()
   const accounts = getAccounts()
   const userAccounts = accounts.filter(a => !a.locked)
@@ -109,8 +107,6 @@ function AccountsOverview() {
     )
   }
 
-  const latestKey = Object.keys(db).filter(k => k !== '_settings').sort().at(-1) ?? ''
-
   return (
     <SectionCard
       icon={WalletCards}
@@ -134,39 +130,9 @@ function AccountsOverview() {
         </Empty>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-          {favorites.map(a => {
-            const balance    = computeAccountBalance(a.id, a, db, latestKey)
-            const isCredit   = a.type === 'credit'
-            const hasBalance = isCredit ? a.creditLimit != null : a.startingBalance != null
-            const fmt        = a.currency === 'USD' ? USD : COP
-            const TypeIcon   = isCredit ? CreditCard : a.type === 'cash' ? Wallet : a.type === 'savings' ? PiggyBank : Landmark
-            const debt       = isCredit ? Math.max(-balance, 0) : 0
-
-            return (
-              <button
-                key={a.id}
-                type="button"
-                onClick={() => { setEditingAccount(a.id); openSheet('account-edit') }}
-                className={cn(
-                  'text-left rounded-xl border border-[var(--border)] bg-card p-3.5 flex flex-col gap-2',
-                  'hover:border-[var(--primary)]/40 hover:bg-[var(--primary)]/3 transition-colors',
-                )}
-              >
-                <div className="flex items-center gap-1.5 min-w-0">
-                  <TypeIcon size={11} className="text-muted-foreground shrink-0" />
-                  <span className="text-xs text-muted-foreground font-medium truncate flex-1 min-w-0">{a.label}</span>
-                  <CurrencyBadge currency={a.currency} />
-                </div>
-                <div className={cn(
-                  'text-base font-bold tabular-nums font-heading leading-tight',
-                  !hasBalance && 'text-sm font-normal text-muted-foreground',
-                  hasBalance && isCredit && 'text-[var(--color-expense-txt)]',
-                )}>
-                  {!hasBalance ? '—' : isCredit ? fmt(debt) : fmt(balance)}
-                </div>
-              </button>
-            )
-          })}
+          {favorites.map(a => (
+            <AccountCardView key={a.id} account={a} size="sm" />
+          ))}
         </div>
       )}
     </SectionCard>
