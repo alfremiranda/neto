@@ -31,7 +31,7 @@ function keyForDate(date: string, fallback: string): string {
 // Apply all pending migrations. Safe to run on any db object (local or cloud).
 // Returns a new db and a `changed` flag so callers know whether to push the result.
 // Bump CURRENT_DB_VERSION when adding a new migration step.
-const CURRENT_DB_VERSION = 4
+const CURRENT_DB_VERSION = 5
 
 function applyDateMigration(db: Record<string, unknown>): { db: Record<string, unknown>; changed: boolean } {
   const settings = (db['_settings'] ?? {}) as Settings & { dbMigrationVersion?: number }
@@ -151,6 +151,67 @@ function applyDateMigration(db: Record<string, unknown>): { db: Record<string, u
       })
       current[key] = { ...m, egresos: fixed }
     }
+  }
+
+  // ── v5: savings are movimientos, not egresos ────────────────────────────────
+  // Convert each VoluntariaItem (and its linked 'ahorro' egreso) into a savings
+  // account (created from the description, deduped by name) + a movimiento from
+  // the paying account to that savings account. Removes the double-count where
+  // savings reduced neto libre both as an egreso and as a voluntary deduction.
+  if (version < 5) {
+    const settingsObj = (current['_settings'] ?? {}) as Settings
+    const accounts: Account[] = [...(settingsObj.accounts ?? [])]
+    const savingsByLabel = new Map<string, string>()
+    for (const a of accounts) {
+      if (a.type === 'savings') savingsByLabel.set(a.label.trim().toLowerCase(), a.id)
+    }
+    let uid = Date.now()
+    const fallbackOrigin =
+      accounts.find(a => a.type === 'cash')?.id ?? accounts[0]?.id ?? 'Efectivo'
+
+    const ensureSavings = (label: string, currency: 'USD' | 'COP'): string => {
+      const norm = (label || 'Ahorro').trim()
+      const key = norm.toLowerCase()
+      const hit = savingsByLabel.get(key)
+      if (hit) return hit
+      const id = `acc_sav_${uid++}`
+      accounts.push({ id, label: norm, currency, type: 'savings', number: '', rate: 0, startingBalance: 0 })
+      savingsByLabel.set(key, id)
+      return id
+    }
+
+    for (const key of Object.keys(current).filter(k => k !== '_settings')) {
+      const m = current[key] as MonthData
+      const voluntarias = m.voluntarias ?? []
+      if (voluntarias.length === 0) continue
+
+      const removeIds = new Set<number>()
+      const transfers: Transfer[] = [...(m.transfers ?? [])]
+      for (const v of voluntarias) {
+        const dest   = ensureSavings(v.label, v.currency)
+        const origin = v.account || fallbackOrigin
+        if (v.egresoId != null) removeIds.add(v.egresoId)
+        transfers.push({
+          id: uid++,
+          date: v.date || `${key}-01`,
+          from: origin,
+          to: dest,
+          amount: v.amount,
+          fromCurrency: v.currency,
+          toCurrency: v.currency,
+          trm: null,
+          toAmount: v.amount,
+        })
+      }
+      current[key] = {
+        ...m,
+        voluntarias: [],
+        transfers,
+        egresos: (m.egresos ?? []).filter(e => !removeIds.has(e.id)),
+      }
+    }
+
+    current['_settings'] = { ...settingsObj, accounts } as unknown as MonthData
   }
 
   current['_settings'] = { ...(current['_settings'] ?? {}), dbMigrationVersion: CURRENT_DB_VERSION } as unknown as MonthData

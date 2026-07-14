@@ -2,7 +2,7 @@ import { DEFAULTS } from '@/data/defaults'
 import { localToday } from '@/lib/format'
 import type {
   Income, Egreso, MonthData, Totales, SSResult, Distribucion, Flujo, AnnualRow,
-  DeductionConfig, DeductionResult, AllDeductionsResult, VoluntariaItem, DeductionBase,
+  DeductionConfig, DeductionResult, AllDeductionsResult, VoluntariaItem,
   Account, FinanceDB,
 } from '@/types'
 
@@ -65,6 +65,8 @@ export function calcFSS(ibc: number, smmlv: number): { amount: number; pct: numb
 
 export function calcGastos(egresos: Egreso[], trm: number, cutoffDate?: string): number {
   return (egresos || [])
+    // Savings ('ahorro') are reallocations to your own accounts, not expenses
+    .filter(e => e.category !== 'ahorro')
     .filter(e => !cutoffDate || !e.date || e.date <= cutoffDate)
     .reduce((a, e) => a + (e.currency === 'USD' ? e.amount * (trm || DEFAULTS.trm) : e.amount), 0)
 }
@@ -89,7 +91,7 @@ export function calcAllDeductions(
   deductions:     DeductionConfig[],
   gast:           number,
   trm:            number,
-  voluntarias?:   VoluntariaItem[],
+  _voluntarias?:  VoluntariaItem[],  // deprecated: savings are movimientos now, ignored
   provisionBase?: number,  // base for neto_ibc; computed from selected incomes by caller
   smmlv?:         number,  // when provided, FSS (Fondo de Solidaridad) is injected after pension
 ): AllDeductionsResult {
@@ -145,21 +147,14 @@ export function calcAllDeductions(
   }
 
   const provItems = enabled.filter(d => d.group === 'provision').map(toResult)
-  const volItems: DeductionResult[] = (voluntarias ?? []).map(v => ({
-    id:     String(v.id),
-    label:  v.label,
-    group:  'voluntary' as const,
-    amount: v.currency === 'USD' ? v.amount * trm : v.amount,
-    pct:    0,
-    base:   (v.currency === 'USD' ? 'fixed_usd' : 'fixed_cop') as DeductionBase,
-    color:  '--color-tax',
-    applies: true,
-  }))
+  // Savings ('ahorros') are no longer deductions — they're movimientos to
+  // savings/investment accounts and do not reduce neto libre. Kept empty for
+  // backward compatibility with callers that still read volItems.
+  const volItems: DeductionResult[] = []
 
   const ssTotal    = ssItems.reduce((a, i) => a + i.amount, 0)
   const provTotal  = provItems.reduce((a, i) => a + i.amount, 0)
-  const volTotal   = volItems.reduce((a, i) => a + i.amount, 0)
-  const nonSsTotal = provTotal + volTotal
+  const nonSsTotal = provTotal
   const total      = ssTotal + nonSsTotal + gast
   const netoLibre  = bruto - total
 

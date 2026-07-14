@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Plus, TrendingUp, TrendingDown, ArrowLeftRight, PiggyBank } from 'lucide-react'
+import { Plus, TrendingUp, TrendingDown, ArrowLeftRight } from 'lucide-react'
 import { useUIStore } from '@/store/uiStore'
 import { cn } from '@/lib/utils'
 
@@ -34,7 +34,7 @@ function FABAction({ label, Icon, onTrigger, delay }: Action) {
 
 export function FAB() {
   const [open, setOpen] = useState(false)
-  const { view, openSheet, setEditingIncome, setEditingEgreso, setEditingTransfer, setEditingVoluntaria } = useUIStore()
+  const { view, openSheet, setEditingIncome, setEditingEgreso, setEditingTransfer } = useUIStore()
 
   useEffect(() => { setOpen(false) }, [view])
 
@@ -61,11 +61,6 @@ export function FAB() {
       label: 'Movimiento',
       Icon: ArrowLeftRight,
       onTrigger: () => trigger(() => { setEditingTransfer(null); openSheet('transfer') }),
-    },
-    {
-      label: 'Ahorro voluntario',
-      Icon: PiggyBank,
-      onTrigger: () => trigger(() => { setEditingVoluntaria(null); openSheet('voluntaria') }),
     },
   ]
 

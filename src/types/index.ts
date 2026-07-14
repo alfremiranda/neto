@@ -37,7 +37,7 @@ export interface Account {
   id: string
   label: string
   currency: 'USD' | 'COP'
-  type?: 'account' | 'cash' | 'credit'  // default 'account'; cash hides number/rate; credit is a liability
+  type?: 'account' | 'cash' | 'credit' | 'savings'  // default 'account'; cash hides number/rate; credit is a liability; savings holds ahorros/inversiones
   number: string
   rate: number
   startingBalance?: number  // one-time base; balance rolls forward from here.

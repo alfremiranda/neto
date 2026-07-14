@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import { Home, ShoppingBasket, ShoppingCart, Monitor, CreditCard, Heart, Car, Users, Tag, Plane, Globe, ShieldPlus, Briefcase, PiggyBank, Landmark } from 'lucide-react'
+import { Home, ShoppingBasket, ShoppingCart, Monitor, CreditCard, Heart, Car, Users, Tag, Plane, Globe, ShieldPlus, Briefcase, Landmark } from 'lucide-react'
 import type { Account } from '@/types'
 
 export const MONTHS = [
@@ -32,7 +32,6 @@ export const EGRESO_CATEGORIAS: EgresoCategoria[] = [
   { id: 'trabajo',         label: 'Trabajo',           color: '--cat-work',        bgColor: '--cat-work-bg',        icon: Briefcase,      tipos: [] },
   { id: 'familia',         label: 'Personas',          color: '--cat-family',      bgColor: '--cat-family-bg',      icon: Users,          tipos: [] },
   { id: 'seguros',         label: 'Seguros',           color: '--cat-insurance',   bgColor: '--cat-insurance-bg',   icon: ShieldPlus,     tipos: [] },
-  { id: 'ahorro',          label: 'Ahorros e Inv.',    color: '--cat-savings',     bgColor: '--cat-savings-bg',     icon: PiggyBank,      tipos: ['pension_vol'] },
   { id: 'viajes',          label: 'Viajes',            color: '--cat-travel',      bgColor: '--cat-travel-bg',      icon: Plane,          tipos: ['viaje'] },
   { id: 'impuestos',       label: 'Impuestos',         color: '--cat-taxes',       bgColor: '--cat-taxes-bg',       icon: Landmark,       tipos: [] },
   { id: 'compras',         label: 'Compras',           color: '--cat-shopping',    bgColor: '--cat-shopping-bg',    icon: ShoppingCart,   tipos: ['compras'] },
@@ -49,7 +48,6 @@ export const EGRESO_TIPOS: { id: string; label: string; category: string }[] = [
   { id: 'salud',       label: 'Salud prepagada',     category: 'salud'           },
   { id: 'transporte',  label: 'Transporte',          category: 'movilidad'       },
   { id: 'viaje',       label: 'Viaje',               category: 'viajes'          },
-  { id: 'pension_vol', label: 'Pensión voluntaria',  category: 'ahorro'          },
   { id: 'compras',     label: 'Compras',             category: 'compras'         },
   { id: 'otro',        label: 'Otro',                category: 'otro'            },
 ]

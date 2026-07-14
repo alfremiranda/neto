@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ChevronLeft, ChevronRight, Plus, ChevronDown, TrendingUp, TrendingDown, ArrowLeftRight, PiggyBank } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, ChevronDown, TrendingUp, TrendingDown, ArrowLeftRight } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { MONTHS } from '@/data/defaults'
@@ -9,15 +9,14 @@ import { cn } from '@/lib/utils'
 
 export function MonthNav() {
   const { curKey, prevMonth, nextMonth } = useFinanceStore()
-  const { openSheet, setEditingIncome, setEditingEgreso, setEditingTransfer, setEditingVoluntaria } = useUIStore()
+  const { openSheet, setEditingIncome, setEditingEgreso, setEditingTransfer } = useUIStore()
   const [y, m] = curKey.split('-').map(Number)
   const [open, setOpen] = useState(false)
 
   const actions = [
-    { label: 'Ingreso',           Icon: TrendingUp,     onClick: () => { setEditingIncome(null);     openSheet('income')     } },
-    { label: 'Egreso',            Icon: TrendingDown,   onClick: () => { setEditingEgreso(null);     openSheet('egreso')     } },
-    { label: 'Movimiento',        Icon: ArrowLeftRight, onClick: () => { setEditingTransfer(null);   openSheet('transfer')   } },
-    { label: 'Ahorro voluntario', Icon: PiggyBank,      onClick: () => { setEditingVoluntaria(null); openSheet('voluntaria') } },
+    { label: 'Ingreso',    Icon: TrendingUp,     onClick: () => { setEditingIncome(null);   openSheet('income')   } },
+    { label: 'Egreso',     Icon: TrendingDown,   onClick: () => { setEditingEgreso(null);   openSheet('egreso')   } },
+    { label: 'Movimiento', Icon: ArrowLeftRight, onClick: () => { setEditingTransfer(null); openSheet('transfer') } },
   ]
 
   return (

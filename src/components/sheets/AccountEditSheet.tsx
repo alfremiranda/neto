@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Trash2, Landmark, Wallet, CreditCard } from 'lucide-react'
+import { Trash2, Landmark, Wallet, CreditCard, PiggyBank } from 'lucide-react'
 import { SheetBase } from '@/components/ui/SheetBase'
 import { MoneyInput } from '@/components/ui/MoneyInput'
 import { useMoneyInput } from '@/hooks/useMoneyInput'
@@ -10,12 +10,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { cn } from '@/lib/utils'
 import type { Account } from '@/types'
 
-type AccountType = 'account' | 'cash' | 'credit'
+type AccountType = 'account' | 'cash' | 'credit' | 'savings'
 
 const TYPE_OPTIONS: Array<{ value: AccountType; label: string; icon: typeof Landmark }> = [
   { value: 'account', label: 'Cuenta',   icon: Landmark },
   { value: 'cash',    label: 'Efectivo', icon: Wallet },
   { value: 'credit',  label: 'Crédito',  icon: CreditCard },
+  { value: 'savings', label: 'Ahorro',   icon: PiggyBank },
 ]
 
 // Clamp a day-of-month string to 1–31, or '' if empty/invalid
@@ -46,8 +47,9 @@ export function AccountEditSheet() {
   const limitAmt   = useMoneyInput({ decimals })  // credit limit (cupo)
   const debtAmt    = useMoneyInput({ decimals })  // current debt for credit
 
-  const isCash   = type === 'cash'
-  const isCredit = type === 'credit'
+  const isCash    = type === 'cash'
+  const isCredit  = type === 'credit'
+  const isSavings = type === 'savings'
 
   useEffect(() => {
     if (activeSheet !== 'account-edit') return
@@ -100,10 +102,10 @@ export function AccountEditSheet() {
     if (editingAccountId) {
       const idx = accounts.findIndex(a => a.id === editingAccountId)
       if (idx !== -1) accounts[idx] = { ...accounts[idx], ...payload }
-      showToast(isCredit ? 'Tarjeta actualizada' : isCash ? 'Bolsillo actualizado' : 'Cuenta actualizada')
+      showToast(isCredit ? 'Tarjeta actualizada' : isCash ? 'Bolsillo actualizado' : isSavings ? 'Ahorro actualizado' : 'Cuenta actualizada')
     } else {
       accounts.push({ id: 'acc_' + Date.now(), ...payload } as Account)
-      showToast(isCredit ? 'Tarjeta agregada' : isCash ? 'Bolsillo agregado' : 'Cuenta agregada')
+      showToast(isCredit ? 'Tarjeta agregada' : isCash ? 'Bolsillo agregado' : isSavings ? 'Ahorro agregado' : 'Cuenta agregada')
     }
     saveAccountsConfig(accounts)
     setEditingAccount(null)
@@ -120,7 +122,7 @@ export function AccountEditSheet() {
 
   const saveLabel = isEditing
     ? 'Guardar cambios'
-    : isCredit ? 'Agregar tarjeta' : isCash ? 'Agregar bolsillo' : 'Agregar cuenta'
+    : isCredit ? 'Agregar tarjeta' : isCash ? 'Agregar bolsillo' : isSavings ? 'Agregar ahorro' : 'Agregar cuenta'
 
   return (
     <SheetBase
@@ -152,7 +154,7 @@ export function AccountEditSheet() {
         {!isLocked && !isEditing && (
           <div>
             <label className="field-label">Tipo</label>
-            <div className="flex rounded-lg border border-[var(--border)] p-0.5 gap-0.5">
+            <div className="grid grid-cols-2 rounded-lg border border-[var(--border)] p-0.5 gap-0.5">
               {TYPE_OPTIONS.map(({ value, label: tLabel, icon: Icon }) => {
                 const selected = type === value
                 return (
@@ -184,7 +186,7 @@ export function AccountEditSheet() {
             type="text"
             value={label}
             onChange={e => setLabel(e.target.value)}
-            placeholder={isCredit ? 'Ej: Visa Bancolombia' : isCash ? 'Ej: Billetera, Menudo…' : 'Ej: Bancolombia Ahorros'}
+            placeholder={isCredit ? 'Ej: Visa Bancolombia' : isCash ? 'Ej: Billetera, Menudo…' : isSavings ? 'Ej: CDT Bancolombia, Skandia…' : 'Ej: Bancolombia Ahorros'}
             className="field-input"
             disabled={isLocked}
           />

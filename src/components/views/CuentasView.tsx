@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, ShieldCheck, Pencil, Plus, Landmark, MoveRight, Trash2, Wallet, CreditCard, Clock, MoreVertical } from 'lucide-react'
+import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, ShieldCheck, Pencil, Plus, Landmark, MoveRight, Trash2, Wallet, CreditCard, PiggyBank, Clock, MoreVertical } from 'lucide-react'
 import { RowActionsSheet } from '@/components/ui/RowActionsSheet'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
@@ -37,7 +37,7 @@ function AccountCard({
   const isCash = account.type === 'cash'
   const isCredit = account.type === 'credit'
   const hasConfig = isCredit ? account.creditLimit != null : account.startingBalance != null
-  const TypeIcon = isCredit ? CreditCard : isCash ? Wallet : Landmark
+  const TypeIcon = isCredit ? CreditCard : isCash ? Wallet : account.type === 'savings' ? PiggyBank : Landmark
   const cc = isCredit ? creditCardStats(account, balance) : null
 
   return (

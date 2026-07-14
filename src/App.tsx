@@ -13,7 +13,6 @@ import { AccountEditSheet } from '@/components/sheets/AccountEditSheet'
 import { AccountDetailSheet } from '@/components/sheets/AccountDetailSheet'
 import { BalanceSheet } from '@/components/sheets/BalanceSheet'
 import { TransferSheet } from '@/components/sheets/TransferSheet'
-import { VoluntariaSheet } from '@/components/sheets/VoluntariaSheet'
 import { IncomeSheet } from '@/components/sheets/IncomeSheet'
 import { EgresoSheet } from '@/components/sheets/EgresoSheet'
 import { SidebarProvider } from '@/components/ui/sidebar'
@@ -146,7 +145,6 @@ export default function App() {
         <AccountDetailSheet />
         <BalanceSheet />
         <TransferSheet />
-        <VoluntariaSheet />
         <Toast />
       </SidebarProvider>
     </TooltipProvider>

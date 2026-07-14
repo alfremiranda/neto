@@ -30,7 +30,7 @@ function greeting() {
 function DashboardHeader() {
   const user = useAuthStore(s => s.user)
   const displayName = useSettingsStore(s => s.displayName)
-  const { openSheet, setEditingIncome, setEditingEgreso, setEditingTransfer, setEditingVoluntaria } = useUIStore()
+  const { openSheet, setEditingIncome, setEditingEgreso, setEditingTransfer } = useUIStore()
   const [open, setOpen] = useState(false)
 
   const oauthName = (user?.user_metadata?.full_name ?? user?.user_metadata?.user_name ?? '') as string
@@ -40,7 +40,6 @@ function DashboardHeader() {
     { label: 'Ingreso',           Icon: TrendingUp,      onClick: () => { setEditingIncome(null);     openSheet('income')     } },
     { label: 'Egreso',            Icon: TrendingDown,    onClick: () => { setEditingEgreso(null);     openSheet('egreso')     } },
     { label: 'Movimiento',        Icon: ArrowLeftRight,  onClick: () => { setEditingTransfer(null);   openSheet('transfer')   } },
-    { label: 'Ahorro voluntario', Icon: PiggyBank,       onClick: () => { setEditingVoluntaria(null); openSheet('voluntaria') } },
   ]
 
   return (
@@ -131,7 +130,7 @@ function AccountsOverview() {
           const isCredit   = a.type === 'credit'
           const hasBalance = isCredit ? a.creditLimit != null : a.startingBalance != null
           const fmt        = a.currency === 'USD' ? USD : COP
-          const TypeIcon   = isCredit ? CreditCard : a.type === 'cash' ? Wallet : Landmark
+          const TypeIcon   = isCredit ? CreditCard : a.type === 'cash' ? Wallet : a.type === 'savings' ? PiggyBank : Landmark
           const debt       = isCredit ? Math.max(-balance, 0) : 0
 
           return (
