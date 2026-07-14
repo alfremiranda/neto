@@ -7,6 +7,7 @@ import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase 
 import { COP } from '@/lib/format'
 import { MONTHS, DEFAULTS } from '@/data/defaults'
 import { useTheme } from '@/hooks/useTheme'
+import { deductionGroupFlags } from '@/hooks/useDeductionGroups'
 import { SectionCard } from '@/components/ui/SectionCard'
 
 const M = 1_000_000
@@ -44,7 +45,7 @@ export function TrendChart() {
   const [tooltip, setTooltip] = useState<Tooltip | null>(null)
 
   // Derive colors from current month's calcAllDeductions — same source as DistribucionCard/KPIStrip
-  const series = useMemo(() => {
+  const allSeries = useMemo(() => {
     const d = db[curKey]
     const [y, mStr] = curKey.split('-')
     const mNum = parseInt(mStr)
@@ -110,6 +111,16 @@ export function TrendChart() {
     }
   }), [db, curKey, deductions])  // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Hide obligation/provision series for employee profiles, but keep them when
+  // there is historical data so a profile switch never drops real bars.
+  const { ssEnabled, retencionEnabled, provisionesEnabled } = deductionGroupFlags(deductions)
+  const showOblig = ssEnabled || retencionEnabled || data.some(d => d.oblig > 0)
+  const showProv  = provisionesEnabled || data.some(d => d.prov > 0)
+  const series = useMemo(
+    () => allSeries.filter(s => (s.key !== 'oblig' || showOblig) && (s.key !== 'prov' || showProv)),
+    [allSeries, showOblig, showProv],
+  )
+
   const [containerW, setContainerW] = useState(0)
   useEffect(() => {
     if (!containerRef.current) return
@@ -140,10 +151,10 @@ export function TrendChart() {
 
     const g = svg.append('g').attr('transform', `translate(${mg.left},${mg.top})`)
 
-    const keys: SeriesKey[] = ['oblig', 'prov', 'egres', 'neto']
+    const keys: SeriesKey[] = series.map(s => s.key)
     const stacked = d3.stack<BarDatum>().keys(keys)(data)
 
-    const maxVal = d3.max(data, d => d.oblig + d.prov + d.egres + d.neto) ?? 1
+    const maxVal = d3.max(data, d => keys.reduce((sum, k) => sum + (d[k] as number), 0)) ?? 1
 
     const xScale = d3.scaleBand<string>()
       .domain(data.map(d => d.label))
