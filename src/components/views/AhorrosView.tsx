@@ -54,9 +54,11 @@ function SavingsCard({ account, balance, selected, onClick }: {
         <CurrencyBadge currency={account.currency} />
       </div>
 
-      <div className="text-lg font-bold tabular-nums font-heading leading-tight text-[var(--color-net-txt)]">
-        {fmt(balance)}
-        <span className="ml-1.5 text-[10px] font-medium text-muted-foreground uppercase tracking-wide">{KIND_LABEL[kind]}</span>
+      <div>
+        <div className="text-lg font-bold tabular-nums font-heading leading-tight text-[var(--color-net-txt)]">
+          {fmt(balance)}
+        </div>
+        <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide mt-0.5">{KIND_LABEL[kind]}</div>
       </div>
 
       {account.rate > 0 && (
