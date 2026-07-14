@@ -1,15 +1,15 @@
 import { useState } from 'react'
-import { Check, ChevronRight, Landmark, Wallet, Plus, X } from 'lucide-react'
+import { Check, ChevronRight, Landmark, Wallet, Plus, X, Briefcase, UserRound, Layers } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { TRANSFER_ACCOUNTS } from '@/data/defaults'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useUIStore } from '@/store/uiStore'
 import { Button } from '@/components/ui/button'
-import { Switch } from '@/components/ui/switch'
-import type { Account, DeductionConfig } from '@/types'
+import type { Account } from '@/types'
 
 type Currency = 'COP' | 'USD'
+type Profile = 'empleado' | 'independiente' | 'ambos'
 
 const CURRENCY_META: Record<Currency, { flag: string; name: string; desc: string }> = {
   COP: { flag: '🇨🇴', name: 'COP', desc: 'Peso colombiano' },
@@ -161,49 +161,90 @@ function AccountsStep({ added, onAdd, onRemove }: {
   )
 }
 
-// ─── Deductions step ──────────────────────────────────────────────────────────
+// ─── Profile step ─────────────────────────────────────────────────────────────
 
-function DeductionsStep({ deductions, onToggle }: {
-  deductions: DeductionConfig[]
-  onToggle: (id: string, enabled: boolean) => void
+const PROFILE_OPTIONS: Array<{ value: Profile; icon: typeof Briefcase; label: string; desc: string }> = [
+  {
+    value: 'empleado',
+    icon: Briefcase,
+    label: 'Empleado',
+    desc: 'Recibo salario; mi empleador maneja los aportes y la retención.',
+  },
+  {
+    value: 'independiente',
+    icon: UserRound,
+    label: 'Independiente',
+    desc: 'Manejo mis propios aportes a seguridad social y provisiones.',
+  },
+  {
+    value: 'ambos',
+    icon: Layers,
+    label: 'Ambos',
+    desc: 'Tengo salario y también ingresos independientes.',
+  },
+]
+
+function ProfileStep({ profile, onSelect }: {
+  profile: Profile
+  onSelect: (p: Profile) => void
 }) {
-  const ss        = deductions.filter(d => d.group === 'ss')
-  const provision = deductions.filter(d => d.group === 'provision')
-
-  function Section({ title, items }: { title: string; items: DeductionConfig[] }) {
-    return (
-      <div className="space-y-2">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide px-1">{title}</p>
-        <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] divide-y divide-[var(--border)]">
-          {items.map(d => (
-            <div key={d.id} className="flex items-center justify-between px-4 py-3 gap-3">
-              <div className="min-w-0">
-                <p className="text-sm font-medium leading-snug">{d.label}</p>
-                <p className="text-xs text-muted-foreground">{d.pct}%</p>
-              </div>
-              <Switch
-                checked={d.enabled}
-                onCheckedChange={v => onToggle(d.id, v)}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h2 className="text-xl font-bold font-heading">Tus obligaciones</h2>
+        <h2 className="text-xl font-bold font-heading">¿Cómo trabajas?</h2>
         <p className="text-sm text-muted-foreground mt-1">
-          Activa las deducciones que apliquen a tu situación.
+          Esto define si Neto calcula tus aportes y provisiones.
         </p>
       </div>
-      <Section title="Seguridad Social" items={ss} />
-      <Section title="Provisiones" items={provision} />
+
+      <div className="flex flex-col gap-2">
+        {PROFILE_OPTIONS.map(opt => {
+          const selected = profile === opt.value
+          const Icon = opt.icon
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => onSelect(opt.value)}
+              className={cn(
+                'flex items-start gap-3 px-4 py-3.5 rounded-xl border-2 text-left transition-all duration-150',
+                selected
+                  ? 'border-[var(--primary)] bg-[var(--primary)]/8'
+                  : 'border-[var(--border)] bg-[var(--card)]',
+              )}
+            >
+              <span className={cn(
+                'w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors',
+                selected ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'bg-muted text-muted-foreground',
+              )}>
+                <Icon size={17} />
+              </span>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold">{opt.label}</p>
+                <p className="text-[12px] text-muted-foreground leading-snug mt-0.5">{opt.desc}</p>
+              </div>
+              <div className={cn(
+                'w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 transition-colors',
+                selected ? 'border-[var(--primary)] bg-[var(--primary)]' : 'border-[var(--border)]',
+              )}>
+                {selected && <Check size={10} strokeWidth={3} className="text-[var(--primary-foreground)]" />}
+              </div>
+            </button>
+          )
+        })}
+      </div>
+
+      {profile === 'ambos' && (
+        <div className="rounded-lg bg-muted/60 border border-[var(--border)] px-3.5 py-3">
+          <p className="text-[12px] text-muted-foreground leading-relaxed">
+            Al registrar tu salario, márcalo como ingreso <strong>"otro"</strong> para excluirlo
+            de los aportes — tus ingresos independientes sí los calcularán.
+          </p>
+        </div>
+      )}
+
       <p className="text-xs text-muted-foreground pb-2">
-        Puedes ajustar porcentajes y agregar más en <strong>Configuración</strong>.
+        Puedes ajustar deducciones y porcentajes en <strong>Configuración</strong>.
       </p>
     </div>
   )
@@ -328,7 +369,7 @@ function WelcomeStep() {
       <div>
         <h1 className="text-2xl font-bold font-heading">Bienvenido a Neto</h1>
         <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-          Vamos a configurar tus cuentas y obligaciones<br />en 2 pasos rápidos.
+          Vamos a configurar tu moneda, tus cuentas<br />y tu perfil en unos pasos rápidos.
         </p>
       </div>
     </div>
@@ -353,20 +394,21 @@ function DoneStep() {
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
-// Steps: 0=welcome  1=currency  2=accounts  3=deductions  4=done
+// Steps: 0=welcome  1=currency  2=accounts  3=profile  4=done
 const TOTAL_STEPS = 5
 const CONTENT_STEPS = [1, 2, 3]   // steps with scrollable content + progress bar
 const PROGRESS_STEPS = [1, 2, 3]  // steps counted in the progress bar
 
 export function OnboardingView() {
   const { saveAccountsConfig, completeOnboarding } = useFinanceStore()
-  const { deductions, setDeduction, setDisplayCurrency } = useSettingsStore()
+  const { setDeductionsEnabled, setDisplayCurrency } = useSettingsStore()
   const { setView } = useUIStore()
 
   const [step,      setStep]      = useState(0)
   const [added,     setAdded]     = useState<NewAccount[]>([])
   const [primary,   setPrimary]   = useState<Currency>('COP')
   const [secondary, setSecondary] = useState<Currency | null>('USD')
+  const [profile,   setProfile]   = useState<Profile>('independiente')
 
   function handleAdd(a: NewAccount) { setAdded(prev => [...prev, a]) }
   function handleRemove(idx: number) { setAdded(prev => prev.filter((_, i) => i !== idx)) }
@@ -387,6 +429,10 @@ export function OnboardingView() {
         ...LOCKED_ACCOUNTS,
       ]
       saveAccountsConfig(accounts)
+    }
+    if (step === 3) {
+      // Employees have no self-managed deductions; independents/mixed keep them on
+      setDeductionsEnabled(profile !== 'empleado')
     }
     if (step === TOTAL_STEPS - 1) {
       setView('dashboard')
@@ -439,12 +485,7 @@ export function OnboardingView() {
             />
           )}
           {step === 2 && <AccountsStep added={added} onAdd={handleAdd} onRemove={handleRemove} />}
-          {step === 3 && (
-            <DeductionsStep
-              deductions={deductions}
-              onToggle={(id, enabled) => setDeduction(id, { enabled })}
-            />
-          )}
+          {step === 3 && <ProfileStep profile={profile} onSelect={setProfile} />}
           {step === 4 && <DoneStep />}
         </div>
       </div>

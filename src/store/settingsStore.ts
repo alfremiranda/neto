@@ -10,6 +10,9 @@ interface SettingsState {
   secondaryCurrency: 'COP' | 'USD' | null
 
   setDeduction: (id: string, patch: Partial<DeductionConfig>) => void
+  // Bulk enable/disable all SS + provision deductions (used by the onboarding
+  // profile: employees turn them off, independents leave them on).
+  setDeductionsEnabled: (enabled: boolean) => void
   addDeduction:  (d: Omit<DeductionConfig, 'id'>) => void
   removeDeduction: (id: string) => void
   resetDeductions: () => void
@@ -31,6 +34,12 @@ export const useSettingsStore = create<SettingsState>()(
       setDeduction: (id, patch) =>
         set(s => ({
           deductions: s.deductions.map(d => d.id === id ? { ...d, ...patch } : d),
+        })),
+
+      setDeductionsEnabled: (enabled) =>
+        set(s => ({
+          deductions: s.deductions.map(d =>
+            d.group === 'ss' || d.group === 'provision' ? { ...d, enabled } : d),
         })),
 
       addDeduction: (d) =>
