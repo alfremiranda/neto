@@ -186,8 +186,8 @@ export function AccountEditSheet() {
           </p>
         )}
 
-        {/* Type selector — only at creation time */}
-        {!isLocked && !isEditing && (
+        {/* Type selector — shown when creating and editing (locked system accounts excluded) */}
+        {!isLocked && (
           <div>
             <label htmlFor="acc-type" className="field-label">Tipo</label>
             <Select value={type} onValueChange={v => setType(v as AccountType)}>
