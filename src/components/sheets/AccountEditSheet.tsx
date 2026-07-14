@@ -190,7 +190,9 @@ export function AccountEditSheet() {
         {!isLocked && (
           <div>
             <label htmlFor="acc-type" className="field-label">Tipo</label>
-            <Select value={type} onValueChange={v => setType(v as AccountType)}>
+            {/* Type is fixed after creation (asset vs liability is the account's identity);
+                shown but disabled when editing — to change it, delete and recreate. */}
+            <Select value={type} onValueChange={v => setType(v as AccountType)} disabled={isEditing}>
               <SelectTrigger id="acc-type" className="w-full">
                 <SelectValue />
               </SelectTrigger>
@@ -205,6 +207,9 @@ export function AccountEditSheet() {
                 ))}
               </SelectContent>
             </Select>
+            {isEditing && (
+              <p className="text-[11px] text-muted-foreground mt-1">El tipo no se puede cambiar. Para reclasificar, elimina y crea de nuevo.</p>
+            )}
           </div>
         )}
 
