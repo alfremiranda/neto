@@ -170,29 +170,22 @@ export function AccountEditSheet() {
         {/* Type selector — only at creation time */}
         {!isLocked && !isEditing && (
           <div>
-            <label className="field-label">Tipo</label>
-            <div className="grid grid-cols-2 rounded-lg border border-[var(--border)] p-0.5 gap-0.5">
-              {TYPE_OPTIONS.map(({ value, label: tLabel, icon: Icon }) => {
-                const selected = type === value
-                return (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setType(value)}
-                    aria-pressed={selected}
-                    className={cn(
-                      'flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer border-0',
-                      selected
-                        ? 'bg-[var(--primary)] text-[var(--primary-foreground)]'
-                        : 'bg-transparent text-muted-foreground hover:text-foreground hover:bg-[var(--accent)]',
-                    )}
-                  >
-                    <Icon size={14} />
-                    {tLabel}
-                  </button>
-                )
-              })}
-            </div>
+            <label htmlFor="acc-type" className="field-label">Tipo</label>
+            <Select value={type} onValueChange={v => setType(v as AccountType)}>
+              <SelectTrigger id="acc-type" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {TYPE_OPTIONS.map(({ value, label: tLabel, icon: Icon }) => (
+                  <SelectItem key={value} value={value}>
+                    <span className="flex items-center gap-2">
+                      <Icon size={14} className="text-muted-foreground" />
+                      {tLabel}
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         )}
 
