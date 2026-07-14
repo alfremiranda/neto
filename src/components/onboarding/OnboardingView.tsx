@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Check, ChevronRight, Landmark, Wallet, Plus, X, Briefcase, UserRound, Layers } from 'lucide-react'
+import { Check, ChevronRight, Landmark, Wallet, CreditCard, Plus, X, Briefcase, UserRound, Layers } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { TRANSFER_ACCOUNTS } from '@/data/defaults'
 import { useFinanceStore } from '@/store/financeStore'
@@ -20,7 +20,32 @@ const LOCKED_ACCOUNTS = TRANSFER_ACCOUNTS.filter(a => a.locked)
 
 // ─── Accounts step ────────────────────────────────────────────────────────────
 
-type NewAccount = Omit<Account, 'id' | 'number' | 'rate' | 'startingBalance'>
+type AccType = 'account' | 'cash' | 'credit'
+
+type NewAccount = {
+  label: string
+  currency: 'USD' | 'COP'
+  type: AccType
+  creditLimit?: number
+  cutoffDay?: number
+  dueDay?: number
+  startingBalance?: number  // credit cards store −debt here
+}
+
+const ACC_TYPE_LABEL: Record<AccType, string> = {
+  account: 'Cuenta bancaria',
+  cash:    'Efectivo',
+  credit:  'Tarjeta de crédito',
+}
+
+// Parse a grouped es-CO number string ("1.750.905") to a plain integer
+function parseGrouped(s: string): number {
+  return parseInt(s.replace(/[^\d]/g, ''), 10) || 0
+}
+function clampDay(s: string): number | undefined {
+  const n = parseInt(s.replace(/[^\d]/g, ''), 10)
+  return n ? Math.min(Math.max(n, 1), 31) : undefined
+}
 
 function AccountsStep({ added, onAdd, onRemove }: {
   added: NewAccount[]
@@ -29,14 +54,38 @@ function AccountsStep({ added, onAdd, onRemove }: {
 }) {
   const [label,    setLabel]    = useState('')
   const [currency, setCurrency] = useState<'USD' | 'COP'>('COP')
-  const [type,     setType]     = useState<'account' | 'cash'>('account')
+  const [type,     setType]     = useState<AccType>('account')
+  const [cupo,     setCupo]     = useState('')
+  const [deuda,    setDeuda]    = useState('')
+  const [cutoff,   setCutoff]   = useState('')
+  const [due,      setDue]      = useState('')
+
+  const isCredit = type === 'credit'
+
+  function reset() {
+    setLabel(''); setCurrency('COP'); setType('account')
+    setCupo(''); setDeuda(''); setCutoff(''); setDue('')
+  }
 
   function handleAdd() {
     if (!label.trim()) return
-    onAdd({ label: label.trim(), currency, type })
-    setLabel('')
-    setCurrency('COP')
-    setType('account')
+    const acc: NewAccount = isCredit
+      ? {
+          label: label.trim(), currency, type,
+          creditLimit: parseGrouped(cupo),
+          startingBalance: -parseGrouped(deuda),
+          cutoffDay: clampDay(cutoff),
+          dueDay: clampDay(due),
+        }
+      : { label: label.trim(), currency, type }
+    onAdd(acc)
+    reset()
+  }
+
+  // Format a numeric string with es-CO grouping as the user types
+  const onMoneyChange = (setter: (v: string) => void) => (v: string) => {
+    const digits = v.replace(/[^\d]/g, '')
+    setter(digits ? parseInt(digits, 10).toLocaleString('es-CO') : '')
   }
 
   return (
@@ -72,7 +121,10 @@ function AccountsStep({ added, onAdd, onRemove }: {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium truncate">{a.label}</p>
-            <p className="text-xs text-muted-foreground">{a.type === 'cash' ? 'Efectivo' : 'Cuenta bancaria'}</p>
+            <p className="text-xs text-muted-foreground">
+              {ACC_TYPE_LABEL[a.type]}
+              {a.type === 'credit' && a.creditLimit ? ` · cupo ${a.creditLimit.toLocaleString('es-CO')}` : ''}
+            </p>
           </div>
           <span className={cn(
             'text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0',
@@ -99,7 +151,7 @@ function AccountsStep({ added, onAdd, onRemove }: {
 
         {/* Type */}
         <div className="flex rounded-lg border border-[var(--border)] p-0.5 gap-0.5">
-          {([['account', 'Cuenta bancaria', Landmark], ['cash', 'Efectivo / Bolsillo', Wallet]] as const).map(([t, tLabel, Icon]) => (
+          {([['account', 'Cuenta', Landmark], ['cash', 'Efectivo', Wallet], ['credit', 'Crédito', CreditCard]] as const).map(([t, tLabel, Icon]) => (
             <button
               key={t}
               type="button"
@@ -123,8 +175,8 @@ function AccountsStep({ added, onAdd, onRemove }: {
             type="text"
             value={label}
             onChange={e => setLabel(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleAdd()}
-            placeholder={type === 'cash' ? 'Ej: Billetera, Menudo…' : 'Ej: Bancolombia Ahorros'}
+            onKeyDown={e => e.key === 'Enter' && !isCredit && handleAdd()}
+            placeholder={isCredit ? 'Ej: Visa Bancolombia' : type === 'cash' ? 'Ej: Billetera, Menudo…' : 'Ej: Bancolombia Ahorros'}
             className="field-input flex-1 min-w-0"
           />
           <div className="flex rounded-lg border border-[var(--border)] p-0.5 gap-0.5 shrink-0">
@@ -145,6 +197,48 @@ function AccountsStep({ added, onAdd, onRemove }: {
             ))}
           </div>
         </div>
+
+        {/* Credit-card fields */}
+        {isCredit && (
+          <div className="flex flex-col gap-2">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                inputMode="numeric"
+                value={cupo}
+                onChange={e => onMoneyChange(setCupo)(e.target.value)}
+                placeholder="Cupo total"
+                className="field-input flex-1 min-w-0"
+              />
+              <input
+                type="text"
+                inputMode="numeric"
+                value={deuda}
+                onChange={e => onMoneyChange(setDeuda)(e.target.value)}
+                placeholder="Deuda actual"
+                className="field-input flex-1 min-w-0"
+              />
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                inputMode="numeric"
+                value={cutoff}
+                onChange={e => setCutoff(e.target.value.replace(/[^\d]/g, '').slice(0, 2))}
+                placeholder="Día de corte"
+                className="field-input flex-1 min-w-0"
+              />
+              <input
+                type="text"
+                inputMode="numeric"
+                value={due}
+                onChange={e => setDue(e.target.value.replace(/[^\d]/g, '').slice(0, 2))}
+                placeholder="Día de pago"
+                className="field-input flex-1 min-w-0"
+              />
+            </div>
+          </div>
+        )}
 
         <Button
           size="sm"
