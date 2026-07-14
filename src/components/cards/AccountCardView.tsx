@@ -64,13 +64,13 @@ export function AccountCardView({ account, size = 'lg', selected = false, onClic
       onClick={handleClick}
       onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && handleClick()}
       className={cn(
-        'text-left rounded-xl p-4 flex flex-col gap-1.5 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]',
+        'text-left rounded-xl p-4 flex flex-col gap-2 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]',
         selected
           ? 'border-2 border-[var(--primary)] bg-[var(--color-income-bg)]'
           : 'border border-[var(--border)] bg-card hover:border-[var(--primary)]/40',
       )}
     >
-      {/* Header: icon · name · favorite */}
+      {/* Header: icon · name · favorite (gap 6) */}
       <div className="flex items-center gap-1.5 w-full">
         <TypeIcon size={13} className="text-muted-foreground shrink-0" />
         <span className="flex-1 min-w-0 text-xs font-medium text-muted-foreground truncate">{account.label}</span>
@@ -89,59 +89,59 @@ export function AccountCardView({ account, size = 'lg', selected = false, onClic
         </button>
       </div>
 
-      {/* Meta: currency badge | kind | number */}
-      <div className="flex items-center gap-1.5 min-w-0">
-        <CurrencyBadge currency={account.currency} />
-        {metaParts.map((p, i) => (
-          <Fragment key={i}>
-            <span className="text-[11px] text-muted-foreground/50">|</span>
-            <span className="text-[11px] font-mono tabular-nums text-muted-foreground truncate">{p}</span>
-          </Fragment>
-        ))}
+      {/* Info block — meta · amount · primary sub-lines, tight (gap 0) */}
+      <div className="flex flex-col">
+        {/* Meta: currency badge | kind | number */}
+        <div className="flex items-center gap-1.5 min-w-0">
+          <CurrencyBadge currency={account.currency} />
+          {metaParts.map((p, i) => (
+            <Fragment key={i}>
+              <span className="text-[11px] text-muted-foreground/50">|</span>
+              <span className="text-[11px] font-mono tabular-nums text-muted-foreground truncate">{p}</span>
+            </Fragment>
+          ))}
+        </div>
+
+        {/* Amount */}
+        {amountStr
+          ? <div className="text-xl font-bold font-heading tabular-nums leading-snug text-foreground">{amountStr}</div>
+          : <div className="text-sm font-normal text-muted-foreground">Sin configurar</div>}
+
+        {/* Primary sub-lines (large only) */}
+        {!sm && hasConfig && account.type === 'account' && account.rate > 0 && (
+          <div className="text-[11px] tabular-nums text-[var(--color-provision)]">
+            ≈ {fmt(monthlyYield)}/mes · {account.rate}% a.a.
+          </div>
+        )}
+        {!sm && hasConfig && isCredit && (
+          <>
+            <div className="text-xs font-mono tabular-nums text-[var(--color-danger-txt)]">
+              −{fmt(cc!.debt)} deuda
+            </div>
+            <div className="text-[11px] tabular-nums text-muted-foreground">
+              {Math.round(cc!.utilization * 100)}% usado
+            </div>
+          </>
+        )}
+        {!sm && hasConfig && isSavings && account.rate > 0 && (
+          <div className="text-[11px] tabular-nums text-[var(--color-provision)]">
+            ≈ {fmt(monthlyYield)}/mes · {account.rate}% E.A.
+          </div>
+        )}
       </div>
 
-      {/* Amount — own line */}
-      {amountStr
-        ? <div className="text-xl font-bold font-heading tabular-nums leading-tight text-foreground">{amountStr}</div>
-        : <div className="text-sm font-normal text-muted-foreground">Sin configurar</div>}
-
-      {/* Type-specific info (large only) */}
-      {!sm && hasConfig && (
-        <div className="flex flex-col gap-0.5">
-          {account.type === 'account' && account.rate > 0 && (
-            <div className="text-[11px] tabular-nums text-[var(--color-provision)]">
-              ≈ {fmt(monthlyYield)}/mes · {account.rate}% a.a.
-            </div>
-          )}
-          {isCredit && (
-            <>
-              <div className="text-[11px] font-mono tabular-nums text-[var(--color-expense-txt)]">
-                −{fmt(cc!.debt)} deuda · {Math.round(cc!.utilization * 100)}% usado
-              </div>
-              {(account.cutoffDay || account.dueDay) && (
-                <div className="text-[11px] tabular-nums text-muted-foreground">
-                  {account.cutoffDay ? `Corte ${account.cutoffDay}` : ''}
-                  {account.cutoffDay && account.dueDay ? ' · ' : ''}
-                  {account.dueDay ? `Pago ${account.dueDay}` : ''}
-                </div>
-              )}
-            </>
-          )}
-          {isSavings && (
-            <>
-              {account.rate > 0 && (
-                <div className="text-[11px] tabular-nums text-[var(--color-provision)]">
-                  ≈ {fmt(monthlyYield)}/mes · {account.rate}% E.A.
-                </div>
-              )}
-              {maturityDays != null && (
-                <div className="text-[11px] tabular-nums text-muted-foreground flex items-center gap-1">
-                  <CalendarClock size={10} className="shrink-0" />
-                  {maturityDays >= 0 ? `Vence en ${maturityDays} d` : 'Vencido'} · {fmtDate(account.maturityDate!)}
-                </div>
-              )}
-            </>
-          )}
+      {/* Secondary block — separated by the card gap (8px) */}
+      {!sm && hasConfig && isCredit && (account.cutoffDay || account.dueDay) && (
+        <div className="text-[11px] tabular-nums text-muted-foreground">
+          {account.cutoffDay ? `Corte ${account.cutoffDay}` : ''}
+          {account.cutoffDay && account.dueDay ? ' · ' : ''}
+          {account.dueDay ? `Pago ${account.dueDay}` : ''}
+        </div>
+      )}
+      {!sm && hasConfig && isSavings && maturityDays != null && (
+        <div className="text-[11px] tabular-nums text-muted-foreground flex items-center gap-1">
+          <CalendarClock size={10} className="shrink-0" />
+          {maturityDays >= 0 ? `Vence en ${maturityDays} d` : 'Vencido'} · {fmtDate(account.maturityDate!)}
         </div>
       )}
 
