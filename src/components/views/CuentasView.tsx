@@ -221,7 +221,7 @@ export function CuentasView() {
             </EmptyContent>
           </Empty>
         ) : (
-          <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}>
+          <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
             {accounts.map(a => (
               <AccountCardView
                 key={a.id}
