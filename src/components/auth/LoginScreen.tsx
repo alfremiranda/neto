@@ -37,7 +37,7 @@ export function LoginScreen() {
 
   return (
     <div
-      className="min-h-[100dvh] flex flex-col items-center justify-center px-6 bg-[var(--background)]"
+      className="h-full flex flex-col items-center justify-center px-6 bg-[var(--background)] overflow-y-auto"
       style={{
         paddingTop: 'max(24px, env(safe-area-inset-top))',
         paddingBottom: 'max(24px, env(safe-area-inset-bottom))',

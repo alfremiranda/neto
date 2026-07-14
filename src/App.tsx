@@ -100,7 +100,7 @@ export default function App() {
 
   if (loading || !cloudReady) {
     return (
-      <div className="min-h-[100dvh] flex items-center justify-center bg-[var(--background)]">
+      <div className="h-full flex items-center justify-center bg-[var(--background)]">
         <div className="w-6 h-6 border-2 border-[var(--border)] border-t-foreground rounded-full animate-spin" />
       </div>
     )

@@ -402,7 +402,7 @@ export function OnboardingView() {
 
   return (
     <div
-      className="h-[100dvh] flex flex-col bg-[var(--background)] overflow-hidden"
+      className="h-full flex flex-col bg-[var(--background)] overflow-hidden"
       style={{
         paddingTop:    'max(16px, env(safe-area-inset-top))',
         paddingBottom: 'max(24px, env(safe-area-inset-bottom))',
