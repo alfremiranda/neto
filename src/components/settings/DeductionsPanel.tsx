@@ -106,7 +106,9 @@ function DeductionDrawer({
   onClose: () => void
 }) {
   const { addDeduction, setDeduction } = useSettingsStore()
-  const accounts = useFinanceStore(s => s.getAccounts())
+  // Select the stable action, then call it — selecting getAccounts() directly returns
+  // a fresh array each render and triggers an infinite re-render loop in zustand v5.
+  const accounts = useFinanceStore(s => s.getAccounts)()
 
   const d = state.deduction
   const isEdit = state.mode === 'edit' && d != null
