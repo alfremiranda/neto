@@ -13,7 +13,7 @@ interface UIState {
   editingAccountId: string | null
   editingBalanceId: string | null
   editingTransferId: number | null
-  editingVoluntariaId: number | null
+  newAccountType: 'savings' | null   // preset type when creating a new account from a specific chapter
   sidebarCollapsed: boolean
 
   setView: (v: ViewType) => void
@@ -27,7 +27,7 @@ interface UIState {
   setEditingAccount: (id: string | null) => void
   setEditingBalance: (id: string | null) => void
   setEditingTransfer: (id: number | null) => void
-  setEditingVoluntaria: (id: number | null) => void
+  setNewAccountType: (t: 'savings' | null) => void
   toggleSidebar: () => void
 }
 
@@ -44,7 +44,7 @@ export const useUIStore = create<UIState>()(persist((set) => ({
   editingAccountId: null,
   editingBalanceId: null,
   editingTransferId: null,
-  editingVoluntariaId: null,
+  newAccountType: null,
   sidebarCollapsed: false,
 
   setView: (view) => set(s => ({ prevView: s.view, view })),
@@ -59,7 +59,7 @@ export const useUIStore = create<UIState>()(persist((set) => ({
     editingAccountId: null,
     editingBalanceId: null,
     editingTransferId: null,
-    editingVoluntariaId: null,
+    newAccountType: null,
   }),
 
   setPendingDelete: (id) => set({ pendingDeleteId: id }),
@@ -75,7 +75,7 @@ export const useUIStore = create<UIState>()(persist((set) => ({
   setEditingAccount: (id) => set({ editingAccountId: id }),
   setEditingBalance: (id) => set({ editingBalanceId: id }),
   setEditingTransfer: (id) => set({ editingTransferId: id }),
-  setEditingVoluntaria: (id) => set({ editingVoluntariaId: id }),
+  setNewAccountType: (t) => set({ newAccountType: t }),
   toggleSidebar: () => set(s => ({ sidebarCollapsed: !s.sidebarCollapsed })),
 }), {
   name: 'neto-ui',

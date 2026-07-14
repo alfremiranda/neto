@@ -7,10 +7,18 @@ import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { DatePicker } from '@/components/ui/DatePicker'
 import { cn } from '@/lib/utils'
 import type { Account } from '@/types'
 
 type AccountType = 'account' | 'cash' | 'credit' | 'savings'
+type SavingsKind = 'cuenta' | 'cdt' | 'inversion'
+
+const SAVINGS_KINDS: Array<{ value: SavingsKind; label: string }> = [
+  { value: 'cuenta',    label: 'Cuenta' },
+  { value: 'cdt',       label: 'CDT' },
+  { value: 'inversion', label: 'Inversión' },
+]
 
 const TYPE_OPTIONS: Array<{ value: AccountType; label: string; icon: typeof Landmark }> = [
   { value: 'account', label: 'Cuenta',   icon: Landmark },
@@ -28,7 +36,7 @@ function clampDay(s: string): number | undefined {
 
 export function AccountEditSheet() {
   const { getAccounts, saveAccountsConfig } = useFinanceStore()
-  const { closeSheet, showToast, editingAccountId, setEditingAccount, activeSheet } = useUIStore()
+  const { closeSheet, showToast, editingAccountId, setEditingAccount, activeSheet, newAccountType } = useUIStore()
 
   const isEditing = editingAccountId !== null
   const editingAccount = isEditing ? getAccounts().find(a => a.id === editingAccountId) : undefined
@@ -41,6 +49,8 @@ export function AccountEditSheet() {
   const [rate, setRate]           = useState('')
   const [cutoffDay, setCutoffDay] = useState('')
   const [dueDay, setDueDay]       = useState('')
+  const [savingsKind, setSavingsKind] = useState<SavingsKind>('cuenta')
+  const [maturity, setMaturity]       = useState('')
 
   const decimals = currency === 'USD' ? 2 : 0
   const balanceAmt = useMoneyInput({ decimals })  // startingBalance for account/cash
@@ -63,14 +73,17 @@ export function AccountEditSheet() {
         setRate(a.rate ? String(a.rate) : '')
         setCutoffDay(a.cutoffDay ? String(a.cutoffDay) : '')
         setDueDay(a.dueDay ? String(a.dueDay) : '')
+        setSavingsKind(a.savingsKind ?? 'cuenta')
+        setMaturity(a.maturityDate ?? '')
         balanceAmt.setValue(a.startingBalance ?? 0)
         limitAmt.setValue(a.creditLimit ?? 0)
         // Credit balance is stored as −debt; show the positive debt to the user
         debtAmt.setValue(Math.max(-(a.startingBalance ?? 0), 0))
       }
     } else {
-      setLabel(''); setCurrency('COP'); setType('account'); setNumber(''); setRate('')
+      setLabel(''); setCurrency('COP'); setType(newAccountType ?? 'account'); setNumber(''); setRate('')
       setCutoffDay(''); setDueDay('')
+      setSavingsKind('cuenta'); setMaturity('')
       balanceAmt.setValue(0); limitAmt.setValue(0); debtAmt.setValue(0)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -97,6 +110,10 @@ export function AccountEditSheet() {
           number: isCash ? '' : number.trim(),
           rate: rateNum,
           startingBalance: balanceAmt.numericValue,
+          ...(isSavings ? {
+            savingsKind,
+            maturityDate: savingsKind === 'cdt' ? (maturity || undefined) : undefined,
+          } : {}),
         }
 
     if (editingAccountId) {
@@ -213,7 +230,7 @@ export function AccountEditSheet() {
           {!isCash && (
             <div>
               <label htmlFor="acc-rate" className="field-label">
-                {isCredit ? 'Tasa E.A. % (opcional)' : 'Tasa anual % (opcional)'}
+                {isCredit ? 'Tasa E.A. % (opcional)' : isSavings ? 'Rendimiento E.A. % (opcional)' : 'Tasa anual % (opcional)'}
               </label>
               <input
                 id="acc-rate"
@@ -227,6 +244,39 @@ export function AccountEditSheet() {
             </div>
           )}
         </div>
+
+        {/* ── Savings/investment fields ── */}
+        {isSavings && (
+          <>
+            <div>
+              <label className="field-label">Tipo de ahorro</label>
+              <div className="grid grid-cols-3 rounded-lg border border-[var(--border)] p-0.5 gap-0.5">
+                {SAVINGS_KINDS.map(({ value, label: kLabel }) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setSavingsKind(value)}
+                    aria-pressed={savingsKind === value}
+                    className={cn(
+                      'py-1.5 rounded-md text-xs font-medium transition-colors border-0',
+                      savingsKind === value
+                        ? 'bg-[var(--primary)] text-[var(--primary-foreground)]'
+                        : 'bg-transparent text-muted-foreground hover:text-foreground hover:bg-[var(--accent)]',
+                    )}
+                  >
+                    {kLabel}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {savingsKind === 'cdt' && (
+              <div>
+                <label htmlFor="acc-maturity" className="field-label">Fecha de vencimiento</label>
+                <DatePicker id="acc-maturity" value={maturity} onChange={setMaturity} />
+              </div>
+            )}
+          </>
+        )}
 
         {/* ── Credit-card fields ── */}
         {isCredit && (

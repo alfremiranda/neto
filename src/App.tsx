@@ -8,6 +8,7 @@ import { DashboardView } from '@/components/views/DashboardView'
 import { ConfigView } from '@/components/views/ConfigView'
 import { ProfileView } from '@/components/views/ProfileView'
 import { CuentasView } from '@/components/views/CuentasView'
+import { AhorrosView } from '@/components/views/AhorrosView'
 import { Toast } from '@/components/ui/Toast'
 import { AccountEditSheet } from '@/components/sheets/AccountEditSheet'
 import { AccountDetailSheet } from '@/components/sheets/AccountDetailSheet'
@@ -129,6 +130,7 @@ export default function App() {
               {view === 'mes'       && <MesView />}
               {view === 'dashboard' && <DashboardView />}
               {view === 'cuentas'   && <CuentasView />}
+              {view === 'ahorros'   && <AhorrosView />}
               {view === 'config'    && <ConfigView />}
               {view === 'profile'   && <ProfileView />}
             </div>

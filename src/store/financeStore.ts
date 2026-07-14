@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { DEFAULTS, TRANSFER_ACCOUNTS, GASTOS_KEYS, EGRESO_TIPOS, EGRESO_CATEGORIAS, smmlvForYear } from '@/data/defaults'
 import { sbPush, sbPullAll, sbDeleteAll } from '@/lib/supabase'
-import type { FinanceDB, MonthData, Account, Settings, Income, Egreso, Transfer, VoluntariaItem } from '@/types'
+import type { FinanceDB, MonthData, Account, Settings, Income, Egreso, Transfer } from '@/types'
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -284,9 +284,6 @@ interface FinanceState {
   addTransfer: (transfer: Omit<Transfer, 'id'>) => void
   updateTransfer: (id: number, transfer: Omit<Transfer, 'id'>) => void
   removeTransfer: (id: number) => void
-  addVoluntaria: (item: Omit<VoluntariaItem, 'id'>) => void
-  updateVoluntaria: (item: VoluntariaItem) => void
-  removeVoluntaria: (id: number) => void
   reorderEgresos: (orderedIds: number[]) => void
   setStartingBalance: (accountId: string, amount: number) => void
   setSsAccount: (accountId: string | null) => void
@@ -495,38 +492,6 @@ export const useFinanceStore = create<FinanceState>()(
         autoPush(curKey, updated)
       },
 
-      addVoluntaria: (item) => {
-        const { curKey, db } = get()
-        const d = db[curKey] ?? initMonth(curKey, db)
-        const updated: MonthData = {
-          ...d,
-          voluntarias: [...(d.voluntarias ?? []), { ...item, id: Date.now() }],
-        }
-        set(state => ({ db: { ...state.db, [curKey]: updated } }))
-        autoPush(curKey, updated)
-      },
-
-      updateVoluntaria: (item) => {
-        const { curKey, db } = get()
-        const d = db[curKey] ?? emptyMonth()
-        const updated: MonthData = {
-          ...d,
-          voluntarias: (d.voluntarias ?? []).map(v => v.id === item.id ? item : v),
-        }
-        set(state => ({ db: { ...state.db, [curKey]: updated } }))
-        autoPush(curKey, updated)
-      },
-
-      removeVoluntaria: (id) => {
-        const { curKey, db } = get()
-        const d = db[curKey] ?? emptyMonth()
-        const updated: MonthData = {
-          ...d,
-          voluntarias: (d.voluntarias ?? []).filter(v => v.id !== id),
-        }
-        set(state => ({ db: { ...state.db, [curKey]: updated } }))
-        autoPush(curKey, updated)
-      },
 
       reorderEgresos: (orderedIds) => {
         const { curKey, db } = get()

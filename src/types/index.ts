@@ -47,6 +47,9 @@ export interface Account {
   creditLimit?: number      // cupo total (in the account's currency)
   cutoffDay?: number        // día de corte (1–31)
   dueDay?: number           // día límite de pago (1–31)
+  // ── Savings/investment only (type === 'savings') ──
+  savingsKind?: 'cuenta' | 'cdt' | 'inversion'  // vehicle kind; default 'cuenta'
+  maturityDate?: string     // CDT: fecha de vencimiento (YYYY-MM-DD)
 }
 
 export interface VoluntariaItem {
@@ -78,9 +81,9 @@ export interface Settings {
 
 export type FinanceDB = { _settings?: Settings } & Record<string, MonthData>
 
-export type ViewType = 'mes' | 'dashboard' | 'cuentas' | 'config' | 'profile'
+export type ViewType = 'mes' | 'dashboard' | 'cuentas' | 'ahorros' | 'config' | 'profile'
 
-export type SheetId = 'income' | 'egreso' | 'transfer' | 'voluntaria' | 'account-edit' | 'balance' | 'account-detail' | null
+export type SheetId = 'income' | 'egreso' | 'transfer' | 'account-edit' | 'balance' | 'account-detail' | null
 
 export interface TRMCache {
   trm: number
