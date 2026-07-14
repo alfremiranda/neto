@@ -1,35 +1,10 @@
 import { useState } from 'react'
-import { SlidersHorizontal, Sliders, LogOut, CloudUpload, RefreshCw, Lock } from 'lucide-react'
+import { LogOut, CloudUpload, RefreshCw } from 'lucide-react'
 import { DeductionsPanel } from '@/components/settings/DeductionsPanel'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { useAuthStore } from '@/store/authStore'
-import { copFormat } from '@/lib/format'
 import { Button } from '@/components/ui/button'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-
-function ParamsTab() {
-  const { getSMMLV, curKey } = useFinanceStore()
-  const [y] = curKey.split('-').map(Number)
-  const currentSmmlv = getSMMLV(y)
-
-  return (
-    <div className="space-y-4">
-      <div className="bg-[var(--background)] rounded-lg border border-[var(--border)] p-4">
-        <label className="block text-xs font-medium text-muted-foreground mb-1.5">
-          SMMLV {y} (COP)
-        </label>
-        <div className="flex items-center gap-2 border border-[var(--input)] rounded-lg px-[10px] py-2 bg-muted/50">
-          <span className="flex-1 font-heading tabular-nums text-foreground">{copFormat(currentSmmlv)}</span>
-          <Lock size={13} className="text-muted-foreground shrink-0" />
-        </div>
-        <p className="text-xs text-muted-foreground mt-2">
-          Valor legal fijado por decreto. Base mínima para calcular el IBC de seguridad social.
-        </p>
-      </div>
-    </div>
-  )
-}
 
 export function ConfigView() {
   const { user, signOut } = useAuthStore()
@@ -61,32 +36,7 @@ export function ConfigView() {
     <div className="max-w-xl mx-auto">
       <h1 className="text-lg font-semibold mb-4">Configuración</h1>
 
-      <Tabs defaultValue="parametros">
-        <TabsList className="w-full rounded-none bg-transparent border-b border-[var(--border)] p-0 h-auto justify-start gap-0 mb-0">
-          <TabsTrigger
-            value="parametros"
-            className="gap-1.5 rounded-none px-4 pb-3 pt-2 text-sm border-b-2 border-transparent -mb-px data-[state=active]:border-[var(--primary)] data-[state=active]:!bg-transparent data-[state=active]:!shadow-none data-[state=active]:text-foreground"
-          >
-            <SlidersHorizontal size={13} />
-            Parámetros
-          </TabsTrigger>
-          <TabsTrigger
-            value="deducciones"
-            className="gap-1.5 rounded-none px-4 pb-3 pt-2 text-sm border-b-2 border-transparent -mb-px data-[state=active]:border-[var(--primary)] data-[state=active]:!bg-transparent data-[state=active]:!shadow-none data-[state=active]:text-foreground"
-          >
-            <Sliders size={13} />
-            Deducciones
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="parametros" className="mt-4">
-          <ParamsTab />
-        </TabsContent>
-
-        <TabsContent value="deducciones" className="mt-4">
-          <DeductionsPanel />
-        </TabsContent>
-      </Tabs>
+      <DeductionsPanel />
 
       {/* Sync + account section */}
       {user && (

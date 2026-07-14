@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
-import { Plus, Trash2, RotateCcw, Pencil, X } from 'lucide-react'
+import { Plus, Trash2, RotateCcw, Pencil, X, Lock } from 'lucide-react'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
+import { copFormat } from '@/lib/format'
 import { Button } from '@/components/ui/button'
 import { IconButton } from '@/components/ui/icon-button'
 import { Switch } from '@/components/ui/switch'
@@ -384,8 +385,11 @@ function DeductionRow({
 
 export function DeductionsPanel() {
   const { deductions, resetDeductions } = useSettingsStore()
+  const { getSMMLV, curKey } = useFinanceStore()
   const { showToast } = useUIStore()
   const [drawer, setDrawer] = useState<DrawerState>(EMPTY_DRAWER)
+  const [year] = curKey.split('-').map(Number)
+  const currentSmmlv = getSMMLV(year)
 
   function openCreate(group: DeductionGroup) {
     setDrawer({ open: true, mode: 'create', group, deduction: null })
@@ -402,6 +406,20 @@ export function DeductionsPanel() {
 
   return (
     <div className="space-y-4">
+      {/* SMMLV — legal base for the IBC floor */}
+      <div className="bg-[var(--background)] rounded-lg border border-[var(--border)] p-4">
+        <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+          SMMLV {year} (COP)
+        </label>
+        <div className="flex items-center gap-2 border border-[var(--input)] rounded-lg px-[10px] py-2 bg-muted/50">
+          <span className="flex-1 font-heading tabular-nums text-foreground">{copFormat(currentSmmlv)}</span>
+          <Lock size={13} className="text-muted-foreground shrink-0" />
+        </div>
+        <p className="text-xs text-muted-foreground mt-2">
+          Valor legal fijado por decreto. Base mínima para calcular el IBC de seguridad social.
+        </p>
+      </div>
+
       <div className="flex items-start justify-between gap-3">
         <p className="text-xs text-muted-foreground">
           Activa deducciones y ajusta el tipo de cálculo, meses y monto desde el formulario de edición.
