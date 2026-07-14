@@ -402,7 +402,7 @@ export function OnboardingView() {
 
   return (
     <div
-      className="min-h-[100dvh] flex flex-col bg-[var(--background)]"
+      className="h-[100dvh] flex flex-col bg-[var(--background)] overflow-hidden"
       style={{
         paddingTop:    'max(16px, env(safe-area-inset-top))',
         paddingBottom: 'max(24px, env(safe-area-inset-bottom))',
@@ -450,7 +450,7 @@ export function OnboardingView() {
       </div>
 
       {/* CTA */}
-      <div className="px-6 max-w-sm mx-auto w-full space-y-1">
+      <div className="shrink-0 px-6 max-w-sm mx-auto w-full space-y-1">
         <Button size="xl" className="w-full" onClick={handleNext}>
           {step === 0
             ? 'Comenzar'
