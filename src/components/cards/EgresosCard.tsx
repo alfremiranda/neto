@@ -123,9 +123,8 @@ function EgresoRow({
       : egreso.account.toLowerCase().includes('bancol') ? 'bancol'
       : 'otro'
     : 'otro'
+  // Dim the amount + icon only while the date is still in the future; once it arrives, treat as effective
   const isScheduled   = !!egreso.date && egreso.date > localToday()
-  // Only dim the amount while the date is still in the future; once it arrives, treat as effective
-  const isUnconfirmed = egreso.confirmed === false && isScheduled
 
   const usdAmount = egreso.currency === 'USD' ? egreso.amount : amtCOP / trm
   const usdLabel  = fmtUSDSecondary(usdAmount)
