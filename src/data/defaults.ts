@@ -63,6 +63,28 @@ export const TRANSFER_ACCOUNTS: Account[] = [
   { id: 'Efectivo',    label: 'Efectivo',             currency: 'COP', type: 'cash', number: '', rate: 0,  startingBalance: 0, locked: true },
 ]
 
+// SMMLV (salario mínimo mensual legal vigente) is a legal constant set each
+// year by government decree — not a user preference. Values are hardcoded per
+// year and updated once a year when the new decree is published.
+export const SMMLV_BY_YEAR: Record<number, number> = {
+  2024: 1300000,
+  2025: 1423500,
+  2026: 1750905,
+}
+
+/**
+ * Official SMMLV for a given year. Years outside the known range clamp to the
+ * nearest known year (earliest for past, latest for future) so calculations
+ * always have a sensible legal base until the table is updated.
+ */
+export function smmlvForYear(year: number): number {
+  const exact = SMMLV_BY_YEAR[year]
+  if (exact) return exact
+  const years = Object.keys(SMMLV_BY_YEAR).map(Number).sort((a, b) => a - b)
+  if (year < years[0]) return SMMLV_BY_YEAR[years[0]]
+  return SMMLV_BY_YEAR[years[years.length - 1]]
+}
+
 export const DEFAULTS = {
   trm: 3567.11,
   pv: 2000000,

@@ -1,27 +1,17 @@
 import { useState } from 'react'
-import { SlidersHorizontal, Sliders, LogOut, CloudUpload, RefreshCw } from 'lucide-react'
+import { SlidersHorizontal, Sliders, LogOut, CloudUpload, RefreshCw, Lock } from 'lucide-react'
 import { DeductionsPanel } from '@/components/settings/DeductionsPanel'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { useAuthStore } from '@/store/authStore'
-import { parseCOP, copFormat } from '@/lib/format'
-import { DEFAULTS } from '@/data/defaults'
+import { copFormat } from '@/lib/format'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 
 function ParamsTab() {
-  const { getSMMLV, saveSMMLV, curKey } = useFinanceStore()
-  const { showToast } = useUIStore()
+  const { getSMMLV, curKey } = useFinanceStore()
   const [y] = curKey.split('-').map(Number)
   const currentSmmlv = getSMMLV(y)
-  const [val, setVal] = useState(copFormat(currentSmmlv))
-
-  function handleSave() {
-    const n = parseCOP(val) || DEFAULTS.smmlv
-    saveSMMLV(String(y), n)
-    setVal(copFormat(n))
-    showToast(`SMMLV ${y} guardado`)
-  }
 
   return (
     <div className="space-y-4">
@@ -29,22 +19,12 @@ function ParamsTab() {
         <label className="block text-xs font-medium text-muted-foreground mb-1.5">
           SMMLV {y} (COP)
         </label>
-        <div className="flex items-center gap-3">
-          <input
-            type="text"
-            inputMode="numeric"
-            value={val}
-            onChange={e => {
-              const stripped = e.target.value.replace(/[^\d]/g, '')
-              setVal(stripped ? parseInt(stripped).toLocaleString('es-CO') : '')
-            }}
-            onBlur={handleSave}
-            className="flex-1 border border-[var(--input)] rounded-lg px-[10px] py-2 bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
-          />
-          <Button onClick={handleSave}>Guardar</Button>
+        <div className="flex items-center gap-2 border border-[var(--input)] rounded-lg px-[10px] py-2 bg-muted/50">
+          <span className="flex-1 font-heading tabular-nums text-foreground">{copFormat(currentSmmlv)}</span>
+          <Lock size={13} className="text-muted-foreground shrink-0" />
         </div>
         <p className="text-xs text-muted-foreground mt-2">
-          Base mínima para calcular el IBC de seguridad social
+          Valor legal fijado por decreto. Base mínima para calcular el IBC de seguridad social.
         </p>
       </div>
     </div>

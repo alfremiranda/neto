@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { DEFAULTS, TRANSFER_ACCOUNTS, GASTOS_KEYS, EGRESO_TIPOS, EGRESO_CATEGORIAS } from '@/data/defaults'
+import { DEFAULTS, TRANSFER_ACCOUNTS, GASTOS_KEYS, EGRESO_TIPOS, EGRESO_CATEGORIAS, smmlvForYear } from '@/data/defaults'
 import { sbPush, sbPullAll, sbDeleteAll } from '@/lib/supabase'
 import type { FinanceDB, MonthData, Account, Settings, Income, Egreso, Transfer, VoluntariaItem } from '@/types'
 
@@ -230,7 +230,6 @@ interface FinanceState {
   setStartingBalance: (accountId: string, amount: number) => void
   setSsAccount: (accountId: string | null) => void
   setTRM: (trm: number) => void
-  saveSMMLV: (year: string, value: number) => void
   saveAccountsConfig: (accounts: Account[]) => void
   completeOnboarding: () => void
 
@@ -284,10 +283,8 @@ export const useFinanceStore = create<FinanceState>()(
         }
       },
 
-      getSMMLV: (year) => {
-        const s = get().db._settings as Settings | undefined
-        return s?.smmlv?.[String(year)] ?? DEFAULTS.smmlv
-      },
+      // SMMLV is a legal constant (see SMMLV_BY_YEAR); not user-editable.
+      getSMMLV: (year) => smmlvForYear(year),
 
       isOnboardingDone: () => {
         const s = get().db._settings as Settings | undefined
@@ -508,22 +505,6 @@ export const useFinanceStore = create<FinanceState>()(
         const updated = { ...existing, trm }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
         autoPush(curKey, updated)
-      },
-
-      saveSMMLV: (year, value) => {
-        set(state => {
-          const settings = (state.db._settings ?? {}) as Settings
-          return {
-            db: {
-              ...state.db,
-              _settings: {
-                ...settings,
-                smmlv: { ...(settings.smmlv ?? {}), [year]: value },
-              },
-            } as FinanceDB,
-          }
-        })
-        sbPush('_settings', get().db._settings).catch(() => {})
       },
 
       saveAccountsConfig: (accounts) => {
