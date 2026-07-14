@@ -152,7 +152,7 @@ export function IncomeSheet() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {accounts.map(a => (
+                {[...accounts].sort((a, b) => Number(!!b.favorite) - Number(!!a.favorite)).map(a => (
                   <SelectItem key={a.id} value={a.id}>{a.label} ({a.currency})</SelectItem>
                 ))}
               </SelectContent>

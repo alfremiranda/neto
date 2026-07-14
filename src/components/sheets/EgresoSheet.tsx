@@ -182,8 +182,10 @@ export function EgresoSheet() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="_none">Sin cuenta asociada</SelectItem>
-              {accounts
-                .sort((a, b) => (a.currency === currency ? -1 : 1) - (b.currency === currency ? -1 : 1))
+              {[...accounts]
+                .sort((a, b) =>
+                  (Number(!!b.favorite) - Number(!!a.favorite)) ||
+                  ((a.currency === currency ? -1 : 1) - (b.currency === currency ? -1 : 1)))
                 .map(a => (
                   <SelectItem key={a.id} value={a.id}>{a.label} ({a.currency})</SelectItem>
                 ))}

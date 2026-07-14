@@ -262,7 +262,7 @@ export function TransferSheet() {
             <Select value={fromId} onValueChange={setFromId}>
               <SelectTrigger id="tr-from" className="w-full"><SelectValue /></SelectTrigger>
               <SelectContent>
-                {accounts.map(a => <SelectItem key={a.id} value={a.id}>{a.label} ({a.currency})</SelectItem>)}
+                {[...accounts].sort((a, b) => Number(!!b.favorite) - Number(!!a.favorite)).map(a => <SelectItem key={a.id} value={a.id}>{a.label} ({a.currency})</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
@@ -271,7 +271,7 @@ export function TransferSheet() {
             <Select value={toId} onValueChange={setToId}>
               <SelectTrigger id="tr-to" className="w-full"><SelectValue /></SelectTrigger>
               <SelectContent>
-                {accounts.map(a => <SelectItem key={a.id} value={a.id}>{a.label} ({a.currency})</SelectItem>)}
+                {[...accounts].sort((a, b) => Number(!!b.favorite) - Number(!!a.favorite)).map(a => <SelectItem key={a.id} value={a.id}>{a.label} ({a.currency})</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
