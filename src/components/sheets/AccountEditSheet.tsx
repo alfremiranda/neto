@@ -51,6 +51,7 @@ export function AccountEditSheet() {
   const [dueDay, setDueDay]       = useState('')
   const [savingsKind, setSavingsKind] = useState<SavingsKind>('cuenta')
   const [maturity, setMaturity]       = useState('')
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
 
   const decimals = currency === 'USD' ? 2 : 0
   const balanceAmt = useMoneyInput({ decimals })  // startingBalance for account/cash
@@ -63,6 +64,7 @@ export function AccountEditSheet() {
 
   useEffect(() => {
     if (activeSheet !== 'account-edit') return
+    setConfirmingDelete(false)
     if (editingAccountId) {
       const a = getAccounts().find(acc => acc.id === editingAccountId)
       if (a) {
@@ -147,14 +149,31 @@ export function AccountEditSheet() {
       title={isEditing ? 'Editar' : 'Nueva cuenta'}
       footer={
         <div className="space-y-4 sm:space-y-3">
-          <Button size="xl" className="w-full" onClick={handleSave}>
-            {saveLabel}
-          </Button>
-          {isEditing && !isLocked && (
-            <Button size="xl" variant="outline-danger" className="w-full" onClick={handleDelete}>
+          {!confirmingDelete && (
+            <Button size="xl" className="w-full" onClick={handleSave}>
+              {saveLabel}
+            </Button>
+          )}
+          {isEditing && !isLocked && !confirmingDelete && (
+            <Button size="xl" variant="outline-danger" className="w-full" onClick={() => setConfirmingDelete(true)}>
               <Trash2 size={14} />
               Eliminar
             </Button>
+          )}
+          {isEditing && !isLocked && confirmingDelete && (
+            <div className="space-y-3">
+              <p className="text-sm text-center text-muted-foreground">
+                ¿Eliminar esta cuenta? Sus movimientos dejarán de estar asociados.
+              </p>
+              <div className="flex gap-2">
+                <Button size="xl" variant="ghost" className="flex-1" onClick={() => setConfirmingDelete(false)}>
+                  Cancelar
+                </Button>
+                <Button size="xl" variant="destructive" className="flex-1" onClick={handleDelete}>
+                  Eliminar
+                </Button>
+              </div>
+            </div>
           )}
         </div>
       }
