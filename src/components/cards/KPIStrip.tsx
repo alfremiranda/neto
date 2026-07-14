@@ -1,6 +1,7 @@
 import { useFinanceStore } from '@/store/financeStore'
 import { useMonthData } from '@/hooks/useMonthData'
 import { useSettingsStore } from '@/store/settingsStore'
+import { useDeductionGroups } from '@/hooks/useDeductionGroups'
 import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase } from '@/lib/calc'
 import { COP, USD, localToday } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -79,9 +80,16 @@ function egresoCategory(category: string) {
   return EGRESO_CATEGORIAS.find(c => c.id === category)?.label ?? 'Otros'
 }
 
+const GRID_BY_COUNT: Record<number, string> = {
+  3: 'grid-cols-1 sm:grid-cols-3 lg:grid-cols-3',
+  4: 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-4',
+  5: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-5',
+}
+
 export function KPIStrip() {
   const { getSMMLV, curKey } = useFinanceStore()
   const deductions = useSettingsStore(s => s.deductions)
+  const { showObligaciones, showProvisiones } = useDeductionGroups()
   const month = useMonthData()
   const [y, m] = curKey.split('-').map(Number)
   const smmlv = getSMMLV(y)
@@ -158,49 +166,62 @@ export function KPIStrip() {
 
   const netoDetail: DetailLine[] = bruto > 0 ? [
     { label: 'Ingreso bruto',         value: COP(bruto) },
-    { label: '− Oblig. tributarias',  value: COP(obligTotal) },
-    { label: '− Provisiones',         value: COP(provTotal) },
+    ...(showObligaciones && obligTotal > 0 ? [{ label: '− Oblig. tributarias', value: COP(obligTotal) }] : []),
+    ...(showProvisiones && provTotal > 0  ? [{ label: '− Provisiones',        value: COP(provTotal) }] : []),
     { label: '− Egresos',             value: COP(gast) },
     { label: '', value: '', separator: true },
     { label: 'Neto libre',            value: COP(Math.max(res.netoLibre, 0)) },
   ] : []
 
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-5">
+  const kpis = [
+    <KPICard
+      key="bruto"
+      label="Ingreso bruto"
+      value={COP(bruto)}
+      sub={bruto > 0 ? USD(totUSD) : 'Sin ingresos este mes'}
+      detail={ingresoDetail.length > 0 ? ingresoDetail : undefined}
+    />,
+    showObligaciones && (
       <KPICard
-        label="Ingreso bruto"
-        value={COP(bruto)}
-        sub={bruto > 0 ? USD(totUSD) : 'Sin ingresos este mes'}
-        detail={ingresoDetail.length > 0 ? ingresoDetail : undefined}
-      />
-      <KPICard
+        key="oblig"
         label="O. Tributarias"
         value={COP(obligTotal)}
         sub={pct(obligTotal)}
         accentToken="--color-tax-txt"
         detail={obligDetail.length > 0 ? obligDetail : undefined}
       />
+    ),
+    showProvisiones && (
       <KPICard
+        key="prov"
         label="Provisiones"
         value={COP(provTotal)}
         sub={pct(provTotal)}
         accentToken={provToken}
         detail={provDetail.length > 0 ? provDetail : undefined}
       />
-      <KPICard
-        label="Egresos"
-        value={COP(gast)}
-        sub={pct(gast)}
-        accent="text-[var(--color-expense-txt)]"
-        detail={egresoDetail.length > 0 ? egresoDetail : undefined}
-      />
-      <KPICard
-        label="Neto libre"
-        value={COP(Math.max(res.netoLibre, 0))}
-        sub={pct(Math.max(res.netoLibre, 0))}
-        accent={res.netoLibre > 0 ? 'text-[var(--color-net-txt)]' : 'text-[var(--color-danger-txt)]'}
-        detail={netoDetail.length > 0 ? netoDetail : undefined}
-      />
+    ),
+    <KPICard
+      key="egresos"
+      label="Egresos"
+      value={COP(gast)}
+      sub={pct(gast)}
+      accent="text-[var(--color-expense-txt)]"
+      detail={egresoDetail.length > 0 ? egresoDetail : undefined}
+    />,
+    <KPICard
+      key="neto"
+      label="Neto libre"
+      value={COP(Math.max(res.netoLibre, 0))}
+      sub={pct(Math.max(res.netoLibre, 0))}
+      accent={res.netoLibre > 0 ? 'text-[var(--color-net-txt)]' : 'text-[var(--color-danger-txt)]'}
+      detail={netoDetail.length > 0 ? netoDetail : undefined}
+    />,
+  ].filter(Boolean)
+
+  return (
+    <div className={cn('grid gap-3 mb-5', GRID_BY_COUNT[kpis.length] ?? GRID_BY_COUNT[5])}>
+      {kpis}
     </div>
   )
 }
