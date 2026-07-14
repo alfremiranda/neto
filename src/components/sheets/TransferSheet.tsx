@@ -164,6 +164,20 @@ export function TransferSheet() {
     if (fromId === toId)   { showToast('Las cuentas deben ser distintas'); return }
     if (!from || !to) return
 
+    // Source account must have enough balance to cover the transfer.
+    // Credit cards are exempt — they can go into (more) debt.
+    if (from.type !== 'credit') {
+      const existing = isEditing ? (month.transfers || []).find(t => t.id === editingTransferId) : undefined
+      // fromBalance already reflects the existing transfer's deduction when editing; add it back
+      const addBack   = existing && existing.from === fromId ? existing.amount : 0
+      const available = fromBalance + addBack
+      if (amt.numericValue > available) {
+        const fmtCcy = from.currency === 'USD' ? USD : COP
+        showToast(`Saldo insuficiente en ${from.label} · disponible ${fmtCcy(Math.max(available, 0))}`)
+        return
+      }
+    }
+
     const toAmount = computeToAmount()
     const trm      = isCross
       ? (effectiveTRM ?? (parseMoney(trmDisplay) || month.trm))
