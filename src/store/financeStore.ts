@@ -751,20 +751,6 @@ export const useFinanceStore = create<FinanceState>()(
         let changed = false
         const newDb: FinanceDB = { ...db }
 
-        // Migrate SMMLV from per-month to _settings
-        if (!newDb._settings || !(newDb._settings as Settings).smmlv) {
-          const byYear: Record<string, number> = {}
-          Object.keys(newDb).filter(k => k !== '_settings').forEach(k => {
-            const m = newDb[k] as (MonthData & { smmlv?: number }) | undefined
-            if (m?.smmlv) { const y = k.split('-')[0]; if (!byYear[y]) byYear[y] = m.smmlv }
-          })
-          if (Object.keys(byYear).length) {
-            const settings = (newDb._settings ?? {}) as Settings
-            newDb._settings = { ...settings, smmlv: byYear }
-            changed = true
-          }
-        }
-
         // Migrate old gastos object → egresos array (legacy format)
         Object.keys(newDb).filter(k => k !== '_settings').forEach(k => {
           const m = newDb[k] as (MonthData & {

@@ -88,7 +88,6 @@ export function smmlvForYear(year: number): number {
 export const DEFAULTS = {
   trm: 3567.11,
   pv: 2000000,
-  smmlv: 1750905,
   salud_prepagada: 2000000,
   arq_savings_rate: 0.035,
   ss_salud: 0.125,
