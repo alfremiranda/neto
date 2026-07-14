@@ -91,7 +91,7 @@ function AccountsOverview() {
 
   if (userAccounts.length === 0) {
     return (
-      <SectionCard icon={WalletCards} title="Favoritos">
+      <SectionCard icon={WalletCards} title="Mis Cuentas">
         <Empty className="border-0 py-2">
           <EmptyHeader>
             <EmptyMedia variant="icon"><WalletCards size={14} /></EmptyMedia>
@@ -110,7 +110,7 @@ function AccountsOverview() {
   return (
     <SectionCard
       icon={WalletCards}
-      title="Favoritos"
+      title="Mis Cuentas"
       action={
         <Button size="sm" variant="outline" onClick={() => setView('cuentas')}>
           Ver todo
