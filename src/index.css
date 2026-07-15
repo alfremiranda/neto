@@ -515,6 +515,16 @@
 *::-webkit-scrollbar-thumb:hover {
   background: var(--muted-foreground);
 }
+/* Hide the scrollbar for drag-scroll rows (e.g. account card carousels) */
+.scrollbar-none {
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* legacy Edge */
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;                /* Chrome / Safari */
+  width: 0;
+  height: 0;
+}
 
 /* react-day-picker: selected day.
    The number is rendered by a ghost button whose own bg/text win over Tailwind
