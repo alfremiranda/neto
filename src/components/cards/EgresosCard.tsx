@@ -586,7 +586,7 @@ function EgresosCardContent() {
                     <div className="flex flex-col gap-1.5">
                       <label className="field-label">Cuenta</label>
                       <Select value={filterAccount || 'all'} onValueChange={v => setFilterAccount(v === 'all' ? '' : v)}>
-                        <SelectTrigger data-size="none" className="h-10 text-sm">
+                        <SelectTrigger data-size="none" className="w-full h-10 text-sm">
                           <SelectValue placeholder="Todas las cuentas" />
                         </SelectTrigger>
                         <SelectContent>
