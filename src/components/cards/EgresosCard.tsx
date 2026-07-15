@@ -445,12 +445,12 @@ function EgresosCardContent() {
                   <button
                     type="button" onClick={() => scrollTabs('left')}
                     aria-label="Ver categorías anteriores"
-                    className="absolute left-0 top-0 bottom-0 z-10 flex items-center justify-center w-8 bg-gradient-to-r from-background via-background/90 to-transparent"
+                    className="hidden sm:flex absolute left-0 top-0 bottom-0 z-10 items-center justify-center w-8 bg-gradient-to-r from-[var(--card)] via-[var(--card)] to-transparent"
                   >
                     <ChevronLeft size={13} className="text-muted-foreground" />
                   </button>
                 )}
-                <div ref={scrollRef} className="overflow-x-auto overflow-y-hidden scrollbar-none">
+                <div ref={scrollRef} className="overflow-x-auto overflow-y-hidden overscroll-x-contain scrollbar-none">
                   <div className="flex items-center gap-2 w-max min-w-full px-4 py-3">
                     <CategoryChip
                       label="Todos"
@@ -478,7 +478,7 @@ function EgresosCardContent() {
                   <button
                     type="button" onClick={() => scrollTabs('right')}
                     aria-label="Ver más categorías"
-                    className="absolute right-0 top-0 bottom-0 z-10 flex items-center justify-center w-8 bg-gradient-to-l from-background via-background/90 to-transparent"
+                    className="hidden sm:flex absolute right-0 top-0 bottom-0 z-10 items-center justify-center w-8 bg-gradient-to-l from-[var(--card)] via-[var(--card)] to-transparent"
                   >
                     <ChevronRight size={13} className="text-muted-foreground" />
                   </button>
