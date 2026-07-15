@@ -164,8 +164,10 @@ export function CuentasView() {
   const { db, getAccounts } = useFinanceStore()
   const { openSheet, setEditingAccount } = useUIStore()
   const accounts = getAccounts()
+  // Favorites first, preserving the configured order otherwise.
+  const sortedAccounts = [...accounts].sort((a, b) => Number(!!b.favorite) - Number(!!a.favorite))
 
-  const [selectedId, setSelectedId] = useState<string>(accounts[0]?.id ?? '')
+  const [selectedId, setSelectedId] = useState<string>(sortedAccounts[0]?.id ?? '')
 
   const selectedAccount = accounts.find(a => a.id === selectedId)
 
@@ -221,15 +223,16 @@ export function CuentasView() {
             </EmptyContent>
           </Empty>
         ) : (
-          <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
-            {accounts.map(a => (
-              <AccountCardView
-                key={a.id}
-                account={a}
-                size="lg"
-                selected={selectedId === a.id}
-                onClick={() => setSelectedId(a.id)}
-              />
+          <div className="flex gap-3 overflow-x-auto scrollbar-none -mx-4 px-4 snap-x sm:mx-0 sm:px-0 sm:overflow-visible sm:grid sm:grid-cols-3 lg:grid-cols-4">
+            {sortedAccounts.map(a => (
+              <div key={a.id} className="grid shrink-0 w-[46%] min-w-[150px] snap-start sm:w-auto sm:min-w-0">
+                <AccountCardView
+                  account={a}
+                  size="lg"
+                  selected={selectedId === a.id}
+                  onClick={() => setSelectedId(a.id)}
+                />
+              </div>
             ))}
           </div>
         )}

@@ -20,7 +20,10 @@ export function AhorrosView() {
   const { openSheet, setEditingAccount, setEditingTransfer, setNewAccountType } = useUIStore()
 
   const accounts = getAccounts()
-  const savings  = accounts.filter(a => a.type === 'savings')
+  // Favorites first, preserving the configured order otherwise.
+  const savings  = accounts
+    .filter(a => a.type === 'savings')
+    .sort((a, b) => Number(!!b.favorite) - Number(!!a.favorite))
 
   const allKeys  = Object.keys(db).filter(k => k !== '_settings').sort()
   const latestKey = allKeys[allKeys.length - 1] ?? ''
@@ -83,16 +86,17 @@ export function AhorrosView() {
             </div>
           </SectionCard>
 
-          {/* Savings account cards */}
-          <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
+          {/* Savings account cards — horizontal drag row on mobile, grid on desktop */}
+          <div className="flex gap-3 overflow-x-auto scrollbar-none -mx-4 px-4 snap-x sm:mx-0 sm:px-0 sm:overflow-visible sm:grid sm:grid-cols-3 lg:grid-cols-4">
             {savings.map(a => (
-              <AccountCardView
-                key={a.id}
-                account={a}
-                size="lg"
-                selected={selected?.id === a.id}
-                onClick={() => setSelectedId(a.id)}
-              />
+              <div key={a.id} className="grid shrink-0 w-[46%] min-w-[150px] snap-start sm:w-auto sm:min-w-0">
+                <AccountCardView
+                  account={a}
+                  size="lg"
+                  selected={selected?.id === a.id}
+                  onClick={() => setSelectedId(a.id)}
+                />
+              </div>
             ))}
           </div>
 

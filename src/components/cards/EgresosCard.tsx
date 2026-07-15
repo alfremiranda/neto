@@ -490,7 +490,7 @@ function EgresosCardContent() {
                 {/* Mobile filter bar */}
                 <div className="sm:hidden px-4 py-2 flex items-center gap-2">
                   <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger data-size="none" className="flex-1 h-8 gap-1.5 text-xs border-transparent bg-transparent hover:bg-[var(--accent)]">
+                    <SelectTrigger data-size="none" className="flex-1 h-8 gap-1.5 text-xs">
                       <ArrowUpDown size={12} className="text-muted-foreground shrink-0" />
                       <SelectValue />
                     </SelectTrigger>
@@ -522,7 +522,7 @@ function EgresosCardContent() {
                 {/* Desktop filter bar */}
                 <div className="hidden sm:flex px-4 py-2 items-center gap-2">
                   <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger data-size="none" className="shrink-0 h-7 w-auto px-2 gap-1.5 text-xs border-transparent bg-transparent hover:bg-[var(--accent)]">
+                    <SelectTrigger data-size="none" className="shrink-0 h-7 w-auto gap-1.5 text-xs">
                       <ArrowUpDown size={12} className="text-muted-foreground shrink-0" />
                       <SelectValue />
                     </SelectTrigger>
