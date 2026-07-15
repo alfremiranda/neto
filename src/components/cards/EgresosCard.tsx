@@ -13,12 +13,12 @@ import { SectionCard } from '@/components/ui/SectionCard'
 import { Button } from '@/components/ui/button'
 import { IconButton } from '@/components/ui/icon-button'
 import { Badge } from '@/components/ui/Badge'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { DatePicker } from '@/components/ui/DatePicker'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import type { LucideIcon } from 'lucide-react'
 import type { Egreso, Account } from '@/types'
 
 // ─── Category icon bubble ─────────────────────────────────────────────────────
@@ -232,28 +232,51 @@ function EgresoRow({
   )
 }
 
-// ─── Count badge pill ─────────────────────────────────────────────────────────
+// ─── Action chip (category tab) ───────────────────────────────────────────────
 
-function CountBadge({ count, active }: { count: number; active: boolean }) {
+function ChipBadge({ count, active }: { count: number; active: boolean }) {
   return (
     <span className={cn(
-      'ml-1 min-w-[18px] h-[18px] rounded-full text-[10px] font-medium px-1 inline-flex items-center justify-center tabular-nums leading-none transition-colors',
+      'inline-flex items-center justify-center h-5 min-w-[20px] px-1 rounded-full text-[10px] font-medium leading-none tabular-nums transition-colors',
       active
         ? 'bg-[var(--primary)] text-[var(--primary-foreground)]'
-        : 'bg-muted text-muted-foreground',
+        : 'bg-[var(--accent)] text-[var(--muted-foreground)]',
     )}>
       {count}
     </span>
   )
 }
 
-// ─── Card ─────────────────────────────────────────────────────────────────────
+function CategoryChip({
+  icon: Icon, label, count, active, onClick,
+}: {
+  icon?: LucideIcon
+  label: string
+  count: number
+  active: boolean
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={cn(
+        'shrink-0 inline-flex items-center gap-1 min-h-[30px] pl-[9px] pr-[5px] py-[5px] rounded-xl border text-[10px] font-medium whitespace-nowrap cursor-pointer transition-colors',
+        active
+          ? 'border-[var(--primary)] text-[var(--primary)]'
+          : 'border-[var(--input)] text-[var(--muted-foreground)] hover:border-[var(--muted-foreground)] hover:text-foreground',
+      )}
+      style={active ? { backgroundColor: 'color-mix(in oklab, var(--primary) 10%, transparent)' } : undefined}
+    >
+      {Icon && <Icon size={12} strokeWidth={2} className="shrink-0" />}
+      {label}
+      <ChipBadge count={count} active={active} />
+    </button>
+  )
+}
 
-const TAB_CLS = [
-  'gap-1 rounded-none px-3 py-3 text-xs border-b-2 border-transparent -mb-px min-h-[44px]',
-  'data-[state=active]:border-[var(--primary)] data-[state=active]:!bg-transparent',
-  'data-[state=active]:!shadow-none data-[state=active]:text-foreground whitespace-nowrap',
-].join(' ')
+// ─── Card ─────────────────────────────────────────────────────────────────────
 
 function EgresosCardSkeleton() {
   return (
@@ -416,42 +439,46 @@ function EgresosCardContent() {
           </Empty>
         ) : (
           <div ref={cardRef} className="-mx-4 -mb-4">
-            <Tabs value={activeTab} onValueChange={handleTabChange}>
-              {/* Tab bar — scrollable with arrow buttons */}
+              {/* Category chips — scrollable with arrow affordances */}
               <div className="relative border-b border-[var(--border)]">
                 {canLeft && (
                   <button
                     type="button" onClick={() => scrollTabs('left')}
                     aria-label="Ver categorías anteriores"
-                    className="absolute left-0 top-0 bottom-0 z-10 flex items-center justify-center w-7 bg-gradient-to-r from-background via-background/90 to-transparent"
+                    className="absolute left-0 top-0 bottom-0 z-10 flex items-center justify-center w-8 bg-gradient-to-r from-background via-background/90 to-transparent"
                   >
                     <ChevronLeft size={13} className="text-muted-foreground" />
                   </button>
                 )}
                 <div ref={scrollRef} className="overflow-x-auto overflow-y-hidden scrollbar-none">
-                  <TabsList className="flex w-max min-w-full rounded-none bg-transparent p-0 h-auto justify-start gap-0 px-1">
-                    <TabsTrigger value="todos" className={TAB_CLS}>
-                      Todos
-                      <CountBadge count={egresos.length} active={activeTab === 'todos'} />
-                    </TabsTrigger>
+                  <div className="flex items-center gap-2 w-max min-w-full px-4 py-3">
+                    <CategoryChip
+                      label="Todos"
+                      count={egresos.length}
+                      active={activeTab === 'todos'}
+                      onClick={() => handleTabChange('todos')}
+                    />
+                    <span className="shrink-0 w-px h-5 bg-[var(--border)] mx-0.5" />
                     {activeCats.map(cat => {
                       const count = egresos.filter(e => (e.category || 'otro') === cat.id).length
-                      const Icon  = cat.icon
                       return (
-                        <TabsTrigger key={cat.id} value={cat.id} className={TAB_CLS}>
-                          <Icon size={11} />
-                          {cat.label}
-                          <CountBadge count={count} active={activeTab === cat.id} />
-                        </TabsTrigger>
+                        <CategoryChip
+                          key={cat.id}
+                          icon={cat.icon}
+                          label={cat.label}
+                          count={count}
+                          active={activeTab === cat.id}
+                          onClick={() => handleTabChange(cat.id)}
+                        />
                       )
                     })}
-                  </TabsList>
+                  </div>
                 </div>
                 {canRight && (
                   <button
                     type="button" onClick={() => scrollTabs('right')}
                     aria-label="Ver más categorías"
-                    className="absolute right-0 top-0 bottom-0 z-10 flex items-center justify-center w-7 bg-gradient-to-l from-background via-background/90 to-transparent"
+                    className="absolute right-0 top-0 bottom-0 z-10 flex items-center justify-center w-8 bg-gradient-to-l from-background via-background/90 to-transparent"
                   >
                     <ChevronRight size={13} className="text-muted-foreground" />
                   </button>
@@ -636,7 +663,6 @@ function EgresosCardContent() {
                   </>
                 )}
               </div>
-            </Tabs>
           </div>
         )}
     </SectionCard>
