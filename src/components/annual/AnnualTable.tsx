@@ -17,16 +17,16 @@ interface DonutSeg { key: string; label: string; amount: number; color: string }
 // Donut of the gross composition (the KPI breakdown): obligations + provisions
 // + expenses + free net all sum to the gross, shown in the center.
 function AnnualDonut({ segments, total, centerValue }: { segments: DonutSeg[]; total: number; centerValue: string }) {
-  const size = 148, stroke = 16
-  const r = (size - stroke) / 2
-  const c = size / 2
+  const vb = 148, stroke = 14
+  const r = (vb - stroke) / 2
+  const c = vb / 2
   const circ = 2 * Math.PI * r
   let acc = 0
 
   return (
-    <div className="flex flex-col items-center gap-3 w-full">
-      <div className="relative shrink-0" style={{ width: size, height: size }}>
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90">
+    <div className="flex flex-col items-center gap-4 w-full">
+      <div className="relative w-full max-w-[220px] aspect-square">
+        <svg viewBox={`0 0 ${vb} ${vb}`} className="w-full h-full -rotate-90">
           <circle cx={c} cy={c} r={r} fill="none" stroke="var(--muted)" strokeWidth={stroke} />
           {segments.map(s => {
             const len = total > 0 ? (s.amount / total) * circ : 0
@@ -41,18 +41,17 @@ function AnnualDonut({ segments, total, centerValue }: { segments: DonutSeg[]; t
             return seg
           })}
         </svg>
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-2 text-center">
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
           <div className="text-[15px] font-bold font-heading tabular-nums leading-tight">{centerValue}</div>
           <div className="text-[11px] text-muted-foreground">Bruto</div>
         </div>
       </div>
 
-      <div className="flex flex-col gap-1.5 w-full">
+      <div className="flex flex-col gap-1.5">
         {segments.map(s => (
-          <div key={s.key} className="flex items-center gap-2 text-[11px]">
+          <div key={s.key} className="flex items-center gap-2 text-xs">
             <span className="w-2 h-2 rounded-full shrink-0" style={{ background: `var(${s.color})` }} />
-            <span className="flex-1 min-w-0 truncate text-muted-foreground">{s.label}</span>
-            <span className="font-mono tabular-nums font-medium">{pct(s.amount, total)}</span>
+            <span className="text-muted-foreground">{s.label}</span>
           </div>
         ))}
       </div>
@@ -113,9 +112,16 @@ export function AnnualTable({ year }: AnnualTableProps) {
   const showDonut = donutTotal > 0 && donutSegments.length > 1
 
   return (
-    <div className={cn('space-y-3', showDonut && 'lg:grid lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-4 lg:space-y-0 lg:items-start')}>
+    <div className={cn('space-y-4', showDonut && 'lg:grid lg:grid-cols-[1fr_2fr] lg:gap-5 lg:space-y-0 lg:items-start')}>
+      {/* Donut — on top on mobile, left column on desktop */}
+      {showDonut && (
+        <div className="flex flex-col justify-center lg:col-start-1 lg:row-start-1 lg:self-stretch">
+          <AnnualDonut segments={donutSegments} total={donutTotal} centerValue={COP(totBruto)} />
+        </div>
+      )}
+
       {/* KPI cards */}
-      <div className={cn('grid grid-cols-2 sm:grid-cols-3 gap-2', showDonut && 'lg:col-start-2')}>
+      <div className={cn('grid grid-cols-2 sm:grid-cols-3 gap-2', showDonut && 'lg:col-start-2 lg:row-start-1')}>
         <MetricCard
           label="Bruto total año"
           value={<span className="text-[15px] font-heading tabular-nums">{COP(totBruto)}</span>}
@@ -147,12 +153,6 @@ export function AnnualTable({ year }: AnnualTableProps) {
         />
       </div>
 
-      {/* Donut — below the KPIs on mobile, left of the KPIs on desktop */}
-      {showDonut && (
-        <div className="rounded-xl border border-[var(--border)] bg-muted/30 p-4 flex flex-col justify-center lg:col-start-1 lg:row-start-1 lg:self-stretch">
-          <AnnualDonut segments={donutSegments} total={donutTotal} centerValue={COP(totBruto)} />
-        </div>
-      )}
     </div>
   )
 }
