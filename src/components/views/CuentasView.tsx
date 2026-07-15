@@ -225,7 +225,7 @@ export function CuentasView() {
         ) : (
           <div className="flex gap-3 overflow-x-auto overscroll-x-contain scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0 sm:overflow-visible sm:grid sm:grid-cols-3 lg:grid-cols-4">
             {sortedAccounts.map(a => (
-              <div key={a.id} className="grid shrink-0 w-[46%] min-w-[150px] sm:w-auto sm:min-w-0">
+              <div key={a.id} className="grid shrink-0 w-[46%] min-w-[150px] [&>*]:min-w-0 sm:w-auto sm:min-w-0">
                 <AccountCardView
                   account={a}
                   size="lg"
