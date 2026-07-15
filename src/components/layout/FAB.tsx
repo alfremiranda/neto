@@ -53,7 +53,7 @@ export function FAB() {
       onTrigger: () => trigger(() => { setEditingIncome(null); openSheet('income') }),
     },
     {
-      label: 'Egreso',
+      label: 'Gasto',
       Icon: TrendingDown,
       onTrigger: () => trigger(() => { setEditingEgreso(null); openSheet('egreso') }),
     },

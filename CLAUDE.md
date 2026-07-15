@@ -38,7 +38,7 @@ Este proyecto usa **Tailwind CSS v3**, NO v4. Cualquier sintaxis v4 es silencios
 
 ## Terminología canónica
 - **Ingresos** — entradas de dinero (USD o COP)
-- **Egresos** — salidas/gastos del mes (nunca "gastos" ni "manutención" en la UI)
+- **Gastos** — salidas del mes. Este es el label de UI (más friendly); en código, tipos y esquema de datos la clave sigue siendo `egresos`/`Egreso`. Nunca "manutención" en la UI.
 - **SS** — seguridad social (salud + pensión + ARL)
 - **Retención** — provisión bimestral para DIAN
 - **Primas** — provisión semestral (jun/dic)

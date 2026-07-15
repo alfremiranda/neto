@@ -82,15 +82,15 @@ export function EgresoSheet() {
   return (
     <SheetBase
       id="egreso"
-      title={isEditing ? 'Editar egreso' : 'Agregar egreso'}
+      title={isEditing ? 'Editar gasto' : 'Agregar gasto'}
       footer={
         <div className="space-y-4 sm:space-y-3">
           <Button size="xl" className="w-full" onClick={handleSubmit}>
-            {isEditing ? 'Guardar cambios' : 'Agregar egreso'}
+            {isEditing ? 'Guardar cambios' : 'Agregar gasto'}
           </Button>
           {isEditing && !confirmingDelete && (
             <Button size="xl" variant="outline-danger" className="w-full" onClick={() => setConfirmingDelete(true)}>
-              Eliminar egreso
+              Eliminar gasto
             </Button>
           )}
           {isEditing && confirmingDelete && (

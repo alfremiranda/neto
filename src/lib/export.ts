@@ -40,7 +40,7 @@ export function exportAnnualCSV(
     'Total SS',
     ...provItems.map(d => pct(d.label, d.pct)),
     'Ahorro voluntario',
-    'Egresos',
+    'Gastos',
     'Total deducciones',
     'Neto libre',
   ]

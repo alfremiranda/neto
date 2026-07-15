@@ -168,7 +168,7 @@ export function KPIStrip() {
     { label: 'Ingreso bruto',         value: COP(bruto) },
     ...(showObligaciones && obligTotal > 0 ? [{ label: '− Oblig. tributarias', value: COP(obligTotal) }] : []),
     ...(showProvisiones && provTotal > 0  ? [{ label: '− Provisiones',        value: COP(provTotal) }] : []),
-    { label: '− Egresos',             value: COP(gast) },
+    { label: '− Gastos',              value: COP(gast) },
     { label: '', value: '', separator: true },
     { label: 'Neto libre',            value: COP(Math.max(res.netoLibre, 0)) },
   ] : []
@@ -203,7 +203,7 @@ export function KPIStrip() {
     ),
     <KPICard
       key="egresos"
-      label="Egresos"
+      label="Gastos"
       value={COP(gast)}
       sub={pct(gast)}
       accent="text-[var(--color-expense-txt)]"

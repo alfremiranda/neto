@@ -16,7 +16,7 @@ import { Badge } from '@/components/ui/Badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { DatePicker } from '@/components/ui/DatePicker'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerBody } from '@/components/ui/drawer'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import type { LucideIcon } from 'lucide-react'
 import type { Egreso, Account } from '@/types'
@@ -180,7 +180,7 @@ function EgresoRow({
         </div>
 
         <div className="flex items-center gap-0.5 shrink-0">
-          <IconButton variant="ghost" size="md" onClick={onEdit} aria-label="Editar egreso">
+          <IconButton variant="ghost" size="md" onClick={onEdit} aria-label="Editar gasto">
             <Pencil size={12} />
           </IconButton>
           {isPendingDelete ? (
@@ -198,7 +198,7 @@ function EgresoRow({
               variant="ghost-danger"
               size="md"
               onClick={onDelete}
-              aria-label="Eliminar egreso"
+              aria-label="Eliminar gasto"
             >
               <Trash2 size={12} />
             </IconButton>
@@ -280,7 +280,7 @@ function CategoryChip({
 
 function EgresosCardSkeleton() {
   return (
-    <SectionCard icon={Receipt} title="Egresos del mes">
+    <SectionCard icon={Receipt} title="Gastos del mes">
       <div className="flex gap-2 mb-3">
         {[48, 36, 52].map((w, i) => <Skeleton key={i} className="h-7 rounded-full" style={{ width: w }} />)}
       </div>
@@ -421,19 +421,19 @@ function EgresosCardContent() {
   }
 
   const subtotalLabel = activeTab === 'todos'
-    ? 'Total egresos'
+    ? 'Total gastos'
     : `Total ${activeCats.find(c => c.id === activeTab)?.label ?? activeTab}`
 
   return (
     <SectionCard
       icon={Receipt}
-      title="Egresos del mes"
+      title="Gastos del mes"
     >
         {egresos.length === 0 ? (
           <Empty className="border-0 py-4">
             <EmptyHeader>
               <EmptyMedia variant="icon"><Receipt size={14} /></EmptyMedia>
-              <EmptyTitle>Sin egresos</EmptyTitle>
+              <EmptyTitle>Sin gastos</EmptyTitle>
               <EmptyDescription>No hay gastos registrados este mes</EmptyDescription>
             </EmptyHeader>
           </Empty>
@@ -565,15 +565,26 @@ function EgresosCardContent() {
                 </div>
               </div>
 
-              {/* Mobile filter drawer */}
-              <Drawer open={filterDrawerOpen} onOpenChange={setFilterDrawerOpen} noBodyStyles>
-                <DrawerContent className="inset-x-0 bottom-0 rounded-t-2xl max-h-[80dvh]">
-                  <DrawerHeader className="text-left pb-2">
+              {/* Mobile filter drawer — matches the app sheet style */}
+              <Drawer open={filterDrawerOpen} onOpenChange={setFilterDrawerOpen} direction="bottom" noBodyStyles>
+                <DrawerContent className="inset-x-0 bottom-0 rounded-t-2xl max-h-[85dvh]">
+                  {/* Drag handle */}
+                  <div data-vaul-handle className="mx-auto mt-3 mb-1 h-1 w-10 rounded-full bg-[var(--border)] shrink-0" />
+
+                  <DrawerHeader>
                     <DrawerTitle>Filtros</DrawerTitle>
+                    <button
+                      onClick={() => setFilterDrawerOpen(false)}
+                      aria-label="Cerrar"
+                      className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
+                    >
+                      <X size={16} />
+                    </button>
                   </DrawerHeader>
-                  <div className="px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] flex flex-col gap-4">
+
+                  <DrawerBody className="space-y-4">
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-medium text-muted-foreground">Cuenta</label>
+                      <label className="field-label">Cuenta</label>
                       <Select value={filterAccount || 'all'} onValueChange={v => setFilterAccount(v === 'all' ? '' : v)}>
                         <SelectTrigger data-size="none" className="h-10 text-sm">
                           <SelectValue placeholder="Todas las cuentas" />
@@ -589,7 +600,7 @@ function EgresosCardContent() {
                       </Select>
                     </div>
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-medium text-muted-foreground">Fecha</label>
+                      <label className="field-label">Fecha</label>
                       <div className="flex items-center gap-2">
                         <DatePicker
                           value={filterDate}
@@ -604,16 +615,23 @@ function EgresosCardContent() {
                         )}
                       </div>
                     </div>
+                  </DrawerBody>
+
+                  <div
+                    className="shrink-0 px-5 pt-3 border-t border-[var(--border)] space-y-2"
+                    style={{ paddingBottom: 'max(20px, env(safe-area-inset-bottom))' }}
+                  >
                     {hasFilters && (
                       <Button
                         variant="outline"
-                        className="w-full mt-1"
+                        size="xl"
+                        className="w-full"
                         onClick={() => { setFilterAccount(''); setFilterDate(''); setFilterDrawerOpen(false) }}
                       >
                         Limpiar filtros
                       </Button>
                     )}
-                    <Button className="w-full" onClick={() => setFilterDrawerOpen(false)}>
+                    <Button size="xl" className="w-full" onClick={() => setFilterDrawerOpen(false)}>
                       Aplicar
                     </Button>
                   </div>

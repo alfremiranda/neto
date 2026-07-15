@@ -37,7 +37,7 @@ export function FlujoCard() {
     {
       num: 1,
       title: <>Bancolombia <Badge variant="cop">COP</Badge></>,
-      desc:  'SS + egresos del mes',
+      desc:  'SS + gastos del mes',
       amount: COP(aBancolCOP),
       sub:    USD(aBancolUSD),
     },

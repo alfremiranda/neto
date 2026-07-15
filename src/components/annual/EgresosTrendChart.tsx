@@ -207,11 +207,11 @@ export function EgresosTrendChart({ year }: EgresosTrendChartProps) {
 
   if (!hasData) {
     return (
-      <SectionCard icon={ShoppingBag} title="Tendencia de egresos">
+      <SectionCard icon={ShoppingBag} title="Tendencia de gastos">
         <Empty className="border-0 py-4">
           <EmptyHeader>
             <EmptyMedia variant="icon"><ShoppingBag size={14} /></EmptyMedia>
-            <EmptyTitle>Sin egresos en {year}</EmptyTitle>
+            <EmptyTitle>Sin gastos en {year}</EmptyTitle>
             <EmptyDescription>Registra gastos del mes para ver la tendencia anual</EmptyDescription>
           </EmptyHeader>
         </Empty>
@@ -220,7 +220,7 @@ export function EgresosTrendChart({ year }: EgresosTrendChartProps) {
   }
 
   return (
-    <SectionCard icon={ShoppingBag} title="Tendencia de egresos">
+    <SectionCard icon={ShoppingBag} title="Tendencia de gastos">
       <div ref={containerRef} className="relative select-none">
         <svg ref={svgRef} className="w-full block" />
         {tooltip && (

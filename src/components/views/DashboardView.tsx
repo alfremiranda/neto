@@ -36,7 +36,7 @@ function DashboardHeader() {
 
   const actions = [
     { label: 'Ingreso',           Icon: TrendingUp,      onClick: () => { setEditingIncome(null);     openSheet('income')     } },
-    { label: 'Egreso',            Icon: TrendingDown,    onClick: () => { setEditingEgreso(null);     openSheet('egreso')     } },
+    { label: 'Gasto',             Icon: TrendingDown,    onClick: () => { setEditingEgreso(null);     openSheet('egreso')     } },
     { label: 'Movimiento',        Icon: ArrowLeftRight,  onClick: () => { setEditingTransfer(null);   openSheet('transfer')   } },
   ]
 

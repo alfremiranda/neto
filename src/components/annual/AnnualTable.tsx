@@ -30,7 +30,7 @@ export function AnnualTable({ year }: AnnualTableProps) {
         <EmptyHeader>
           <EmptyMedia variant="icon"><CalendarDays size={14} /></EmptyMedia>
           <EmptyTitle>Sin registros en {year}</EmptyTitle>
-          <EmptyDescription>Navega a un mes y agrega ingresos o egresos para ver el resumen anual</EmptyDescription>
+          <EmptyDescription>Navega a un mes y agrega ingresos o gastos para ver el resumen anual</EmptyDescription>
         </EmptyHeader>
       </Empty>
     )
@@ -80,7 +80,7 @@ export function AnnualTable({ year }: AnnualTableProps) {
           />
         )}
         <MetricCard
-          label="Egresos"
+          label="Gastos"
           value={<span className="text-[15px] font-heading tabular-nums text-[var(--color-expense)]">{COP(totGast)}</span>}
           sub={`${pct(totGast, totBruto)} del bruto`}
         />
@@ -100,7 +100,7 @@ export function AnnualTable({ year }: AnnualTableProps) {
               <th className="text-right py-[6px] px-[6px] text-muted-foreground font-medium">Bruto</th>
               {showOblig && <th className="hidden sm:table-cell text-right py-[6px] px-[6px] font-medium" style={{ color: `var(${obligColor})` }}>Oblig.</th>}
               {showProv && <th className="hidden sm:table-cell text-right py-[6px] px-[6px] font-medium" style={{ color: `var(${provColor})` }}>Prov.</th>}
-              <th className="hidden xs:table-cell text-right py-[6px] px-[6px] text-[var(--color-expense)] font-medium">Egresos</th>
+              <th className="hidden xs:table-cell text-right py-[6px] px-[6px] text-[var(--color-expense)] font-medium">Gastos</th>
               <th className="text-right py-[6px] px-[6px] text-[var(--color-net-txt)] font-medium">Neto</th>
             </tr>
           </thead>

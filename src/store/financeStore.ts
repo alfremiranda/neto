@@ -829,7 +829,7 @@ export const useFinanceStore = create<FinanceState>()(
               ?? 'otro'
             return {
               id: e.id,
-              desc: tipoData?.label ?? tipo ?? 'Egreso',
+              desc: tipoData?.label ?? tipo ?? 'Gasto',
               category: catId,
               amount: e.amount,
               currency: e.currency,

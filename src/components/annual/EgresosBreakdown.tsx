@@ -47,11 +47,11 @@ export function EgresosBreakdown({ year }: EgresosBreakdownProps) {
 
   if (categories.length === 0) {
     return (
-      <SectionCard icon={LayoutList} title="Egresos por categoría">
+      <SectionCard icon={LayoutList} title="Gastos por categoría">
         <Empty className="border-0 py-4">
           <EmptyHeader>
             <EmptyMedia variant="icon"><LayoutList size={14} /></EmptyMedia>
-            <EmptyTitle>Sin egresos en {year}</EmptyTitle>
+            <EmptyTitle>Sin gastos en {year}</EmptyTitle>
             <EmptyDescription>Registra gastos del mes para ver el desglose por categoría</EmptyDescription>
           </EmptyHeader>
         </Empty>
@@ -65,7 +65,7 @@ export function EgresosBreakdown({ year }: EgresosBreakdownProps) {
   return (
     <SectionCard
       icon={LayoutList}
-      title="Egresos por categoría"
+      title="Gastos por categoría"
       action={
         <span className="text-sm font-semibold font-heading tabular-nums text-[var(--color-expense)]">
           {COP(grandTotal)}

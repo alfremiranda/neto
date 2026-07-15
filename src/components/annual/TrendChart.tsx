@@ -66,7 +66,7 @@ export function TrendChart() {
     return [
       { key: 'oblig' as SeriesKey, label: 'Obligaciones', token: '--color-tax' },
       { key: 'prov'  as SeriesKey, label: 'Provisiones',  token: provColor   },
-      { key: 'egres' as SeriesKey, label: 'Egresos',      token: '--color-expense'  },
+      { key: 'egres' as SeriesKey, label: 'Gastos',       token: '--color-expense'  },
       { key: 'neto'  as SeriesKey, label: 'Neto libre',   token: '--color-net'  },
     ]
   }, [db, curKey, deductions, getSMMLV])

@@ -211,7 +211,7 @@ export function AccountDetailSheet() {
             </EmptyTitle>
             <EmptyDescription>
               {account.startingBalance != null
-                ? 'Los ingresos, egresos y transferencias vinculados a esta cuenta aparecerán aquí'
+                ? 'Los ingresos, gastos y transferencias vinculados a esta cuenta aparecerán aquí'
                 : 'Configura el saldo inicial para activar el historial de esta cuenta'}
             </EmptyDescription>
           </EmptyHeader>

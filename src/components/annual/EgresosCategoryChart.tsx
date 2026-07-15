@@ -235,11 +235,11 @@ export function EgresosCategoryChart({ year }: EgresosCategoryChartProps) {
 
   if (!hasData) {
     return (
-      <SectionCard icon={ShoppingBag} title="Egresos mensuales">
+      <SectionCard icon={ShoppingBag} title="Gastos mensuales">
         <Empty className="border-0 py-4">
           <EmptyHeader>
             <EmptyMedia variant="icon"><ShoppingBag size={14} /></EmptyMedia>
-            <EmptyTitle>Sin egresos en {year}</EmptyTitle>
+            <EmptyTitle>Sin gastos en {year}</EmptyTitle>
             <EmptyDescription>Registra gastos del mes para ver la tendencia anual</EmptyDescription>
           </EmptyHeader>
         </Empty>
@@ -248,7 +248,7 @@ export function EgresosCategoryChart({ year }: EgresosCategoryChartProps) {
   }
 
   return (
-    <SectionCard icon={ShoppingBag} title="Egresos mensuales">
+    <SectionCard icon={ShoppingBag} title="Gastos mensuales">
       <div ref={containerRef} className="relative select-none">
         <svg ref={svgRef} className="w-full block" />
         {tooltip && (

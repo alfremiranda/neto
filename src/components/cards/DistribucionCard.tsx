@@ -41,7 +41,7 @@ export function DistribucionCard() {
   const raw: Omit<Segment, 'pct'>[] = [
     { id: 'oblig',   label: 'Obligaciones', color: '--color-tax', amount: obligTotal },
     { id: 'prov',    label: 'Provisiones',  color: provColor,   amount: provTotal  },
-    { id: 'egresos', label: 'Egresos',      color: '--color-expense',  amount: gast       },
+    { id: 'egresos', label: 'Gastos',       color: '--color-expense',  amount: gast       },
     { id: 'neto',    label: 'Neto libre',   color: '--color-net',  amount: netoLibre  },
   ]
 

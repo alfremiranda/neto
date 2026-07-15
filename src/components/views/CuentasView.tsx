@@ -296,7 +296,7 @@ export function CuentasView() {
                   </EmptyTitle>
                   <EmptyDescription>
                     {selectedAccount.startingBalance != null
-                      ? 'Los ingresos, egresos y transferencias vinculados a esta cuenta aparecerán aquí'
+                      ? 'Los ingresos, gastos y transferencias vinculados a esta cuenta aparecerán aquí'
                       : 'Configura el saldo inicial en la tarjeta de la cuenta para activar el historial'}
                   </EmptyDescription>
                 </EmptyHeader>
