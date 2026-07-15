@@ -4,6 +4,7 @@ import { Header } from '@/components/layout/Header'
 import { AppSidebar, Sidebar_MobileNav } from '@/components/layout/Sidebar'
 import { FAB } from '@/components/layout/FAB'
 import { MesView } from '@/components/views/MesView'
+import { MonthNav } from '@/components/layout/MonthNav'
 import { DashboardView } from '@/components/views/DashboardView'
 import { ConfigView } from '@/components/views/ConfigView'
 import { ProfileView } from '@/components/views/ProfileView'
@@ -127,6 +128,13 @@ export default function App() {
 
           <main ref={mainRef} className="flex-1 overflow-y-auto overflow-x-hidden bg-[var(--background)] min-w-0 flex flex-col">
             <PullIndicator pullY={pullY} refreshing={refreshing} isPulling={isPulling} />
+            {view === 'mes' && (
+              <div className="sticky top-0 z-30 bg-[var(--background)]/80 backdrop-blur-md border-b border-[var(--border)]">
+                <div className="max-w-5xl mx-auto w-full px-4 sm:px-5 lg:px-6 py-3">
+                  <MonthNav />
+                </div>
+              </div>
+            )}
             <div className="max-w-5xl mx-auto w-full p-4 sm:p-5 lg:p-6 pb-4 sm:pb-5 lg:pb-6">
               {view === 'mes'       && <MesView />}
               {view === 'dashboard' && <DashboardView />}
