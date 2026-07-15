@@ -126,7 +126,7 @@ export function AnnualTable({ year }: AnnualTableProps) {
     <div className={cn('space-y-4', showDonut && 'lg:grid lg:grid-cols-[1fr_2fr] lg:gap-5 lg:space-y-0 lg:items-center')}>
       {/* Donut — on top on mobile, left column (centered with the KPIs) on desktop */}
       {showDonut && (
-        <div className="lg:col-start-1 lg:row-start-1">
+        <div className="py-4 lg:py-0 lg:col-start-1 lg:row-start-1">
           <AnnualDonut segments={donutSegments} total={donutTotal} centerValue={COP(totBruto)} />
         </div>
       )}
