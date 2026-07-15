@@ -123,16 +123,16 @@ export function AnnualTable({ year }: AnnualTableProps) {
   restKpis.push({ key: 'neto', label: 'Neto libre acum.',  value: <span className="text-[15px] font-heading tabular-nums text-[var(--color-net-txt)]">{COP(totNeto)}</span>, sub: `${pct(totNeto, totBruto)} del bruto` })
 
   return (
-    <div className={cn('space-y-4', showDonut && 'lg:grid lg:grid-cols-[1fr_2fr] lg:gap-5 lg:space-y-0 lg:items-center')}>
-      {/* Donut — on top on mobile, left column (centered with the KPIs) on desktop */}
+    <div className={cn('space-y-4', showDonut && 'lg:flex lg:flex-row lg:items-center lg:gap-5 lg:space-y-0')}>
+      {/* Donut — on top on mobile, left (hugging its width, centered with the KPIs) on desktop */}
       {showDonut && (
-        <div className="py-4 lg:py-0 lg:col-start-1 lg:row-start-1">
+        <div className="py-4 lg:py-0 lg:w-[200px] lg:shrink-0">
           <AnnualDonut segments={donutSegments} total={donutTotal} centerValue={COP(totBruto)} />
         </div>
       )}
 
       {/* KPI cards — Bruto (principal) on its own row, the rest distributed */}
-      <div className={cn('flex flex-col gap-2', showDonut && 'lg:col-start-2 lg:row-start-1')}>
+      <div className={cn('flex flex-col gap-2', showDonut && 'lg:flex-1 lg:min-w-0')}>
         <MetricCard
           label="Bruto total año"
           value={<span className="text-xl font-heading tabular-nums">{COP(totBruto)}</span>}
