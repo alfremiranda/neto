@@ -1,4 +1,5 @@
 import { CalendarDays } from 'lucide-react'
+import { useState, type ReactNode } from 'react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
 import { buildAnnualData } from '@/lib/calc'
@@ -17,43 +18,46 @@ interface DonutSeg { key: string; label: string; amount: number; color: string }
 // Donut of the gross composition (the KPI breakdown): obligations + provisions
 // + expenses + free net all sum to the gross, shown in the center.
 function AnnualDonut({ segments, total, centerValue }: { segments: DonutSeg[]; total: number; centerValue: string }) {
-  const vb = 148, stroke = 14
+  const [selected, setSelected] = useState<string | null>(null)
+  const vb = 148, stroke = 20
   const r = (vb - stroke) / 2
   const c = vb / 2
   const circ = 2 * Math.PI * r
   let acc = 0
+  const sel = segments.find(s => s.key === selected) ?? null
 
   return (
-    <div className="flex flex-col items-center gap-4 w-full">
+    <div className="flex flex-col items-center w-full">
       <div className="relative w-full max-w-[220px] aspect-square">
         <svg viewBox={`0 0 ${vb} ${vb}`} className="w-full h-full -rotate-90">
           <circle cx={c} cy={c} r={r} fill="none" stroke="var(--muted)" strokeWidth={stroke} />
           {segments.map(s => {
             const len = total > 0 ? (s.amount / total) * circ : 0
+            const dim = sel != null && sel.key !== s.key
             const seg = (
               <circle
                 key={s.key} cx={c} cy={c} r={r} fill="none"
                 stroke={`var(${s.color})`} strokeWidth={stroke}
                 strokeDasharray={`${len} ${circ - len}`} strokeDashoffset={-acc}
+                className="cursor-pointer transition-opacity"
+                style={{ opacity: dim ? 0.25 : 1 }}
+                onClick={() => setSelected(k => (k === s.key ? null : s.key))}
               />
             )
             acc += len
             return seg
           })}
         </svg>
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
-          <div className="text-[15px] font-bold font-heading tabular-nums leading-tight">{centerValue}</div>
-          <div className="text-[11px] text-muted-foreground">Bruto</div>
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-1.5">
-        {segments.map(s => (
-          <div key={s.key} className="flex items-center gap-2 text-xs">
-            <span className="w-2 h-2 rounded-full shrink-0" style={{ background: `var(${s.color})` }} />
-            <span className="text-muted-foreground">{s.label}</span>
+        {/* Center reflects the tapped segment, or the gross by default */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center pointer-events-none">
+          <div
+            className="text-[15px] font-bold font-heading tabular-nums leading-tight"
+            style={sel ? { color: `var(${sel.color})` } : undefined}
+          >
+            {sel ? COP(sel.amount) : centerValue}
           </div>
-        ))}
+          <div className="text-[11px] text-muted-foreground">{sel ? sel.label : 'Bruto'}</div>
+        </div>
       </div>
     </div>
   )
@@ -111,46 +115,40 @@ export function AnnualTable({ year }: AnnualTableProps) {
   const donutTotal = donutSegments.reduce((s, x) => s + x.amount, 0)
   const showDonut = donutTotal > 0 && donutSegments.length > 1
 
+  // Secondary KPIs — the gross ("Bruto") is shown separately as the principal.
+  const restKpis: { key: string; label: string; value: ReactNode; sub: string }[] = []
+  if (showOblig) restKpis.push({ key: 'oblig', label: 'Obligaciones tributarias', value: <span className="text-[15px] font-heading tabular-nums" style={{ color: `var(${obligColor})` }}>{COP(totOblig)}</span>, sub: `${pct(totOblig, totBruto)} del bruto` })
+  if (showProv)  restKpis.push({ key: 'prov',  label: 'Provisiones',              value: <span className="text-[15px] font-heading tabular-nums" style={{ color: `var(${provColor})` }}>{COP(totProv)}</span>,  sub: `${pct(totProv, totBruto)} del bruto` })
+  restKpis.push({ key: 'gast', label: 'Gastos',            value: <span className="text-[15px] font-heading tabular-nums text-[var(--color-expense)]">{COP(totGast)}</span>, sub: `${pct(totGast, totBruto)} del bruto` })
+  restKpis.push({ key: 'neto', label: 'Neto libre acum.',  value: <span className="text-[15px] font-heading tabular-nums text-[var(--color-net-txt)]">{COP(totNeto)}</span>, sub: `${pct(totNeto, totBruto)} del bruto` })
+
   return (
-    <div className={cn('space-y-4', showDonut && 'lg:grid lg:grid-cols-[1fr_2fr] lg:gap-5 lg:space-y-0 lg:items-start')}>
-      {/* Donut — on top on mobile, left column on desktop */}
+    <div className={cn('space-y-4', showDonut && 'lg:grid lg:grid-cols-[1fr_2fr] lg:gap-5 lg:space-y-0 lg:items-center')}>
+      {/* Donut — on top on mobile, left column (centered with the KPIs) on desktop */}
       {showDonut && (
-        <div className="flex flex-col justify-center lg:col-start-1 lg:row-start-1 lg:self-stretch">
+        <div className="lg:col-start-1 lg:row-start-1">
           <AnnualDonut segments={donutSegments} total={donutTotal} centerValue={COP(totBruto)} />
         </div>
       )}
 
-      {/* KPI cards */}
-      <div className={cn('grid grid-cols-2 sm:grid-cols-3 gap-2', showDonut && 'lg:col-start-2 lg:row-start-1')}>
+      {/* KPI cards — Bruto (principal) on its own row, the rest distributed */}
+      <div className={cn('flex flex-col gap-2', showDonut && 'lg:col-start-2 lg:row-start-1')}>
         <MetricCard
           label="Bruto total año"
-          value={<span className="text-[15px] font-heading tabular-nums">{COP(totBruto)}</span>}
+          value={<span className="text-xl font-heading tabular-nums">{COP(totBruto)}</span>}
           sub={`${USD(totUSD)} + ${COP(totCOP)}`}
         />
-        {showOblig && (
-          <MetricCard
-            label="Obligaciones tributarias"
-            value={<span className="text-[15px] font-heading tabular-nums" style={{ color: `var(${obligColor})` }}>{COP(totOblig)}</span>}
-            sub={`${pct(totOblig, totBruto)} del bruto`}
-          />
-        )}
-        {showProv && (
-          <MetricCard
-            label="Provisiones"
-            value={<span className="text-[15px] font-heading tabular-nums" style={{ color: `var(${provColor})` }}>{COP(totProv)}</span>}
-            sub={`${pct(totProv, totBruto)} del bruto`}
-          />
-        )}
-        <MetricCard
-          label="Gastos"
-          value={<span className="text-[15px] font-heading tabular-nums text-[var(--color-expense)]">{COP(totGast)}</span>}
-          sub={`${pct(totGast, totBruto)} del bruto`}
-        />
-        <MetricCard
-          label="Neto libre acum."
-          value={<span className="text-[15px] font-heading tabular-nums text-[var(--color-net-txt)]">{COP(totNeto)}</span>}
-          sub={`${pct(totNeto, totBruto)} del bruto`}
-        />
+        <div className="flex flex-wrap gap-2">
+          {restKpis.map(k => (
+            <MetricCard
+              key={k.key}
+              label={k.label}
+              value={k.value}
+              sub={k.sub}
+              className="flex-1 basis-[calc(50%-0.25rem)] lg:basis-0 min-w-0"
+            />
+          ))}
+        </div>
       </div>
 
     </div>
