@@ -1,4 +1,4 @@
-import { Sun, Moon, CalendarDays, LogOut, PanelLeftClose, PanelLeftOpen, UserRound, Bell } from 'lucide-react'
+import { Sun, Moon, CalendarDays, LogOut, PanelLeftClose, PanelLeftOpen, UserRound, Bell, X, Settings2 } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 import { useLiveTRM } from '@/hooks/useLiveTRM'
 import { useTheme } from '@/hooks/useTheme'
@@ -9,6 +9,7 @@ import { useUIStore } from '@/store/uiStore'
 import { useSidebar } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
 import { IconButton } from '@/components/ui/icon-button'
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerBody } from '@/components/ui/drawer'
 
 function NotificationBell() {
   const { count } = useNotifications()
@@ -41,15 +42,26 @@ function UserAvatar() {
   const { setView } = useUIStore()
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const [isDesktop, setIsDesktop] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(min-width: 640px)').matches
+  )
 
   useEffect(() => {
-    if (!open) return
+    const mq = window.matchMedia('(min-width: 640px)')
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+
+  // Desktop dropdown: close on outside click
+  useEffect(() => {
+    if (!open || !isDesktop) return
     function onClickOutside(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
     }
     document.addEventListener('mousedown', onClickOutside)
     return () => document.removeEventListener('mousedown', onClickOutside)
-  }, [open])
+  }, [open, isDesktop])
 
   if (!user) return null
 
@@ -58,28 +70,89 @@ function UserAvatar() {
   const name       = displayName.trim() || oauthName
   const initials   = name.split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase()
 
+  const goProfile = () => { setOpen(false); setView('profile') }
+  const goConfig  = () => { setOpen(false); setView('config') }
+  const doSignOut = () => { setOpen(false); signOut() }
+
+  const trigger = (
+    <button
+      onClick={() => setOpen(v => !v)}
+      aria-label="Cuenta"
+      aria-haspopup="menu"
+      aria-expanded={open}
+      className="w-8 h-8 rounded-full overflow-hidden border-2 border-[var(--border)] hover:border-[var(--primary)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] cursor-pointer shrink-0"
+    >
+      {avatarUrl
+        ? <img src={avatarUrl} alt={name} className="w-full h-full object-cover" />
+        : <span className="w-full h-full flex items-center justify-center bg-[var(--muted)] text-[10px] font-bold">{initials}</span>
+      }
+    </button>
+  )
+
+  // Mobile: bottom sheet (matches the app sheet pattern + native focus trap/a11y from vaul)
+  if (!isDesktop) {
+    return (
+      <>
+        {trigger}
+        <Drawer open={open} onOpenChange={setOpen} direction="bottom" noBodyStyles>
+          <DrawerContent className="inset-x-0 bottom-0 rounded-t-2xl">
+            <div data-vaul-handle className="mx-auto mt-3 mb-1 h-1 w-10 rounded-full bg-[var(--border)] shrink-0" />
+            <DrawerHeader>
+              <DrawerTitle>Cuenta</DrawerTitle>
+              <button
+                onClick={() => setOpen(false)}
+                aria-label="Cerrar"
+                className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
+              >
+                <X size={16} />
+              </button>
+            </DrawerHeader>
+            <DrawerBody className="pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+              <div className="flex items-center gap-3 pb-4 mb-2 border-b border-[var(--border)]">
+                <div className="w-11 h-11 rounded-full overflow-hidden border border-[var(--border)] shrink-0">
+                  {avatarUrl
+                    ? <img src={avatarUrl} alt={name} className="w-full h-full object-cover" />
+                    : <span className="w-full h-full flex items-center justify-center bg-[var(--muted)] text-sm font-bold">{initials}</span>
+                  }
+                </div>
+                <div className="min-w-0">
+                  <div className="text-sm font-medium truncate">{name}</div>
+                  <div className="text-xs text-muted-foreground truncate">{user.email}</div>
+                </div>
+              </div>
+              <button type="button" onClick={goProfile} className="w-full flex items-center gap-3 px-2 py-3 rounded-lg text-sm hover:bg-[var(--muted)] transition-colors text-left">
+                <UserRound size={16} className="text-muted-foreground shrink-0" />
+                Mi perfil
+              </button>
+              <button type="button" onClick={goConfig} className="w-full flex items-center gap-3 px-2 py-3 rounded-lg text-sm hover:bg-[var(--muted)] transition-colors text-left">
+                <Settings2 size={16} className="text-muted-foreground shrink-0" />
+                Configuración
+              </button>
+              <button type="button" onClick={doSignOut} className="w-full flex items-center gap-3 px-2 py-3 rounded-lg text-sm text-btn-danger-fg hover:bg-btn-danger-hover transition-colors text-left">
+                <LogOut size={16} className="shrink-0" />
+                Cerrar sesión
+              </button>
+            </DrawerBody>
+          </DrawerContent>
+        </Drawer>
+      </>
+    )
+  }
+
+  // Desktop dropdown
   return (
     <div ref={ref} className="relative">
-      <button
-        onClick={() => setOpen(v => !v)}
-        aria-label="Cuenta"
-        className="w-8 h-8 rounded-full overflow-hidden border-2 border-[var(--border)] hover:border-[var(--primary)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] cursor-pointer"
-      >
-        {avatarUrl
-          ? <img src={avatarUrl} alt={name} className="w-full h-full object-cover" />
-          : <span className="w-full h-full flex items-center justify-center bg-[var(--muted)] text-[10px] font-bold">{initials}</span>
-        }
-      </button>
+      {trigger}
 
       {open && (
-        <div className="absolute right-0 top-10 w-52 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-lg z-50 overflow-hidden">
+        <div role="menu" className="absolute right-0 top-10 w-52 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-lg z-50 overflow-hidden">
           <div className="px-3 py-2.5 border-b border-[var(--border)]">
             <div className="text-xs font-medium truncate">{name}</div>
             <div className="text-[11px] text-muted-foreground truncate">{user.email}</div>
           </div>
           <Button
             variant="ghost"
-            onClick={() => { setOpen(false); setView('profile') }}
+            onClick={goProfile}
             className="w-full justify-start gap-2 px-3 py-2.5 h-auto text-sm rounded-none"
           >
             <UserRound size={14} className="text-muted-foreground" />
@@ -87,7 +160,15 @@ function UserAvatar() {
           </Button>
           <Button
             variant="ghost"
-            onClick={() => { setOpen(false); signOut() }}
+            onClick={goConfig}
+            className="w-full justify-start gap-2 px-3 py-2.5 h-auto text-sm rounded-none"
+          >
+            <Settings2 size={14} className="text-muted-foreground" />
+            Configuración
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={doSignOut}
             className="w-full justify-start gap-2 px-3 py-2.5 h-auto text-sm rounded-none text-btn-danger-fg hover:bg-btn-danger-hover"
           >
             <LogOut size={14} />

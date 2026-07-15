@@ -1,4 +1,4 @@
-import { CalendarDays, LayoutDashboard, Settings2, WalletCards, PiggyBank } from 'lucide-react'
+import { CalendarDays, LayoutDashboard, WalletCards, PiggyBank } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useUIStore } from '@/store/uiStore'
 import {
@@ -10,11 +10,10 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import type { ViewType } from '@/types'
 
 const NAV_ITEMS: Array<{ id: ViewType; label: string; mobileLabel: string; Icon: typeof CalendarDays }> = [
-  { id: 'dashboard', label: 'Dashboard',    mobileLabel: 'Dashboard',     Icon: LayoutDashboard },
-  { id: 'mes',     label: 'Mes actual',    mobileLabel: 'Mes',           Icon: CalendarDays },
+  { id: 'dashboard', label: 'Resumen',       mobileLabel: 'Resumen',       Icon: LayoutDashboard },
+  { id: 'mes',     label: 'Mes',           mobileLabel: 'Mes',           Icon: CalendarDays },
   { id: 'cuentas', label: 'Cuentas',       mobileLabel: 'Cuentas',       Icon: WalletCards },
   { id: 'ahorros', label: 'Ahorros',       mobileLabel: 'Ahorros',       Icon: PiggyBank },
-  { id: 'config',  label: 'Configuración', mobileLabel: 'Configuración', Icon: Settings2 },
 ]
 
 function NavButton({ id, label, Icon }: { id: ViewType; label: string; Icon: typeof CalendarDays }) {
