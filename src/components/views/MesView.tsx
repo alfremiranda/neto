@@ -15,7 +15,7 @@ export function MesView() {
 
   return (
     <div>
-      <div className="mb-4">
+      <div className="sticky top-0 z-30 mb-4 -mx-4 sm:-mx-5 lg:-mx-6 -mt-4 sm:-mt-5 lg:-mt-6 px-4 sm:px-5 lg:px-6 py-3 bg-[var(--background)]/80 backdrop-blur-md border-b border-[var(--border)]">
         <MonthNav />
       </div>
 
