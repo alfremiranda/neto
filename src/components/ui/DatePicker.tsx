@@ -3,7 +3,6 @@ import { es } from 'date-fns/locale'
 import { CalendarIcon } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
-import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 interface DatePickerProps {
@@ -32,20 +31,23 @@ export function DatePicker({ value, onChange, className, placeholder = 'Seleccio
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button
+        <button
           id={id}
-          variant="outline"
+          type="button"
+          data-slot="datepicker-trigger"
           className={cn(
-            'w-full justify-start text-left font-normal h-11 sm:h-9',
+            'flex w-full items-center gap-2 h-11 sm:h-9 rounded-sm border border-input bg-[var(--card)] px-3 text-left text-base sm:text-sm whitespace-nowrap transition-colors outline-none select-none focus-visible:border-2 focus-visible:border-foreground disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive',
             !selected && 'text-muted-foreground',
             className,
           )}
         >
-          <CalendarIcon className="mr-2 size-4 shrink-0 text-muted-foreground" />
-          {selected
-            ? format(selected, "d 'de' MMMM yyyy", { locale: es })
-            : placeholder}
-        </Button>
+          <CalendarIcon className="size-4 shrink-0 text-muted-foreground" />
+          <span className="flex-1 min-w-0 truncate">
+            {selected
+              ? format(selected, "d 'de' MMMM yyyy", { locale: es })
+              : placeholder}
+          </span>
+        </button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
         <Calendar
