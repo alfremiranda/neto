@@ -1,12 +1,10 @@
 import { CalendarDays } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
-import { monthKey } from '@/store/financeStore'
 import { buildAnnualData } from '@/lib/calc'
 import { COP, USD, pct } from '@/lib/format'
 import { MetricCard } from '@/components/ui/MetricCard'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
-import { MONTHS } from '@/data/defaults'
 import { deductionGroupFlags } from '@/hooks/useDeductionGroups'
 import { cn } from '@/lib/utils'
 
@@ -63,7 +61,7 @@ function AnnualDonut({ segments, total, centerValue }: { segments: DonutSeg[]; t
 }
 
 export function AnnualTable({ year }: AnnualTableProps) {
-  const { db, curKey, getSMMLV, setCurKey } = useFinanceStore()
+  const { db, getSMMLV } = useFinanceStore()
   const deductions = useSettingsStore(s => s.deductions)
 
   const dbAsMonthMap = Object.fromEntries(
@@ -117,7 +115,7 @@ export function AnnualTable({ year }: AnnualTableProps) {
   return (
     <div className={cn('space-y-3', showDonut && 'lg:grid lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-4 lg:space-y-0 lg:items-start')}>
       {/* KPI cards */}
-      <div className={cn('grid grid-cols-2 sm:grid-cols-3 gap-2', showDonut && 'lg:col-start-2 lg:row-start-1')}>
+      <div className={cn('grid grid-cols-2 sm:grid-cols-3 gap-2', showDonut && 'lg:col-start-2')}>
         <MetricCard
           label="Bruto total año"
           value={<span className="text-[15px] font-heading tabular-nums">{COP(totBruto)}</span>}
@@ -149,70 +147,12 @@ export function AnnualTable({ year }: AnnualTableProps) {
         />
       </div>
 
-      {/* Donut — below the KPIs on mobile, left of KPIs + table on desktop */}
+      {/* Donut — below the KPIs on mobile, left of the KPIs on desktop */}
       {showDonut && (
-        <div className="rounded-xl border border-[var(--border)] bg-muted/30 p-4 lg:col-start-1 lg:row-start-1 lg:row-span-2">
+        <div className="rounded-xl border border-[var(--border)] bg-muted/30 p-4 flex flex-col justify-center lg:col-start-1 lg:row-start-1 lg:self-stretch">
           <AnnualDonut segments={donutSegments} total={donutTotal} centerValue={COP(totBruto)} />
         </div>
       )}
-
-      {/* Table */}
-      <div className={cn('overflow-x-auto', showDonut && 'lg:col-start-2 lg:row-start-2')}>
-        <table className="w-full border-collapse text-[12px]">
-          <thead>
-            <tr className="border-b border-border">
-              <th className="text-left py-[6px] px-[6px] text-muted-foreground font-medium">Mes</th>
-              <th className="text-right py-[6px] px-[6px] text-muted-foreground font-medium">Bruto</th>
-              {showOblig && <th className="hidden sm:table-cell text-right py-[6px] px-[6px] font-medium" style={{ color: `var(${obligColor})` }}>Oblig.</th>}
-              {showProv && <th className="hidden sm:table-cell text-right py-[6px] px-[6px] font-medium" style={{ color: `var(${provColor})` }}>Prov.</th>}
-              <th className="hidden xs:table-cell text-right py-[6px] px-[6px] text-[var(--color-expense)] font-medium">Gastos</th>
-              <th className="text-right py-[6px] px-[6px] text-[var(--color-net-txt)] font-medium">Neto</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.filter(r => r.hasData).map(r => {
-              const key = monthKey(r.m, year)
-              const isCurrent = key === curKey
-              const oblig = (r.ssTot ?? 0) + (r.ret ?? 0)
-              return (
-                <tr
-                  key={r.m}
-                  onClick={() => setCurKey(key)}
-                  onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && setCurKey(key)}
-                  role="button"
-                  tabIndex={0}
-                  aria-pressed={isCurrent}
-                  className={[
-                    'border-b border-border cursor-pointer hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-inset',
-                    isCurrent ? 'bg-muted' : '',
-                  ].join(' ')}
-                >
-                  <td className="py-[7px] px-[6px] text-muted-foreground font-medium">
-                    {MONTHS[r.m - 1].slice(0, 3)}
-                  </td>
-                  <td className="py-[7px] px-[6px] text-right tabular-nums">{COP(r.bruto ?? 0)}</td>
-                  {showOblig && <td className="hidden sm:table-cell py-[7px] px-[6px] text-right tabular-nums" style={{ color: `var(${obligColor})` }}>{COP(oblig)}</td>}
-                  {showProv && <td className="hidden sm:table-cell py-[7px] px-[6px] text-right tabular-nums" style={{ color: `var(${provColor})` }}>{COP(r.provTotal ?? r.prim ?? 0)}</td>}
-                  <td className="hidden xs:table-cell py-[7px] px-[6px] text-right tabular-nums text-[var(--color-expense)]">{COP(r.gast ?? 0)}</td>
-                  <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold text-[var(--color-net-txt)]">
-                    {COP(Math.max(r.netoLibre ?? 0, 0))}
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-          <tfoot>
-            <tr className="border-t-2 border-border">
-              <td className="py-[7px] px-[6px] text-muted-foreground text-[11px] font-medium tracking-wider">TOTAL</td>
-              <td className="py-[7px] px-[6px] text-right tabular-nums font-semibold">{COP(totBruto)}</td>
-              {showOblig && <td className="hidden sm:table-cell py-[7px] px-[6px] text-right tabular-nums font-semibold" style={{ color: `var(${obligColor})` }}>{COP(totOblig)}</td>}
-              {showProv && <td className="hidden sm:table-cell py-[7px] px-[6px] text-right tabular-nums font-semibold" style={{ color: `var(${provColor})` }}>{COP(totProv)}</td>}
-              <td className="hidden xs:table-cell py-[7px] px-[6px] text-right tabular-nums font-semibold text-[var(--color-expense)]">{COP(totGast)}</td>
-              <td className="py-[7px] px-[6px] text-right tabular-nums font-bold text-[var(--color-net-txt)]">{COP(totNeto)}</td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
     </div>
   )
 }
