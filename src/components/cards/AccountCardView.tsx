@@ -3,7 +3,7 @@ import { Fragment } from 'react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { computeAccountBalance, creditCardStats } from '@/lib/calc'
-import { COP, USD, fmtDate } from '@/lib/format'
+import { COP, fmtDate } from '@/lib/format'
 import { CurrencyBadge } from '@/components/ui/Badge'
 import { cn } from '@/lib/utils'
 import type { Account } from '@/types'
@@ -34,7 +34,12 @@ export function AccountCardView({ account, size = 'lg', selected = false, onClic
 
   const latestKey = Object.keys(db).filter(k => k !== '_settings').sort().at(-1) ?? ''
   const balance = computeAccountBalance(account.id, account, db, latestKey)
-  const fmt = (n: number) => account.currency === 'USD' ? USD(n) : COP(n)
+  // The card already carries a currency badge, so amounts use "$" for both
+  // currencies (USD keeps 2 decimals) instead of the redundant "USD " prefix.
+  const fmt = (n: number) =>
+    account.currency === 'USD'
+      ? '$' + (Math.round(n * 100) / 100).toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      : COP(n)
 
   const isCredit  = account.type === 'credit'
   const isSavings = account.type === 'savings'
