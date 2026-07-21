@@ -93,6 +93,29 @@ export default function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, onboardingDone])
 
+  // Auto-pull when the app regains focus / becomes visible / reconnects, on
+  // both web and PWA — so changes made on another device show up without a
+  // manual sync. Debounced (focus + visibilitychange can fire together).
+  useEffect(() => {
+    if (!user || !onboardingDone || import.meta.env.DEV) return
+    let last = 0
+    const trigger = () => {
+      if (document.visibilityState === 'hidden') return
+      const now = Date.now()
+      if (now - last < 1500) return
+      last = now
+      syncFromCloud()
+    }
+    window.addEventListener('focus', trigger)
+    document.addEventListener('visibilitychange', trigger)
+    window.addEventListener('online', trigger)
+    return () => {
+      window.removeEventListener('focus', trigger)
+      document.removeEventListener('visibilitychange', trigger)
+      window.removeEventListener('online', trigger)
+    }
+  }, [user, onboardingDone, syncFromCloud])
+
   const handleRefresh = useCallback(async () => {
     await syncFromCloud()
     showToast('Sincronizado')

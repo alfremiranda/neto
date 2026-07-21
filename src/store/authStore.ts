@@ -26,11 +26,15 @@ export const useAuthStore = create<AuthState>()((set) => ({
       if (!user) set({ cloudReady: true })
     })
 
-    // In prod: auto-pull on SIGNED_IN so a second device gets the latest data.
+    // In prod: auto-pull whenever a session appears — both a fresh sign-in
+    // (SIGNED_IN, OAuth redirect) AND a restored session on normal app open
+    // (INITIAL_SESSION). The latter was missing before, so reopening the app
+    // never fetched changes made on another device.
     // cloudReady is set only after sync completes to avoid showing onboarding
     // briefly for returning users whose _settings.onboardingDone is in the cloud.
     const unsub = onAuthStateChange((user, event) => {
-      if (event === 'SIGNED_IN' && user && !import.meta.env.DEV) {
+      const shouldSync = (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && user && !import.meta.env.DEV
+      if (shouldSync) {
         set({ user, loading: false })
         useFinanceStore.getState().syncFromCloud().finally(() => {
           set({ cloudReady: true })

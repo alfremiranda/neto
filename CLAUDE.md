@@ -70,7 +70,7 @@ Dos proyectos Supabase separados para evitar contaminar datos de producción dur
 - `.env.production` — committeado, apunta a Supabase prod
 - `src/lib/supabase.ts` lee `import.meta.env.VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY`
 - Dos GitHub OAuth Apps: "neto" (prod) y "neto-dev" (dev), cada una con su callback URL de Supabase
-- Sync es **manual** — no hay auto-push ni auto-pull; el usuario usa los botones en Configuración
+- Sync es **automática** (solo prod): auto-push confiable por-clave tras cada mutación (cola `dirty` con reintento en `flushPending`), y auto-pull al abrir la app (`INITIAL_SESSION`/`SIGNED_IN`) y al enfocar/reconectar (`focus`/`visibilitychange`/`online`). El merge es no destructivo, LWW por mes vía `updatedAt` (ms local) vs `updated_at` (Supabase); las claves `dirty` locales siempre ganan. Los botones en Configuración son overrides manuales (reconciliación). Límite conocido: borrar un mes completo no se propaga entre dispositivos (los borrados de entradas sí, porque actualizan el blob del mes). En **dev** no hay auto-sync (se usa manual)
 
 ## Roadmap
 1. ~~Refactor: migrar a React + Vite + TypeScript~~ ✓

@@ -6,12 +6,21 @@ import type { FinanceDB, MonthData, Account, Settings, Income, Egreso, Transfer 
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
-// In prod, push the month to Supabase after every local mutation so changes
-// made on one device are available on others without a manual sync.
+// Reliable per-key push (prod only). Stamps the key's local edit time, marks
+// it dirty, pushes, and clears dirty on success. A failed push stays dirty and
+// is retried by flushPending() (on focus / reconnect / next sync), so a change
+// is never silently dropped.
+let syncInFlight = false
+
 function autoPush(key: string, data: unknown) {
-  if (!import.meta.env.DEV) {
-    sbPush(key, data).catch(() => {})
-  }
+  if (import.meta.env.DEV) return
+  useFinanceStore.setState(s => ({
+    updatedAt: { ...s.updatedAt, [key]: Date.now() },
+    dirty: s.dirty.includes(key) ? s.dirty : [...s.dirty, key],
+  }))
+  sbPush(key, data)
+    .then(() => useFinanceStore.setState(s => ({ dirty: s.dirty.filter(k => k !== key) })))
+    .catch(() => { /* stays dirty; retried by flushPending */ })
 }
 
 export function monthKey(m: number, y: number): string {
@@ -304,7 +313,10 @@ interface FinanceState {
   wipeCloudAndPush: () => Promise<void>
 
   // sync
+  updatedAt: Record<string, number>   // per-key last local edit time (ms) for LWW merge
+  dirty: string[]                     // keys with an unconfirmed push, retried on flush
   syncFromCloud: () => Promise<void>
+  flushPending: () => Promise<void>
   pushCurrent: () => void
   forcePushAll: () => Promise<{ pushed: number; errors: number }>
 
@@ -318,6 +330,8 @@ export const useFinanceStore = create<FinanceState>()(
   persist(
     (set, get) => ({
       db: {},
+      updatedAt: {},
+      dirty: [],
       curKey: (() => {
         const now = new Date()
         return monthKey(now.getMonth() + 1, now.getFullYear())
@@ -523,7 +537,7 @@ export const useFinanceStore = create<FinanceState>()(
             } as FinanceDB,
           }
         })
-        sbPush('_settings', get().db._settings).catch(() => {})
+        autoPush('_settings', get().db._settings)
       },
 
       setTRM: (trm) => {
@@ -544,7 +558,7 @@ export const useFinanceStore = create<FinanceState>()(
             } as FinanceDB,
           }
         })
-        sbPush('_settings', get().db._settings).catch(() => {})
+        autoPush('_settings', get().db._settings)
       },
 
       toggleAccountFavorite: (id) => {
@@ -562,7 +576,7 @@ export const useFinanceStore = create<FinanceState>()(
             } as FinanceDB,
           }
         })
-        sbPush('_settings', get().db._settings).catch(() => {})
+        autoPush('_settings', get().db._settings)
       },
 
       // ── navigation ─────────────────────────────────────────────────────────
@@ -614,7 +628,7 @@ export const useFinanceStore = create<FinanceState>()(
           newCurKey = mo > 0 ? `${y}-${String(mo - 1).padStart(2, '0')}` : key
         }
         set({ db: newDb, curKey: newCurKey })
-        sbPush(key, null).catch(() => {})
+        autoPush(key, null)
       },
 
       restoreJuneEgresos: () => {
@@ -734,45 +748,74 @@ export const useFinanceStore = create<FinanceState>()(
       // ── sync ───────────────────────────────────────────────────────────────
 
       pushCurrent: () => {
-        const { curKey, db } = get()
-        sbPush(curKey, db[curKey]).catch(() => {})
+        const { curKey } = get()
+        autoPush(curKey, get().db[curKey])
       },
 
       forcePushAll: async () => {
         const { db } = get()
         let pushed = 0
         let errors = 0
+        const now = Date.now()
+        const ts: Record<string, number> = { ...get().updatedAt }
         for (const key of Object.keys(db)) {
           try {
             await sbPush(key, db[key])
+            ts[key] = now
             pushed++
           } catch {
             errors++
           }
         }
+        // Local is now the source of truth in the cloud: stamp + clear the queue.
+        set({ updatedAt: ts, dirty: [] })
         return { pushed, errors }
       },
 
-      syncFromCloud: async () => {
-        const rows = await sbPullAll()
-        if (!rows || rows.length === 0) return
-
-        // Cloud is authoritative: replace local with cloud data entirely.
-        // Merging by ID caused duplicates when IDs changed across sessions.
-        const rawDb: Record<string, unknown> = {}
-        for (const { key, data } of rows) {
-          rawDb[key] = data
+      // Retry any keys whose push never confirmed (offline, expired token, …).
+      flushPending: async () => {
+        if (import.meta.env.DEV) return
+        const dirty = [...get().dirty]
+        for (const key of dirty) {
+          const db = get().db
+          try {
+            await sbPush(key, key in db ? db[key] : null)
+            set(s => ({ dirty: s.dirty.filter(k => k !== key) }))
+          } catch { /* keep dirty, retry next time */ }
         }
+      },
 
-        // Apply date-based migration to cloud data — cloud may be un-migrated
-        // if it was last written by an older client.
-        const { db: migratedDb, changed } = applyDateMigration(rawDb)
-        set({ db: migratedDb as FinanceDB })
+      // Non-destructive two-way sync. Flush local changes first, then pull and
+      // merge per key by last-edit time (last-writer-wins per month). Local
+      // dirty keys always win so an in-flight edit is never clobbered.
+      syncFromCloud: async () => {
+        if (syncInFlight) return
+        syncInFlight = true
+        try {
+          await get().flushPending()
+          const rows = await sbPullAll()
+          if (!rows) return
 
-        // Push migrated data back so the cloud is also up to date.
-        if (changed) {
-          const finalDb = get().db
-          await Promise.all(Object.keys(finalDb).map(k => sbPush(k, finalDb[k]).catch(() => {})))
+          const { db: localDb, updatedAt: localTs, dirty } = get()
+          const rawDb: Record<string, unknown> = { ...localDb }
+          const newTs: Record<string, number> = { ...localTs }
+          for (const { key, data, updated_at } of rows) {
+            if (dirty.includes(key)) continue           // unpushed local change wins
+            const cloudMs = updated_at ? Date.parse(updated_at) : 0
+            const localMs = localTs[key] ?? 0
+            if (cloudMs >= localMs) { rawDb[key] = data; newTs[key] = cloudMs }
+          }
+
+          // Cloud may be un-migrated if last written by an older client.
+          const { db: migratedDb, changed } = applyDateMigration(rawDb)
+          set({ db: migratedDb as FinanceDB, updatedAt: newTs })
+
+          if (changed) {
+            const finalDb = get().db
+            Object.keys(finalDb).forEach(k => autoPush(k, finalDb[k]))
+          }
+        } finally {
+          syncInFlight = false
         }
       },
 
@@ -872,7 +915,7 @@ export const useFinanceStore = create<FinanceState>()(
     }),
     {
       name: 'amd-finance', // mismo localStorage key — datos existentes sobreviven
-      partialize: (state) => ({ db: state.db }),
+      partialize: (state) => ({ db: state.db, updatedAt: state.updatedAt, dirty: state.dirty }),
       onRehydrateStorage: () => (state) => {
         state?.migrate()
         if (!state) return
@@ -880,6 +923,20 @@ export const useFinanceStore = create<FinanceState>()(
         // ── One-time migration: move records to their date-based month key ──
         const { db: migratedDb, changed } = applyDateMigration(state.db as Record<string, unknown>)
         if (changed) state.db = migratedDb as FinanceDB
+
+        // ── Sync bookkeeping ──
+        // First load after enabling per-key sync: stamp every existing key so
+        // pulls can compare freshness. This is non-destructive — no push, no
+        // dirty — so nothing in the cloud is overwritten; convergence happens
+        // as each device edits (or via a manual "Subir todo").
+        if (!state.updatedAt) state.updatedAt = {}
+        if (!state.dirty) state.dirty = []
+        if (Object.keys(state.updatedAt).length === 0) {
+          const now = Date.now()
+          const ts: Record<string, number> = {}
+          Object.keys(state.db).forEach(k => { ts[k] = now })
+          state.updatedAt = ts
+        }
 
         // Always reset curKey to actual current month on load
         const now = new Date()

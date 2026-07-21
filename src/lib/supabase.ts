@@ -79,15 +79,15 @@ export async function sbDeleteAll(): Promise<void> {
   await sb.from('months').delete().eq('user_id', user.id)
 }
 
-export async function sbPullAll(): Promise<Array<{ key: string; data: unknown }> | null> {
+export async function sbPullAll(): Promise<Array<{ key: string; data: unknown; updated_at: string | null }> | null> {
   const sb = sbClient()
   const user = await getUser()
   if (!user) return null
 
   const { data, error } = await sb
     .from('months')
-    .select('key, data')
+    .select('key, data, updated_at')
     .eq('user_id', user.id)
 
-  return error ? null : data
+  return error ? null : (data as Array<{ key: string; data: unknown; updated_at: string | null }>)
 }

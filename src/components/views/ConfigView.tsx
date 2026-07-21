@@ -48,11 +48,14 @@ export function ConfigView() {
               No uses "Jalar desde la nube" o perderás los datos locales.
             </div>
           )}
-          {/* Sync actions — dev only; pull-to-refresh handles sync in prod */}
-          {import.meta.env.DEV && (
-            <div>
-              <div className="text-xs font-medium text-muted-foreground mb-2">Sincronización</div>
-              <div className="flex gap-2">
+          {/* Sync actions — automatic on open/focus; these are manual overrides
+              (e.g. to reconcile two devices: push from the one with the good data). */}
+          <div>
+            <div className="text-xs font-medium text-muted-foreground mb-2">Sincronización</div>
+            <p className="text-[11px] text-muted-foreground mb-2">
+              La sincronización es automática al abrir la app y al volver a ella. Usa estos botones solo si necesitas forzarla.
+            </p>
+            <div className="flex gap-2">
                 <Button
                   variant="outline"
                   size="sm"
@@ -79,7 +82,6 @@ export function ConfigView() {
                 </Button>
               </div>
             </div>
-          )}
 
           {/* Account */}
           <div className="flex items-center justify-between pt-2 border-t border-[var(--border)]">
