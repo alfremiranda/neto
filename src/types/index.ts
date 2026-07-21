@@ -7,6 +7,7 @@ export interface Income {
   tipo: 'servicios' | 'otro'
   date?: string
   applyProvisions?: boolean  // default true — include in provision base for primas/cesantías/vacaciones
+  updatedAt?: number  // ms of last local edit — per-entry LWW for cross-device merge
 }
 
 export interface Egreso {
@@ -19,6 +20,7 @@ export interface Egreso {
   recurring?: boolean
   confirmed?: boolean  // false = seeded from prev month, needs amount verification
   account?: string  // account ID this egreso debits (optional)
+  updatedAt?: number  // ms of last local edit — per-entry LWW for cross-device merge
 }
 
 export interface Transfer {
@@ -31,6 +33,7 @@ export interface Transfer {
   toCurrency: 'USD' | 'COP'
   trm: number | null
   toAmount: number
+  updatedAt?: number  // ms of last local edit — per-entry LWW for cross-device merge
 }
 
 export interface Account {
@@ -62,6 +65,7 @@ export interface VoluntariaItem {
   date?: string
   recurring?: boolean
   egresoId?: number
+  updatedAt?: number  // ms of last local edit — per-entry LWW for cross-device merge
 }
 
 export interface MonthData {
@@ -72,6 +76,9 @@ export interface MonthData {
   voluntarias?: VoluntariaItem[]
   egresosSeeded?: boolean
   balances?: Record<string, number>
+  // Tombstones for deleted entries: "<type>:<id>" → deletion time (ms). Lets a
+  // delete on one device win over a stale copy on another (propagates deletes).
+  deleted?: Record<string, number>
 }
 
 export interface Settings {

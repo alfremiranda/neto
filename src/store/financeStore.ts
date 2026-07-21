@@ -23,6 +23,74 @@ function autoPush(key: string, data: unknown) {
     .catch(() => { /* stays dirty; retried by flushPending */ })
 }
 
+// ── per-entry merge (cross-device) ──────────────────────────────────────────
+// Union month lists by entry id so no device's entries are ever dropped;
+// newest edit wins per entry (entry.updatedAt, falling back to the month-level
+// timestamp for entries created before per-entry stamping); a tombstone whose
+// time ≥ the entry's last edit removes it (so deletes propagate).
+type Stamped = { id: number; updatedAt?: number }
+
+function mergeList<T extends Stamped>(
+  type: string,
+  local: T[] = [],
+  cloud: T[] = [],
+  del: Record<string, number>,
+  localMs: number,
+  cloudMs: number,
+): T[] {
+  const map = new Map<number, { e: T; ts: number }>()
+  for (const e of local) map.set(e.id, { e, ts: e.updatedAt ?? localMs })
+  for (const e of cloud) {
+    const ts = e.updatedAt ?? cloudMs
+    const ex = map.get(e.id)
+    if (!ex || ts > ex.ts) map.set(e.id, { e, ts })
+  }
+  const out: T[] = []
+  for (const [id, { e, ts }] of map) {
+    if ((del[`${type}:${id}`] ?? 0) >= ts) continue
+    out.push(e)
+  }
+  return out.sort((a, b) => a.id - b.id)   // deterministic → both devices converge
+}
+
+function mergeMonth(local: MonthData, cloud: MonthData, localMs: number, cloudMs: number): MonthData {
+  const del: Record<string, number> = {}
+  for (const k of new Set([...Object.keys(local.deleted ?? {}), ...Object.keys(cloud.deleted ?? {})])) {
+    del[k] = Math.max(local.deleted?.[k] ?? 0, cloud.deleted?.[k] ?? 0)
+  }
+  const scalar = cloudMs > localMs ? cloud : local   // trm, balances, egresosSeeded
+  const merged: MonthData = {
+    ...scalar,
+    incomes:   mergeList('income',   local.incomes,   cloud.incomes,   del, localMs, cloudMs),
+    egresos:   mergeList('egreso',   local.egresos,   cloud.egresos,   del, localMs, cloudMs),
+    transfers: mergeList('transfer', local.transfers, cloud.transfers, del, localMs, cloudMs),
+    deleted:   Object.keys(del).length ? del : undefined,
+  }
+  if (local.voluntarias || cloud.voluntarias) {
+    merged.voluntarias = mergeList('vol', local.voluntarias, cloud.voluntarias, del, localMs, cloudMs)
+  }
+  return merged
+}
+
+// True if local holds anything the cloud copy lacks (new/newer entry, tombstone,
+// or newer scalars) — if so we push the merged blob so the cloud converges too.
+function localHasExtra(local: MonthData, cloud: MonthData, localMs: number, cloudMs: number): boolean {
+  if (localMs > cloudMs) return true
+  for (const f of ['incomes', 'egresos', 'transfers', 'voluntarias'] as const) {
+    const cloudMap = new Map(((cloud[f] as Stamped[] | undefined) ?? []).map(e => [e.id, e]))
+    for (const e of ((local[f] as Stamped[] | undefined) ?? [])) {
+      const ce = cloudMap.get(e.id)
+      if (!ce) return true
+      if ((e.updatedAt ?? localMs) > (ce.updatedAt ?? cloudMs)) return true
+    }
+  }
+  const cd = cloud.deleted ?? {}
+  for (const [k, ts] of Object.entries(local.deleted ?? {})) {
+    if (ts > (cd[k] ?? 0)) return true
+  }
+  return false
+}
+
 export function monthKey(m: number, y: number): string {
   return `${y}-${String(m).padStart(2, '0')}`
 }
@@ -402,7 +470,7 @@ export const useFinanceStore = create<FinanceState>()(
         const d = db[key] ?? initMonth(key, db)
         const updated: MonthData = {
           ...d,
-          incomes: [...d.incomes, { ...income, id: Date.now() }],
+          incomes: [...d.incomes, { ...income, id: Date.now(), updatedAt: Date.now() }],
         }
         set(state => ({ db: { ...state.db, [key]: updated } }))
         autoPush(key, updated)
@@ -413,7 +481,7 @@ export const useFinanceStore = create<FinanceState>()(
         const d = db[curKey] ?? emptyMonth()
         const updated: MonthData = {
           ...d,
-          incomes: d.incomes.map(i => i.id === id ? { ...i, ...patch } : i),
+          incomes: d.incomes.map(i => i.id === id ? { ...i, ...patch, updatedAt: Date.now() } : i),
         }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
         autoPush(curKey, updated)
@@ -422,7 +490,11 @@ export const useFinanceStore = create<FinanceState>()(
       removeIncome: (id) => {
         const { curKey, db } = get()
         const d = db[curKey] ?? emptyMonth()
-        const updated: MonthData = { ...d, incomes: d.incomes.filter(i => i.id !== id) }
+        const updated: MonthData = {
+          ...d,
+          incomes: d.incomes.filter(i => i.id !== id),
+          deleted: { ...(d.deleted ?? {}), [`income:${id}`]: Date.now() },
+        }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
         autoPush(curKey, updated)
       },
@@ -434,7 +506,7 @@ export const useFinanceStore = create<FinanceState>()(
         const id = Date.now()
         const updated: MonthData = {
           ...d,
-          egresos: [...(d.egresos || []), { ...egreso, id, confirmed: true }],
+          egresos: [...(d.egresos || []), { ...egreso, id, confirmed: true, updatedAt: id }],
         }
         set(state => ({ db: { ...state.db, [key]: updated } }))
         autoPush(key, updated)
@@ -446,7 +518,7 @@ export const useFinanceStore = create<FinanceState>()(
         const d = db[curKey] ?? emptyMonth()
         const updated: MonthData = {
           ...d,
-          egresos: (d.egresos || []).map(e => e.id === id ? { ...e, ...patch, confirmed: true } : e),
+          egresos: (d.egresos || []).map(e => e.id === id ? { ...e, ...patch, confirmed: true, updatedAt: Date.now() } : e),
         }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
         autoPush(curKey, updated)
@@ -457,7 +529,7 @@ export const useFinanceStore = create<FinanceState>()(
         const d = db[curKey] ?? emptyMonth()
         const updated: MonthData = {
           ...d,
-          egresos: (d.egresos || []).map(e => e.id === id ? { ...e, confirmed: true } : e),
+          egresos: (d.egresos || []).map(e => e.id === id ? { ...e, confirmed: true, updatedAt: Date.now() } : e),
         }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
         autoPush(curKey, updated)
@@ -466,7 +538,11 @@ export const useFinanceStore = create<FinanceState>()(
       removeEgreso: (id) => {
         const { curKey, db } = get()
         const d = db[curKey] ?? emptyMonth()
-        const updated: MonthData = { ...d, egresos: (d.egresos || []).filter(e => e.id !== id) }
+        const updated: MonthData = {
+          ...d,
+          egresos: (d.egresos || []).filter(e => e.id !== id),
+          deleted: { ...(d.deleted ?? {}), [`egreso:${id}`]: Date.now() },
+        }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
         autoPush(curKey, updated)
       },
@@ -475,7 +551,7 @@ export const useFinanceStore = create<FinanceState>()(
         const { curKey, db } = get()
         const key = transfer.date ? keyForDate(transfer.date, curKey) : curKey
         const d = db[key] ?? initMonth(key, db)
-        const newTransfer: Transfer = { ...transfer, id: Date.now() }
+        const newTransfer: Transfer = { ...transfer, id: Date.now(), updatedAt: Date.now() }
         const updated: MonthData = {
           ...d,
           transfers: [...(d.transfers || []), newTransfer],
@@ -490,7 +566,7 @@ export const useFinanceStore = create<FinanceState>()(
         const d = db[curKey] ?? emptyMonth()
         const updated: MonthData = {
           ...d,
-          transfers: (d.transfers || []).map(t => t.id === id ? { ...transfer, id } : t),
+          transfers: (d.transfers || []).map(t => t.id === id ? { ...transfer, id, updatedAt: Date.now() } : t),
         }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
         autoPush(curKey, updated)
@@ -502,6 +578,7 @@ export const useFinanceStore = create<FinanceState>()(
         const updated: MonthData = {
           ...d,
           transfers: (d.transfers || []).filter(t => t.id !== id),
+          deleted: { ...(d.deleted ?? {}), [`transfer:${id}`]: Date.now() },
         }
         set(state => ({ db: { ...state.db, [curKey]: updated } }))
         autoPush(curKey, updated)
@@ -619,16 +696,24 @@ export const useFinanceStore = create<FinanceState>()(
       deleteMonth: (key) => {
         const { db, curKey } = get()
         if (key === '_settings') return
-        const newDb = { ...db }
-        delete newDb[key]
-        // If deleting the current month, move to adjacent
+        const m = db[key] as MonthData | undefined
+        if (!m) return
+        // Tombstone every entry so the deletion propagates across devices (a plain
+        // key delete would be re-added by the union merge from another device).
+        const now = Date.now()
+        const deleted: Record<string, number> = { ...(m.deleted ?? {}) }
+        for (const e of m.incomes ?? [])    deleted[`income:${e.id}`]   = now
+        for (const e of m.egresos ?? [])     deleted[`egreso:${e.id}`]   = now
+        for (const e of m.transfers ?? [])   deleted[`transfer:${e.id}`] = now
+        for (const e of m.voluntarias ?? []) deleted[`vol:${e.id}`]      = now
+        const emptied: MonthData = { trm: m.trm, incomes: [], transfers: [], egresos: [], deleted }
         let newCurKey = curKey
         if (key === curKey) {
           const [y, mo] = key.split('-').map(Number)
           newCurKey = mo > 0 ? `${y}-${String(mo - 1).padStart(2, '0')}` : key
         }
-        set({ db: newDb, curKey: newCurKey })
-        autoPush(key, null)
+        set({ db: { ...db, [key]: emptied }, curKey: newCurKey })
+        autoPush(key, emptied)
       },
 
       restoreJuneEgresos: () => {
@@ -786,8 +871,10 @@ export const useFinanceStore = create<FinanceState>()(
       },
 
       // Non-destructive two-way sync. Flush local changes first, then pull and
-      // merge per key by last-edit time (last-writer-wins per month). Local
-      // dirty keys always win so an in-flight edit is never clobbered.
+      // MERGE PER ENTRY: month lists are unioned by id (nothing is dropped),
+      // newest edit wins per entry, tombstones remove deleted entries. Any month
+      // where local holds extra is pushed back so the cloud (and other devices)
+      // converge. `_settings` is whole-object LWW.
       syncFromCloud: async () => {
         if (syncInFlight) return
         syncInFlight = true
@@ -796,24 +883,49 @@ export const useFinanceStore = create<FinanceState>()(
           const rows = await sbPullAll()
           if (!rows) return
 
+          const cloudMap = new Map<string, { data: unknown; ms: number }>()
+          for (const { key, data, updated_at } of rows) {
+            cloudMap.set(key, { data, ms: updated_at ? Date.parse(updated_at) : 0 })
+          }
+
           const { db: localDb, updatedAt: localTs, dirty } = get()
           const rawDb: Record<string, unknown> = { ...localDb }
           const newTs: Record<string, number> = { ...localTs }
-          for (const { key, data, updated_at } of rows) {
-            if (dirty.includes(key)) continue           // unpushed local change wins
-            const cloudMs = updated_at ? Date.parse(updated_at) : 0
+          const pushBack = new Set<string>()
+
+          for (const key of new Set<string>([...Object.keys(localDb), ...cloudMap.keys()])) {
+            const cloud = cloudMap.get(key)
             const localMs = localTs[key] ?? 0
-            if (cloudMs >= localMs) { rawDb[key] = data; newTs[key] = cloudMs }
+            const cloudMs = cloud?.ms ?? 0
+            const localVal = localDb[key]
+
+            if (key === '_settings') {
+              // Whole-object LWW; a dirty (unpushed) local settings wins.
+              if (cloud && !dirty.includes(key) && cloudMs >= localMs) {
+                rawDb[key] = cloud.data; newTs[key] = cloudMs
+              } else if (localVal !== undefined && (!cloud || localMs >= cloudMs)) {
+                pushBack.add(key)
+              }
+              continue
+            }
+
+            const local = localVal as MonthData | undefined
+            const cloudData = cloud?.data as MonthData | undefined
+            if (!cloudData) { if (local) pushBack.add(key); continue }   // local-only month
+            if (!local) { rawDb[key] = cloudData; newTs[key] = cloudMs; continue }  // cloud-only
+
+            rawDb[key] = mergeMonth(local, cloudData, localMs, cloudMs)
+            newTs[key] = Math.max(localMs, cloudMs)
+            if (localHasExtra(local, cloudData, localMs, cloudMs)) pushBack.add(key)
           }
 
           // Cloud may be un-migrated if last written by an older client.
           const { db: migratedDb, changed } = applyDateMigration(rawDb)
           set({ db: migratedDb as FinanceDB, updatedAt: newTs })
 
-          if (changed) {
-            const finalDb = get().db
-            Object.keys(finalDb).forEach(k => autoPush(k, finalDb[k]))
-          }
+          const finalDb = get().db
+          if (changed) Object.keys(finalDb).forEach(k => pushBack.add(k))
+          pushBack.forEach(k => autoPush(k, finalDb[k]))
         } finally {
           syncInFlight = false
         }
