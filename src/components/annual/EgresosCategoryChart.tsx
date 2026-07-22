@@ -3,6 +3,7 @@ import * as d3 from 'd3'
 import { ShoppingBag } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { MONTHS, DEFAULTS, EGRESO_CATEGORIAS } from '@/data/defaults'
+import { settledEgresos } from '@/lib/calc'
 import { COP } from '@/lib/format'
 import { useTheme } from '@/hooks/useTheme'
 import { SectionCard } from '@/components/ui/SectionCard'
@@ -54,7 +55,7 @@ export function EgresosCategoryChart({ year }: EgresosCategoryChartProps) {
       const key = `${year}-${String(m).padStart(2, '0')}`
       const d   = db[key]
       const trm = d?.trm || DEFAULTS.trm
-      const egresos = d?.egresos || []
+      const egresos = settledEgresos(d?.egresos)
       const total = egresos.reduce(
         (a, e) => a + (e.currency === 'USD' ? e.amount * trm : e.amount), 0
       )

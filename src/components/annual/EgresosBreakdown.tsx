@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { LayoutList } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { DEFAULTS, EGRESO_CATEGORIAS } from '@/data/defaults'
+import { settledEgresos } from '@/lib/calc'
 import { COP } from '@/lib/format'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
@@ -21,7 +22,7 @@ export function EgresosBreakdown({ year }: EgresosBreakdownProps) {
       const d   = db[key]
       if (!d) continue
       const trm = d.trm || DEFAULTS.trm
-      for (const e of d.egresos || []) {
+      for (const e of settledEgresos(d.egresos)) {
         const cat = e.category || 'otro'
         const amt = e.currency === 'USD' ? e.amount * trm : e.amount
         totals[cat] = (totals[cat] ?? 0) + amt

@@ -65,11 +65,21 @@ export function calcFSS(ibc: number, smmlv: number): { amount: number; pct: numb
   return { amount: ibc * (pct / 100), pct }
 }
 
-export function calcGastos(egresos: Egreso[], trm: number, cutoffDate?: string): number {
+/**
+ * The egresos that actually count toward totals:
+ *  - savings ('ahorro') are reallocations to your own accounts, not expenses;
+ *  - future-dated ("programado") ones don't count until their date arrives.
+ * The cutoff defaults to today so monthly and annual figures never diverge —
+ * every aggregation must go through here.
+ */
+export function settledEgresos(egresos: Egreso[] = [], cutoffDate: string = localToday()): Egreso[] {
   return (egresos || [])
-    // Savings ('ahorro') are reallocations to your own accounts, not expenses
     .filter(e => e.category !== 'ahorro')
-    .filter(e => !cutoffDate || !e.date || e.date <= cutoffDate)
+    .filter(e => !e.date || e.date <= cutoffDate)
+}
+
+export function calcGastos(egresos: Egreso[], trm: number, cutoffDate: string = localToday()): number {
+  return settledEgresos(egresos, cutoffDate)
     .reduce((a, e) => a + (e.currency === 'USD' ? e.amount * (trm || DEFAULTS.trm) : e.amount), 0)
 }
 

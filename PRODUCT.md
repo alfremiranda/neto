@@ -138,7 +138,8 @@ Primas       = 8.33% × base
 Cesantías    = 8.33% × base
 Vacaciones   = 4.17% × base
 
-Gastos       = Σ gastos del mes, excluyendo los de fecha futura
+Gastos       = Σ gastos, excluyendo ahorros y los de fecha futura
+               (mismo criterio en las cifras mensuales y anuales)
 Neto libre   = bruto − obligaciones − provisiones − gastos
 ```
 
@@ -237,7 +238,6 @@ Sin versionado semántico formal; el producto avanza por hitos (246 commits desd
 **Limitaciones conocidas:**
 - La navegación de meses con flechas **no cruza el año** (ene–dic).
 - `_settings` (que incluye las cuentas) se sincroniza por último-en-escribir: editar cuentas en dos dispositivos a la vez puede perder un lado. Las listas del mes sí hacen merge por entrada.
-- Las cifras **anuales incluyen gastos programados a futuro**, mientras que las **mensuales los excluyen**.
 - No hay búsqueda de texto en gastos.
 - No hay notificaciones push del sistema operativo.
 - Las cuentas de **ahorro no se pueden crear durante el onboarding** (solo después).
