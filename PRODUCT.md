@@ -233,7 +233,7 @@ Sin versionado semántico formal; el producto avanza por hitos (246 commits desd
 
 ## 11. Estado actual y deuda conocida
 
-**Implementado pero no expuesto en la UI** (código vivo, sin punto de entrada): vista “Año” independiente, sheet de detalle de cuenta y de saldo inicial, tarjeta de “Flujo recomendado”, y herramientas de mantenimiento de datos (reset, deduplicar, wipe+push).
+**Código muerto: eliminado (2026-07-22).** Se retiró todo lo que había quedado sin punto de entrada tras sucesivos rediseños: la vista “Año” independiente, los sheets de detalle de cuenta y de saldo inicial (su función la cubre el ledger de Cuentas y el campo “Saldo inicial” del editor), la tarjeta de “Flujo recomendado”, gráficas y modales reemplazados, las herramientas de mantenimiento de datos (reset/deduplicar/wipe+push, con fixtures personales embebidos), el ajuste `ssAccount` que nadie leía, y los cálculos legacy `calcSS`/`calcDistribucion`/`calcFlujo`. Si algo de esto se necesita, está en el historial de git.
 
 **Limitaciones conocidas:**
 - La navegación de meses con flechas **no cruza el año** (ene–dic).

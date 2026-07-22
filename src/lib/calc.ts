@@ -1,7 +1,7 @@
 import { DEFAULTS } from '@/data/defaults'
 import { localToday } from '@/lib/format'
 import type {
-  Income, Egreso, MonthData, Totales, SSResult, Distribucion, Flujo, AnnualRow,
+  Income, Egreso, MonthData, Totales, AnnualRow,
   DeductionConfig, DeductionResult, AllDeductionsResult, VoluntariaItem,
   Account, FinanceDB,
 } from '@/types'
@@ -22,25 +22,6 @@ export function calcIBC(incomes: Income[], trm: number, smmlv: number): number {
   const totalServicios = serviciosIncomes
     .reduce((a, i) => a + (i.currency === 'USD' ? i.amount * trm : i.amount), 0)
   return Math.max(totalServicios * DEFAULTS.ibc_factor, smmlv)
-}
-
-// Backward-compat: without deductions uses DEFAULTS constants
-export function calcSS(ibc: number, deductions?: DeductionConfig[]): SSResult {
-  if (!deductions) {
-    const salud = ibc * DEFAULTS.ss_salud
-    const pens  = ibc * DEFAULTS.ss_pens
-    const arl   = ibc * DEFAULTS.ss_arl
-    return { salud, pens, arl, total: salud + pens + arl }
-  }
-  const ssEnabled = deductions.filter(d => d.enabled && d.group === 'ss' && d.base === 'ibc')
-  let salud = 0, pens = 0, arl = 0
-  ssEnabled.forEach(d => {
-    const amt = ibc * (d.pct / 100)
-    if (d.id === 'salud')    salud = amt
-    else if (d.id === 'pension') pens = amt
-    else if (d.id === 'arl')     arl  = amt
-  })
-  return { salud, pens, arl, total: salud + pens + arl }
 }
 
 // Base for primas/cesantías/vacaciones: the gross of incomes flagged with
@@ -81,14 +62,6 @@ export function settledEgresos(egresos: Egreso[] = [], cutoffDate: string = loca
 export function calcGastos(egresos: Egreso[], trm: number, cutoffDate: string = localToday()): number {
   return settledEgresos(egresos, cutoffDate)
     .reduce((a, e) => a + (e.currency === 'USD' ? e.amount * (trm || DEFAULTS.trm) : e.amount), 0)
-}
-
-// Kept for backward compat in FlujoCard/TrendChart migration
-export function calcDistribucion(bruto: number, ssTot: number, gast: number): Distribucion {
-  const ret  = bruto * DEFAULTS.retencion
-  const prim = bruto * DEFAULTS.primas
-  const netoLibre = bruto - ssTot - gast - ret - prim
-  return { ret, prim, netoLibre }
 }
 
 /**
@@ -173,19 +146,11 @@ export function calcAllDeductions(
   return { ssItems, ssTotal, provItems, volItems, nonSsTotal, total, netoLibre }
 }
 
-export function calcFlujo(ssTot: number, gast: number, ret: number, prim: number, trm: number, totUSD: number): Flujo {
-  const aBancol  = (ssTot + gast) / trm
-  const aARQ     = (ret + prim) / trm
-  const netoU    = totUSD - aBancol - aARQ
-  const interest = aARQ * (DEFAULTS.arq_savings_rate / 12)
-  return { aBancol, aARQ, netoU, interest }
-}
-
 export function buildAnnualData(
   db: Record<string, MonthData>,
   year: number,
   smmlvFn: (y: number) => number,
-  deductions?: DeductionConfig[],
+  deductions: DeductionConfig[],
 ): AnnualRow[] {
   const rows: AnnualRow[] = []
   const now = new Date()
@@ -209,26 +174,14 @@ export function buildAnnualData(
     const ibc     = calcIBC(incomes, trm, smmlvFn(year))
     const gast    = calcGastos(egresos, trm)
 
-    let ssTot: number, ret: number, prim: number, provTotal: number, netoLibre: number
-
-    if (deductions) {
-      const provBase = calcProvisionBase(incomes, trm)
-      const res = calcAllDeductions(bruto, ibc, m, deductions, gast, trm, d.voluntarias, provBase, smmlvFn(year))
-      ssTot     = res.ssTotal
-      ret       = res.provItems.find(i => i.id === 'retencion')?.amount ?? 0
-      prim      = res.provItems.find(i => i.id === 'primas')?.amount ?? 0
-      provTotal = res.provItems.filter(i => i.id !== 'retencion').reduce((a, i) => a + i.amount, 0)
-               + res.volItems.reduce((a, i) => a + i.amount, 0)
-      netoLibre = res.netoLibre
-    } else {
-      const ss = calcSS(ibc)
-      ssTot = ss.total
-      const dist = calcDistribucion(bruto, ssTot, gast)
-      ret       = dist.ret
-      prim      = dist.prim
-      provTotal = prim
-      netoLibre = dist.netoLibre
-    }
+    const provBase  = calcProvisionBase(incomes, trm)
+    const res       = calcAllDeductions(bruto, ibc, m, deductions, gast, trm, d.voluntarias, provBase, smmlvFn(year))
+    const ssTot     = res.ssTotal
+    const ret       = res.provItems.find(i => i.id === 'retencion')?.amount ?? 0
+    const prim      = res.provItems.find(i => i.id === 'primas')?.amount ?? 0
+    const provTotal = res.provItems.filter(i => i.id !== 'retencion').reduce((a, i) => a + i.amount, 0)
+                    + res.volItems.reduce((a, i) => a + i.amount, 0)
+    const netoLibre = res.netoLibre
 
     rows.push({ m, hasData: true, bruto, totUSD, totCOP, ssTot, gast, ret, prim, provTotal, netoLibre })
   }

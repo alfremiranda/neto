@@ -72,13 +72,6 @@ export async function sbPush(key: string, data: unknown): Promise<void> {
   )
 }
 
-export async function sbDeleteAll(): Promise<void> {
-  const sb = sbClient()
-  const user = await getUser()
-  if (!user) return
-  await sb.from('months').delete().eq('user_id', user.id)
-}
-
 export async function sbPullAll(): Promise<Array<{ key: string; data: unknown; updated_at: string | null }> | null> {
   const sb = sbClient()
   const user = await getUser()

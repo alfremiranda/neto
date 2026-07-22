@@ -75,7 +75,6 @@ export interface MonthData {
   egresos: Egreso[]
   voluntarias?: VoluntariaItem[]
   egresosSeeded?: boolean
-  balances?: Record<string, number>
   // Tombstones for deleted entries: "<type>:<id>" → deletion time (ms). Lets a
   // delete on one device win over a stale copy on another (propagates deletes).
   deleted?: Record<string, number>
@@ -83,7 +82,6 @@ export interface MonthData {
 
 export interface Settings {
   accounts?: Account[]
-  ssAccount?: string       // account ID that pays SS each month
   onboardingDone?: boolean // set to true after first-run wizard is completed
 }
 
@@ -91,7 +89,7 @@ export type FinanceDB = { _settings?: Settings } & Record<string, MonthData>
 
 export type ViewType = 'mes' | 'dashboard' | 'cuentas' | 'ahorros' | 'config' | 'profile'
 
-export type SheetId = 'income' | 'egreso' | 'transfer' | 'account-edit' | 'balance' | 'account-detail' | 'notifications' | null
+export type SheetId = 'income' | 'egreso' | 'transfer' | 'account-edit' | 'notifications' | null
 
 export interface TRMCache {
   trm: number
@@ -99,30 +97,10 @@ export interface TRMCache {
   ts: number
 }
 
-export interface SSResult {
-  salud: number
-  pens: number
-  arl: number
-  total: number
-}
-
 export interface Totales {
   totUSD: number
   totCOP: number
   bruto: number
-}
-
-export interface Distribucion {
-  ret: number
-  prim: number
-  netoLibre: number
-}
-
-export interface Flujo {
-  aBancol: number
-  aARQ: number
-  netoU: number
-  interest: number
 }
 
 export interface AnnualRow {

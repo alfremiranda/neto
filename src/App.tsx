@@ -12,8 +12,6 @@ import { CuentasView } from '@/components/views/CuentasView'
 import { AhorrosView } from '@/components/views/AhorrosView'
 import { Toast } from '@/components/ui/Toast'
 import { AccountEditSheet } from '@/components/sheets/AccountEditSheet'
-import { AccountDetailSheet } from '@/components/sheets/AccountDetailSheet'
-import { BalanceSheet } from '@/components/sheets/BalanceSheet'
 import { TransferSheet } from '@/components/sheets/TransferSheet'
 import { NotificationsSheet } from '@/components/sheets/NotificationsSheet'
 import { IncomeSheet } from '@/components/sheets/IncomeSheet'
@@ -184,8 +182,6 @@ export default function App() {
         <IncomeSheet />
         <EgresoSheet />
         <AccountEditSheet />
-        <AccountDetailSheet />
-        <BalanceSheet />
         <TransferSheet />
         <NotificationsSheet />
         <Toast />
