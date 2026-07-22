@@ -4,7 +4,7 @@ import { RowActionsSheet } from '@/components/ui/RowActionsSheet'
 import { AccountCardView } from '@/components/cards/AccountCardView'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
-import { buildLedger, computeAccountBalance } from '@/lib/calc'
+import { buildLedger, computeAccountBalance, creditCardStats } from '@/lib/calc'
 import { COP, USD, fmtDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -189,6 +189,25 @@ export function CuentasView() {
     : 0
 
   const fmt = (n: number) => selectedAccount?.currency === 'USD' ? USD(n) : COP(n)
+
+  // Type-specific detail shown in the ledger header (moved off the mini cards).
+  const acctDetail: string | null = (() => {
+    const a = selectedAccount
+    if (!a) return null
+    if (a.type === 'credit' && a.creditLimit != null) {
+      const s = creditCardStats(a, currentBalance)
+      const parts = [`−${fmt(s.debt)} deuda`, `${Math.round(s.utilization * 100)}% usado`]
+      if (a.cutoffDay) parts.push(`Corte ${a.cutoffDay}`)
+      if (a.dueDay)    parts.push(`Pago ${a.dueDay}`)
+      return parts.join(' · ')
+    }
+    if (a.rate > 0 && a.type !== 'cash') {
+      const monthly = currentBalance * (a.rate / 100) / 12
+      const detail = `≈ ${fmt(monthly)}/mes · ${a.rate}% ${a.type === 'savings' ? 'E.A.' : 'a.a.'}`
+      return a.type === 'savings' && a.maturityDate ? `${detail} · Vence ${fmtDate(a.maturityDate)}` : detail
+    }
+    return null
+  })()
   // Exclude scheduled (not-yet-settled) entries so Entradas/Salidas reconcile with Saldo actual.
   const totalCredits = ledger.filter(e => !e.scheduled && e.convertedAmount > 0).reduce((s, e) => s + e.convertedAmount, 0)
   const totalDebits  = ledger.filter(e => !e.scheduled && e.convertedAmount < 0).reduce((s, e) => s + e.convertedAmount, 0)
@@ -231,7 +250,7 @@ export function CuentasView() {
               <div key={a.id} className="grid shrink-0 w-[46%] min-w-[150px] [&>*]:min-w-0 sm:w-auto sm:min-w-0">
                 <AccountCardView
                   account={a}
-                  size="lg"
+                  size="sm"
                   selected={selectedId === a.id}
                   onClick={() => setSelectedId(a.id)}
                 />
@@ -248,10 +267,24 @@ export function CuentasView() {
           {/* Header */}
           <div className="px-4 py-3 border-b border-[var(--border)] flex flex-wrap items-center gap-3">
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-semibold">{selectedAccount.label}</div>
-              <div className="text-xs text-muted-foreground mt-0.5">
+              <div className="flex items-center gap-1">
+                <span className="text-sm font-semibold truncate">{selectedAccount.label}</span>
+                <IconButton
+                  variant="ghost"
+                  size="md"
+                  className="shrink-0"
+                  onClick={() => { setEditingAccount(selectedAccount.id); openSheet('account-edit') }}
+                  aria-label="Editar cuenta"
+                >
+                  <Pencil size={12} />
+                </IconButton>
+              </div>
+              <div className="text-xs text-muted-foreground">
                 {ledger.length} movimiento{ledger.length !== 1 ? 's' : ''}
               </div>
+              {acctDetail && (
+                <div className="text-[11px] text-muted-foreground tabular-nums mt-0.5">{acctDetail}</div>
+              )}
             </div>
             {/* Stats — hidden on very small screens, visible on sm+ */}
             <div className="hidden sm:flex items-center gap-4 text-right">
