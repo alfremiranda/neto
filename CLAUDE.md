@@ -1,5 +1,9 @@
 # Neto — Planeador financiero personal
 
+> **Contexto de producto** (funcionalidades, tipos de cuenta, categorías, reglas de negocio,
+> perfiles de usuario, historial de features): ver [PRODUCT.md](./PRODUCT.md).
+> Este archivo cubre stack, convenciones de código y ambientes.
+
 ## Contexto
 App web para Alfredo Miranda, diseñador senior en Barranquilla, Colombia.
 Gestiona ingresos en USD (contrato fijo vía ARQ Dollar App + freelance Toptal)
