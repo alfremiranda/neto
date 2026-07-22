@@ -1,3 +1,4 @@
+import type { KeyboardEvent } from 'react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useMonthData } from '@/hooks/useMonthData'
 import { useSettingsStore } from '@/store/settingsStore'
@@ -18,6 +19,7 @@ interface KPICardProps {
   accentToken?: string
   accent?: string
   detail?: DetailLine[]
+  onClick?: () => void   // jump to the matching Mes tab
 }
 
 function KPITooltipContent({ lines }: { lines: DetailLine[] }) {
@@ -37,7 +39,20 @@ function KPITooltipContent({ lines }: { lines: DetailLine[] }) {
   )
 }
 
-function KPICard({ label, value, sub, accentToken, accent, detail }: KPICardProps) {
+function KPICard({ label, value, sub, accentToken, accent, detail, onClick }: KPICardProps) {
+  const clickable = !!onClick
+  const clickProps = clickable
+    ? {
+        role: 'button' as const,
+        tabIndex: 0,
+        onClick,
+        onKeyDown: (e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick!() } },
+      }
+    : {}
+  const cardCls = cn(
+    'p-[17px] flex flex-col gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]',
+    clickable ? 'cursor-pointer hover:border-[var(--primary)]/40 transition-colors' : detail ? 'cursor-help' : '',
+  )
   const inner = (
     <>
       <div className="text-[10px] font-semibold font-sans uppercase tracking-[1px] text-muted-foreground">
@@ -56,16 +71,13 @@ function KPICard({ label, value, sub, accentToken, accent, detail }: KPICardProp
   )
 
   if (!detail || detail.length === 0) {
-    return <Card className="p-[17px] flex flex-col gap-1.5">{inner}</Card>
+    return <Card className={cardCls} {...clickProps}>{inner}</Card>
   }
 
   return (
     <Tooltip delayDuration={200}>
       <TooltipTrigger asChild>
-        <Card
-          tabIndex={0}
-          className="p-[17px] flex flex-col gap-1.5 cursor-help focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
-        >
+        <Card className={cardCls} {...(clickable ? clickProps : { tabIndex: 0 })}>
           {inner}
         </Card>
       </TooltipTrigger>
@@ -86,7 +98,7 @@ const GRID_BY_COUNT: Record<number, string> = {
   5: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-5',
 }
 
-export function KPIStrip() {
+export function KPIStrip({ onNavigate }: { onNavigate?: (tab: string) => void } = {}) {
   const { getSMMLV, curKey } = useFinanceStore()
   const deductions = useSettingsStore(s => s.deductions)
   const { showObligaciones, showProvisiones } = useDeductionGroups()
@@ -180,6 +192,7 @@ export function KPIStrip() {
       value={COP(bruto)}
       sub={bruto > 0 ? USD(totUSD) : 'Sin ingresos este mes'}
       detail={ingresoDetail.length > 0 ? ingresoDetail : undefined}
+      onClick={onNavigate ? () => onNavigate('ingresos') : undefined}
     />,
     showObligaciones && (
       <KPICard
@@ -189,6 +202,7 @@ export function KPIStrip() {
         sub={pct(obligTotal)}
         accentToken="--color-tax-txt"
         detail={obligDetail.length > 0 ? obligDetail : undefined}
+        onClick={onNavigate ? () => onNavigate('tributarias') : undefined}
       />
     ),
     showProvisiones && (
@@ -199,6 +213,7 @@ export function KPIStrip() {
         sub={pct(provTotal)}
         accentToken={provToken}
         detail={provDetail.length > 0 ? provDetail : undefined}
+        onClick={onNavigate ? () => onNavigate('provisiones') : undefined}
       />
     ),
     <KPICard
@@ -208,6 +223,7 @@ export function KPIStrip() {
       sub={pct(gast)}
       accent="text-[var(--color-expense-txt)]"
       detail={egresoDetail.length > 0 ? egresoDetail : undefined}
+      onClick={onNavigate ? () => onNavigate('gastos') : undefined}
     />,
     <KPICard
       key="neto"
