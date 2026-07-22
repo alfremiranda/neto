@@ -152,20 +152,28 @@ export default function App() {
           <main ref={mainRef} className="flex-1 overflow-y-auto overflow-x-hidden bg-[var(--background)] min-w-0 flex flex-col">
             <PullIndicator pullY={pullY} refreshing={refreshing} isPulling={isPulling} />
             {view === 'mes' && (
-              <div className="sticky top-0 z-30 bg-[var(--background)]/80 backdrop-blur-md border-b border-[var(--border)]">
+              <div
+                className="sticky top-0 z-30 border-b border-[var(--border)]"
+                style={{ backgroundColor: 'color-mix(in oklab, var(--card) 55%, var(--background))' }}
+              >
                 <div className="max-w-5xl mx-auto w-full px-4 sm:px-5 lg:px-6 py-3">
                   <MonthNav />
                 </div>
               </div>
             )}
-            <div className="max-w-5xl mx-auto w-full p-4 sm:p-5 lg:p-6 pb-4 sm:pb-5 lg:pb-6">
-              {view === 'mes'       && <MesView />}
-              {view === 'dashboard' && <DashboardView />}
-              {view === 'cuentas'   && <CuentasView />}
-              {view === 'ahorros'   && <AhorrosView />}
-              {view === 'config'    && <ConfigView />}
-              {view === 'profile'   && <ProfileView />}
-            </div>
+            {/* Mes manages its own full-width sticky tab bar, so it renders
+                outside the centered container; other views stay centered+padded. */}
+            {view === 'mes' ? (
+              <MesView />
+            ) : (
+              <div className="max-w-5xl mx-auto w-full p-4 sm:p-5 lg:p-6 pb-4 sm:pb-5 lg:pb-6">
+                {view === 'dashboard' && <DashboardView />}
+                {view === 'cuentas'   && <CuentasView />}
+                {view === 'ahorros'   && <AhorrosView />}
+                {view === 'config'    && <ConfigView />}
+                {view === 'profile'   && <ProfileView />}
+              </div>
+            )}
           </main>
         </div>
 

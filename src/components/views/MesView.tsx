@@ -28,42 +28,48 @@ export function MesView() {
   const activeTab: TabId = tabs.some(t => t.id === tab) ? tab : 'ingresos'
 
   return (
-    <div>
-      {/* ── Resumen del mes — siempre visible ─────────────────── */}
-      <KPIStrip onNavigate={t => setTab(t as TabId)} />
-      {showDistribucion && <DistribucionCard />}
+    <>
+      {/* ── Resumen del mes — siempre visible (centrado + padding) ── */}
+      <div className="max-w-5xl mx-auto w-full px-4 sm:px-5 lg:px-6 pt-4 sm:pt-5 lg:pt-6">
+        <KPIStrip onNavigate={t => setTab(t as TabId)} />
+        {showDistribucion && <DistribucionCard />}
+      </div>
 
-      {/* ── Tabs — sticky bajo el month nav; scroll horizontal en mobile ── */}
-      <div className="sticky top-[68px] sm:top-[56px] z-20 -mx-4 sm:-mx-5 lg:-mx-6 mb-4 px-4 sm:px-5 lg:px-6 bg-[var(--background)]/85 backdrop-blur-md border-b border-[var(--border)]">
-        <div className="flex gap-1.5 overflow-x-auto overscroll-x-contain scrollbar-none py-2">
-          {tabs.map(t => {
-            const active = t.id === activeTab
-            return (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => setTab(t.id)}
-                aria-pressed={active}
-                className={cn(
-                  'shrink-0 h-9 px-3.5 rounded-lg text-sm font-medium whitespace-nowrap cursor-pointer transition-colors',
-                  active
-                    ? 'bg-[var(--primary)] text-[var(--primary-foreground)]'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-[var(--muted)]',
-                )}
-              >
-                {t.label}
-              </button>
-            )
-          })}
+      {/* ── Tabs — ancho completo de main, sticky bajo el month nav ── */}
+      <div className="sticky top-[68px] sm:top-[56px] z-20 mb-4 bg-[var(--background)] border-b border-[var(--border)]">
+        <div className="max-w-5xl mx-auto w-full px-4 sm:px-5 lg:px-6">
+          <div className="flex gap-1.5 overflow-x-auto overscroll-x-contain scrollbar-none py-2">
+            {tabs.map(t => {
+              const active = t.id === activeTab
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setTab(t.id)}
+                  aria-pressed={active}
+                  className={cn(
+                    'shrink-0 h-9 px-3.5 rounded-lg text-sm font-medium whitespace-nowrap cursor-pointer transition-colors',
+                    active
+                      ? 'bg-[var(--primary)] text-[var(--primary-foreground)]'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-[var(--muted)]',
+                  )}
+                >
+                  {t.label}
+                </button>
+              )
+            })}
+          </div>
         </div>
       </div>
 
-      {/* ── Contenido del tab activo ──────────────────────────── */}
-      {activeTab === 'ingresos'    && <IngresosCard />}
-      {activeTab === 'gastos'      && <EgresosCard />}
-      {activeTab === 'movimientos' && <MovimientosCard />}
-      {activeTab === 'tributarias' && <ObligacionesCard />}
-      {activeTab === 'provisiones' && <ProvisionesCard />}
-    </div>
+      {/* ── Contenido del tab activo (centrado + padding) ────────── */}
+      <div className="max-w-5xl mx-auto w-full px-4 sm:px-5 lg:px-6 pb-4 sm:pb-5 lg:pb-6">
+        {activeTab === 'ingresos'    && <IngresosCard />}
+        {activeTab === 'gastos'      && <EgresosCard />}
+        {activeTab === 'movimientos' && <MovimientosCard />}
+        {activeTab === 'tributarias' && <ObligacionesCard />}
+        {activeTab === 'provisiones' && <ProvisionesCard />}
+      </div>
+    </>
   )
 }
