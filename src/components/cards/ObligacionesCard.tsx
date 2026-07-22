@@ -4,14 +4,12 @@ import { Dialog as DialogPrimitive } from 'radix-ui'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
-import { useUIStore } from '@/store/uiStore'
 import { useLiveTRM } from '@/hooks/useLiveTRM'
-import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase, computeAccountBalance } from '@/lib/calc'
+import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase } from '@/lib/calc'
 import { COP, USD, localToday } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { IconButton } from '@/components/ui/icon-button'
-import { Button } from '@/components/ui/button'
 
 // ─── SS Payment schedule data ─────────────────────────────────────────────────
 
@@ -260,20 +258,12 @@ function GroupBox({ label, children, action, trmNote, ibcRow }: { label: string;
 // ─── Main card ────────────────────────────────────────────────────────────────
 
 export function ObligacionesCard() {
-  const { getCurrentMonth, getSMMLV, curKey, db, getAccounts } = useFinanceStore()
+  const { getCurrentMonth, getSMMLV, curKey } = useFinanceStore()
   const deductions = useSettingsStore(s => s.deductions)
-  const { openSheet, setTransferPreset } = useUIStore()
   const { trm: liveTRM } = useLiveTRM()
   const month = getCurrentMonth()
   const [y, m] = curKey.split('-').map(Number)
   const smmlv = getSMMLV(y)
-
-  const accounts  = getAccounts()
-  const allKeys   = Object.keys(db).filter(k => k !== '_settings').sort()
-  const latestKey = allKeys[allKeys.length - 1] ?? curKey
-  const retDest   = deductions.find(dd => dd.id === 'retencion')?.destAccount
-  const retReserveAcc = retDest ? accounts.find(a => a.id === retDest) : undefined
-  const retReserve = retReserveAcc ? computeAccountBalance(retReserveAcc.id, retReserveAcc, db, latestKey) : null
 
   const { totUSD, bruto } = calcTotales(month.incomes, month.trm)
   const ibc  = calcIBC(month.incomes, month.trm, smmlv)
@@ -369,17 +359,6 @@ export function ObligacionesCard() {
                 showUSD={showUSD}
               />
             ))}
-            {retReserveAcc && retReserve != null && (
-              <div className="flex items-center gap-2 py-[9px]">
-                <span className="flex-1 min-w-0 text-[11px] text-muted-foreground truncate">
-                  En {retReserveAcc.label}: <span className="tabular-nums font-mono text-[var(--color-net-txt)]">{COP(retReserve)}</span>
-                </span>
-                <Button size="xs" variant="ghost" className="bg-muted text-muted-foreground hover:text-foreground shrink-0"
-                  onClick={() => { setTransferPreset({ to: retReserveAcc.id, amount: retefuente.reduce((a, i) => a + i.amount, 0) }); openSheet('transfer') }}>
-                  Aporte
-                </Button>
-              </div>
-            )}
           </GroupBox>
         )}
       </div>

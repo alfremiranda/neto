@@ -4,7 +4,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useLiveTRM } from '@/hooks/useLiveTRM'
-import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase, computeAccountBalance } from '@/lib/calc'
+import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase } from '@/lib/calc'
 import { COP, USD, localToday } from '@/lib/format'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Button } from '@/components/ui/button'
@@ -39,28 +39,14 @@ export function ProvisionesCard() {
 }
 
 function ProvisionesCardContent() {
-  const { getCurrentMonth, getSMMLV, curKey, db, getAccounts } = useFinanceStore()
+  const { getCurrentMonth, getSMMLV, curKey } = useFinanceStore()
   const deductions = useSettingsStore(s => s.deductions)
   const { trm: liveTRM } = useLiveTRM()
-  const { setView, openSheet, setTransferPreset } = useUIStore()
+  const { setView } = useUIStore()
 
   const month = getCurrentMonth()
   const [y, m] = curKey.split('-').map(Number)
   const smmlv = getSMMLV(y)
-
-  const accounts  = getAccounts()
-  const allKeys   = Object.keys(db).filter(k => k !== '_settings').sort()
-  const latestKey = allKeys[allKeys.length - 1] ?? curKey
-  const reserveFor = (id: string) => {
-    const dest = deductions.find(dd => dd.id === id)?.destAccount
-    const acc  = dest ? accounts.find(a => a.id === dest) : undefined
-    if (!acc) return null
-    return { acc, balance: computeAccountBalance(acc.id, acc, db, latestKey) }
-  }
-  function aporte(destId: string, amount: number) {
-    setTransferPreset({ to: destId, amount })
-    openSheet('transfer')
-  }
 
   const { totUSD, bruto } = calcTotales(month.incomes, month.trm)
   const ibc  = calcIBC(month.incomes, month.trm, smmlv)
@@ -158,7 +144,6 @@ function ProvisionesCardContent() {
                   : item.base === 'fixed_usd' ? 'fijo USD'
                   : item.base === 'base_usd'  ? `${item.pct}% s/U$${item.amount ?? 0}`
                   : `${item.pct}%`
-                const reserve = reserveFor(item.id)
                 return (
                   <div key={item.id} className="py-[9px] border-b border-[var(--border)] last:border-0">
                     <div className="flex items-center gap-2">
@@ -171,17 +156,6 @@ function ProvisionesCardContent() {
                         )}
                       </div>
                     </div>
-                    {reserve && (
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="flex-1 min-w-0 text-[11px] text-muted-foreground truncate">
-                          En {reserve.acc.label}: <span className="tabular-nums font-mono text-[var(--color-net-txt)]">{COP(reserve.balance)}</span>
-                        </span>
-                        <Button size="xs" variant="ghost" className="bg-muted text-muted-foreground hover:text-foreground shrink-0"
-                          onClick={() => aporte(reserve.acc.id, item.amount)}>
-                          Aporte
-                        </Button>
-                      </div>
-                    )}
                   </div>
                 )
               })}

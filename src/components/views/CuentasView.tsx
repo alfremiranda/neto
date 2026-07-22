@@ -40,7 +40,9 @@ function LedgerRow({ entry, account, accounts }: { entry: LedgerEntry; account: 
 
   const fmt = (n: number) => account.currency === 'USD' ? USD(n) : COP(n)
   const { Icon, color, bg } = ENTRY_ICONS[entry.type]
-  const isCredit = entry.convertedAmount >= 0
+  // Credit vs debit by entry TYPE, not amount sign — a scheduled egreso has a
+  // 0-balance impact but is still an expense, so it must not read as a "+" credit.
+  const isCredit = entry.type === 'income' || entry.type === 'transfer_in'
   // On a credit-card account the running balance is ≤ 0 (−debt); show it as positive debt
   const acctIsCredit = account.type === 'credit'
   const runningBalance = acctIsCredit ? Math.max(-entry.balance, 0) : entry.balance
@@ -187,8 +189,9 @@ export function CuentasView() {
     : 0
 
   const fmt = (n: number) => selectedAccount?.currency === 'USD' ? USD(n) : COP(n)
-  const totalCredits = ledger.filter(e => e.convertedAmount > 0).reduce((s, e) => s + e.convertedAmount, 0)
-  const totalDebits  = ledger.filter(e => e.convertedAmount < 0).reduce((s, e) => s + e.convertedAmount, 0)
+  // Exclude scheduled (not-yet-settled) entries so Entradas/Salidas reconcile with Saldo actual.
+  const totalCredits = ledger.filter(e => !e.scheduled && e.convertedAmount > 0).reduce((s, e) => s + e.convertedAmount, 0)
+  const totalDebits  = ledger.filter(e => !e.scheduled && e.convertedAmount < 0).reduce((s, e) => s + e.convertedAmount, 0)
   const selIsCredit  = selectedAccount?.type === 'credit'
 
   return (
@@ -261,18 +264,12 @@ export function CuentasView() {
                 <div className="text-sm font-semibold tabular-nums">{fmt(totalDebits)}</div>
               </div>
             </div>
-            {/* Saldo + action — always visible */}
-            <div className="flex items-center gap-3 shrink-0">
-              <div className="text-right">
-                <div className="text-[10px] text-muted-foreground">{selIsCredit ? 'Deuda actual' : 'Saldo actual'}</div>
-                <div className={cn('text-sm font-bold tabular-nums font-heading', selIsCredit && 'text-[var(--color-expense-txt)]')}>
-                  {fmt(selIsCredit ? Math.max(-currentBalance, 0) : currentBalance)}
-                </div>
+            {/* Saldo — the Movimiento action lives in the page header above */}
+            <div className="text-right shrink-0">
+              <div className="text-[10px] text-muted-foreground">{selIsCredit ? 'Deuda actual' : 'Saldo actual'}</div>
+              <div className={cn('text-sm font-bold tabular-nums font-heading', selIsCredit && 'text-[var(--color-expense-txt)]')}>
+                {fmt(selIsCredit ? Math.max(-currentBalance, 0) : currentBalance)}
               </div>
-              <Button size="sm" variant="outline" onClick={() => openSheet('transfer')}>
-                <ArrowLeftRight size={13} />
-                <span className="hidden xs:inline">Movimiento</span>
-              </Button>
             </div>
           </div>
 

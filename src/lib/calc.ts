@@ -296,7 +296,7 @@ export function buildLedger(
         desc: egr.desc,
         amount: egr.amount,
         currency: egr.currency,
-        convertedAmount: scheduled ? 0 : -toAccountCcy(egr.amount, egr.currency),
+        convertedAmount: -toAccountCcy(egr.amount, egr.currency),
         balance: 0,
         scheduled,
       })
@@ -341,7 +341,9 @@ export function buildLedger(
   // Compute running balance
   let running = account.startingBalance ?? 0
   for (const e of entries) {
-    running += e.convertedAmount
+    // Scheduled (future-dated) egresos are shown but not yet settled, so they
+    // don't move the running balance.
+    if (!e.scheduled) running += e.convertedAmount
     e.balance = running
   }
 
