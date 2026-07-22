@@ -36,7 +36,7 @@ const DISPLAY_SECTIONS: {
 ]
 
 const BASE_OPTIONS: { value: DeductionBase; label: string; desc: string }[] = [
-  { value: 'neto_ibc',  label: 'Bruto − IBC', desc: 'Sobre el ingreso bruto menos el IBC (base para primas, cesantías, vacaciones)' },
+  { value: 'neto_ibc',  label: 'Ingreso bruto', desc: 'Sobre el ingreso bruto con "aplicar provisiones" (base para primas, cesantías, vacaciones)' },
   { value: 'bruto',     label: '% Bruto',      desc: 'Porcentaje sobre el total de ingresos del mes' },
   { value: 'base_usd',  label: 'Base USD',     desc: 'Porcentaje sobre un ingreso fijo en USD × TRM' },
   { value: 'fixed_cop', label: 'Fijo COP',     desc: 'Monto fijo mensual en pesos' },

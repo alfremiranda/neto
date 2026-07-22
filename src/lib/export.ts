@@ -63,7 +63,7 @@ export function exportAnnualCSV(
     const { bruto } = calcTotales(incomes, trm)
     const ibc     = calcIBC(incomes, trm, smmlvFn(year))
     const gast    = calcGastos(d.egresos || [], trm)
-    const provBase = calcProvisionBase(incomes, trm, ibc)
+    const provBase = calcProvisionBase(incomes, trm)
     const res     = calcAllDeductions(bruto, ibc, m + 1, deductions, gast, trm, d.voluntarias, provBase, smmlvFn(year))
 
     const ssAmts    = ssItems.map(s => res.ssItems.find(i => i.id === s.id)?.amount ?? 0)

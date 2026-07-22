@@ -43,12 +43,14 @@ export function calcSS(ibc: number, deductions?: DeductionConfig[]): SSResult {
   return { salud, pens, arl, total: salud + pens + arl }
 }
 
-export function calcProvisionBase(incomes: Income[], trm: number, ibc: number): number {
-  const selected = incomes.filter(i => i.applyProvisions !== false)
-  const base = selected.reduce(
-    (a, i) => a + (i.currency === 'USD' ? i.amount * trm : i.amount), 0
-  )
-  return Math.max(base - ibc, 0)
+// Base for primas/cesantías/vacaciones: the gross of incomes flagged with
+// "aplicar provisiones" (8.33% of gross ≈ one salary / 12), NOT gross − IBC —
+// those provisions are on the income itself, and subtracting the SMMLV-floored
+// IBC wrongly zeroed the base for incomes at or below the minimum wage.
+export function calcProvisionBase(incomes: Income[], trm: number): number {
+  return incomes
+    .filter(i => i.applyProvisions !== false)
+    .reduce((a, i) => a + (i.currency === 'USD' ? i.amount * trm : i.amount), 0)
 }
 
 export function calcFSS(ibc: number, smmlv: number): { amount: number; pct: number } {
@@ -200,7 +202,7 @@ export function buildAnnualData(
     let ssTot: number, ret: number, prim: number, provTotal: number, netoLibre: number
 
     if (deductions) {
-      const provBase = calcProvisionBase(incomes, trm, ibc)
+      const provBase = calcProvisionBase(incomes, trm)
       const res = calcAllDeductions(bruto, ibc, m, deductions, gast, trm, d.voluntarias, provBase, smmlvFn(year))
       ssTot     = res.ssTotal
       ret       = res.provItems.find(i => i.id === 'retencion')?.amount ?? 0

@@ -45,7 +45,7 @@ export const DEFAULT_DEDUCTIONS: DeductionConfig[] = [
 export const BASE_LABELS: Record<string, string> = {
   ibc:       'IBC',
   bruto:     'Bruto',
-  neto_ibc:  'Bruto − IBC',
+  neto_ibc:  'Ingreso bruto',
   fixed_cop: 'Fijo COP',
   fixed_usd: 'Fijo USD',
   base_usd:  'Base USD',

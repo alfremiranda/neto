@@ -97,7 +97,7 @@ export function KPIStrip() {
   const { bruto, totUSD } = calcTotales(month.incomes, month.trm)
   const ibc       = calcIBC(month.incomes, month.trm, smmlv)
   const gast      = calcGastos(month.egresos || [], month.trm, localToday())
-  const provBase  = calcProvisionBase(month.incomes, month.trm, ibc)
+  const provBase  = calcProvisionBase(month.incomes, month.trm)
   const res       = calcAllDeductions(bruto, ibc, m, deductions, gast, month.trm, month.voluntarias, provBase, smmlv)
 
   const pct = (n: number) => bruto > 0 ? `${Math.round(n / bruto * 100)}% del bruto` : undefined

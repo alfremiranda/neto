@@ -278,7 +278,7 @@ export function ObligacionesCard() {
   const { totUSD, bruto } = calcTotales(month.incomes, month.trm)
   const ibc  = calcIBC(month.incomes, month.trm, smmlv)
   const gast = calcGastos(month.egresos || [], month.trm, localToday())
-  const provBase = calcProvisionBase(month.incomes, month.trm, ibc)
+  const provBase = calcProvisionBase(month.incomes, month.trm)
   const res  = calcAllDeductions(bruto, ibc, m, deductions, gast, month.trm, month.voluntarias, provBase, smmlv)
 
   const ibcIsMin   = ibc <= smmlv * 1.001

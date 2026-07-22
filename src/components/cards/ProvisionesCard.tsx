@@ -65,7 +65,7 @@ function ProvisionesCardContent() {
   const { totUSD, bruto } = calcTotales(month.incomes, month.trm)
   const ibc  = calcIBC(month.incomes, month.trm, smmlv)
   const gast = calcGastos(month.egresos || [], month.trm, localToday())
-  const provBase = calcProvisionBase(month.incomes, month.trm, ibc)
+  const provBase = calcProvisionBase(month.incomes, month.trm)
   const res  = calcAllDeductions(bruto, ibc, m, deductions, gast, month.trm, month.voluntarias, provBase, smmlv)
 
   const showUSD      = totUSD > 0
@@ -106,6 +106,21 @@ function ProvisionesCardContent() {
   }
 
   if (provItems.length === 0) {
+    const provEnabled = deductions.some(d => d.group === 'provision' && d.id !== 'retencion' && d.enabled)
+    // Enabled but base is 0 → the month's incomes don't opt into provisions.
+    if (provEnabled) {
+      return (
+        <SectionCard icon={PiggyBank} title="Provisiones">
+          <Empty className="border-0 py-2">
+            <EmptyHeader>
+              <EmptyMedia variant="icon"><Calculator size={14} /></EmptyMedia>
+              <EmptyTitle>Sin provisiones este mes</EmptyTitle>
+              <EmptyDescription>Ningún ingreso de este mes tiene "Aplicar provisiones" activado</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        </SectionCard>
+      )
+    }
     return (
       <SectionCard icon={PiggyBank} title="Provisiones">
         <Empty className="border-0 py-2">

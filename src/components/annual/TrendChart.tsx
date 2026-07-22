@@ -56,7 +56,7 @@ export function TrendChart() {
     const { bruto } = calcTotales(incomes, trm)
     const ibc = calcIBC(incomes, trm, smmlv)
     const gast = calcGastos(egresos, trm)
-    const provBase = calcProvisionBase(incomes, trm, ibc)
+    const provBase = calcProvisionBase(incomes, trm)
     const res = calcAllDeductions(bruto, ibc, mNum, deductions, gast, trm, d?.voluntarias, provBase, smmlv)
 
     const provColor = res.provItems.filter(i => i.id !== 'retencion').find(i => i.applies)?.color
@@ -98,7 +98,7 @@ export function TrendChart() {
     if (bruto === 0 && gast === 0) return { label, monthKey: k, oblig: 0, prov: 0, egres: 0, neto: 0 }
     const smmlv   = getSMMLV(parseInt(y))
     const ibc     = calcIBC(incomes, trm, smmlv)
-    const provBase = calcProvisionBase(incomes, trm, ibc)
+    const provBase = calcProvisionBase(incomes, trm)
     const res     = calcAllDeductions(bruto, ibc, monthNum, deductions, gast, trm, d?.voluntarias, provBase, smmlv)
     const retAmt  = res.provItems.find(i => i.id === 'retencion')?.amount ?? 0
     return {

@@ -26,7 +26,7 @@ export function DistribucionCard() {
   const { bruto } = calcTotales(month.incomes, month.trm)
   const ibc  = calcIBC(month.incomes, month.trm, smmlv)
   const gast = calcGastos(month.egresos || [], month.trm, localToday())
-  const provBase = calcProvisionBase(month.incomes, month.trm, ibc)
+  const provBase = calcProvisionBase(month.incomes, month.trm)
   const res  = calcAllDeductions(bruto, ibc, m, deductions, gast, month.trm, month.voluntarias, provBase, smmlv)
 
   const retencionTotal = res.provItems.filter(i => i.id === 'retencion').reduce((a, i) => a + i.amount, 0)
