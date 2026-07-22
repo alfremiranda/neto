@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { PiggyBank, Plus, ArrowLeftRight, TrendingUp, Landmark } from 'lucide-react'
+import { PiggyBank, Plus, ArrowLeftRight, TrendingUp, Landmark, Pencil } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useUIStore } from '@/store/uiStore'
@@ -8,6 +8,7 @@ import { COP, USD, fmtDate } from '@/lib/format'
 import { DEFAULTS } from '@/data/defaults'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { IconButton } from '@/components/ui/icon-button'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty'
 import { AccountCardView } from '@/components/cards/AccountCardView'
@@ -46,6 +47,18 @@ export function AhorrosView() {
 
   const ledger = selected ? [...buildLedger(selected.id, selected, db)].reverse() : []
   const fmtSel = (n: number) => selected?.currency === 'USD' ? USD(n) : COP(n)
+  const selBalance = selected ? computeAccountBalance(selected.id, selected, db, latestKey) : 0
+
+  // Detail moved off the mini cards into the selected account's header.
+  const acctDetail: string | null = (() => {
+    if (!selected) return null
+    if (selected.rate > 0) {
+      const monthly = selBalance * (selected.rate / 100) / 12
+      const d = `≈ ${fmtSel(monthly)}/mes · ${selected.rate}% E.A.`
+      return selected.maturityDate ? `${d} · Vence ${fmtDate(selected.maturityDate)}` : d
+    }
+    return selected.maturityDate ? `Vence ${fmtDate(selected.maturityDate)}` : null
+  })()
 
   return (
     <div className="space-y-5">
@@ -92,7 +105,7 @@ export function AhorrosView() {
               <div key={a.id} className="grid shrink-0 w-[46%] min-w-[150px] [&>*]:min-w-0 sm:w-auto sm:min-w-0">
                 <AccountCardView
                   account={a}
-                  size="lg"
+                  size="sm"
                   selected={selected?.id === a.id}
                   onClick={() => setSelectedId(a.id)}
                 />
@@ -105,13 +118,19 @@ export function AhorrosView() {
             <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] overflow-hidden">
               <div className="px-4 py-3 border-b border-[var(--border)] flex items-center justify-between gap-3">
                 <div className="min-w-0">
-                  <div className="text-sm font-semibold truncate">{selected.label}</div>
-                  <div className="text-xs text-muted-foreground mt-0.5">{ledger.length} movimiento{ledger.length !== 1 ? 's' : ''}</div>
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm font-semibold truncate">{selected.label}</span>
+                    <IconButton variant="ghost" size="md" className="shrink-0" onClick={() => { setEditingAccount(selected.id); openSheet('account-edit') }} aria-label="Editar cuenta">
+                      <Pencil size={12} />
+                    </IconButton>
+                  </div>
+                  <div className="text-xs text-muted-foreground">{ledger.length} movimiento{ledger.length !== 1 ? 's' : ''}</div>
+                  {acctDetail && <div className="text-[11px] text-muted-foreground tabular-nums mt-0.5">{acctDetail}</div>}
                 </div>
                 <div className="text-right shrink-0">
                   <div className="text-[10px] text-muted-foreground">Saldo</div>
                   <div className="text-sm font-bold tabular-nums font-heading text-[var(--color-net-txt)]">
-                    {fmtSel(computeAccountBalance(selected.id, selected, db, latestKey))}
+                    {fmtSel(selBalance)}
                   </div>
                 </div>
               </div>
