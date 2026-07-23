@@ -93,6 +93,13 @@ Each phase is independently shippable and leaves the product functional. Do not 
       `acc_onboarding_<ts>_*` ids that then union with the cloud's → duplicate accounts. Not blocking
       (monotonic OR covers the flag, prod gates the UI on `cloudReady` after the pull, `neto-settings`
       stays as backup) but it is the **first thing to check** if a tester reports something odd post-deploy.
+      <br>**Post-deploy status (2026-07-23):** shipped to prod (PR #3, squash `9a4fadb7`) and verified on
+      the user's two real devices — current-month figures unchanged, no duplicate accounts, deductions
+      correct. A prod `months` JSON snapshot (10 rows) was taken **pre-merge** as the data-rollback net;
+      the real risk window is each old-data device's **first consolidation** (which happens when that
+      device opens post-deploy, not at deploy time), so keep the snapshot until the other testers have
+      opened the app and synced at least once — roughly deletable after **2026-07-30**. Code rollback =
+      revert the squash commit (reverts code only, not data — hence the snapshot).
 - [ ] **Ley 1581 groundwork.** Privacy policy, explicit consent on onboarding, data-processing
       basics. *Get real legal advice — this doc is not it.*
 - [ ] **Sentry.** Error tracking wired for web (and later native).
