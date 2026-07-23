@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { DEFAULTS, TRANSFER_ACCOUNTS, GASTOS_KEYS, EGRESO_TIPOS, EGRESO_CATEGORIAS, smmlvForYear } from '@/data/defaults'
 import { sbPush, sbPullAll } from '@/lib/supabase'
-import { mergeMonth, localHasExtra } from './merge'
+import { mergeMonth, localHasExtra, mergeSettings, canonicalTieBreak } from './merge'
 import type { FinanceDB, MonthData, Account, Settings, Income, Egreso, Transfer } from '@/types'
 
 // ─── helpers ────────────────────────────────────────────────────────────────
@@ -539,12 +539,37 @@ export const useFinanceStore = create<FinanceState>()(
       },
 
       saveAccountsConfig: (accounts) => {
+        const now = Date.now()
         set(state => {
           const settings = (state.db._settings ?? {}) as Settings
+          const prev = settings.accounts ?? []
+          const prevById = new Map(prev.map(a => [a.id, a]))
+
+          // Stamp ONLY accounts that actually changed, so editing one account does
+          // not bump the others — otherwise a save would let this device's stale
+          // copies win the per-entry merge over another device's real edits.
+          const stamped = accounts.map(a => {
+            const before = prevById.get(a.id)
+            const same = before && canonicalTieBreak({ ...before, updatedAt: undefined }, { ...a, updatedAt: undefined }) === 0
+            return same ? before! : { ...a, updatedAt: now }
+          })
+
+          // Tombstone removed non-locked accounts so deletes propagate (the union
+          // merge would otherwise resurrect them from the other device); clear any
+          // tombstone for an id that is present again (re-add / resurrection).
+          const deleted: Record<string, number> = { ...(settings.deleted ?? {}) }
+          const nextIds = new Set(accounts.map(a => a.id))
+          for (const a of prev) if (!nextIds.has(a.id) && !a.locked) deleted[`account:${a.id}`] = now
+          for (const id of nextIds) delete deleted[`account:${id}`]
+
           return {
             db: {
               ...state.db,
-              _settings: { ...settings, accounts },
+              _settings: {
+                ...settings,
+                accounts: stamped,
+                deleted: Object.keys(deleted).length ? deleted : undefined,
+              },
             } as FinanceDB,
           }
         })
@@ -685,7 +710,7 @@ export const useFinanceStore = create<FinanceState>()(
             cloudMap.set(key, { data, ms: updated_at ? Date.parse(updated_at) : 0 })
           }
 
-          const { db: localDb, updatedAt: localTs, dirty } = get()
+          const { db: localDb, updatedAt: localTs } = get()
           const rawDb: Record<string, unknown> = { ...localDb }
           const newTs: Record<string, number> = { ...localTs }
           const pushBack = new Set<string>()
@@ -697,12 +722,28 @@ export const useFinanceStore = create<FinanceState>()(
             const localVal = localDb[key]
 
             if (key === '_settings') {
-              // Whole-object LWW; a dirty (unpushed) local settings wins.
-              if (cloud && !dirty.includes(key) && cloudMs >= localMs) {
-                rawDb[key] = cloud.data; newTs[key] = cloudMs
-              } else if (localVal !== undefined && (!cloud || localMs >= cloudMs)) {
-                pushBack.add(key)
+              // Per-entry (accounts/deductions) + per-field (scalars) merge, so
+              // concurrent settings edits across devices no longer drop a side.
+              const localS = localVal as Settings | undefined
+              const cloudS = cloud?.data as Settings | undefined
+              if (!cloudS) { if (localS !== undefined) pushBack.add(key); continue }  // local-only
+              if (!localS) { rawDb[key] = cloudS; newTs[key] = cloudMs; continue }    // cloud-only
+
+              // A locked entry is system: its own `locked` flag is the source of
+              // truth (no defaults import needed). Union both sides.
+              const lockedIds = <T extends { id: string; locked?: boolean }>(a?: T[], b?: T[]) =>
+                new Set([...(a ?? []), ...(b ?? [])].filter(x => x.locked).map(x => x.id))
+              const systemIds = {
+                accounts:   lockedIds(localS.accounts,   cloudS.accounts),
+                deductions: lockedIds(localS.deductions, cloudS.deductions),
               }
+
+              const merged = mergeSettings(localS, cloudS, localMs, cloudMs, systemIds)
+              rawDb[key] = merged
+              newTs[key] = Math.max(localMs, cloudMs)
+              // Push back only when the cloud isn't already at the merged state
+              // (local contributed something). Canonical compare ignores key order.
+              if (canonicalTieBreak(merged, cloudS) !== 0) pushBack.add(key)
               continue
             }
 
