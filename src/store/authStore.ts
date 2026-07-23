@@ -22,8 +22,12 @@ export const useAuthStore = create<AuthState>()((set) => ({
     // Seed initial user (handles OAuth callback on page load)
     getUser().then(user => {
       set({ user, loading: false })
-      // No session → no sync needed, mark ready immediately
-      if (!user) set({ cloudReady: true })
+      // No session → no sync needed. Consolidate local settings immediately
+      // (local-first hatch: nothing in the cloud to collide with) and mark ready.
+      if (!user) {
+        useFinanceStore.getState().consolidateSettings()
+        set({ cloudReady: true })
+      }
     })
 
     // In prod: auto-pull whenever a session appears — both a fresh sign-in
@@ -37,9 +41,15 @@ export const useAuthStore = create<AuthState>()((set) => ({
       if (shouldSync) {
         set({ user, loading: false })
         useFinanceStore.getState().syncFromCloud().finally(() => {
+          // GATE: consolidate only AFTER the pull resolves, so an authenticated
+          // device never seeds its local deductions before seeing the cloud —
+          // seeding blind would let two devices duplicate the same custom provision.
+          useFinanceStore.getState().consolidateSettings()
           set({ cloudReady: true })
         })
       } else {
+        // No sync path (signed out / dev): safe to consolidate now — no cloud to race.
+        useFinanceStore.getState().consolidateSettings()
         set({ user, loading: false, cloudReady: true })
       }
     })
