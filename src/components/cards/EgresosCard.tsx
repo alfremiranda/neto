@@ -7,6 +7,7 @@ import { useMonthData } from '@/hooks/useMonthData'
 import { useUIStore } from '@/store/uiStore'
 import { calcGastos } from '@/lib/calc'
 import { COP, fmtDate, localToday } from '@/lib/format'
+import { accountLabel } from '@/lib/accountLabel'
 import { cn } from '@/lib/utils'
 import { EGRESO_CATEGORIAS } from '@/data/defaults'
 import { SectionCard } from '@/components/ui/SectionCard'
@@ -116,7 +117,7 @@ function EgresoRow({
   const category  = egreso.category || 'otro'
   const amtCOP    = egreso.currency === 'USD' ? egreso.amount * trm : egreso.amount
   const dateStr   = egreso.date ? fmtDate(egreso.date) : ''
-  const acctLabel = egreso.account ? (accounts.find(a => a.id === egreso.account)?.label ?? egreso.account) : null
+  const acctLabel = egreso.account ? accountLabel(egreso.account, accounts) : null
   const acctVariant = egreso.account
     ? egreso.account.toLowerCase().includes('arq')    ? 'arq'
       : egreso.account.toLowerCase().includes('toptal') ? 'toptal'
@@ -543,7 +544,7 @@ function EgresosCardContent() {
                       <SelectItem value="all">Todas las cuentas</SelectItem>
                       {accountOptions.map(a => (
                         <SelectItem key={a} value={a}>
-                          {accounts.find(ac => ac.id === a)?.label ?? a}
+                          {accountLabel(a, accounts)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -593,7 +594,7 @@ function EgresosCardContent() {
                           <SelectItem value="all">Todas las cuentas</SelectItem>
                           {accountOptions.map(a => (
                             <SelectItem key={a} value={a}>
-                              {accounts.find(ac => ac.id === a)?.label ?? a}
+                              {accountLabel(a, accounts)}
                             </SelectItem>
                           ))}
                         </SelectContent>
