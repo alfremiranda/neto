@@ -41,9 +41,13 @@ function keyForDate(date: string, fallback: string): string {
 // Apply all pending migrations. Safe to run on any db object (local or cloud).
 // Returns a new db and a `changed` flag so callers know whether to push the result.
 // Bump CURRENT_DB_VERSION when adding a new migration step.
-const CURRENT_DB_VERSION = 5
+const CURRENT_DB_VERSION = 6
 
-function applyDateMigration(db: Record<string, unknown>): { db: Record<string, unknown>; changed: boolean } {
+// `settingsMs` is the last-known write time of the _settings blob for THIS side
+// (local rehydrate: the local stamp; cloud merge: the merged ms). v6 uses it to
+// seed a stable per-account updatedAt. It is data-shape only — deductions live in
+// a separate local store and are consolidated in the settingsStore mirror, not here.
+function applyDateMigration(db: Record<string, unknown>, settingsMs = 0): { db: Record<string, unknown>; changed: boolean } {
   const settings = (db['_settings'] ?? {}) as Settings & { dbMigrationVersion?: number }
   const version = settings.dbMigrationVersion ?? 0
   if (version >= CURRENT_DB_VERSION) return { db, changed: false }
@@ -222,6 +226,21 @@ function applyDateMigration(db: Record<string, unknown>): { db: Record<string, u
     }
 
     current['_settings'] = { ...settingsObj, accounts } as unknown as MonthData
+  }
+
+  // ── v6: seed a stable per-account updatedAt so _settings merges per-entry ─────
+  // Without a stamp, an unstamped account falls back to the settings blob's ms,
+  // which is bumped by ANY settings write — so editing one account would make the
+  // others look freshly edited and clobber another device's concurrent edits.
+  // Seed the last-known settings ts (clamped ≥1 to dodge the ts=0 / default-
+  // tombstone collision) as a stable baseline; real edits stamp Date.now() later.
+  if (version < 6) {
+    const st = current['_settings'] as (Settings & Record<string, unknown>) | undefined
+    if (st?.accounts?.length) {
+      const seedTs = settingsMs || 1
+      const accounts = st.accounts.map(a => (a.updatedAt ? a : { ...a, updatedAt: seedTs }))
+      current['_settings'] = { ...st, accounts } as unknown as MonthData
+    }
   }
 
   current['_settings'] = { ...(current['_settings'] ?? {}), dbMigrationVersion: CURRENT_DB_VERSION } as unknown as MonthData
@@ -758,7 +777,7 @@ export const useFinanceStore = create<FinanceState>()(
           }
 
           // Cloud may be un-migrated if last written by an older client.
-          const { db: migratedDb, changed } = applyDateMigration(rawDb)
+          const { db: migratedDb, changed } = applyDateMigration(rawDb, newTs['_settings'] ?? 0)
           set({ db: migratedDb as FinanceDB, updatedAt: newTs })
 
           const finalDb = get().db
@@ -871,7 +890,7 @@ export const useFinanceStore = create<FinanceState>()(
         if (!state) return
 
         // ── One-time migration: move records to their date-based month key ──
-        const { db: migratedDb, changed } = applyDateMigration(state.db as Record<string, unknown>)
+        const { db: migratedDb, changed } = applyDateMigration(state.db as Record<string, unknown>, state.updatedAt?.['_settings'] ?? 0)
         if (changed) state.db = migratedDb as FinanceDB
 
         // ── Sync bookkeeping ──
