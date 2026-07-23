@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { DEFAULTS, TRANSFER_ACCOUNTS, GASTOS_KEYS, EGRESO_TIPOS, EGRESO_CATEGORIAS, smmlvForYear } from '@/data/defaults'
 import { sbPush, sbPullAll } from '@/lib/supabase'
+import { mergeMonth, localHasExtra } from './merge'
 import type { FinanceDB, MonthData, Account, Settings, Income, Egreso, Transfer } from '@/types'
 
 // ─── helpers ────────────────────────────────────────────────────────────────
@@ -21,74 +22,6 @@ function autoPush(key: string, data: unknown) {
   sbPush(key, data)
     .then(() => useFinanceStore.setState(s => ({ dirty: s.dirty.filter(k => k !== key) })))
     .catch(() => { /* stays dirty; retried by flushPending */ })
-}
-
-// ── per-entry merge (cross-device) ──────────────────────────────────────────
-// Union month lists by entry id so no device's entries are ever dropped;
-// newest edit wins per entry (entry.updatedAt, falling back to the month-level
-// timestamp for entries created before per-entry stamping); a tombstone whose
-// time ≥ the entry's last edit removes it (so deletes propagate).
-type Stamped = { id: number; updatedAt?: number }
-
-function mergeList<T extends Stamped>(
-  type: string,
-  local: T[] = [],
-  cloud: T[] = [],
-  del: Record<string, number>,
-  localMs: number,
-  cloudMs: number,
-): T[] {
-  const map = new Map<number, { e: T; ts: number }>()
-  for (const e of local) map.set(e.id, { e, ts: e.updatedAt ?? localMs })
-  for (const e of cloud) {
-    const ts = e.updatedAt ?? cloudMs
-    const ex = map.get(e.id)
-    if (!ex || ts > ex.ts) map.set(e.id, { e, ts })
-  }
-  const out: T[] = []
-  for (const [id, { e, ts }] of map) {
-    if ((del[`${type}:${id}`] ?? 0) >= ts) continue
-    out.push(e)
-  }
-  return out.sort((a, b) => a.id - b.id)   // deterministic → both devices converge
-}
-
-function mergeMonth(local: MonthData, cloud: MonthData, localMs: number, cloudMs: number): MonthData {
-  const del: Record<string, number> = {}
-  for (const k of new Set([...Object.keys(local.deleted ?? {}), ...Object.keys(cloud.deleted ?? {})])) {
-    del[k] = Math.max(local.deleted?.[k] ?? 0, cloud.deleted?.[k] ?? 0)
-  }
-  const scalar = cloudMs > localMs ? cloud : local   // trm, balances, egresosSeeded
-  const merged: MonthData = {
-    ...scalar,
-    incomes:   mergeList('income',   local.incomes,   cloud.incomes,   del, localMs, cloudMs),
-    egresos:   mergeList('egreso',   local.egresos,   cloud.egresos,   del, localMs, cloudMs),
-    transfers: mergeList('transfer', local.transfers, cloud.transfers, del, localMs, cloudMs),
-    deleted:   Object.keys(del).length ? del : undefined,
-  }
-  if (local.voluntarias || cloud.voluntarias) {
-    merged.voluntarias = mergeList('vol', local.voluntarias, cloud.voluntarias, del, localMs, cloudMs)
-  }
-  return merged
-}
-
-// True if local holds anything the cloud copy lacks (new/newer entry, tombstone,
-// or newer scalars) — if so we push the merged blob so the cloud converges too.
-function localHasExtra(local: MonthData, cloud: MonthData, localMs: number, cloudMs: number): boolean {
-  if (localMs > cloudMs) return true
-  for (const f of ['incomes', 'egresos', 'transfers', 'voluntarias'] as const) {
-    const cloudMap = new Map(((cloud[f] as Stamped[] | undefined) ?? []).map(e => [e.id, e]))
-    for (const e of ((local[f] as Stamped[] | undefined) ?? [])) {
-      const ce = cloudMap.get(e.id)
-      if (!ce) return true
-      if ((e.updatedAt ?? localMs) > (ce.updatedAt ?? cloudMs)) return true
-    }
-  }
-  const cd = cloud.deleted ?? {}
-  for (const [k, ts] of Object.entries(local.deleted ?? {})) {
-    if (ts > (cd[k] ?? 0)) return true
-  }
-  return false
 }
 
 export function monthKey(m: number, y: number): string {

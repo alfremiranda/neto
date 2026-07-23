@@ -72,7 +72,15 @@ Each phase is independently shippable and leaves the product functional. Do not 
       prod vs `not null default '{}'` in schema.sql — backfill needs care under forced RLS.*
 - [ ] **Fix `_settings` sync.** Today `_settings` (which includes accounts) is whole-object LWW —
       concurrent account edits across devices can silently drop one side. Upgrade to per-entry /
-      per-field merge, consistent with the existing `mergeMonth`/`mergeList` model.
+      per-field merge, consistent with the existing `mergeMonth`/`mergeList` model. Scope also covers
+      **deductions**, which today live in a separate `neto-settings` store that **never syncs at all**
+      (a worse bug than the LWW one) — they get consolidated into the synced `_settings`.
+      Three merge groups: accounts (per-entry), deductions (per-entry), scalars (per-field LWW, except
+      `onboardingDone` which is monotonic OR — must never regress to false).
+      *Note: the onboarding profile (empleado/independiente/ambos) is NOT persisted — it is a transient
+      `useState` in OnboardingView that only calls `setDeductionsEnabled` once. Deductions are the source
+      of truth; do NOT persist the profile as a synced field, or you reintroduce a profile↔deductions
+      invariant the merge cannot preserve.*
 - [ ] **Ley 1581 groundwork.** Privacy policy, explicit consent on onboarding, data-processing
       basics. *Get real legal advice — this doc is not it.*
 - [ ] **Sentry.** Error tracking wired for web (and later native).
@@ -137,8 +145,11 @@ devices; analytics dashboards exist; referral flow works.
 - **RLS by `auth.uid()` on every table.** No exceptions. This gates going multi-user at all.
 - **`_settings` per-entry merge** before onboarding real users on multiple devices.
 - **Local-first is never broken.** The app must function fully offline in every phase.
-- **The per-entry merge + tombstones engine must not regress.** Guard it with the existing
-  standalone merge tests (union / newer-wins / delete-propagates / resurrect / converge / deterministic).
+- **The per-entry merge + tombstones engine must not regress.** Guard it with the merge tests in
+  `src/store/merge.test.ts` (union / newer-wins / delete-propagates / resurrect / converge / deterministic),
+  run via `npm test`. *These were created 2026-07-22 (Phase 1 / W2, commit 0): the engine had been
+  referenced as "verified with standalone tests" but no automated net existed in the repo — every earlier
+  change to the sync engine shipped without one. Extend this suite, never weaken it.*
 - **Ley 1581 compliance** before handling third-party financial data at scale (Phase 3).
 
 ---

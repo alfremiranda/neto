@@ -16,6 +16,13 @@ y obligaciones en COP (seguridad social colombiana, egresos de manutención).
 - localStorage para storage local (`amd-finance`)
 - Supabase para sync entre dispositivos
 - Deploy: GitHub Pages → alfremiranda.github.io/neto
+- Tests: **Vitest** (`npm test`). El motor de sync (`src/store/merge.ts`) tiene red en `src/store/merge.test.ts`.
+
+## Definition of Done (toda tarea)
+Antes de dar algo por terminado: `npm run build` (compila) **y** `npm test` (verde). Si tocaste el motor
+de sync, los tests de `merge.test.ts` deben seguir verdes y se agregan casos, nunca se debilitan. La app
+funciona online **y** offline. Cumple Tailwind v3. Código/commits/docs en inglés. Si tocó datos/esquema/prod,
+se confirmó antes y se probó en dev/local primero.
 
 ## ⚠️ Tailwind v3 — restricciones críticas
 Este proyecto usa **Tailwind CSS v3**, NO v4. Cualquier sintaxis v4 es silenciosamente ignorada.
