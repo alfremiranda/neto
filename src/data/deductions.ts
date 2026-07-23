@@ -42,6 +42,40 @@ export const DEFAULT_DEDUCTIONS: DeductionConfig[] = [
 
 ]
 
+// Apply the deduction schema migrations (formerly inline in settingsStore's zustand
+// `merge`) to a stored list, and append any new defaults the stored set lacks. Used
+// when consolidating the local `neto-settings` backup into the synced `_settings` —
+// the on-disk backup may still hold a pre-migration shape (old color tokens, old
+// base, frequency instead of months[]).
+export function migrateDeductions(stored: DeductionConfig[]): DeductionConfig[] {
+  const NETO_IBC_IDS = new Set(['primas', 'cesantias', 'vacaciones'])
+  const OLD_PROVISION_COLORS = new Set(['--n-lime', '--n-purple-txt', '--n-pink'])
+  const TOKEN_MAP: Record<string, string> = {
+    '--n-blue':  '--color-income',
+    '--n-green': '--color-provision',
+    '--n-amber': '--color-tax',
+    '--n-pink':  '--color-expense',
+    '--n-lime':  '--color-net',
+  }
+
+  const migrated = stored.map((d: DeductionConfig & { frequency?: string }) => {
+    let r: DeductionConfig = d
+    if (r.months === undefined) {
+      const months = (r as DeductionConfig & { frequency?: string }).frequency === 'semiannual' ? [6, 12] : []
+      const { frequency: _f, ...rest } = r as DeductionConfig & { frequency?: string }
+      r = { ...rest, months }
+    }
+    if (NETO_IBC_IDS.has(r.id) && r.base === 'bruto') r = { ...r, base: 'neto_ibc' }
+    if (NETO_IBC_IDS.has(r.id) && OLD_PROVISION_COLORS.has(r.color ?? '')) r = { ...r, color: '--n-green' }
+    if (r.id === 'primas' && (r.months?.length ?? 0) > 0) r = { ...r, months: [] }
+    if (r.color && TOKEN_MAP[r.color]) r = { ...r, color: TOKEN_MAP[r.color] }
+    return r
+  })
+
+  const storedIds = new Set(migrated.map(d => d.id))
+  return [...migrated, ...DEFAULT_DEDUCTIONS.filter(d => !storedIds.has(d.id))]
+}
+
 export const BASE_LABELS: Record<string, string> = {
   ibc:       'IBC',
   bruto:     'Bruto',

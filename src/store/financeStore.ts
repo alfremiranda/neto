@@ -3,7 +3,26 @@ import { persist } from 'zustand/middleware'
 import { DEFAULTS, TRANSFER_ACCOUNTS, GASTOS_KEYS, EGRESO_TIPOS, EGRESO_CATEGORIAS, smmlvForYear } from '@/data/defaults'
 import { sbPush, sbPullAll } from '@/lib/supabase'
 import { mergeMonth, localHasExtra, mergeSettings, canonicalTieBreak } from './merge'
-import type { FinanceDB, MonthData, Account, Settings, Income, Egreso, Transfer } from '@/types'
+import { DEFAULT_DEDUCTIONS, migrateDeductions } from '@/data/deductions'
+import type { FinanceDB, MonthData, Account, Settings, Income, Egreso, Transfer, DeductionConfig } from '@/types'
+
+// The old settingsStore persisted deductions + display prefs under this key. The
+// derived settingsStore no longer writes it, so the last value stays frozen as a
+// one-time consolidation source / rollback backup.
+const NETO_SETTINGS_KEY = 'neto-settings'
+
+type SettingsBackup = Partial<Pick<Settings, 'deductions' | 'displayName' | 'primaryCurrency' | 'secondaryCurrency'>>
+
+function readSettingsBackup(): SettingsBackup | null {
+  try {
+    const raw = localStorage.getItem(NETO_SETTINGS_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as { state?: SettingsBackup } & SettingsBackup
+    return parsed?.state ?? parsed ?? null
+  } catch {
+    return null
+  }
+}
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -318,6 +337,9 @@ interface FinanceState {
   setTRM: (trm: number) => void
   saveAccountsConfig: (accounts: Account[]) => void
   toggleAccountFavorite: (id: string) => void
+  saveDeductionsConfig: (deductions: DeductionConfig[]) => void
+  setSettingsScalars: (patch: Partial<Pick<Settings, 'displayName' | 'primaryCurrency' | 'secondaryCurrency'>>) => void
+  consolidateSettings: () => void
   completeOnboarding: () => void
 
   // navigation
@@ -598,6 +620,122 @@ export const useFinanceStore = create<FinanceState>()(
       toggleAccountFavorite: (id) => {
         const accounts = get().getAccounts().map(a => a.id === id ? { ...a, favorite: !a.favorite } : a)
         get().saveAccountsConfig(accounts)
+      },
+
+      // Deduction write-side — mirrors saveAccountsConfig: stamp only what changed,
+      // tombstone removed non-locked deductions so the union merge doesn't resurrect
+      // them. (The settingsStore mirror funnels every deduction edit through here.)
+      saveDeductionsConfig: (deductions) => {
+        const now = Date.now()
+        set(state => {
+          const settings = (state.db._settings ?? {}) as Settings
+          const prev = settings.deductions ?? []
+          const prevById = new Map(prev.map(d => [d.id, d]))
+          const stamped = deductions.map(d => {
+            const before = prevById.get(d.id)
+            const same = before && canonicalTieBreak({ ...before, updatedAt: undefined }, { ...d, updatedAt: undefined }) === 0
+            return same ? before! : { ...d, updatedAt: now }
+          })
+          const deleted: Record<string, number> = { ...(settings.deleted ?? {}) }
+          const nextIds = new Set(deductions.map(d => d.id))
+          for (const d of prev) if (!nextIds.has(d.id) && !d.locked) deleted[`deduction:${d.id}`] = now
+          for (const id of nextIds) delete deleted[`deduction:${id}`]
+          return {
+            db: {
+              ...state.db,
+              _settings: {
+                ...settings,
+                deductions: stamped,
+                deleted: Object.keys(deleted).length ? deleted : undefined,
+              },
+            } as FinanceDB,
+          }
+        })
+        autoPush('_settings', get().db._settings)
+      },
+
+      // Scalar settings write-side: set the field(s) + stamp fieldUpdatedAt so the
+      // per-field LWW in mergeSettings has evidence of a real edit.
+      setSettingsScalars: (patch) => {
+        const now = Date.now()
+        set(state => {
+          const settings = (state.db._settings ?? {}) as Settings
+          const fieldUpdatedAt = { ...(settings.fieldUpdatedAt ?? {}) }
+          const next: Settings = { ...settings }
+          for (const [k, v] of Object.entries(patch)) {
+            (next as Record<string, unknown>)[k] = v
+            fieldUpdatedAt[k] = now
+          }
+          next.fieldUpdatedAt = fieldUpdatedAt
+          return { db: { ...state.db, _settings: next } as FinanceDB }
+        })
+        autoPush('_settings', get().db._settings)
+      },
+
+      // One-time-per-device consolidation of the local neto-settings backup into the
+      // synced _settings. GATED BY THE CALLER on a resolved cloud state (authStore's
+      // cloudReady) so an authenticated device never seeds before its first pull —
+      // seeding blind would let two devices each create the same custom provision and
+      // the union merge would duplicate it. Seeds only when deductions are still
+      // absent (presence = "someone already consolidated"), then always runs a
+      // label+group dedupe as a net against the race + the rollout window.
+      consolidateSettings: () => {
+        let changed = false
+        set(state => {
+          const settings = (state.db._settings ?? {}) as Settings
+          const seedTs = state.updatedAt['_settings'] || 1
+          let deductions = settings.deductions ?? []
+          const deleted: Record<string, number> = { ...(settings.deleted ?? {}) }
+          const scalarPatch: Record<string, unknown> = {}
+          const fieldUpdatedAt = { ...(settings.fieldUpdatedAt ?? {}) }
+
+          // Seed only if nobody has consolidated yet (locked deductions guarantee a
+          // consolidated set is never empty, so "empty" reliably means "not seeded").
+          if (deductions.length === 0) {
+            const backup = readSettingsBackup()
+            const src = backup?.deductions?.length ? migrateDeductions(backup.deductions) : DEFAULT_DEDUCTIONS
+            deductions = src.map(d => ({ ...d, updatedAt: d.updatedAt ?? seedTs }))
+            if (backup) {
+              for (const f of ['displayName', 'primaryCurrency', 'secondaryCurrency'] as const) {
+                if (backup[f] !== undefined && settings[f] === undefined) {
+                  scalarPatch[f] = backup[f]
+                  fieldUpdatedAt[f] = seedTs
+                }
+              }
+            }
+            changed = true
+          }
+
+          // Dedupe by label+group: keep the code-point-smallest id, tombstone the
+          // rest (non-locked). Deterministic across devices → converges to one.
+          const byKey = new Map<string, DeductionConfig>()
+          for (const d of deductions) {
+            const k = `${d.label} ${d.group}`
+            const ex = byKey.get(k)
+            if (!ex || String(d.id) < String(ex.id)) byKey.set(k, d)
+          }
+          const keep = new Set([...byKey.values()].map(d => d.id))
+          if (keep.size < deductions.length) {
+            for (const d of deductions) if (!keep.has(d.id) && !d.locked) deleted[`deduction:${d.id}`] = Date.now()
+            deductions = deductions.filter(d => keep.has(d.id))
+            changed = true
+          }
+
+          if (!changed) return {}
+          return {
+            db: {
+              ...state.db,
+              _settings: {
+                ...settings,
+                ...scalarPatch,
+                deductions,
+                fieldUpdatedAt: Object.keys(fieldUpdatedAt).length ? fieldUpdatedAt : undefined,
+                deleted: Object.keys(deleted).length ? deleted : undefined,
+              },
+            } as FinanceDB,
+          }
+        })
+        if (changed) autoPush('_settings', get().db._settings)
       },
 
       completeOnboarding: () => {
