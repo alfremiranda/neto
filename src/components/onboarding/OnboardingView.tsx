@@ -511,7 +511,15 @@ export function OnboardingView() {
     if (step === 1) {
       setDisplayCurrency(primary, secondary)
     }
-    if (step === 2) {
+    if (step === 3) {
+      // Employees have no self-managed deductions; independents/mixed keep them on
+      setDeductionsEnabled(profile !== 'empleado')
+    }
+    if (step === TOTAL_STEPS - 1) {
+      // Persist accounts only here, at the very end. Writing them earlier (at the
+      // Cuentas step) flips App's onboardingDone fallback (accounts.length > 0),
+      // which unmounts the wizard before the Perfil step — silently skipping the
+      // profile / deduction setup.
       const accounts: Account[] = [
         ...added.map((a, i) => ({
           id: `acc_onboarding_${Date.now()}_${i}`,
@@ -523,12 +531,6 @@ export function OnboardingView() {
         ...LOCKED_ACCOUNTS,
       ]
       saveAccountsConfig(accounts)
-    }
-    if (step === 3) {
-      // Employees have no self-managed deductions; independents/mixed keep them on
-      setDeductionsEnabled(profile !== 'empleado')
-    }
-    if (step === TOTAL_STEPS - 1) {
       setView('dashboard')
       completeOnboarding()
       return
