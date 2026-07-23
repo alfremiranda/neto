@@ -23,6 +23,33 @@ function byId(a: Stamped, b: Stamped): number {
   return as < bs ? -1 : as > bs ? 1 : 0   // code-point order — locale-independent
 }
 
+// Canonical serialization: recursively key-sorted, with `undefined` treated as
+// absent so a field left out on one device and set to undefined on the other
+// serialize identically. Plain JSON.stringify is key-INSERTION-order dependent
+// (the same logical entry built in the UI vs received from the cloud can differ),
+// which would make a content tie-break pick different winners on each device —
+// reintroducing the ping-pong. This is stable across devices and runtimes.
+function canonical(v: unknown): string {
+  if (v === undefined || v === null) return 'null'
+  if (Array.isArray(v)) return '[' + v.map(canonical).join(',') + ']'
+  if (typeof v === 'object') {
+    const keys = Object.keys(v as Record<string, unknown>)
+      .filter(k => (v as Record<string, unknown>)[k] !== undefined)
+      .sort()
+    return '{' + keys.map(k => JSON.stringify(k) + ':' + canonical((v as Record<string, unknown>)[k])).join(',') + '}'
+  }
+  return JSON.stringify(v)
+}
+
+// Deterministic, symmetric tie-break for entries with an equal updatedAt: the
+// canonically-greater one wins, the same on both devices. Opt-in (see mergeList's
+// `tieBreak` param) — off for months, where Date.now() ids make same-id ties all
+// but impossible and touching that path would be risk without benefit.
+export function canonicalTieBreak(a: unknown, b: unknown): number {
+  const as = canonical(a), bs = canonical(b)
+  return as < bs ? -1 : as > bs ? 1 : 0
+}
+
 export function mergeList<T extends Stamped>(
   type: string,
   local: T[] = [],
@@ -30,13 +57,19 @@ export function mergeList<T extends Stamped>(
   del: Record<string, number>,
   localMs: number,
   cloudMs: number,
+  tieBreak?: (a: T, b: T) => number,   // opt-in: resolve equal-updatedAt collisions deterministically
 ): T[] {
   const map = new Map<number | string, { e: T; ts: number }>()
   for (const e of local) map.set(e.id, { e, ts: e.updatedAt ?? localMs })
   for (const e of cloud) {
     const ts = e.updatedAt ?? cloudMs
     const ex = map.get(e.id)
-    if (!ex || ts > ex.ts) map.set(e.id, { e, ts })
+    // Replace when strictly newer, or — with a tieBreak — when equal-ts and the
+    // incoming entry is the canonical winner. Without tieBreak, equal-ts keeps
+    // local (legacy behaviour; asymmetric, so months rely on unique ids instead).
+    if (!ex || ts > ex.ts || (ts === ex.ts && tieBreak !== undefined && tieBreak(e, ex.e) > 0)) {
+      map.set(e.id, { e, ts })
+    }
   }
   const out: T[] = []
   for (const [id, { e, ts }] of map) {

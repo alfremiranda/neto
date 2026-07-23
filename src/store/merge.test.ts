@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { mergeList, mergeMonth, localHasExtra, type Stamped } from './merge'
+import { mergeList, mergeMonth, localHasExtra, canonicalTieBreak, type Stamped } from './merge'
 import type { MonthData, Income } from '@/types'
 
 // ─── Characterization tests ───────────────────────────────────────────────────
@@ -90,6 +90,34 @@ describe('mergeList — string ids (accounts/deductions) sort by code point, not
     )
     expect(out.map(x => x.id)).toEqual(['bancol', 'efectivo'])  // arq deleted, sorted
     expect(out.find(x => x.id === 'efectivo')?.updatedAt).toBe(200)  // cloud newer wins
+  })
+})
+
+describe('tieBreak — deterministic convergence on equal-updatedAt (settings)', () => {
+  // Same stable id (as accounts/deductions have across devices), same updatedAt,
+  // different content — the realistic settings collision.
+  const A = { id: 'efectivo', updatedAt: 100, label: 'A-edit' }
+  const B = { id: 'efectivo', updatedAt: 100, label: 'B-edit' }
+
+  it('WITHOUT tieBreak, equal-updatedAt keeps local → asymmetric (the permanent ping-pong A fixes)', () => {
+    const x = mergeList('acct', [A], [B], {}, 0, 0)  // device X: local A wins
+    const y = mergeList('acct', [B], [A], {}, 0, 0)  // device Y: local B wins
+    expect(x).not.toEqual(y)   // two devices never converge on this entry
+  })
+
+  it('WITH canonicalTieBreak, merge is symmetric → both devices converge', () => {
+    const x = mergeList('acct', [A], [B], {}, 0, 0, canonicalTieBreak)
+    const y = mergeList('acct', [B], [A], {}, 0, 0, canonicalTieBreak)
+    expect(x).toEqual(y)   // the property that matters: order-independent result
+  })
+
+  it('canonical serialization ignores key order and undefined-vs-absent', () => {
+    // Same logical entry, different key insertion order, one has an explicit
+    // `undefined` the other omits. A raw JSON.stringify tie-break would see two
+    // different strings here and could pick different winners per device.
+    const built    = { id: 'x', updatedAt: 100, label: 'L', rate: 0, note: undefined }
+    const fromCloud = { updatedAt: 100, rate: 0, id: 'x', label: 'L' }
+    expect(canonicalTieBreak(built, fromCloud)).toBe(0)
   })
 })
 
