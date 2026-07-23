@@ -81,6 +81,18 @@ Each phase is independently shippable and leaves the product functional. Do not 
       `useState` in OnboardingView that only calls `setDeductionsEnabled` once. Deductions are the source
       of truth; do NOT persist the profile as a synced field, or you reintroduce a profile↔deductions
       invariant the merge cannot preserve.*
+      <br>**W2 test-coverage caveats (known debt):**
+      (a) The pre-merge validation was a **manual two-instance smoke on dev** (see PR #3). It did NOT
+      cover the **automatic sync triggers** (focus / reconnect / mutation) — dev has no auto-push by
+      design, so only `mergeSettings` + the write-side were exercised; that trigger path is unchanged by W2.
+      (b) `saveAccountsConfig` / `saveDeductionsConfig` (the store write-side) have **no unit tests** —
+      their only coverage is that functional smoke. Only the pure merge engine (`src/store/merge.ts`) is
+      unit-tested (33 tests).
+      **Known edge (onboarding + W2):** an existing user opening the app on a **new device** can, if
+      onboarding starts before the initial pull brings `onboardingDone`, create accounts with fresh
+      `acc_onboarding_<ts>_*` ids that then union with the cloud's → duplicate accounts. Not blocking
+      (monotonic OR covers the flag, prod gates the UI on `cloudReady` after the pull, `neto-settings`
+      stays as backup) but it is the **first thing to check** if a tester reports something odd post-deploy.
 - [ ] **Ley 1581 groundwork.** Privacy policy, explicit consent on onboarding, data-processing
       basics. *Get real legal advice — this doc is not it.*
 - [ ] **Sentry.** Error tracking wired for web (and later native).
