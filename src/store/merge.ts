@@ -1,4 +1,4 @@
-import type { MonthData } from '@/types'
+import type { MonthData, Settings, Account, DeductionConfig } from '@/types'
 
 // ── per-entry merge (cross-device) ──────────────────────────────────────────
 // Pure, dependency-free CRDT-ish merge helpers, extracted from financeStore so
@@ -115,4 +115,98 @@ export function localHasExtra(local: MonthData, cloud: MonthData, localMs: numbe
     if (ts > (cd[k] ?? 0)) return true
   }
   return false
+}
+
+// ── settings merge (accounts + deductions per-entry, scalars per-field) ───────
+// `_settings` was whole-object LWW, which silently drops one side's edit when two
+// devices touch settings concurrently. This merges it in three groups, mirroring
+// the month model:
+//   • accounts, deductions → per-entry union by id (mergeList) with a deterministic
+//     tie-break, since their ids are STABLE across devices (unlike Date.now() month
+//     ids) so same-id collisions are realistic.
+//   • scalars (displayName, currencies) → per-FIELD LWW via `fieldUpdatedAt`.
+//   • onboardingDone / dbMigrationVersion → monotonic (OR / max), never regress.
+// System (locked) ids are passed in (systemIds) so this module stays pure and does
+// not import the account/deduction defaults; tombstones targeting them are ignored,
+// so a device with stale state can never delete an indestructible entity.
+const SCALAR_FIELDS = ['displayName', 'primaryCurrency', 'secondaryCurrency'] as const
+
+export interface SystemIds {
+  accounts:   Set<string>
+  deductions: Set<string>
+}
+
+// Pick the winning value for one scalar field, symmetrically. `null` counts as a
+// real value (distinct from absent) so clearing e.g. secondaryCurrency propagates.
+// A field STAMP is evidence of a real edit; an unstamped side that merely rides a
+// newer blob ms must not overwrite a stamped edit — so a stamped side beats an
+// unstamped one when the values differ. Equal clocks fall to the canonical
+// tie-break (deterministic across devices).
+function pickScalar(
+  local: Settings, cloud: Settings, f: string, localMs: number, cloudMs: number,
+): { present: boolean; value: unknown } {
+  const lp = f in local, cp = f in cloud
+  if (!lp && !cp) return { present: false, value: undefined }
+  const lv = (local as Record<string, unknown>)[f]
+  const cv = (cloud as Record<string, unknown>)[f]
+  if (lp && !cp) return { present: true, value: lv }
+  if (!lp && cp) return { present: true, value: cv }
+  if (canonicalTieBreak(lv, cv) === 0) return { present: true, value: lv }   // equal → no conflict
+
+  const ls = local.fieldUpdatedAt?.[f], cs = cloud.fieldUpdatedAt?.[f]
+  const lsDef = ls !== undefined, csDef = cs !== undefined
+  // Rollout heuristic (transition window): prefer the stamped side over the
+  // unstamped one. In theory a stale stamped value could beat a fresh edit from
+  // an OLD (pre-W2) client that doesn't stamp; with a tiny user base + fast PWA
+  // updates that risk is far smaller than the systematic loss it prevents.
+  if (lsDef && !csDef) return { present: true, value: lv }
+  if (csDef && !lsDef) return { present: true, value: cv }
+
+  const lc = lsDef ? ls! : localMs
+  const cc = csDef ? cs! : cloudMs
+  if (lc > cc) return { present: true, value: lv }
+  if (cc > lc) return { present: true, value: cv }
+  return { present: true, value: canonicalTieBreak(lv, cv) > 0 ? lv : cv }   // symmetric tie-break
+}
+
+export function mergeSettings(
+  local: Settings,
+  cloud: Settings,
+  localMs: number,
+  cloudMs: number,
+  systemIds: SystemIds,
+): Settings {
+  // Tombstones: union by max, minus any that target a system (locked) entity.
+  const del: Record<string, number> = {}
+  for (const k of new Set([...Object.keys(local.deleted ?? {}), ...Object.keys(cloud.deleted ?? {})])) {
+    const sep = k.indexOf(':')
+    const kind = k.slice(0, sep), id = k.slice(sep + 1)
+    if (kind === 'account'   && systemIds.accounts.has(id))   continue
+    if (kind === 'deduction' && systemIds.deductions.has(id)) continue
+    del[k] = Math.max(local.deleted?.[k] ?? 0, cloud.deleted?.[k] ?? 0)
+  }
+
+  const result: Settings = {
+    accounts:   mergeList<Account>('account', local.accounts, cloud.accounts, del, localMs, cloudMs, canonicalTieBreak),
+    deductions: mergeList<DeductionConfig>('deduction', local.deductions, cloud.deductions, del, localMs, cloudMs, canonicalTieBreak),
+  }
+  if (Object.keys(del).length) result.deleted = del
+
+  // Monotonic fields — never regress.
+  if ((local.onboardingDone ?? false) || (cloud.onboardingDone ?? false)) result.onboardingDone = true
+  const dbv = Math.max(local.dbMigrationVersion ?? 0, cloud.dbMigrationVersion ?? 0)
+  if (dbv) result.dbMigrationVersion = dbv
+
+  // Scalars: per-field LWW (stamp-aware). Carry the newest known stamp per field.
+  for (const f of SCALAR_FIELDS) {
+    const picked = pickScalar(local, cloud, f, localMs, cloudMs)
+    if (picked.present) (result as Record<string, unknown>)[f] = picked.value
+  }
+  const fieldUpdatedAt: Record<string, number> = {}
+  for (const f of new Set([...Object.keys(local.fieldUpdatedAt ?? {}), ...Object.keys(cloud.fieldUpdatedAt ?? {})])) {
+    fieldUpdatedAt[f] = Math.max(local.fieldUpdatedAt?.[f] ?? 0, cloud.fieldUpdatedAt?.[f] ?? 0)
+  }
+  if (Object.keys(fieldUpdatedAt).length) result.fieldUpdatedAt = fieldUpdatedAt
+
+  return result
 }

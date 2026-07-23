@@ -54,6 +54,7 @@ export interface Account {
   // ── Savings/investment only (type === 'savings') ──
   savingsKind?: 'cuenta' | 'cdt' | 'inversion'  // vehicle kind; default 'cuenta'
   maturityDate?: string     // CDT: fecha de vencimiento (YYYY-MM-DD)
+  updatedAt?: number  // ms of last local edit — per-entry LWW for cross-device settings merge
 }
 
 export interface VoluntariaItem {
@@ -81,8 +82,19 @@ export interface MonthData {
 }
 
 export interface Settings {
-  accounts?: Account[]
-  onboardingDone?: boolean // set to true after first-run wizard is completed
+  // ── per-entry merge groups (id string, + updatedAt, tombstones in `deleted`) ──
+  accounts?:   Account[]
+  deductions?: DeductionConfig[]
+  // ── scalars (per-field LWW via `fieldUpdatedAt`) ──
+  onboardingDone?:    boolean         // monotonic OR — once true never regresses (a future
+                                      // "redo onboarding" must be a LOCAL, non-synced action)
+  displayName?:       string
+  primaryCurrency?:   'COP' | 'USD'
+  secondaryCurrency?: 'COP' | 'USD' | null   // null = "no secondary" (distinct from absent)
+  // ── merge metadata ──
+  fieldUpdatedAt?:     Record<string, number>  // ms per scalar field (per-field LWW)
+  deleted?:            Record<string, number>  // tombstones "account:<id>" / "deduction:<id>"
+  dbMigrationVersion?: number                  // monotonic — merged by max
 }
 
 export type FinanceDB = { _settings?: Settings } & Record<string, MonthData>
@@ -134,6 +146,7 @@ export interface DeductionConfig {
   color:    string          // CSS var token e.g. '--color-income'
   locked?:  boolean         // system default — can't delete
   destAccount?: string      // provisions: account where the reserve is set aside (e.g. retención → ARQ Savings)
+  updatedAt?: number  // ms of last local edit — per-entry LWW for cross-device settings merge
 }
 
 export interface DeductionResult {

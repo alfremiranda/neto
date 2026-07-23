@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { mergeList, mergeMonth, localHasExtra, canonicalTieBreak, type Stamped } from './merge'
-import type { MonthData, Income } from '@/types'
+import { mergeList, mergeMonth, localHasExtra, canonicalTieBreak, mergeSettings, type Stamped } from './merge'
+import type { MonthData, Income, Settings, Account, DeductionConfig } from '@/types'
 
 // ─── Characterization tests ───────────────────────────────────────────────────
 // These FREEZE the current behaviour of the sync merge engine as it shipped —
@@ -198,5 +198,110 @@ describe('convergence — two devices reach the same state (distinct month ms)',
     expect(x.incomes.map(i => i.id)).toEqual([1, 2, 3])
     expect(x.incomes.find(i => i.id === 1)?.desc).toBe('B-new') // 150 > 100
     expect(x.trm).toBe(3100)                                    // newer month ms side
+  })
+})
+
+describe('mergeSettings', () => {
+  const acct = (id: string, updatedAt?: number, label = id): Account =>
+    ({ id, label, currency: 'COP', number: '', rate: 0, updatedAt })
+  const ded = (id: string, updatedAt?: number, label = id): DeductionConfig =>
+    ({ id, label, group: 'ss', base: 'ibc', pct: 0, months: [], enabled: true, color: '--color-income', updatedAt })
+  const s = (o: Partial<Settings> = {}): Settings => ({ ...o })
+  const SYS = { accounts: new Set(['efectivo']), deductions: new Set(['salud', 'pension', 'arl', 'retencion']) }
+
+  it('unions accounts and deductions by id', () => {
+    const out = mergeSettings(
+      s({ accounts: [acct('a', 100)], deductions: [ded('salud', 100)] }),
+      s({ accounts: [acct('b', 100)], deductions: [ded('custom_1', 100)] }),
+      0, 0, SYS,
+    )
+    expect(out.accounts?.map(a => a.id)).toEqual(['a', 'b'])
+    expect(out.deductions?.map(d => d.id)).toEqual(['custom_1', 'salud'])
+  })
+
+  it('newest updatedAt wins per account', () => {
+    const out = mergeSettings(
+      s({ accounts: [acct('arq', 100, 'old')] }),
+      s({ accounts: [acct('arq', 200, 'new')] }),
+      0, 0, SYS,
+    )
+    expect(out.accounts?.find(a => a.id === 'arq')?.label).toBe('new')
+  })
+
+  it('a tombstone removes a non-system account (delete propagates)', () => {
+    const out = mergeSettings(
+      s({ accounts: [acct('custom_1', 100)] }),
+      s({ deleted: { 'account:custom_1': 200 } }),
+      0, 0, SYS,
+    )
+    expect(out.accounts).toEqual([])
+    expect(out.deleted).toEqual({ 'account:custom_1': 200 })
+  })
+
+  it('IGNORES a tombstone that targets a system (locked) entity', () => {
+    const out = mergeSettings(
+      s({ accounts: [acct('efectivo', 100)], deductions: [ded('salud', 100)] }),
+      s({ deleted: { 'account:efectivo': 999, 'deduction:salud': 999 } }),
+      0, 0, SYS,
+    )
+    expect(out.accounts?.map(a => a.id)).toEqual(['efectivo'])  // survives the tombstone
+    expect(out.deductions?.map(d => d.id)).toEqual(['salud'])
+    expect(out.deleted).toBeUndefined()                        // system tombstones dropped
+  })
+
+  it('scalars merge per-field by newest stamp', () => {
+    const out = mergeSettings(
+      s({ displayName: 'Old', fieldUpdatedAt: { displayName: 100 } }),
+      s({ displayName: 'New', fieldUpdatedAt: { displayName: 200 } }),
+      0, 0, SYS,
+    )
+    expect(out.displayName).toBe('New')
+    expect(out.fieldUpdatedAt?.displayName).toBe(200)
+  })
+
+  it('a stamped scalar beats an unstamped one on a newer blob (rollout guard)', () => {
+    // A really edited displayName (stamped @100). B never touched it (no stamp) but
+    // its blob is newer (ms 500). Without the guard, B's stale name would win.
+    const A = s({ displayName: 'A-real-edit', fieldUpdatedAt: { displayName: 100 } })
+    const B = s({ displayName: 'B-stale' })
+    expect(mergeSettings(A, B, 0, 500, SYS).displayName).toBe('A-real-edit')
+    expect(mergeSettings(B, A, 500, 0, SYS).displayName).toBe('A-real-edit')  // symmetric
+  })
+
+  it('onboardingDone is monotonic OR — never regresses to false', () => {
+    const done = s({ onboardingDone: true })
+    const notYet = s({ onboardingDone: false })
+    expect(mergeSettings(done, notYet, 0, 999, SYS).onboardingDone).toBe(true)  // cloud newer, still true
+    expect(mergeSettings(notYet, done, 999, 0, SYS).onboardingDone).toBe(true)
+  })
+
+  it('clearing secondaryCurrency (null) propagates — null is a value, not absence', () => {
+    const cleared = s({ secondaryCurrency: null, fieldUpdatedAt: { secondaryCurrency: 200 } })
+    const hasUsd  = s({ secondaryCurrency: 'USD', fieldUpdatedAt: { secondaryCurrency: 100 } })
+    const out = mergeSettings(cleared, hasUsd, 0, 0, SYS)
+    expect('secondaryCurrency' in out).toBe(true)
+    expect(out.secondaryCurrency).toBeNull()
+  })
+
+  it('dbMigrationVersion is merged by max, not LWW', () => {
+    expect(mergeSettings(s({ dbMigrationVersion: 6 }), s({ dbMigrationVersion: 5 }), 999, 0, SYS).dbMigrationVersion).toBe(6)
+    expect(mergeSettings(s({ dbMigrationVersion: 5 }), s({ dbMigrationVersion: 6 }), 999, 0, SYS).dbMigrationVersion).toBe(6)
+  })
+
+  it('is symmetric on a mixed payload including a scalar tie (two devices converge)', () => {
+    const A = s({
+      accounts: [acct('efectivo', 100), acct('arq', 300)],
+      deductions: [ded('salud', 100)],
+      displayName: 'Ana', fieldUpdatedAt: { displayName: 100 },
+      onboardingDone: true, dbMigrationVersion: 6,
+      deleted: { 'account:old': 150 },
+    })
+    const B = s({
+      accounts: [acct('efectivo', 200), acct('bancol', 100)],
+      deductions: [ded('salud', 200, 'Salud-B')],
+      displayName: 'Bob', fieldUpdatedAt: { displayName: 100 },  // tie with A → canonical tie-break
+      dbMigrationVersion: 5,
+    })
+    expect(mergeSettings(A, B, 1000, 2000, SYS)).toEqual(mergeSettings(B, A, 2000, 1000, SYS))
   })
 })
