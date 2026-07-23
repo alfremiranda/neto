@@ -6,6 +6,7 @@ import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { EGRESO_CATEGORIAS } from '@/data/defaults'
 import { localToday } from '@/lib/format'
+import { DELETED_ACCOUNT_LABEL } from '@/lib/accountLabel'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -182,6 +183,11 @@ export function EgresoSheet() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="_none">Sin cuenta asociada</SelectItem>
+              {/* Orphan: this egreso points to a deleted account. Keep it selectable
+                  and labelled so the value is not silently lost when re-saving. */}
+              {account && !accounts.some(a => a.id === account) && (
+                <SelectItem value={account}>{DELETED_ACCOUNT_LABEL}</SelectItem>
+              )}
               {[...accounts]
                 .sort((a, b) =>
                   (Number(!!b.favorite) - Number(!!a.favorite)) ||

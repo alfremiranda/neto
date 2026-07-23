@@ -1,129 +1,77 @@
-import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { useFinanceStore } from './financeStore'
 import { DEFAULT_DEDUCTIONS } from '@/data/deductions'
-import type { DeductionConfig } from '@/types'
+import type { DeductionConfig, Settings } from '@/types'
+
+// ─── settingsStore — a DERIVED view over financeStore.db._settings ────────────
+// W2 / W-1: deductions + display prefs now live in the synced `_settings` blob, so
+// this is no longer a persisted store with its own state. It READS db._settings and
+// its actions WRITE back through financeStore (which stamps updatedAt / fieldUpdatedAt,
+// tombstones deletes, and autoPushes). One persistence layer, one source of truth —
+// no second copy to keep in sync, no echo to guard, no event order to reason about.
+// The old `neto-settings` localStorage stays frozen as a consolidation source /
+// rollback backup (see financeStore.consolidateSettings).
+//
+// The public API is unchanged, so the ~10 consumer components keep working as-is:
+//   useSettingsStore(s => s.deductions)   and   const { addDeduction } = useSettingsStore()
 
 interface SettingsState {
   deductions: DeductionConfig[]
   displayName: string
   primaryCurrency: 'COP' | 'USD'
   secondaryCurrency: 'COP' | 'USD' | null
-
   setDeduction: (id: string, patch: Partial<DeductionConfig>) => void
-  // Bulk enable/disable all SS + provision deductions (used by the onboarding
-  // profile: employees turn them off, independents leave them on).
   setDeductionsEnabled: (enabled: boolean) => void
-  addDeduction:  (d: Omit<DeductionConfig, 'id'>) => void
+  addDeduction: (d: Omit<DeductionConfig, 'id'>) => void
   removeDeduction: (id: string) => void
   resetDeductions: () => void
   setDisplayName: (name: string) => void
   setDisplayCurrency: (primary: 'COP' | 'USD', secondary: 'COP' | 'USD' | null) => void
 }
 
-export const useSettingsStore = create<SettingsState>()(
-  persist(
-    (set) => ({
-      deductions: DEFAULT_DEDUCTIONS,
-      displayName: '',
-      primaryCurrency: 'COP' as const,
-      secondaryCurrency: 'USD' as const,
+type SettingsActions = Omit<SettingsState, 'deductions' | 'displayName' | 'primaryCurrency' | 'secondaryCurrency'>
 
-      setDisplayName: (name) => set({ displayName: name }),
-      setDisplayCurrency: (primary, secondary) => set({ primaryCurrency: primary, secondaryCurrency: secondary }),
+const fs = () => useFinanceStore.getState()
+const curDeductions = (): DeductionConfig[] => fs().db._settings?.deductions ?? DEFAULT_DEDUCTIONS
 
-      setDeduction: (id, patch) =>
-        set(s => ({
-          deductions: s.deductions.map(d => d.id === id ? { ...d, ...patch } : d),
-        })),
+// Stable, module-level action references — every write routes through financeStore.
+const actions: SettingsActions = {
+  setDeduction: (id, patch) =>
+    fs().saveDeductionsConfig(curDeductions().map(d => (d.id === id ? { ...d, ...patch } : d))),
+  setDeductionsEnabled: (enabled) =>
+    fs().saveDeductionsConfig(curDeductions().map(d => (d.group === 'ss' || d.group === 'provision' ? { ...d, enabled } : d))),
+  addDeduction: (d) =>
+    fs().saveDeductionsConfig([...curDeductions(), { ...d, id: `custom_${Date.now()}` }]),
+  removeDeduction: (id) =>
+    fs().saveDeductionsConfig(curDeductions().filter(d => d.id !== id || d.locked)),
+  resetDeductions: () => fs().saveDeductionsConfig(DEFAULT_DEDUCTIONS),
+  setDisplayName: (name) => fs().setSettingsScalars({ displayName: name }),
+  setDisplayCurrency: (primary, secondary) => fs().setSettingsScalars({ primaryCurrency: primary, secondaryCurrency: secondary }),
+}
 
-      setDeductionsEnabled: (enabled) =>
-        set(s => ({
-          deductions: s.deductions.map(d =>
-            d.group === 'ss' || d.group === 'provision' ? { ...d, enabled } : d),
-        })),
+// Memoize the derived object by the `_settings` REFERENCE. financeStore updates are
+// immutable, so `db._settings` keeps the same reference across unrelated changes
+// (e.g. month edits) — the cache then returns a stable snapshot, which zustand v5 /
+// useSyncExternalStore requires (a fresh object each call would loop / warn) and
+// which avoids re-rendering settings consumers on every unrelated store change.
+let cache: { src: Settings | undefined; state: SettingsState } | null = null
+function derive(s: Settings | undefined): SettingsState {
+  if (cache && cache.src === s) return cache.state
+  const state: SettingsState = {
+    deductions: s?.deductions ?? DEFAULT_DEDUCTIONS,
+    displayName: s?.displayName ?? '',
+    primaryCurrency: s?.primaryCurrency ?? 'COP',
+    secondaryCurrency: s?.secondaryCurrency !== undefined ? s.secondaryCurrency : 'USD',
+    ...actions,
+  }
+  cache = { src: s, state }
+  return state
+}
 
-      addDeduction: (d) =>
-        set(s => ({
-          deductions: [
-            ...s.deductions,
-            { ...d, id: `custom_${Date.now()}` },
-          ],
-        })),
-
-      removeDeduction: (id) =>
-        set(s => ({
-          deductions: s.deductions.filter(d => d.id !== id || d.locked),
-        })),
-
-      resetDeductions: () => set({ deductions: DEFAULT_DEDUCTIONS }),
-    }),
-    {
-      name: 'neto-settings',
-      version: 5,
-      // Always pass stored state through on version mismatch instead of discarding
-      migrate: (s: unknown) => s as SettingsState,
-      // Merge stored deductions with any new defaults; run schema migrations inline
-      merge: (persisted: unknown, current) => {
-        const p = persisted as Partial<SettingsState>
-        if (!p?.deductions) return current
-
-        // Provision ids that should use neto_ibc instead of bruto
-        const NETO_IBC_IDS = new Set(['primas', 'cesantias', 'vacaciones'])
-
-        const migrated = p.deductions.map((d: DeductionConfig & { frequency?: string }) => {
-          let result: DeductionConfig = d
-
-          // v1→v2: migrate old frequency field → months[]
-          if (result.months === undefined) {
-            const months =
-              (result as DeductionConfig & { frequency?: string }).frequency === 'semiannual' ? [6, 12] :
-              []
-            const { frequency: _, ...rest } = result as DeductionConfig & { frequency?: string }
-            result = { ...rest, months }
-          }
-
-          // v1→v2: migrate provision base bruto → neto_ibc
-          if (NETO_IBC_IDS.has(result.id) && result.base === 'bruto') {
-            result = { ...result, base: 'neto_ibc' }
-          }
-
-          // v2→v3: all provision items (primas/cesantías/vacaciones) → green (pre-token-rename)
-          const OLD_PROVISION_COLORS = new Set(['--n-lime', '--n-purple-txt', '--n-pink'])
-          if (NETO_IBC_IDS.has(result.id) && OLD_PROVISION_COLORS.has(result.color ?? '')) {
-            result = { ...result, color: '--n-green' }
-          }
-
-          // v3→v4: primas → provisión mensual (months: [] = todos los meses)
-          if (result.id === 'primas' && result.months?.length > 0) {
-            result = { ...result, months: [] }
-          }
-
-          // v4→v5: rename --n-* color tokens → --color-{semantic}
-          const TOKEN_MAP: Record<string, string> = {
-            '--n-blue':      '--color-income',
-            '--n-green':     '--color-provision',
-            '--n-amber':     '--color-tax',
-            '--n-pink':      '--color-expense',
-            '--n-lime':      '--color-net',
-          }
-          if (result.color && TOKEN_MAP[result.color]) {
-            result = { ...result, color: TOKEN_MAP[result.color] }
-          }
-
-          return result
-        })
-
-        const storedIds = new Set(migrated.map((d: DeductionConfig) => d.id))
-        const newDefaults = DEFAULT_DEDUCTIONS.filter(d => !storedIds.has(d.id))
-        return {
-          ...current,
-          deductions: [...migrated, ...newDefaults],
-          // Preserve user preferences stored in previous sessions
-          displayName: p.displayName ?? current.displayName,
-          primaryCurrency: p.primaryCurrency ?? current.primaryCurrency,
-          secondaryCurrency: p.secondaryCurrency !== undefined ? p.secondaryCurrency : current.secondaryCurrency,
-        }
-      },
-    },
-  ),
-)
+export function useSettingsStore(): SettingsState
+export function useSettingsStore<T>(selector: (s: SettingsState) => T): T
+export function useSettingsStore<T>(selector?: (s: SettingsState) => T): T | SettingsState {
+  return useFinanceStore(f => {
+    const s = derive(f.db._settings)
+    return selector ? selector(s) : s
+  })
+}

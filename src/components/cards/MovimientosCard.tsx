@@ -4,6 +4,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { COP, USD, fmtDate } from '@/lib/format'
+import { accountLabel } from '@/lib/accountLabel'
 import { MONTHS } from '@/data/defaults'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { IconButton } from '@/components/ui/icon-button'
@@ -21,9 +22,7 @@ function TransferRow({
   onEdit: () => void
   onDelete: () => void
 }) {
-  const fromAcc = accounts.find(a => a.id === t.from)
-  const toAcc   = accounts.find(a => a.id === t.to)
-  const title   = `${fromAcc?.label ?? t.from} → ${toAcc?.label ?? t.to}`
+  const title   = `${accountLabel(t.from, accounts)} → ${accountLabel(t.to, accounts)}`
 
   const primaryAmt   = t.fromCurrency === 'USD' ? USD(t.amount) : COP(t.amount)
   const secondaryCOP = t.fromCurrency === 'USD' && t.trm ? COP(t.amount * t.trm) : null

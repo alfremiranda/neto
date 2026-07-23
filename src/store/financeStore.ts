@@ -2,7 +2,27 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { DEFAULTS, TRANSFER_ACCOUNTS, GASTOS_KEYS, EGRESO_TIPOS, EGRESO_CATEGORIAS, smmlvForYear } from '@/data/defaults'
 import { sbPush, sbPullAll } from '@/lib/supabase'
-import type { FinanceDB, MonthData, Account, Settings, Income, Egreso, Transfer } from '@/types'
+import { mergeMonth, localHasExtra, mergeSettings, canonicalTieBreak } from './merge'
+import { DEFAULT_DEDUCTIONS, migrateDeductions } from '@/data/deductions'
+import type { FinanceDB, MonthData, Account, Settings, Income, Egreso, Transfer, DeductionConfig } from '@/types'
+
+// The old settingsStore persisted deductions + display prefs under this key. The
+// derived settingsStore no longer writes it, so the last value stays frozen as a
+// one-time consolidation source / rollback backup.
+const NETO_SETTINGS_KEY = 'neto-settings'
+
+type SettingsBackup = Partial<Pick<Settings, 'deductions' | 'displayName' | 'primaryCurrency' | 'secondaryCurrency'>>
+
+function readSettingsBackup(): SettingsBackup | null {
+  try {
+    const raw = localStorage.getItem(NETO_SETTINGS_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as { state?: SettingsBackup } & SettingsBackup
+    return parsed?.state ?? parsed ?? null
+  } catch {
+    return null
+  }
+}
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -23,74 +43,6 @@ function autoPush(key: string, data: unknown) {
     .catch(() => { /* stays dirty; retried by flushPending */ })
 }
 
-// ── per-entry merge (cross-device) ──────────────────────────────────────────
-// Union month lists by entry id so no device's entries are ever dropped;
-// newest edit wins per entry (entry.updatedAt, falling back to the month-level
-// timestamp for entries created before per-entry stamping); a tombstone whose
-// time ≥ the entry's last edit removes it (so deletes propagate).
-type Stamped = { id: number; updatedAt?: number }
-
-function mergeList<T extends Stamped>(
-  type: string,
-  local: T[] = [],
-  cloud: T[] = [],
-  del: Record<string, number>,
-  localMs: number,
-  cloudMs: number,
-): T[] {
-  const map = new Map<number, { e: T; ts: number }>()
-  for (const e of local) map.set(e.id, { e, ts: e.updatedAt ?? localMs })
-  for (const e of cloud) {
-    const ts = e.updatedAt ?? cloudMs
-    const ex = map.get(e.id)
-    if (!ex || ts > ex.ts) map.set(e.id, { e, ts })
-  }
-  const out: T[] = []
-  for (const [id, { e, ts }] of map) {
-    if ((del[`${type}:${id}`] ?? 0) >= ts) continue
-    out.push(e)
-  }
-  return out.sort((a, b) => a.id - b.id)   // deterministic → both devices converge
-}
-
-function mergeMonth(local: MonthData, cloud: MonthData, localMs: number, cloudMs: number): MonthData {
-  const del: Record<string, number> = {}
-  for (const k of new Set([...Object.keys(local.deleted ?? {}), ...Object.keys(cloud.deleted ?? {})])) {
-    del[k] = Math.max(local.deleted?.[k] ?? 0, cloud.deleted?.[k] ?? 0)
-  }
-  const scalar = cloudMs > localMs ? cloud : local   // trm, balances, egresosSeeded
-  const merged: MonthData = {
-    ...scalar,
-    incomes:   mergeList('income',   local.incomes,   cloud.incomes,   del, localMs, cloudMs),
-    egresos:   mergeList('egreso',   local.egresos,   cloud.egresos,   del, localMs, cloudMs),
-    transfers: mergeList('transfer', local.transfers, cloud.transfers, del, localMs, cloudMs),
-    deleted:   Object.keys(del).length ? del : undefined,
-  }
-  if (local.voluntarias || cloud.voluntarias) {
-    merged.voluntarias = mergeList('vol', local.voluntarias, cloud.voluntarias, del, localMs, cloudMs)
-  }
-  return merged
-}
-
-// True if local holds anything the cloud copy lacks (new/newer entry, tombstone,
-// or newer scalars) — if so we push the merged blob so the cloud converges too.
-function localHasExtra(local: MonthData, cloud: MonthData, localMs: number, cloudMs: number): boolean {
-  if (localMs > cloudMs) return true
-  for (const f of ['incomes', 'egresos', 'transfers', 'voluntarias'] as const) {
-    const cloudMap = new Map(((cloud[f] as Stamped[] | undefined) ?? []).map(e => [e.id, e]))
-    for (const e of ((local[f] as Stamped[] | undefined) ?? [])) {
-      const ce = cloudMap.get(e.id)
-      if (!ce) return true
-      if ((e.updatedAt ?? localMs) > (ce.updatedAt ?? cloudMs)) return true
-    }
-  }
-  const cd = cloud.deleted ?? {}
-  for (const [k, ts] of Object.entries(local.deleted ?? {})) {
-    if (ts > (cd[k] ?? 0)) return true
-  }
-  return false
-}
-
 export function monthKey(m: number, y: number): string {
   return `${y}-${String(m).padStart(2, '0')}`
 }
@@ -108,9 +60,13 @@ function keyForDate(date: string, fallback: string): string {
 // Apply all pending migrations. Safe to run on any db object (local or cloud).
 // Returns a new db and a `changed` flag so callers know whether to push the result.
 // Bump CURRENT_DB_VERSION when adding a new migration step.
-const CURRENT_DB_VERSION = 5
+const CURRENT_DB_VERSION = 6
 
-function applyDateMigration(db: Record<string, unknown>): { db: Record<string, unknown>; changed: boolean } {
+// `settingsMs` is the last-known write time of the _settings blob for THIS side
+// (local rehydrate: the local stamp; cloud merge: the merged ms). v6 uses it to
+// seed a stable per-account updatedAt. It is data-shape only — deductions live in
+// a separate local store and are consolidated in the settingsStore mirror, not here.
+function applyDateMigration(db: Record<string, unknown>, settingsMs = 0): { db: Record<string, unknown>; changed: boolean } {
   const settings = (db['_settings'] ?? {}) as Settings & { dbMigrationVersion?: number }
   const version = settings.dbMigrationVersion ?? 0
   if (version >= CURRENT_DB_VERSION) return { db, changed: false }
@@ -291,6 +247,21 @@ function applyDateMigration(db: Record<string, unknown>): { db: Record<string, u
     current['_settings'] = { ...settingsObj, accounts } as unknown as MonthData
   }
 
+  // ── v6: seed a stable per-account updatedAt so _settings merges per-entry ─────
+  // Without a stamp, an unstamped account falls back to the settings blob's ms,
+  // which is bumped by ANY settings write — so editing one account would make the
+  // others look freshly edited and clobber another device's concurrent edits.
+  // Seed the last-known settings ts (clamped ≥1 to dodge the ts=0 / default-
+  // tombstone collision) as a stable baseline; real edits stamp Date.now() later.
+  if (version < 6) {
+    const st = current['_settings'] as (Settings & Record<string, unknown>) | undefined
+    if (st?.accounts?.length) {
+      const seedTs = settingsMs || 1
+      const accounts = st.accounts.map(a => (a.updatedAt ? a : { ...a, updatedAt: seedTs }))
+      current['_settings'] = { ...st, accounts } as unknown as MonthData
+    }
+  }
+
   current['_settings'] = { ...(current['_settings'] ?? {}), dbMigrationVersion: CURRENT_DB_VERSION } as unknown as MonthData
   return { db: current, changed: true }
 }
@@ -366,6 +337,9 @@ interface FinanceState {
   setTRM: (trm: number) => void
   saveAccountsConfig: (accounts: Account[]) => void
   toggleAccountFavorite: (id: string) => void
+  saveDeductionsConfig: (deductions: DeductionConfig[]) => void
+  setSettingsScalars: (patch: Partial<Pick<Settings, 'displayName' | 'primaryCurrency' | 'secondaryCurrency'>>) => void
+  consolidateSettings: () => void
   completeOnboarding: () => void
 
   // navigation
@@ -606,12 +580,37 @@ export const useFinanceStore = create<FinanceState>()(
       },
 
       saveAccountsConfig: (accounts) => {
+        const now = Date.now()
         set(state => {
           const settings = (state.db._settings ?? {}) as Settings
+          const prev = settings.accounts ?? []
+          const prevById = new Map(prev.map(a => [a.id, a]))
+
+          // Stamp ONLY accounts that actually changed, so editing one account does
+          // not bump the others — otherwise a save would let this device's stale
+          // copies win the per-entry merge over another device's real edits.
+          const stamped = accounts.map(a => {
+            const before = prevById.get(a.id)
+            const same = before && canonicalTieBreak({ ...before, updatedAt: undefined }, { ...a, updatedAt: undefined }) === 0
+            return same ? before! : { ...a, updatedAt: now }
+          })
+
+          // Tombstone removed non-locked accounts so deletes propagate (the union
+          // merge would otherwise resurrect them from the other device); clear any
+          // tombstone for an id that is present again (re-add / resurrection).
+          const deleted: Record<string, number> = { ...(settings.deleted ?? {}) }
+          const nextIds = new Set(accounts.map(a => a.id))
+          for (const a of prev) if (!nextIds.has(a.id) && !a.locked) deleted[`account:${a.id}`] = now
+          for (const id of nextIds) delete deleted[`account:${id}`]
+
           return {
             db: {
               ...state.db,
-              _settings: { ...settings, accounts },
+              _settings: {
+                ...settings,
+                accounts: stamped,
+                deleted: Object.keys(deleted).length ? deleted : undefined,
+              },
             } as FinanceDB,
           }
         })
@@ -621,6 +620,122 @@ export const useFinanceStore = create<FinanceState>()(
       toggleAccountFavorite: (id) => {
         const accounts = get().getAccounts().map(a => a.id === id ? { ...a, favorite: !a.favorite } : a)
         get().saveAccountsConfig(accounts)
+      },
+
+      // Deduction write-side — mirrors saveAccountsConfig: stamp only what changed,
+      // tombstone removed non-locked deductions so the union merge doesn't resurrect
+      // them. (The settingsStore mirror funnels every deduction edit through here.)
+      saveDeductionsConfig: (deductions) => {
+        const now = Date.now()
+        set(state => {
+          const settings = (state.db._settings ?? {}) as Settings
+          const prev = settings.deductions ?? []
+          const prevById = new Map(prev.map(d => [d.id, d]))
+          const stamped = deductions.map(d => {
+            const before = prevById.get(d.id)
+            const same = before && canonicalTieBreak({ ...before, updatedAt: undefined }, { ...d, updatedAt: undefined }) === 0
+            return same ? before! : { ...d, updatedAt: now }
+          })
+          const deleted: Record<string, number> = { ...(settings.deleted ?? {}) }
+          const nextIds = new Set(deductions.map(d => d.id))
+          for (const d of prev) if (!nextIds.has(d.id) && !d.locked) deleted[`deduction:${d.id}`] = now
+          for (const id of nextIds) delete deleted[`deduction:${id}`]
+          return {
+            db: {
+              ...state.db,
+              _settings: {
+                ...settings,
+                deductions: stamped,
+                deleted: Object.keys(deleted).length ? deleted : undefined,
+              },
+            } as FinanceDB,
+          }
+        })
+        autoPush('_settings', get().db._settings)
+      },
+
+      // Scalar settings write-side: set the field(s) + stamp fieldUpdatedAt so the
+      // per-field LWW in mergeSettings has evidence of a real edit.
+      setSettingsScalars: (patch) => {
+        const now = Date.now()
+        set(state => {
+          const settings = (state.db._settings ?? {}) as Settings
+          const fieldUpdatedAt = { ...(settings.fieldUpdatedAt ?? {}) }
+          const next: Settings = { ...settings }
+          for (const [k, v] of Object.entries(patch)) {
+            (next as Record<string, unknown>)[k] = v
+            fieldUpdatedAt[k] = now
+          }
+          next.fieldUpdatedAt = fieldUpdatedAt
+          return { db: { ...state.db, _settings: next } as FinanceDB }
+        })
+        autoPush('_settings', get().db._settings)
+      },
+
+      // One-time-per-device consolidation of the local neto-settings backup into the
+      // synced _settings. GATED BY THE CALLER on a resolved cloud state (authStore's
+      // cloudReady) so an authenticated device never seeds before its first pull —
+      // seeding blind would let two devices each create the same custom provision and
+      // the union merge would duplicate it. Seeds only when deductions are still
+      // absent (presence = "someone already consolidated"), then always runs a
+      // label+group dedupe as a net against the race + the rollout window.
+      consolidateSettings: () => {
+        let changed = false
+        set(state => {
+          const settings = (state.db._settings ?? {}) as Settings
+          const seedTs = state.updatedAt['_settings'] || 1
+          let deductions = settings.deductions ?? []
+          const deleted: Record<string, number> = { ...(settings.deleted ?? {}) }
+          const scalarPatch: Record<string, unknown> = {}
+          const fieldUpdatedAt = { ...(settings.fieldUpdatedAt ?? {}) }
+
+          // Seed only if nobody has consolidated yet (locked deductions guarantee a
+          // consolidated set is never empty, so "empty" reliably means "not seeded").
+          if (deductions.length === 0) {
+            const backup = readSettingsBackup()
+            const src = backup?.deductions?.length ? migrateDeductions(backup.deductions) : DEFAULT_DEDUCTIONS
+            deductions = src.map(d => ({ ...d, updatedAt: d.updatedAt ?? seedTs }))
+            if (backup) {
+              for (const f of ['displayName', 'primaryCurrency', 'secondaryCurrency'] as const) {
+                if (backup[f] !== undefined && settings[f] === undefined) {
+                  scalarPatch[f] = backup[f]
+                  fieldUpdatedAt[f] = seedTs
+                }
+              }
+            }
+            changed = true
+          }
+
+          // Dedupe by label+group: keep the code-point-smallest id, tombstone the
+          // rest (non-locked). Deterministic across devices → converges to one.
+          const byKey = new Map<string, DeductionConfig>()
+          for (const d of deductions) {
+            const k = `${d.label} ${d.group}`
+            const ex = byKey.get(k)
+            if (!ex || String(d.id) < String(ex.id)) byKey.set(k, d)
+          }
+          const keep = new Set([...byKey.values()].map(d => d.id))
+          if (keep.size < deductions.length) {
+            for (const d of deductions) if (!keep.has(d.id) && !d.locked) deleted[`deduction:${d.id}`] = Date.now()
+            deductions = deductions.filter(d => keep.has(d.id))
+            changed = true
+          }
+
+          if (!changed) return {}
+          return {
+            db: {
+              ...state.db,
+              _settings: {
+                ...settings,
+                ...scalarPatch,
+                deductions,
+                fieldUpdatedAt: Object.keys(fieldUpdatedAt).length ? fieldUpdatedAt : undefined,
+                deleted: Object.keys(deleted).length ? deleted : undefined,
+              },
+            } as FinanceDB,
+          }
+        })
+        if (changed) autoPush('_settings', get().db._settings)
       },
 
       completeOnboarding: () => {
@@ -752,7 +867,7 @@ export const useFinanceStore = create<FinanceState>()(
             cloudMap.set(key, { data, ms: updated_at ? Date.parse(updated_at) : 0 })
           }
 
-          const { db: localDb, updatedAt: localTs, dirty } = get()
+          const { db: localDb, updatedAt: localTs } = get()
           const rawDb: Record<string, unknown> = { ...localDb }
           const newTs: Record<string, number> = { ...localTs }
           const pushBack = new Set<string>()
@@ -764,12 +879,28 @@ export const useFinanceStore = create<FinanceState>()(
             const localVal = localDb[key]
 
             if (key === '_settings') {
-              // Whole-object LWW; a dirty (unpushed) local settings wins.
-              if (cloud && !dirty.includes(key) && cloudMs >= localMs) {
-                rawDb[key] = cloud.data; newTs[key] = cloudMs
-              } else if (localVal !== undefined && (!cloud || localMs >= cloudMs)) {
-                pushBack.add(key)
+              // Per-entry (accounts/deductions) + per-field (scalars) merge, so
+              // concurrent settings edits across devices no longer drop a side.
+              const localS = localVal as Settings | undefined
+              const cloudS = cloud?.data as Settings | undefined
+              if (!cloudS) { if (localS !== undefined) pushBack.add(key); continue }  // local-only
+              if (!localS) { rawDb[key] = cloudS; newTs[key] = cloudMs; continue }    // cloud-only
+
+              // A locked entry is system: its own `locked` flag is the source of
+              // truth (no defaults import needed). Union both sides.
+              const lockedIds = <T extends { id: string; locked?: boolean }>(a?: T[], b?: T[]) =>
+                new Set([...(a ?? []), ...(b ?? [])].filter(x => x.locked).map(x => x.id))
+              const systemIds = {
+                accounts:   lockedIds(localS.accounts,   cloudS.accounts),
+                deductions: lockedIds(localS.deductions, cloudS.deductions),
               }
+
+              const merged = mergeSettings(localS, cloudS, localMs, cloudMs, systemIds)
+              rawDb[key] = merged
+              newTs[key] = Math.max(localMs, cloudMs)
+              // Push back only when the cloud isn't already at the merged state
+              // (local contributed something). Canonical compare ignores key order.
+              if (canonicalTieBreak(merged, cloudS) !== 0) pushBack.add(key)
               continue
             }
 
@@ -784,7 +915,7 @@ export const useFinanceStore = create<FinanceState>()(
           }
 
           // Cloud may be un-migrated if last written by an older client.
-          const { db: migratedDb, changed } = applyDateMigration(rawDb)
+          const { db: migratedDb, changed } = applyDateMigration(rawDb, newTs['_settings'] ?? 0)
           set({ db: migratedDb as FinanceDB, updatedAt: newTs })
 
           const finalDb = get().db
@@ -897,7 +1028,7 @@ export const useFinanceStore = create<FinanceState>()(
         if (!state) return
 
         // ── One-time migration: move records to their date-based month key ──
-        const { db: migratedDb, changed } = applyDateMigration(state.db as Record<string, unknown>)
+        const { db: migratedDb, changed } = applyDateMigration(state.db as Record<string, unknown>, state.updatedAt?.['_settings'] ?? 0)
         if (changed) state.db = migratedDb as FinanceDB
 
         // ── Sync bookkeeping ──
