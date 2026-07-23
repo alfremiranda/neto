@@ -63,9 +63,13 @@ Each phase is independently shippable and leaves the product functional. Do not 
 
 **Goal:** make Neto safe and legal for a second user with two devices. This is active risk today.
 
-- [ ] **RLS audit + enforcement.** Verify/author Row-Level Security policies on **every** Supabase
-      table (starting with `months`), keyed by `auth.uid()`, for select/insert/update/delete.
-      No table may be readable or writable across tenants.
+- [x] **RLS audit + enforcement.** ✅ 2026-07-22. `months` (the only table) hardened on dev **and**
+      prod: RLS enabled + forced, single `for all to authenticated using/with check (auth.uid() = user_id)`
+      policy, `user_id default auth.uid()`, `anon` grants revoked. Tenant isolation proven
+      **empirically** (not just by inspection) on both dev and prod — `supabase/rls_isolation_test.sql`
+      returns 5/5 (B cannot see, read, update, or spoof-insert A's rows). Canonical `supabase/schema.sql`
+      corrected from the old open PoC. *Deferred debt (minor, non-security): `months.data` is nullable on
+      prod vs `not null default '{}'` in schema.sql — backfill needs care under forced RLS.*
 - [ ] **Fix `_settings` sync.** Today `_settings` (which includes accounts) is whole-object LWW —
       concurrent account edits across devices can silently drop one side. Upgrade to per-entry /
       per-field merge, consistent with the existing `mergeMonth`/`mergeList` model.
