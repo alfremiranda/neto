@@ -9,7 +9,19 @@ import type { MonthData } from '@/types'
 // newest edit wins per entry (entry.updatedAt, falling back to the month-level
 // timestamp for entries created before per-entry stamping); a tombstone whose
 // time ≥ the entry's last edit removes it (so deletes propagate).
-export type Stamped = { id: number; updatedAt?: number }
+//
+// `id` is number (month entries) or string (accounts/deductions). The sort must
+// stay deterministic across devices, so string ids compare by CODE POINT, never
+// via localeCompare (whose order depends on the runtime locale → would make two
+// devices sort differently and ping-pong). Numeric ids keep numeric order so
+// month behaviour is unchanged (9 before 10, not "10" before "9").
+export type Stamped = { id: number | string; updatedAt?: number }
+
+function byId(a: Stamped, b: Stamped): number {
+  if (typeof a.id === 'number' && typeof b.id === 'number') return a.id - b.id
+  const as = String(a.id), bs = String(b.id)
+  return as < bs ? -1 : as > bs ? 1 : 0   // code-point order — locale-independent
+}
 
 export function mergeList<T extends Stamped>(
   type: string,
@@ -19,7 +31,7 @@ export function mergeList<T extends Stamped>(
   localMs: number,
   cloudMs: number,
 ): T[] {
-  const map = new Map<number, { e: T; ts: number }>()
+  const map = new Map<number | string, { e: T; ts: number }>()
   for (const e of local) map.set(e.id, { e, ts: e.updatedAt ?? localMs })
   for (const e of cloud) {
     const ts = e.updatedAt ?? cloudMs
@@ -31,7 +43,7 @@ export function mergeList<T extends Stamped>(
     if ((del[`${type}:${id}`] ?? 0) >= ts) continue
     out.push(e)
   }
-  return out.sort((a, b) => a.id - b.id)   // deterministic → both devices converge
+  return out.sort(byId)   // deterministic → both devices converge
 }
 
 export function mergeMonth(local: MonthData, cloud: MonthData, localMs: number, cloudMs: number): MonthData {

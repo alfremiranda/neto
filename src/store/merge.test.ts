@@ -62,6 +62,37 @@ describe('mergeList — characterization', () => {
   })
 })
 
+describe('mergeList — string ids (accounts/deductions) sort by code point, not locale', () => {
+  const s = (id: string, updatedAt = 100) => ({ id, updatedAt })
+
+  it('orders string ids by code point regardless of runtime locale', () => {
+    // Ids chosen so locale collation (e.g. es-CO) would disagree with code-point
+    // order: locales sort "a" before "A" and cluster "á" with "a"; code point puts
+    // all uppercase before all lowercase and "á" (U+00E1) after ASCII letters.
+    const ids = ['b', 'A', 'Z', 'a', '10', '2', 'á']
+    const out = mergeList('acct', ids.map(id => s(id)), [], {}, 0, 0).map(x => x.id)
+
+    const codePoint = [...ids].sort((x, y) => (x < y ? -1 : x > y ? 1 : 0))
+    expect(out).toEqual(codePoint)
+    // Explicit invariants a localeCompare implementation would break:
+    expect(out.indexOf('10')).toBeLessThan(out.indexOf('2'))  // '1' < '2' by code point
+    expect(out.indexOf('A')).toBeLessThan(out.indexOf('a'))   // uppercase before lowercase
+    expect(out.indexOf('Z')).toBeLessThan(out.indexOf('a'))   // all ASCII upper before lower
+  })
+
+  it('unions, newest-wins and tombstones work identically with string ids', () => {
+    const out = mergeList(
+      'acct',
+      [s('efectivo', 100), s('arq', 300)],
+      [s('efectivo', 200), s('bancol', 100)],
+      { 'acct:arq': 400 },                       // tombstone newer than arq's edit → removed
+      0, 0,
+    )
+    expect(out.map(x => x.id)).toEqual(['bancol', 'efectivo'])  // arq deleted, sorted
+    expect(out.find(x => x.id === 'efectivo')?.updatedAt).toBe(200)  // cloud newer wins
+  })
+})
+
 describe('mergeMonth — characterization', () => {
   it('merges incomes, egresos and transfers independently', () => {
     const local = month({ incomes: [income(1, 100)], egresos: [] })
