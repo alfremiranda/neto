@@ -102,7 +102,24 @@ Each phase is independently shippable and leaves the product functional. Do not 
       revert the squash commit (reverts code only, not data — hence the snapshot).
 - [ ] **Ley 1581 groundwork.** Privacy policy, explicit consent on onboarding, data-processing
       basics. *Get real legal advice — this doc is not it.*
+      <br>**Dependency from W4:** enabling Sentry means processing third-party data (technical
+      metadata + IP), so **Sentry must be listed as a data processor** in the privacy policy.
+      Don't ship the policy without it.
 - [ ] **Sentry.** Error tracking wired for web (and later native).
+      <br>**Scaffold shipped (gated, prod-only):** `src/lib/sentry.ts` `initSentry()` is a **no-op
+      unless `VITE_SENTRY_DSN` is set** (dev + offline unaffected, same posture as auto-sync). A
+      `Sentry.ErrorBoundary` (`src/components/AppErrorBoundary.tsx`) now wraps `<App>` — it catches
+      render crashes and shows a Spanish panic screen even without a DSN; it only *reports* when
+      Sentry is active. Privacy-first by construction (finance app): `sendDefaultPii: false`, no user
+      identity (errors tie to the **build** via `release` = `GITHUB_SHA`), no Session Replay, no
+      tracing; breadcrumbs **allowlisted** (console/DOM/fetch/xhr off at source, only `navigation`
+      passes); `beforeSend` **allowlists** the event (exception+stack, release, browser/os) and drops
+      everything else (request, user, extra, contexts.state). The DSN is committed in
+      `.env.production` (public by design — write-only, no read access; distinct rationale from the
+      RLS-backed anon key — do NOT generalize to a real secret).
+      **Deferred (D2):** source-map upload (needs a Sentry auth token in CI → minified stacks until
+      then; `release` keeps them attributable). **Remaining to finish W4:** create the Sentry project,
+      paste the DSN, verify an event lands *and that scrubbing holds* (no PII / no UI-text breadcrumbs).
 
 **Definition of done:** a second test account cannot see or touch the first account's rows
 (verified manually); concurrent settings edits on two devices converge with no data loss;
