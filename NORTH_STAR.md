@@ -102,19 +102,26 @@ Each phase is independently shippable and leaves the product functional. Do not 
       revert the squash commit (reverts code only, not data — hence the snapshot).
 - [ ] **Ley 1581 groundwork.** Privacy policy, explicit consent on onboarding, data-processing
       basics. *Get real legal advice — this doc is not it.*
-- [ ] **Sentry.** Error tracking for web (later native). **Attempted + REVERTED 2026-07-24.**
-      Shipped via PR #5 (`d235b8a2`), verified working in prod (a real error landed with
-      `environment: production` + correct SHA). But it **broke fresh OAuth login on mobile** (iOS
-      Safari + Chrome, PWA and browser tabs): `/callback` 500 `bad verification code / context canceled`
-      — the provider code exchange failing, session dying after ~2s. **Reverted** (`d8e28cac`); the
-      revert **restored** mobile login immediately (PWA + browsers), confirming W4 was the cause.
-      Desktop was never affected. **Root mechanism still unconfirmed** — the SW `autoUpdate` reload
-      racing the callback was the leading suspect but not proven (the failure is on `supabase.co`, which
-      our SW doesn't control); the Sentry SDK's global instrumentation is the other candidate.
-      **Re-introduce carefully:** re-deploy on a branch, test a FRESH mobile login before declaring done,
-      keep the revert ready. Consider the SW fix (`registerType: 'prompt'`, branch `phase1/fix-pwa-oauth`
-      / PR #6) as part of it. Sentry as a data processor + its server-side IP geo still apply to W3's
-      privacy policy when it does go back in.
+      <br>**Dependency from W4:** enabling Sentry means processing third-party data (technical
+      metadata + IP), so **Sentry must be listed as a data processor** in the privacy policy.
+      Don't ship the policy without it. **Open residual:** Sentry derives **coarse city-level
+      geolocation from the request IP** server-side, *after* PII scrubbing, so it is NOT removable via
+      the SDK (`sendDefaultPii: false`), the "Prevent Storing of IP Addresses" toggle (enabled — nulls
+      the IP but geo persists), or a data-scrubbing rule. Decide in W3 whether to disclose it or escalate.
+- [ ] **Sentry.** Error tracking for web (later native). **RE-INTRODUCTION IN PROGRESS 2026-07-25.**
+      History: first attempt (PR #5, `d235b8a2`) shipped + verified working in prod, but **broke fresh
+      OAuth login on mobile** (iOS Safari + Chrome, PWA and tabs) — `/callback` 500 `bad verification
+      code / context canceled`, session dying after ~2s. Reverted (`d8e28cac`), which **restored** mobile
+      login, confirming W4 as the cause. Desktop never affected. Root mechanism unconfirmed (SW
+      `autoUpdate` reload vs Sentry SDK instrumentation). **This attempt re-adds Sentry TOGETHER WITH the
+      SW fix** (`registerType: 'autoUpdate'`→`'prompt'`, manual `registerSW` with `onRegisterError`) to
+      kill the leading suspect; if mobile still breaks, the Sentry SDK is the definitive cause. **MUST
+      test a fresh mobile login (PWA + browser) before declaring done; keep revert `d8e28cac` ready.**
+      Scaffold (unchanged from attempt 1): gated on `VITE_SENTRY_DSN` (no-op without it), privacy-first
+      (`sendDefaultPii: false`, no user identity, release=`GITHUB_SHA`, no replay/tracing, allowlist
+      `beforeSend` + breadcrumbs), `Sentry.ErrorBoundary` panic screen (removes `#splash`, sign-out hatch
+      doesn't touch `amd-finance`). DSN public-by-design, committed in `.env.production`. D2 (source-map
+      upload) still deferred. Geo residual → W3 (see above).
 
 **Definition of done:** a second test account cannot see or touch the first account's rows
 (verified manually); concurrent settings edits on two devices converge with no data loss;

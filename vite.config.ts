@@ -4,10 +4,21 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
   base: '/neto/',
+  // Sentry release: the commit SHA in CI (GitHub Actions sets GITHUB_SHA), else
+  // 'dev' locally. Ties every captured error to a build so minified stacks stay
+  // legible until source-map upload lands (W4 D2, deferred).
+  define: {
+    __SENTRY_RELEASE__: JSON.stringify(process.env.GITHUB_SHA ?? 'dev'),
+  },
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      // 'prompt' (not 'autoUpdate'): a new SW must NOT force-reload the page. The
+      // autoUpdate reload was racing the OAuth callback on mobile — the reload
+      // re-hit the callback, the single-use provider code got exchanged twice, and
+      // login failed with "Unable to exchange external code". New versions now apply
+      // on the next natural app launch instead of a surprise mid-flow reload.
+      registerType: 'prompt',
       // Workbox takes over — delete manual public/sw.js
       filename: 'sw.js',
       strategies: 'generateSW',
@@ -39,8 +50,10 @@ export default defineConfig({
       },
       // Manifest is in public/manifest.json — don't inject a second one
       manifest: false,
-      // Register SW via built-in virtual module (replaces manual navigator.serviceWorker.register)
-      injectRegister: 'auto',
+      // null: we register the SW manually in main.tsx (via virtual:pwa-register) so
+      // we can catch registration errors — the auto-injected registerSW.js let the
+      // register() promise reject UNHANDLED during OAuth navigation (noisy Sentry).
+      injectRegister: null,
       devOptions: {
         enabled: false, // only active in production build
       },
