@@ -125,6 +125,10 @@ Each phase is independently shippable and leaves the product functional. Do not 
       `Sentry.ErrorBoundary` panic screen (removes `#splash`, sign-out hatch doesn't touch `amd-finance`).
       DSN public-by-design, committed in `.env.production`. D2 (source-map upload) still deferred. Sentry as
       a data processor + the server-side IP-geo residual apply to W3's privacy policy (see above).
+      <br>**Empirical half CLOSED:** the real prod event reviewed 2026-07-24 (the SW-registration rejection)
+      had the expected payload — `environment: production`, correct release SHA, nothing financial (only the
+      geo residual) — proving end-to-end reporting + scrubbing in prod. (That event was from the 1st-attempt
+      build; config is identical now, so it holds; the current build tags its own SHA.)
 
 **Definition of done:** a second test account cannot see or touch the first account's rows
 (verified manually); concurrent settings edits on two devices converge with no data loss;
