@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/react'
-import type { ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { useAuthStore } from '@/store/authStore'
 
 // Panic screen shown when a render crash escapes the tree. Two recovery paths,
@@ -13,6 +13,14 @@ import { useAuthStore } from '@/store/authStore'
 // click away on a panic screen. A corrupt-`amd-finance` recovery, if ever needed,
 // belongs in a deliberate, guarded flow, not here.
 function PanicScreen() {
+  // The pre-React splash (#splash in index.html) is normally removed by an effect
+  // inside <App>. On a startup crash that effect never runs, so the splash overlay
+  // would stay on top and hide this screen — the exact case a panic screen exists
+  // for. Remove it here too. (Belt-and-suspenders with the fixed/high-z container.)
+  useEffect(() => {
+    document.getElementById('splash')?.remove()
+  }, [])
+
   const reload = () => window.location.reload()
 
   const signOutAndReload = async () => {
@@ -25,7 +33,7 @@ function PanicScreen() {
   }
 
   return (
-    <div className="flex min-h-[100dvh] flex-col items-center justify-center gap-6 bg-background px-6 text-center text-foreground">
+    <div className="fixed inset-0 z-[10000] flex flex-col items-center justify-center gap-6 bg-background px-6 text-center text-foreground">
       <div className="max-w-sm space-y-2">
         <h1 className="text-lg font-semibold">Algo salió mal</h1>
         <p className="text-sm text-muted-foreground">
