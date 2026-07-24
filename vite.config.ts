@@ -4,12 +4,6 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
   base: '/neto/',
-  // Sentry release: the commit SHA in CI (GitHub Actions sets GITHUB_SHA), else
-  // 'dev' locally. Ties every captured error to a build so minified stacks stay
-  // legible until source-map upload lands (W4 D2, deferred).
-  define: {
-    __SENTRY_RELEASE__: JSON.stringify(process.env.GITHUB_SHA ?? 'dev'),
-  },
   plugins: [
     react(),
     VitePWA({
