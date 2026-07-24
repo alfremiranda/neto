@@ -102,7 +102,19 @@ Each phase is independently shippable and leaves the product functional. Do not 
       revert the squash commit (reverts code only, not data — hence the snapshot).
 - [ ] **Ley 1581 groundwork.** Privacy policy, explicit consent on onboarding, data-processing
       basics. *Get real legal advice — this doc is not it.*
-- [ ] **Sentry.** Error tracking wired for web (and later native).
+- [ ] **Sentry.** Error tracking for web (later native). **Attempted + REVERTED 2026-07-24.**
+      Shipped via PR #5 (`d235b8a2`), verified working in prod (a real error landed with
+      `environment: production` + correct SHA). But it **broke fresh OAuth login on mobile** (iOS
+      Safari + Chrome, PWA and browser tabs): `/callback` 500 `bad verification code / context canceled`
+      — the provider code exchange failing, session dying after ~2s. **Reverted** (`d8e28cac`); the
+      revert **restored** mobile login immediately (PWA + browsers), confirming W4 was the cause.
+      Desktop was never affected. **Root mechanism still unconfirmed** — the SW `autoUpdate` reload
+      racing the callback was the leading suspect but not proven (the failure is on `supabase.co`, which
+      our SW doesn't control); the Sentry SDK's global instrumentation is the other candidate.
+      **Re-introduce carefully:** re-deploy on a branch, test a FRESH mobile login before declaring done,
+      keep the revert ready. Consider the SW fix (`registerType: 'prompt'`, branch `phase1/fix-pwa-oauth`
+      / PR #6) as part of it. Sentry as a data processor + its server-side IP geo still apply to W3's
+      privacy policy when it does go back in.
 
 **Definition of done:** a second test account cannot see or touch the first account's rows
 (verified manually); concurrent settings edits on two devices converge with no data loss;
