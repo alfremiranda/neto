@@ -102,7 +102,46 @@ Each phase is independently shippable and leaves the product functional. Do not 
       revert the squash commit (reverts code only, not data — hence the snapshot).
 - [ ] **Ley 1581 groundwork.** Privacy policy, explicit consent on onboarding, data-processing
       basics. *Get real legal advice — this doc is not it.*
-- [ ] **Sentry.** Error tracking wired for web (and later native).
+      <br>**Dependency from W4:** enabling Sentry means processing third-party data (technical
+      metadata + IP), so **Sentry must be listed as a data processor** in the privacy policy.
+      Don't ship the policy without it. **Open residual to resolve here (from W4 verification):**
+      Sentry derives **coarse city-level geolocation from the request IP** server-side, *after* PII
+      scrubbing runs, so it is NOT removable via the SDK (`sendDefaultPii: false`), the "Prevent
+      Storing of IP Addresses" project toggle (enabled — it nulls the stored IP but geo persists), or
+      an advanced data-scrubbing rule (`$user` / `$user.geo` don't match because `user.geo` isn't in
+      the payload at scrub time). Decide in W3 whether to disclose the geo in the privacy notice or
+      escalate to Sentry support for a full geo opt-out.
+- [x] **Sentry.** ✅ 2026-07-23. Error tracking wired for web (native later).
+      <br>**Scaffold shipped (gated, prod-only):** `src/lib/sentry.ts` `initSentry()` is a **no-op
+      unless `VITE_SENTRY_DSN` is set** (dev + offline unaffected, same posture as auto-sync). A
+      `Sentry.ErrorBoundary` (`src/components/AppErrorBoundary.tsx`) now wraps `<App>` — it catches
+      render crashes and shows a Spanish panic screen even without a DSN; it only *reports* when
+      Sentry is active. Privacy-first by construction (finance app): `sendDefaultPii: false`, no user
+      identity (errors tie to the **build** via `release` = `GITHUB_SHA`), no Session Replay, no
+      tracing; breadcrumbs **allowlisted** (console/DOM/fetch/xhr off at source, only `navigation`
+      passes); `beforeSend` **allowlists** the event (exception+stack, release, browser/os) and drops
+      everything else (request, user, extra, contexts.state). The DSN is committed in
+      `.env.production` (public by design — write-only, no read access; distinct rationale from the
+      RLS-backed anon key — do NOT generalize to a real secret).
+      **Deferred (D2):** source-map upload (needs a Sentry auth token in CI → minified stacks until
+      then; `release` keeps them attributable).
+      <br>**Verified locally 2026-07-23** (DSN temporarily in `.env.local`, a throwaway URL-param crash
+      trigger): event lands with `environment: development` + `release: dev`, stack attributed to the
+      build, **Users: 0** (no identity), **no breadcrumbs**, no replay. Two Sentry project data-scrubbing
+      toggles enabled (Data Scrubber + default scrubbers for passwords/credit-cards + Prevent Storing of
+      IP Addresses). Also caught + fixed a real bug: on a **startup** crash the pre-React `#splash`
+      overlay was never removed and hid the panic screen — `PanicScreen` now removes `#splash` on mount
+      and renders as a `fixed z-[10000]` overlay. **One residual:** Sentry's server-side city-level
+      geolocation persists (see the W3 dependency note above) — accepted, not blocking (coarse, single
+      user today, tracked for W3). DSN now lives in `.env.production`.
+      <br>**Verified by CONFIGURATION, not yet empirically in prod (pending):** the SDK config is proven
+      (10+ dev events inspected) and the DSN, SHA, and `environment: production` are baked into the prod
+      bundle (grep-confirmed; `environment` = Vite build mode, cannot vary). A prod-mode local build
+      (`vite preview`, real SHA) was served but no `production` event landed — most likely rate-limiting
+      from the ~11 test events generated in one session (Spike Protection is on), not a defect. **Still
+      TODO after deploy:** confirm the FIRST real production error arrives with the expected payload
+      (`environment: production`, correct SHA, nothing financial) — or fire a controlled one once quota
+      recovers. This is the "verified empirically" half W1 had and W4 does not yet.
 
 **Definition of done:** a second test account cannot see or touch the first account's rows
 (verified manually); concurrent settings edits on two devices converge with no data loss;
