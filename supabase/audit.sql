@@ -37,3 +37,13 @@ from information_schema.role_table_grants
 where table_schema = 'public'
   and grantee in ('anon','authenticated')
 order by table_name, grantee, privilege_type;
+
+-- 5) Foreign keys on `months` + their ON DELETE action (W3 right-to-erasure:
+--    confirm `user_id → auth.users` cascades, so deleting the auth user removes
+--    the rows — no orphaned data). Expect: ON DELETE CASCADE (confdeltype 'c').
+--    Verified on prod 2026-07-25: months_user_id_fkey ... ON DELETE CASCADE.
+select conname as constraint,
+       confdeltype as on_delete_code,        -- 'c' = cascade
+       pg_get_constraintdef(oid) as definition
+from pg_constraint
+where conrelid = 'public.months'::regclass and contype = 'f';
