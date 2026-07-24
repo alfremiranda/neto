@@ -22,7 +22,7 @@ export function sbReady(): boolean { return true }
 
 // ─── Auth ────────────────────────────────────────────────────────────────────
 
-const REDIRECT_URL = `${window.location.origin}/neto/`
+const REDIRECT_URL = `${window.location.origin}/`
 
 export async function signInWithGitHub(): Promise<void> {
   await sbClient().auth.signInWithOAuth({

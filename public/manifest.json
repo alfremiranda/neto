@@ -2,8 +2,8 @@
   "name": "Neto — Planeador financiero",
   "short_name": "Neto",
   "description": "Planeador financiero mensual para independientes",
-  "start_url": "/neto/",
-  "scope": "/neto/",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#1a1a1a",
@@ -12,25 +12,25 @@
   "categories": ["finance", "productivity"],
   "icons": [
     {
-      "src": "/neto/icon-192.png",
+      "src": "/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/neto/icon-512.png",
+      "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/neto/icon-512.png",
+      "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/neto/icon.svg",
+      "src": "/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"

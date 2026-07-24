@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  base: '/neto/',
+  base: '/',
   // Sentry release: the commit SHA in CI (GitHub Actions sets GITHUB_SHA), else
   // 'dev' locally. Ties every captured error to a build so minified stacks stay
   // legible until source-map upload lands (W4 D2, deferred).
@@ -26,7 +26,7 @@ export default defineConfig({
         // Cache all build assets + shell
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         // Network-first for navigation (SPA shell)
-        navigateFallback: '/neto/index.html',
+        navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api/],
         // Network-only for external APIs
         runtimeCaching: [
