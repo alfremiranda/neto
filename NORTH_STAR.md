@@ -108,20 +108,23 @@ Each phase is independently shippable and leaves the product functional. Do not 
       geolocation from the request IP** server-side, *after* PII scrubbing, so it is NOT removable via
       the SDK (`sendDefaultPii: false`), the "Prevent Storing of IP Addresses" toggle (enabled — nulls
       the IP but geo persists), or a data-scrubbing rule. Decide in W3 whether to disclose it or escalate.
-- [ ] **Sentry.** Error tracking for web (later native). **RE-INTRODUCTION IN PROGRESS 2026-07-25.**
-      History: first attempt (PR #5, `d235b8a2`) shipped + verified working in prod, but **broke fresh
-      OAuth login on mobile** (iOS Safari + Chrome, PWA and tabs) — `/callback` 500 `bad verification
-      code / context canceled`, session dying after ~2s. Reverted (`d8e28cac`), which **restored** mobile
-      login, confirming W4 as the cause. Desktop never affected. Root mechanism unconfirmed (SW
-      `autoUpdate` reload vs Sentry SDK instrumentation). **This attempt re-adds Sentry TOGETHER WITH the
-      SW fix** (`registerType: 'autoUpdate'`→`'prompt'`, manual `registerSW` with `onRegisterError`) to
-      kill the leading suspect; if mobile still breaks, the Sentry SDK is the definitive cause. **MUST
-      test a fresh mobile login (PWA + browser) before declaring done; keep revert `d8e28cac` ready.**
-      Scaffold (unchanged from attempt 1): gated on `VITE_SENTRY_DSN` (no-op without it), privacy-first
-      (`sendDefaultPii: false`, no user identity, release=`GITHUB_SHA`, no replay/tracing, allowlist
-      `beforeSend` + breadcrumbs), `Sentry.ErrorBoundary` panic screen (removes `#splash`, sign-out hatch
-      doesn't touch `amd-finance`). DSN public-by-design, committed in `.env.production`. D2 (source-map
-      upload) still deferred. Geo residual → W3 (see above).
+- [x] **Sentry.** ✅ 2026-07-25 (2nd attempt). Error tracking for web (later native), in prod + mobile-safe.
+      **ROOT CAUSE OF THE MOBILE-LOGIN REGRESSION CONFIRMED: the PWA service worker's `autoUpdate` reload.**
+      First attempt (PR #5, `d235b8a2`) shipped + verified working, but broke fresh OAuth login on mobile
+      (iOS Safari + Chrome, PWA + tabs) — `/callback` 500 `bad verification code / context canceled`. A new
+      SW version (every deploy makes one) with `registerType: 'autoUpdate'` force-reloads the page when it
+      activates; on the first mobile visit after a deploy that reload raced the OAuth callback → provider
+      code consumed/canceled → session died after ~2s. Desktop's SW had already settled, so it never hit it.
+      Reverted (`d8e28cac`) → restored login (proved W4 was the cause). **2nd attempt (PR #7, `efdefbb3`)
+      re-added Sentry TOGETHER WITH the SW fix — `registerType: 'autoUpdate'`→`'prompt'` (no forced reload)
+      + manual `registerSW` with `onRegisterError`. Verified: fresh OAuth login now works on PWA + Safari +
+      Chrome mobile.** Since the SW fix alone resolved it, the Sentry SDK was NOT the culprit — it's just
+      error tracking, and the `'prompt'` SW means no future deploy can re-trigger this.
+      Scaffold: gated on `VITE_SENTRY_DSN` (no-op without it), privacy-first (`sendDefaultPii: false`, no
+      user identity, release=`GITHUB_SHA`, no replay/tracing, allowlist `beforeSend` + breadcrumbs),
+      `Sentry.ErrorBoundary` panic screen (removes `#splash`, sign-out hatch doesn't touch `amd-finance`).
+      DSN public-by-design, committed in `.env.production`. D2 (source-map upload) still deferred. Sentry as
+      a data processor + the server-side IP-geo residual apply to W3's privacy policy (see above).
 
 **Definition of done:** a second test account cannot see or touch the first account's rows
 (verified manually); concurrent settings edits on two devices converge with no data loss;
