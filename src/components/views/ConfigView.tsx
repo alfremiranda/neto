@@ -94,6 +94,19 @@ export function ConfigView() {
               Cerrar sesión
             </Button>
           </div>
+
+          {/* Privacy */}
+          <div className="pt-2 border-t border-[var(--border)]">
+            <div className="text-xs font-medium text-muted-foreground mb-1">Privacidad</div>
+            <a
+              href={`${import.meta.env.BASE_URL}privacidad.html`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-[var(--primary)] underline underline-offset-2 hover:opacity-80"
+            >
+              Política de Privacidad
+            </a>
+          </div>
         </div>
       )}
     </div>
