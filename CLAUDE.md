@@ -15,7 +15,7 @@ y obligaciones en COP (seguridad social colombiana, egresos de manutención).
 - Zustand para estado global
 - localStorage para storage local (`amd-finance`)
 - Supabase para sync entre dispositivos
-- Deploy: GitHub Pages → alfremiranda.github.io/neto
+- Deploy: GitHub Pages (custom domain) → https://netofinanzas.app
 - Tests: **Vitest** (`npm test`). El motor de sync (`src/store/merge.ts`) tiene red en `src/store/merge.test.ts`.
 
 ## Definition of Done (toda tarea)

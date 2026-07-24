@@ -207,6 +207,7 @@ Se puede cambiar en cualquier momento desde el editor de deducciones. Las vistas
 - **Tema claro/oscuro** con preferencia del sistema.
 - **Pull-to-refresh** en mobile para forzar sincronización.
 - Español (Colombia) en toda la interfaz; formatos de moneda es-CO.
+- Servida desde dominio propio: **https://netofinanzas.app** (GitHub Pages con dominio personalizado).
 
 ---
 
