@@ -339,6 +339,7 @@ interface FinanceState {
   toggleAccountFavorite: (id: string) => void
   saveDeductionsConfig: (deductions: DeductionConfig[]) => void
   setSettingsScalars: (patch: Partial<Pick<Settings, 'displayName' | 'primaryCurrency' | 'secondaryCurrency'>>) => void
+  acceptPrivacyPolicy: (version: number) => void
   consolidateSettings: () => void
   completeOnboarding: () => void
 
@@ -667,6 +668,18 @@ export const useFinanceStore = create<FinanceState>()(
             fieldUpdatedAt[k] = now
           }
           next.fieldUpdatedAt = fieldUpdatedAt
+          return { db: { ...state.db, _settings: next } as FinanceDB }
+        })
+        autoPush('_settings', get().db._settings)
+      },
+
+      // Record Ley 1581 consent as { version, acceptedAt }. NOT routed through
+      // setSettingsScalars / fieldUpdatedAt: consent is merged monotonically by
+      // version (not per-field LWW), so it carries no field stamp.
+      acceptPrivacyPolicy: (version) => {
+        set(state => {
+          const settings = (state.db._settings ?? {}) as Settings
+          const next: Settings = { ...settings, privacyConsent: { version, acceptedAt: Date.now() } }
           return { db: { ...state.db, _settings: next } as FinanceDB }
         })
         autoPush('_settings', get().db._settings)

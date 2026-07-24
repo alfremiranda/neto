@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
+import { PRIVACY_POLICY_URL } from '@/lib/privacy'
 
 function GitHubIcon() {
   return (
@@ -84,7 +85,7 @@ export function LoginScreen() {
         <p className="text-[11px] text-muted-foreground text-center leading-relaxed">
           Al continuar aceptas nuestra{' '}
           <a
-            href={`${import.meta.env.BASE_URL}privacidad.html`}
+            href={PRIVACY_POLICY_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="underline underline-offset-2 hover:text-foreground"

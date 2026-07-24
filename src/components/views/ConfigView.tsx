@@ -5,6 +5,7 @@ import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { useAuthStore } from '@/store/authStore'
 import { Button } from '@/components/ui/button'
+import { PRIVACY_POLICY_URL } from '@/lib/privacy'
 
 export function ConfigView() {
   const { user, signOut } = useAuthStore()
@@ -99,7 +100,7 @@ export function ConfigView() {
           <div className="pt-2 border-t border-[var(--border)]">
             <div className="text-xs font-medium text-muted-foreground mb-1">Privacidad</div>
             <a
-              href={`${import.meta.env.BASE_URL}privacidad.html`}
+              href={PRIVACY_POLICY_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-[var(--primary)] underline underline-offset-2 hover:opacity-80"
