@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="robots" content="index,follow" />
+    <title>Política de Privacidad — Neto</title>
+    <style>
+      :root {
+        --bg: #f8fafc;
+        --surface: #ffffff;
+        --fg: #0f172a;
+        --muted: #64748b;
+        --border: #e2e8f0;
+        --accent: #0e7490;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0b0f14;
+          --surface: #121821;
+          --fg: #e2e8f0;
+          --muted: #94a3b8;
+          --border: #1e293b;
+          --accent: #22d3ee;
+        }
+      }
+      * { box-sizing: border-box; }
+      html { -webkit-text-size-adjust: 100%; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        line-height: 1.6;
+        font-size: 16px;
+      }
+      .wrap {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 32px 20px 64px;
+      }
+      header { margin-bottom: 8px; }
+      h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 12px; }
+      h2 { font-size: 1.2rem; margin: 36px 0 10px; padding-top: 8px; }
+      h3 { font-size: 1.02rem; margin: 22px 0 8px; }
+      p, li { color: var(--fg); }
+      .meta { color: var(--muted); font-size: 0.85rem; margin: 2px 0; }
+      .lead { color: var(--muted); margin-top: 16px; }
+      a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+      hr { border: 0; border-top: 1px solid var(--border); margin: 32px 0; }
+      ul { padding-left: 1.25rem; }
+      li { margin: 6px 0; }
+      strong { font-weight: 650; }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.88em;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 1px 5px;
+      }
+      .table-scroll { overflow-x: auto; margin: 14px 0; }
+      table { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+      th, td {
+        border: 1px solid var(--border);
+        padding: 8px 10px;
+        text-align: left;
+        vertical-align: top;
+      }
+      th { background: var(--surface); font-weight: 600; }
+      .back { display: inline-block; margin-top: 40px; font-size: 0.9rem; }
+      footer { margin-top: 40px; color: var(--muted); font-size: 0.85rem; }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <header>
+        <h1>Política de Tratamiento de Datos Personales — Neto</h1>
+        <p class="meta"><strong>Última actualización:</strong> [FECHA REAL DE DEPLOY A PRODUCCIÓN]</p>
+        <p class="meta"><strong>Vigencia:</strong> desde [FECHA REAL DE DEPLOY A PRODUCCIÓN]</p>
+      </header>
+
+      <p class="lead">Esta política explica qué datos personales trata Neto, para qué, con quién se comparten y cómo puedes ejercer tus derechos. Está escrita para que la entiendas, no para protegernos con lenguaje confuso.</p>
+
+      <hr />
+
+      <h2>1. Quién es responsable de tus datos</h2>
+      <p><strong>Responsable del tratamiento:</strong> Alfredo Miranda<br />
+      <strong>Ciudad:</strong> Barranquilla, Colombia<br />
+      <strong>Correo de contacto para datos personales:</strong> <a href="mailto:privacidad@netofinanzas.app">privacidad@netofinanzas.app</a></p>
+      <p>Neto es un proyecto personal, no una empresa constituida. El responsable del tratamiento es una persona natural. Todas las solicitudes relacionadas con tus datos personales se atienden por el correo indicado arriba.</p>
+
+      <h2>2. Qué datos tratamos</h2>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Dato</th><th>Cuándo se recoge</th><th>Dónde vive</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Correo electrónico</strong> e identificador de cuenta</td><td>Al iniciar sesión con GitHub o Google</td><td>Sistema de autenticación de Supabase</td></tr>
+            <tr><td><strong>Datos financieros</strong> que tú registras: ingresos, gastos, cuentas, deducciones, TRM</td><td>Cuando los ingresas en la app</td><td><strong>Tu dispositivo</strong> (copia principal) y respaldo en Supabase</td></tr>
+            <tr><td><strong>Ciudad aproximada</strong> (derivada de tu dirección IP, que no se almacena)</td><td>Solo cuando ocurre un error en la app</td><td>Sentry</td></tr>
+            <tr><td><strong>Datos técnicos del error</strong>: tipo de error, traza, versión de la app</td><td>Solo cuando ocurre un error en la app</td><td>Sentry</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>Lo que NO recogemos:</strong></p>
+      <ul>
+        <li>No almacenamos tu contraseña. El inicio de sesión lo maneja GitHub o Google; nosotros nunca la vemos.</li>
+        <li>No recogemos tu ubicación precisa, ni usamos GPS.</li>
+        <li><strong>No almacenamos tu dirección IP.</strong> Cuando ocurre un error, se usa únicamente para deducir una ciudad aproximada y se descarta enseguida.</li>
+        <li>No hacemos seguimiento de tu comportamiento dentro de la app (no hay analítica de uso).</li>
+        <li>No mostramos publicidad ni vendemos, alquilamos ni compartimos tus datos con anunciantes.</li>
+        <li>Los reportes de error <strong>no incluyen</strong> tus datos financieros: la app filtra el contenido antes de enviarlo, conservando únicamente información técnica.</li>
+      </ul>
+      <p><strong>Sobre "datos sensibles":</strong> la Ley 1581 de 2012 reserva esa categoría para datos como salud, biometría, orientación política o sexual. Neto <strong>no trata datos sensibles</strong> en ese sentido legal. Dicho esto, tratamos tu información financiera con el cuidado que merece.</p>
+
+      <h2>3. Para qué usamos tus datos</h2>
+      <ul>
+        <li><strong>Correo e identificador:</strong> identificar tu cuenta, permitirte iniciar sesión y asegurar que solo tú accedas a tu información.</li>
+        <li><strong>Datos financieros:</strong> hacer funcionar la app —calcular tus obligaciones, provisiones y neto libre— y sincronizar tu información entre tus dispositivos.</li>
+        <li><strong>Datos de error y ciudad aproximada:</strong> detectar fallas y corregirlas. La ciudad aproximada ayuda a identificar problemas que solo ocurren en ciertas regiones o redes.</li>
+      </ul>
+      <p>No usamos tus datos para ninguna otra finalidad. Si eso cambia, te lo informaremos y pediremos tu autorización.</p>
+
+      <h2>4. Cómo funciona Neto: primero tu dispositivo</h2>
+      <p>Neto está construido para funcionar <strong>sin conexión</strong>. Tus datos financieros viven principalmente <strong>en tu dispositivo</strong>; la nube es un respaldo que te permite usar la app desde varios dispositivos.</p>
+      <p>Esto tiene una consecuencia importante que debes conocer: <strong>si borras tu cuenta, eliminamos tus datos de la nube, pero las copias guardadas en tus propios dispositivos permanecen ahí</strong> hasta que desinstales la app o borres los datos del navegador. Esas copias están bajo tu control, no bajo el nuestro. En la sección 8 te explicamos cómo eliminarlas.</p>
+
+      <h2>5. Con quién compartimos tus datos</h2>
+      <p>No vendemos ni compartimos tus datos con terceros para fines comerciales. Sí usamos proveedores de servicios que los procesan por nuestra cuenta:</p>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Proveedor</th><th>Para qué</th><th>Qué recibe</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Supabase</strong></td><td>Autenticación y respaldo en la nube</td><td>Correo, identificador, datos financieros</td></tr>
+            <tr><td><strong>Sentry</strong></td><td>Detección de errores</td><td>Datos técnicos del error, ciudad aproximada</td></tr>
+            <tr><td><strong>GitHub</strong></td><td>Inicio de sesión (si eliges esa opción)</td><td>Tu correo, según los permisos que autorices</td></tr>
+            <tr><td><strong>Google</strong></td><td>Inicio de sesión (si eliges esa opción)</td><td>Tu correo, según los permisos que autorices</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>Transferencia internacional de datos</h3>
+      <p>Estos proveedores operan servidores <strong>fuera de Colombia</strong> (principalmente en Estados Unidos y la Unión Europea). Esto significa que tus datos se transfieren, almacenan y procesan en esos países, cuyas normas de protección de datos pueden diferir de las colombianas.</p>
+      <p><strong>Al aceptar esta política y usar Neto, otorgas tu autorización expresa e inequívoca</strong> para que tus datos personales sean transferidos, almacenados y procesados en esos países por los proveedores listados arriba, únicamente para las finalidades descritas en la sección 3.</p>
+      <p>Puedes revocar esta autorización en cualquier momento eliminando tu cuenta (sección 8). Ten en cuenta que sin esta transferencia Neto no puede sincronizar tus datos entre dispositivos: la app seguiría funcionando en tu dispositivo, pero sin respaldo ni sincronización.</p>
+
+      <h2>6. Cuánto tiempo conservamos tus datos</h2>
+      <ul>
+        <li><strong>Datos financieros y de cuenta:</strong> mientras tu cuenta exista. Si la eliminas, se borran de nuestra base de datos de forma permanente e inmediata. No mantenemos copias de respaldo desde las cuales podamos restaurar tu información.</li>
+        <li><strong>Datos de error:</strong> treinta (30) días, tras los cuales Sentry los elimina automáticamente.</li>
+        <li><strong>Datos en tu dispositivo:</strong> permanecen hasta que tú los borres (ver sección 8).</li>
+      </ul>
+
+      <h2>7. Tus derechos</h2>
+      <p>Como titular de tus datos personales, la Ley 1581 de 2012 te reconoce el derecho a:</p>
+      <ul>
+        <li><strong>Conocer</strong> qué datos tuyos tratamos y cómo.</li>
+        <li><strong>Actualizar y rectificar</strong> los datos que sean inexactos, incompletos o desactualizados.</li>
+        <li><strong>Solicitar prueba</strong> de la autorización que nos otorgaste.</li>
+        <li><strong>Ser informado</strong> sobre el uso que le hemos dado a tus datos.</li>
+        <li><strong>Revocar tu autorización y/o solicitar la supresión</strong> de tus datos.</li>
+        <li><strong>Presentar quejas</strong> ante la Superintendencia de Industria y Comercio (SIC).</li>
+        <li><strong>Acceder gratuitamente</strong> a tus datos.</li>
+      </ul>
+      <h3>Cómo ejercerlos</h3>
+      <p>Escríbenos a <a href="mailto:privacidad@netofinanzas.app">privacidad@netofinanzas.app</a>. Indícanos tu solicitud y el correo con el que usas Neto.</p>
+      <p>Plazos de respuesta:</p>
+      <ul>
+        <li><strong>Consultas:</strong> máximo diez (10) días hábiles. Si no es posible responder en ese plazo, te informaremos y podremos extenderlo hasta cinco (5) días hábiles más.</li>
+        <li><strong>Reclamos:</strong> máximo quince (15) días hábiles. Si no es posible responder en ese plazo, te informaremos y podremos extenderlo hasta ocho (8) días hábiles más.</li>
+      </ul>
+
+      <h2>8. Cómo eliminar tu cuenta y tus datos</h2>
+      <p><strong>Para eliminar tus datos de la nube:</strong> escríbenos a <a href="mailto:privacidad@netofinanzas.app">privacidad@netofinanzas.app</a> desde el correo con el que usas Neto. Eliminaremos tu cuenta y toda tu información de nuestros servidores de forma permanente. Es irreversible: no mantenemos copias de respaldo desde las cuales podamos restaurar tu información.</p>
+      <p><strong>Para eliminar los datos guardados en tu dispositivo</strong>, en cada dispositivo donde hayas usado Neto:</p>
+      <ul>
+        <li><strong>App instalada (PWA):</strong> desinstálala como cualquier otra aplicación.</li>
+        <li><strong>Navegador:</strong> borra los datos del sitio desde la configuración de tu navegador.</li>
+      </ul>
+      <p>Recuerda hacerlo en <strong>todos</strong> los dispositivos donde hayas usado Neto.</p>
+
+      <h2>9. Seguridad</h2>
+      <ul>
+        <li>Cada usuario solo puede acceder a sus propios datos. Esto está garantizado a nivel de base de datos, no solo en la aplicación.</li>
+        <li>Toda comunicación con nuestros servidores viaja cifrada (HTTPS).</li>
+        <li>No almacenamos contraseñas.</li>
+        <li>Los reportes de error se filtran antes de enviarse, para que no contengan información personal ni financiera.</li>
+      </ul>
+      <p>Ningún sistema es completamente invulnerable. Hacemos lo razonable para proteger tu información, pero no podemos garantizar seguridad absoluta.</p>
+
+      <h2>10. Menores de edad</h2>
+      <p>Neto no está dirigido a menores de dieciocho (18) años y no recogemos datos de menores a sabiendas. Si crees que un menor nos ha proporcionado datos, escríbenos a <a href="mailto:privacidad@netofinanzas.app">privacidad@netofinanzas.app</a> y los eliminaremos.</p>
+
+      <h2>11. Autorización</h2>
+      <p>Al crear una cuenta y usar Neto, autorizas el tratamiento de tus datos personales en los términos de esta política. Puedes revocar esa autorización en cualquier momento eliminando tu cuenta (sección 8).</p>
+
+      <h2>12. Cambios a esta política</h2>
+      <p>Si modificamos esta política, actualizaremos la fecha del encabezado y te avisaremos dentro de la app antes de que los cambios apliquen. Si los cambios son sustanciales, pediremos tu autorización nuevamente.</p>
+
+      <h2>13. Contacto</h2>
+      <p><a href="mailto:privacidad@netofinanzas.app">privacidad@netofinanzas.app</a></p>
+      <p>Si consideras que no hemos atendido adecuadamente tu solicitud, puedes acudir a la <strong>Superintendencia de Industria y Comercio (SIC)</strong>, autoridad de protección de datos en Colombia.</p>
+
+      <a class="back" href="./">← Volver a Neto</a>
+      <footer>Neto — Planeador financiero personal.</footer>
+    </main>
+  </body>
+</html>

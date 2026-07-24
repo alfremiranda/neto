@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
+import { PRIVACY_POLICY_URL } from '@/lib/privacy'
 
 function GitHubIcon() {
   return (
@@ -82,7 +83,15 @@ export function LoginScreen() {
         </div>
 
         <p className="text-[11px] text-muted-foreground text-center leading-relaxed">
-          Tus datos se sincronizan de forma privada.<br />Solo tú tienes acceso a tu información.
+          Al continuar aceptas nuestra{' '}
+          <a
+            href={PRIVACY_POLICY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline underline-offset-2 hover:text-foreground"
+          >
+            Política de Privacidad
+          </a>.<br />Solo tú tienes acceso a tu información.
         </p>
       </div>
     </div>

@@ -304,4 +304,38 @@ describe('mergeSettings', () => {
     })
     expect(mergeSettings(A, B, 1000, 2000, SYS)).toEqual(mergeSettings(B, A, 2000, 1000, SYS))
   })
+
+  // ── privacy consent (Ley 1581): monotonic by version, never rolls back ──
+  it('privacyConsent: adopts the accepting side when the other has none', () => {
+    const accepted = s({ privacyConsent: { version: 1, acceptedAt: 500 } })
+    const none = s({})
+    expect(mergeSettings(accepted, none, 999, 0, SYS).privacyConsent).toEqual({ version: 1, acceptedAt: 500 })
+    expect(mergeSettings(none, accepted, 0, 999, SYS).privacyConsent).toEqual({ version: 1, acceptedAt: 500 })  // symmetric
+  })
+
+  it('privacyConsent: a stale device (no consent) NEVER rolls back an accepted one', () => {
+    const accepted = s({ privacyConsent: { version: 1, acceptedAt: 500 } })
+    const stale = s({})
+    // even when the stale side rides a much newer blob ms, consent survives
+    expect(mergeSettings(accepted, stale, 0, 9999, SYS).privacyConsent).toEqual({ version: 1, acceptedAt: 500 })
+    expect(mergeSettings(stale, accepted, 9999, 0, SYS).privacyConsent).toEqual({ version: 1, acceptedAt: 500 })
+  })
+
+  it('privacyConsent: higher version wins (monotonic, both directions)', () => {
+    const v2 = s({ privacyConsent: { version: 2, acceptedAt: 100 } })  // older acceptedAt but newer policy
+    const v1 = s({ privacyConsent: { version: 1, acceptedAt: 900 } })
+    expect(mergeSettings(v2, v1, 0, 0, SYS).privacyConsent).toEqual({ version: 2, acceptedAt: 100 })
+    expect(mergeSettings(v1, v2, 0, 0, SYS).privacyConsent).toEqual({ version: 2, acceptedAt: 100 })  // symmetric
+  })
+
+  it('privacyConsent: equal version keeps the earlier acceptedAt (deterministic tie)', () => {
+    const early = s({ privacyConsent: { version: 1, acceptedAt: 200 } })
+    const late = s({ privacyConsent: { version: 1, acceptedAt: 800 } })
+    expect(mergeSettings(early, late, 0, 0, SYS).privacyConsent).toEqual({ version: 1, acceptedAt: 200 })
+    expect(mergeSettings(late, early, 0, 0, SYS).privacyConsent).toEqual({ version: 1, acceptedAt: 200 })  // symmetric
+  })
+
+  it('privacyConsent: absent on both sides stays absent', () => {
+    expect(mergeSettings(s({}), s({}), 0, 0, SYS).privacyConsent).toBeUndefined()
+  })
 })

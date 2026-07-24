@@ -23,7 +23,9 @@ import { useAuthStore } from '@/store/authStore'
 import { useFinanceStore } from '@/store/financeStore'
 import { usePullToRefresh, PTR_THRESHOLD } from '@/hooks/usePullToRefresh'
 import { LoginScreen } from '@/components/auth/LoginScreen'
+import { ConsentScreen } from '@/components/auth/ConsentScreen'
 import { OnboardingView } from '@/components/onboarding/OnboardingView'
+import { needsPrivacyConsent } from '@/lib/privacy'
 
 function PullIndicator({ pullY, refreshing, isPulling }: { pullY: number; refreshing: boolean; isPulling: boolean }) {
   const progress = Math.min(pullY / PTR_THRESHOLD, 1)
@@ -66,6 +68,8 @@ export default function App() {
     const settings = s.db._settings as import('@/types').Settings | undefined
     return settings?.onboardingDone === true || (settings?.accounts != null && settings.accounts.length > 0)
   })
+  const needsConsent = useFinanceStore(s =>
+    needsPrivacyConsent(s.db._settings as import('@/types').Settings | undefined))
   const mainRef = useRef<HTMLElement>(null)
 
   // Remove splash screen on first render
@@ -131,6 +135,14 @@ export default function App() {
 
   if (!user) {
     return <LoginScreen />
+  }
+
+  // Ley 1581 consent gate — after login (needs a user) and after cloudReady (so a
+  // user who already accepted on another device isn't re-prompted), BEFORE
+  // onboarding so consent precedes entering any financial data. Catches existing
+  // users too (they have onboardingDone but no consent record yet).
+  if (needsConsent) {
+    return <ConsentScreen />
   }
 
   if (!onboardingDone) {
