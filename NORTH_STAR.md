@@ -134,6 +134,14 @@ Each phase is independently shippable and leaves the product functional. Do not 
       and renders as a `fixed z-[10000]` overlay. **One residual:** Sentry's server-side city-level
       geolocation persists (see the W3 dependency note above) — accepted, not blocking (coarse, single
       user today, tracked for W3). DSN now lives in `.env.production`.
+      <br>**Verified by CONFIGURATION, not yet empirically in prod (pending):** the SDK config is proven
+      (10+ dev events inspected) and the DSN, SHA, and `environment: production` are baked into the prod
+      bundle (grep-confirmed; `environment` = Vite build mode, cannot vary). A prod-mode local build
+      (`vite preview`, real SHA) was served but no `production` event landed — most likely rate-limiting
+      from the ~11 test events generated in one session (Spike Protection is on), not a defect. **Still
+      TODO after deploy:** confirm the FIRST real production error arrives with the expected payload
+      (`environment: production`, correct SHA, nothing financial) — or fire a controlled one once quota
+      recovers. This is the "verified empirically" half W1 had and W4 does not yet.
 
 **Definition of done:** a second test account cannot see or touch the first account's rows
 (verified manually); concurrent settings edits on two devices converge with no data loss;
