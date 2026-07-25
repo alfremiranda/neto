@@ -4,6 +4,7 @@ import { DEFAULTS, TRANSFER_ACCOUNTS, GASTOS_KEYS, EGRESO_TIPOS, EGRESO_CATEGORI
 import { sbPush, sbPullAll } from '@/lib/supabase'
 import { mergeMonth, localHasExtra, mergeSettings, canonicalTieBreak } from './merge'
 import { DEFAULT_DEDUCTIONS, migrateDeductions } from '@/data/deductions'
+import { needsPrivacyConsent } from '@/lib/privacy'
 import type { FinanceDB, MonthData, Account, Settings, Income, Egreso, Transfer, DeductionConfig } from '@/types'
 
 // The old settingsStore persisted deductions + display prefs under this key. The
@@ -34,6 +35,10 @@ let syncInFlight = false
 
 function autoPush(key: string, data: unknown) {
   if (import.meta.env.DEV) return
+  // Ley 1581: no cross-border transfer of personal data before consent. Gate every
+  // cloud push (including `_settings`). `acceptPrivacyPolicy` sets consent BEFORE
+  // calling autoPush, so its own push proceeds; everything else is a no-op until then.
+  if (needsPrivacyConsent(useFinanceStore.getState().db._settings)) return
   useFinanceStore.setState(s => ({
     updatedAt: { ...s.updatedAt, [key]: Date.now() },
     dirty: s.dirty.includes(key) ? s.dirty : [...s.dirty, key],
@@ -852,6 +857,7 @@ export const useFinanceStore = create<FinanceState>()(
       // Retry any keys whose push never confirmed (offline, expired token, …).
       flushPending: async () => {
         if (import.meta.env.DEV) return
+        if (needsPrivacyConsent(get().db._settings)) return
         const dirty = [...get().dirty]
         for (const key of dirty) {
           const db = get().db
