@@ -197,6 +197,20 @@ export function mergeSettings(
   const dbv = Math.max(local.dbMigrationVersion ?? 0, cloud.dbMigrationVersion ?? 0)
   if (dbv) result.dbMigrationVersion = dbv
 
+  // Privacy consent — monotonic by VERSION (a stale device must never roll back a
+  // higher-version acceptance). On equal version, keep the earlier acceptedAt so
+  // both devices converge on the same object deterministically. Like the other
+  // monotonic fields, this must be handled explicitly or it would be dropped —
+  // mergeSettings builds `result` from scratch.
+  const lpc = local.privacyConsent, cpc = cloud.privacyConsent
+  if (lpc && cpc) {
+    result.privacyConsent = lpc.version !== cpc.version
+      ? (lpc.version > cpc.version ? lpc : cpc)
+      : { version: lpc.version, acceptedAt: Math.min(lpc.acceptedAt, cpc.acceptedAt) }
+  } else if (lpc || cpc) {
+    result.privacyConsent = (lpc ?? cpc)!
+  }
+
   // Scalars: per-field LWW (stamp-aware). Carry the newest known stamp per field.
   for (const f of SCALAR_FIELDS) {
     const picked = pickScalar(local, cloud, f, localMs, cloudMs)

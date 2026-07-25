@@ -4,6 +4,7 @@ import { DEFAULTS, TRANSFER_ACCOUNTS, GASTOS_KEYS, EGRESO_TIPOS, EGRESO_CATEGORI
 import { sbPush, sbPullAll } from '@/lib/supabase'
 import { mergeMonth, localHasExtra, mergeSettings, canonicalTieBreak } from './merge'
 import { DEFAULT_DEDUCTIONS, migrateDeductions } from '@/data/deductions'
+import { needsPrivacyConsent } from '@/lib/privacy'
 import type { FinanceDB, MonthData, Account, Settings, Income, Egreso, Transfer, DeductionConfig } from '@/types'
 
 // The old settingsStore persisted deductions + display prefs under this key. The
@@ -34,6 +35,10 @@ let syncInFlight = false
 
 function autoPush(key: string, data: unknown) {
   if (import.meta.env.DEV) return
+  // Ley 1581: no cross-border transfer of personal data before consent. Gate every
+  // cloud push (including `_settings`). `acceptPrivacyPolicy` sets consent BEFORE
+  // calling autoPush, so its own push proceeds; everything else is a no-op until then.
+  if (needsPrivacyConsent(useFinanceStore.getState().db._settings)) return
   useFinanceStore.setState(s => ({
     updatedAt: { ...s.updatedAt, [key]: Date.now() },
     dirty: s.dirty.includes(key) ? s.dirty : [...s.dirty, key],
@@ -339,6 +344,7 @@ interface FinanceState {
   toggleAccountFavorite: (id: string) => void
   saveDeductionsConfig: (deductions: DeductionConfig[]) => void
   setSettingsScalars: (patch: Partial<Pick<Settings, 'displayName' | 'primaryCurrency' | 'secondaryCurrency'>>) => void
+  acceptPrivacyPolicy: (version: number) => void
   consolidateSettings: () => void
   completeOnboarding: () => void
 
@@ -672,6 +678,18 @@ export const useFinanceStore = create<FinanceState>()(
         autoPush('_settings', get().db._settings)
       },
 
+      // Record Ley 1581 consent as { version, acceptedAt }. NOT routed through
+      // setSettingsScalars / fieldUpdatedAt: consent is merged monotonically by
+      // version (not per-field LWW), so it carries no field stamp.
+      acceptPrivacyPolicy: (version) => {
+        set(state => {
+          const settings = (state.db._settings ?? {}) as Settings
+          const next: Settings = { ...settings, privacyConsent: { version, acceptedAt: Date.now() } }
+          return { db: { ...state.db, _settings: next } as FinanceDB }
+        })
+        autoPush('_settings', get().db._settings)
+      },
+
       // One-time-per-device consolidation of the local neto-settings backup into the
       // synced _settings. GATED BY THE CALLER on a resolved cloud state (authStore's
       // cloudReady) so an authenticated device never seeds before its first pull —
@@ -839,6 +857,7 @@ export const useFinanceStore = create<FinanceState>()(
       // Retry any keys whose push never confirmed (offline, expired token, …).
       flushPending: async () => {
         if (import.meta.env.DEV) return
+        if (needsPrivacyConsent(get().db._settings)) return
         const dirty = [...get().dirty]
         for (const key of dirty) {
           const db = get().db

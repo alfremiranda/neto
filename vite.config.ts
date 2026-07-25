@@ -27,7 +27,10 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         // Network-first for navigation (SPA shell)
         navigateFallback: '/index.html',
-        navigateFallbackDenylist: [/^\/api/],
+        // Keep the static privacy policy out of the SPA navigation fallback — a
+        // direct navigation to /neto/privacidad.html must serve that page, not the
+        // app shell. (It must also load pre-login and without depending on the SW.)
+        navigateFallbackDenylist: [/^\/api/, /privacidad\.html$/],
         // Network-only for external APIs
         runtimeCaching: [
           {

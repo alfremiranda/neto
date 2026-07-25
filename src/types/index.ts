@@ -91,6 +91,12 @@ export interface Settings {
   displayName?:       string
   primaryCurrency?:   'COP' | 'USD'
   secondaryCurrency?: 'COP' | 'USD' | null   // null = "no secondary" (distinct from absent)
+  // ── privacy consent (Ley 1581) ──
+  // { version, acceptedAt } — NOT a boolean: the version records WHICH policy the
+  // user accepted, so a policy change can re-prompt. Merged MONOTONICALLY by
+  // version (higher wins; equal → earlier acceptedAt), so a stale device can never
+  // roll a consent back. Same spirit as onboardingDone, comparing versions.
+  privacyConsent?:     { version: number; acceptedAt: number }
   // ── merge metadata ──
   fieldUpdatedAt?:     Record<string, number>  // ms per scalar field (per-field LWW)
   deleted?:            Record<string, number>  // tombstones "account:<id>" / "deduction:<id>"
