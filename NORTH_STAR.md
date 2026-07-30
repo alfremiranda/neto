@@ -100,14 +100,26 @@ Each phase is independently shippable and leaves the product functional. Do not 
       device opens post-deploy, not at deploy time), so keep the snapshot until the other testers have
       opened the app and synced at least once — roughly deletable after **2026-07-30**. Code rollback =
       revert the squash commit (reverts code only, not data — hence the snapshot).
-- [ ] **Ley 1581 groundwork.** Privacy policy, explicit consent on onboarding, data-processing
-      basics. *Get real legal advice — this doc is not it.*
-      <br>**Dependency from W4:** enabling Sentry means processing third-party data (technical
-      metadata + IP), so **Sentry must be listed as a data processor** in the privacy policy.
-      Don't ship the policy without it. **Open residual:** Sentry derives **coarse city-level
-      geolocation from the request IP** server-side, *after* PII scrubbing, so it is NOT removable via
-      the SDK (`sendDefaultPii: false`), the "Prevent Storing of IP Addresses" toggle (enabled — nulls
-      the IP but geo persists), or a data-scrubbing rule. Decide in W3 whether to disclose it or escalate.
+- [x] **Ley 1581 groundwork.** ✅ 2026-07-25. Shipped + verified in prod (PR #8, squash `9e39bb27`).
+      **Delivered:** (1) privacy policy published as a static page (`public/privacidad.html`) accessible
+      **pre-login** at `netofinanzas.app/privacidad.html`, linked from LoginScreen + ConfigView, kept out
+      of the SW `navigateFallback` via denylist; (2) a **blocking consent screen** in App's gating chain
+      (login → consent → onboarding) that catches new AND existing un-consented users; (3) consent stored
+      as `{version, acceptedAt}` in `_settings`, **merged monotonically by version** (a stale device can't
+      roll it back; +5 merge tests); (4) a **Ley 1581 cloud-sync gate** — `autoPush`/`flushPending`
+      early-return until consent, so **no cross-border transfer before consent** (the accept's own push
+      proceeds; pull stays open so a cross-device consenter isn't re-prompted). All 4 processors
+      (Supabase, Sentry incl. the city-geo residual, GitHub, Google) + international transfer declared;
+      the §5 authorization clause covers the US/EU transfer. Verified in prod: policy live pre-login,
+      consent appears, network shows no push before accept, no re-prompt after logout→login.
+      <br>**Known / deferred (documented, NOT in this W3):** (a) the **right-to-erasure DELETION FLOW** is
+      still future work — v1 is the **manual channel** (`privacidad@netofinanzas.app` → delete the
+      Supabase auth user, cascades via the confirmed `months` FK); the self-service button + Edge Function
+      is later (see [[project-w3-erasure-vs-localfirst]]). (b) **Lawyer-review items** stand: RNBD
+      registration, international-transfer wording, minors clause — the drafter is not a lawyer. (c) A
+      **dev-only consent re-prompt** exists (local `_settings.privacyConsent` transiently drops during the
+      auth cycle); prod is masked by the login pull (both need network), so no prod re-prompt. Closable
+      offline-bulletproof with a dedicated local consent key if ever wanted — judged marginal.
 - [x] **Sentry.** ✅ 2026-07-25 (2nd attempt). Error tracking for web (later native), in prod + mobile-safe.
       **ROOT CAUSE OF THE MOBILE-LOGIN REGRESSION CONFIRMED: the PWA service worker's `autoUpdate` reload.**
       First attempt (PR #5, `d235b8a2`) shipped + verified working, but broke fresh OAuth login on mobile
@@ -133,6 +145,12 @@ Each phase is independently shippable and leaves the product functional. Do not 
 **Definition of done:** a second test account cannot see or touch the first account's rows
 (verified manually); concurrent settings edits on two devices converge with no data loss;
 privacy policy is live and consented; Sentry captures client errors.
+
+**✅ PHASE 1 COMPLETE — 2026-07-25.** W1 (RLS) · W2 (_settings per-entry merge) · W4 (Sentry) ·
+W3 (Ley 1581 policy + consent) all shipped to prod and verified. The remaining open items are
+explicitly-deferred follow-ups, not blockers: the self-service account-deletion flow (v1 is the
+documented manual channel), the lawyer-review legal items, and the marginal dev-only consent
+re-prompt. Ready for Phase 2 (Capacitor native shell) when chosen.
 
 ### Phase 2 — Native shell + push
 
