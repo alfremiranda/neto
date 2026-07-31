@@ -181,6 +181,12 @@ biometric lock works; an OTA JS update ships without store review; Apple Sign-In
 - [ ] **Shared TRM service.** Cron caches Banco de la República TRM once, served to all clients
       instead of each client hitting the API.
 - [ ] **Billing.** RevenueCat for iOS/Android IAP + Stripe for web; subscription gating.
+- [~] **Public SEO calculators** (acquisition channel, cost ≈ 0 — see `docs/DIRECTION.md` §1).
+      Runs ahead of the rest of this phase because it doesn't depend on any of it. First one shipped
+      **2026-07-30**: `/calculadoras/seguridad-social-independientes/`. Pattern to follow for the
+      next ones (retención independientes, TRM efectiva): standalone static page in `public/`, same
+      domain (SEO authority accrues to netofinanzas.app), no app bundle, no third-party requests,
+      excluded from the service worker, and legal constants pinned to the app engine by a test.
 
 **Definition of done:** a connected bank seeds unconfirmed expenses the user can categorize;
 subscriptions work on iOS, Android, and web; TRM is served from cache.

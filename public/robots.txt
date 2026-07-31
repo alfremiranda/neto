@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://netofinanzas.app/sitemap.xml

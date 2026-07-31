@@ -50,6 +50,9 @@ Cinco superficies (la navegación expone cuatro; Configuración y Perfil viven e
 
 \* Tabs condicionales: solo aparecen si el usuario tiene ese grupo de deducciones habilitado.
 
+**Superficies públicas** (fuera de la app, sin login y sin cargar el bundle): la política de
+privacidad (`/privacidad.html`) y las calculadoras SEO (`/calculadoras/…`, ver 4.12).
+
 **Navegación:** sidebar colapsable (desktop) / bottom tab bar (mobile). Header con chip de TRM en vivo, campana de notificaciones, toggle de tema y menú de cuenta. Navegador de mes sticky en la vista Mes. FAB con speed-dial en mobile; popover “Agregar” en desktop.
 
 ---
@@ -125,6 +128,26 @@ Asistente de 5 pasos: bienvenida → **moneda principal y secundaria** → **cue
 - **Sin transferencia de datos a la nube antes de aceptar:** la sincronización (push) queda inhabilitada hasta que hay consentimiento; el pull sí sigue abierto para que quien aceptó en otro dispositivo no sea re-preguntado.
 - El consentimiento se guarda con su **versión**, de modo que un cambio de política puede volver a pedirlo.
 - **Eliminar tu cuenta** hoy es por correo (privacidad@netofinanzas.app); el botón de autoservicio es trabajo futuro.
+
+### 4.12 Calculadoras públicas (SEO)
+Páginas públicas de adquisición: resuelven una duda concreta sin registro y llevan a la app.
+
+- **Primera calculadora:** *Seguridad Social para Independientes — Colombia 2026*, en
+  `netofinanzas.app/calculadoras/seguridad-social-independientes/`.
+- **Qué hace:** con los ingresos mensuales por servicios y el nivel de riesgo ARL (I–V) calcula el
+  IBC, salud (12,5%), pensión (16%), ARL y Fondo de Solidaridad Pensional, con el desglose por
+  concepto, el total mensual y las fórmulas visibles paso a paso. Avisa cuando el IBC provendría del
+  piso (1 SMMLV) y cuando superaría el tope legal de 25 SMMLV (que la calculadora no aplica).
+- **Cómo está construida:** página estática autónoma en `public/` — HTML/CSS/JS propios con los
+  tokens del design system (claro/oscuro por preferencia del sistema) y fuentes autoalojadas. **No
+  carga el bundle de la app, no hace peticiones a terceros y está excluida del service worker**
+  (`navigateFallbackDenylist` + `globIgnores`), igual que la política de privacidad.
+- **Constantes legales** (SMMLV, tasas, tramos del FSS) viven en un único bloque JSON dentro de la
+  página, para actualizarlas una vez al año; `src/lib/calculadoraSS.test.ts` las contrasta contra el
+  motor de la app, así que un desfase rompe el build.
+- **Contenido SEO:** H1 con keyword, calculadora above the fold, "¿Cómo se calcula?" con referencias
+  legales, FAQ con schema.org `FAQPage`, CTA a la app y disclaimer obligatorio
+  ("Herramienta de planeación, no constituye asesoría tributaria ni contable").
 
 ---
 
@@ -215,6 +238,8 @@ Se puede cambiar en cualquier momento desde el editor de deducciones. Las vistas
 - **Pull-to-refresh** en mobile para forzar sincronización.
 - Español (Colombia) en toda la interfaz; formatos de moneda es-CO.
 - Servida desde dominio propio: **https://netofinanzas.app** (GitHub Pages con dominio personalizado).
+- **Páginas públicas estáticas** (política de privacidad y calculadoras) en el mismo dominio, fuera
+  del service worker: cargan sin login, sin el bundle de la app y sin depender del SW.
 
 ---
 
@@ -236,6 +261,8 @@ Sin versionado semántico formal; el producto avanza por hitos (246 commits desd
 | **Jul 13** | **Adaptación por perfil** (empleado/independiente), SMMLV como constante legal, **tarjetas de crédito**, **capítulo Ahorros e Inversiones** (CDT/inversión). |
 | **Jul 14** | Favoritos, **notificaciones de pagos**, rediseño de chips de categoría, “Egresos” → **“Gastos”**, month nav sticky, carruseles de cuentas, **dona anual interactiva**. |
 | **Jul 21–22** | **Sync robusta**: pull al abrir/enfocar, cola de reintento y **merge por entrada con tombstones**. Base de provisiones corregida al bruto. **Navegación por tabs en la vista Mes.** |
+| **Jul 25** | **Ley 1581**: política de privacidad pública + pantalla de consentimiento bloqueante, con la sync inhabilitada hasta aceptar. |
+| **Jul 30** | **Primera calculadora pública SEO** (seguridad social independientes 2026): página estática autónoma, fuera del service worker, con constantes legales verificadas contra el motor de la app. |
 
 ---
 

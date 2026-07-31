@@ -25,12 +25,16 @@ export default defineConfig({
       workbox: {
         // Cache all build assets + shell
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        // The public SEO pages under /calculadoras/ are standalone static pages with
+        // their own fonts — they must not enter the app's precache (they'd add weight
+        // to every install and the SW has no business owning them).
+        globIgnores: ['calculadoras/**'],
         // Network-first for navigation (SPA shell)
         navigateFallback: '/index.html',
-        // Keep the static privacy policy out of the SPA navigation fallback — a
-        // direct navigation to /neto/privacidad.html must serve that page, not the
-        // app shell. (It must also load pre-login and without depending on the SW.)
-        navigateFallbackDenylist: [/^\/api/, /privacidad\.html$/],
+        // Keep the static pages out of the SPA navigation fallback — a direct
+        // navigation to /privacidad.html or /calculadoras/... must serve that page,
+        // not the app shell. (They must also load pre-login and without the SW.)
+        navigateFallbackDenylist: [/^\/api/, /privacidad\.html$/, /^\/calculadoras\//],
         // Network-only for external APIs
         runtimeCaching: [
           {
