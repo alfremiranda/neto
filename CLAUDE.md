@@ -42,6 +42,12 @@ Este proyecto usa **Tailwind CSS v3**, NO v4. Cualquier sintaxis v4 es silencios
 
 **Para colores con opacidad:** usar `color-mix()` vía la función `cv()` definida en `tailwind.config.js`, no la sintaxis `bg-color/50` con oklch vars.
 
+## ⚠️ Service worker (PWA) — NO cambiar a `autoUpdate`
+El SW usa `registerType: 'prompt'` en `vite.config.ts`, **NO** `'autoUpdate'`, y se registra manualmente en `main.tsx` (`registerSW` con `onRegisterError`; `injectRegister: null`). Con `autoUpdate`, cada deploy genera un SW nuevo que **fuerza un reload al activarse**, y en móvil ese reload pisaba el callback de OAuth → login roto (raíz confirmada de la regresión de W4). Si vuelves a `autoUpdate`, se rompe el login móvil. La página estática de privacidad va en `navigateFallbackDenylist` para que el fallback de la SPA no la sombree.
+
+## ⚠️ Deploy de GitHub Pages — no re-correr runs fallidos
+Si el deploy de Pages falla, **no uses `gh run rerun`**: cada rerun apila otro artifact `github-pages` en el run y `deploy-pages` rechaza con *"Multiple artifacts named github-pages"*. La cura es un **run fresco** — un commit nuevo (aunque sea `--allow-empty`). El primer fallo suele ser un timeout transitorio de la API de Pages de GitHub (`updating_pages`), no del código.
+
 ## Reglas del negocio
 - Salario fijo: $8,800 USD/mes — contrato con Observer Hub LLC (Net 30, llega semana 1-2 del mes siguiente), pagos recibidos en cuenta ARQ (Dollar App)
 - Freelance Toptal: variable, se registra manualmente cada mes

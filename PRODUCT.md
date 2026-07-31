@@ -119,6 +119,13 @@ Derivadas de gastos **con fecha y sin confirmar** (típicamente recurrentes reci
 ### 4.10 Onboarding
 Asistente de 5 pasos: bienvenida → **moneda principal y secundaria** → **cuentas** (Efectivo incluido siempre; se pueden agregar bancarias y tarjetas con cupo/deuda/fechas) → **perfil de trabajo** → listo. Cada paso se puede omitir.
 
+### 4.11 Privacidad y consentimiento (Ley 1581)
+- **Pantalla de consentimiento bloqueante** antes de usar la app: al entrar —usuarios nuevos **y** existentes que aún no aceptaron— Neto pide aceptar la política de tratamiento de datos. El flujo es **login → consentimiento → onboarding**. "No acepto" cierra sesión.
+- **Política de privacidad** publicada como página estática accesible **sin iniciar sesión** en `netofinanzas.app/privacidad.html`, enlazada desde el login y desde Configuración.
+- **Sin transferencia de datos a la nube antes de aceptar:** la sincronización (push) queda inhabilitada hasta que hay consentimiento; el pull sí sigue abierto para que quien aceptó en otro dispositivo no sea re-preguntado.
+- El consentimiento se guarda con su **versión**, de modo que un cambio de política puede volver a pedirlo.
+- **Eliminar tu cuenta** hoy es por correo (privacidad@netofinanzas.app); el botón de autoservicio es trabajo futuro.
+
 ---
 
 ## 5. Reglas de negocio
@@ -179,7 +186,7 @@ Las obligaciones (salud, pensión, ARL, retención) son **de sistema**: se puede
 - **Local**: `localStorage`. Claves: `amd-finance` (datos financieros + control de sync), `neto-settings` (deducciones, nombre, monedas), `neto-ui` (vista, sidebar), `neto-theme`, `neto-trm-live`.
 - **Nube**: Supabase, tabla `months` con una fila por mes (más una fila `_settings`) por usuario.
 - **Auth**: OAuth con GitHub o Google.
-- **Sync automática** (solo producción): push confiable tras cada mutación con cola de reintento; pull al abrir la app y al enfocar/reconectar.
+- **Sync automática** (solo producción): push confiable tras cada mutación con cola de reintento; pull al abrir la app y al enfocar/reconectar. **El push queda inhabilitado hasta que el usuario da su consentimiento (Ley 1581)** — sin transferencia cross-border antes de aceptar; el pull no se bloquea (ver §4.11).
 - **Merge por entrada**: las listas del mes se **unen por id**; gana la edición más reciente por entrada; los borrados se propagan con *tombstones*. Los dispositivos convergen solos sin perder datos.
 - Los escalares del mes (TRM) y `_settings` se resuelven por último-en-escribir.
 - **Migraciones versionadas** del esquema (v1–v5), que corren tanto en local como sobre datos traídos de la nube. La más relevante (v5) convirtió los “ahorros voluntarios” —que se contaban doble— en cuentas de ahorro + movimientos.
