@@ -1,0 +1,6 @@
+{
+  "projectId": "62367779-92ce-4d82-8ba1-8d3a63b53691",
+  "source": "bundle",
+  "bundle": "neto-design-system-bundle.zip",
+  "note": "Neto is an app, not a component library — published from a curated, verified preview bundle (foundations + core components, light/dark, production CSS with @dsCard markers), not the /design-sync converter. Re-publish = replace the zip and re-run."
+}
