@@ -187,6 +187,9 @@ biometric lock works; an OTA JS update ships without store review; Apple Sign-In
       next ones (retención independientes, TRM efectiva): standalone static page in `public/`, same
       domain (SEO authority accrues to netofinanzas.app), no app bundle, no third-party requests,
       excluded from the service worker, and legal constants pinned to the app engine by a test.
+      - [ ] SEO calculators: pre-render computed values in static HTML (no-JS resilience) — apply
+            to #2 and backport to #1. Do it once in #2 (retención) and retroapply to #1 in the same
+            PR — one pass, not two. Not urgent (Google renders JS); low-priority SEO hardening.
 
 **Definition of done:** a connected bank seeds unconfirmed expenses the user can categorize;
 subscriptions work on iOS, Android, and web; TRM is served from cache.
