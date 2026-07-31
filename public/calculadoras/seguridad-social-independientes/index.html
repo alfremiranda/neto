@@ -453,10 +453,10 @@
         margin-top: 16px;
         padding: 10px 12px;
         border-radius: 10px;
-        background: var(--color-tax-bg);
-        color: var(--color-tax-txt);
+        background: var(--muted);
+        color: var(--on-muted-foreground);
         font-size: 13.5px;
-        border: 1px solid color-mix(in srgb, var(--color-tax) 35%, transparent);
+        border: 1px solid var(--border);
       }
       .alert[hidden] { display: none; }
 
@@ -892,7 +892,9 @@
 
         function compute(income, arlPct) {
           var ibcFromIncome = income * L.ibcFactor
-          var ibc = Math.max(ibcFromIncome, L.smmlv)
+          var capValue = L.smmlv * L.ibcCapSmmlv
+          // Floor at SMMLV, ceiling at 25×SMMLV (Ley 797 de 2003, art. 5)
+          var ibc = Math.min(Math.max(ibcFromIncome, L.smmlv), capValue)
           var items = [
             { id: 'salud',   label: 'Salud (EPS)',            pct: L.salud,   color: 'var(--color-income)' },
             { id: 'pension', label: 'Pensión obligatoria',    pct: L.pension, color: 'var(--color-net)' },
@@ -911,7 +913,8 @@
             ibc: ibc,
             ibcFromIncome: ibcFromIncome,
             flooredBySmmlv: ibcFromIncome < L.smmlv,
-            overCap: ibc > L.smmlv * L.ibcCapSmmlv,
+            cappedByLaw: ibcFromIncome > capValue,
+            capValue: capValue,
             items: items,
             total: total,
           }
@@ -1014,16 +1017,18 @@
           el.totalHero.textContent = cop(r.total)
           el.totalRow.textContent = cop(r.total)
           el.ibcValue.textContent = cop(r.ibc)
-          el.ibcOrigin.textContent = r.flooredBySmmlv
-            ? '(piso legal: 1 SMMLV)'
-            : '(40% de ' + cop(income) + ')'
+          el.ibcOrigin.textContent = r.cappedByLaw
+            ? '(tope legal: ' + L.ibcCapSmmlv + ' SMMLV)'
+            : r.flooredBySmmlv
+              ? '(piso legal: 1 SMMLV)'
+              : '(40% de ' + cop(income) + ')'
 
-          el.cap.hidden = !r.overCap
-          if (r.overCap) {
+          el.cap.hidden = !r.cappedByLaw
+          if (r.cappedByLaw) {
             el.cap.textContent =
-              'Tu IBC supera el tope legal de ' + L.ibcCapSmmlv + ' SMMLV (' +
-              cop(L.smmlv * L.ibcCapSmmlv) + '). Por encima de ese límite se cotiza sobre el tope: ' +
-              'esta calculadora no lo aplica, confírmalo con tu contador.'
+              'Tu IBC se limitó al tope legal de ' + L.ibcCapSmmlv + ' SMMLV (' +
+              cop(r.capValue) + '). Por encima de ese límite se cotiza sobre el tope, ' +
+              'no sobre el 40% — Ley 797 de 2003, art. 5.'
           }
 
           el.bar.innerHTML = ''
@@ -1049,8 +1054,8 @@
 
           // Fórmulas vivas de "¿Cómo se calcula?"
           el.fIbc.textContent =
-            'IBC = máx(40% × ingresos, 1 SMMLV)\n' +
-            'IBC = máx(40% × ' + cop(income) + ', ' + cop(L.smmlv) + ')\n' +
+            'IBC = mín( máx(40% × ingresos, 1 SMMLV), ' + L.ibcCapSmmlv + ' SMMLV )\n' +
+            'IBC = mín( máx(40% × ' + cop(income) + ', ' + cop(L.smmlv) + '), ' + cop(r.capValue) + ' )\n' +
             'IBC = ' + cop(r.ibc)
 
           var aportes = r.items.filter(function (it) { return it.id !== 'fss' })

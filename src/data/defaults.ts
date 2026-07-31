@@ -92,6 +92,7 @@ export const DEFAULTS = {
   ss_pens: 0.16,
   ss_arl: 0.00522,
   ibc_factor: 0.40,
+  ibc_cap_smmlv: 25, // legal ceiling on IBC — 25 × SMMLV (Ley 797 de 2003, art. 5)
   retencion: 0.20,
   primas: 0.0833,
 } as const

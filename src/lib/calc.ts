@@ -21,7 +21,9 @@ export function calcIBC(incomes: Income[], trm: number, smmlv: number): number {
   if (serviciosIncomes.length === 0) return smmlv
   const totalServicios = serviciosIncomes
     .reduce((a, i) => a + (i.currency === 'USD' ? i.amount * trm : i.amount), 0)
-  return Math.max(totalServicios * DEFAULTS.ibc_factor, smmlv)
+  // Floor at SMMLV, ceiling at 25×SMMLV (Ley 797 de 2003, art. 5)
+  const floor = Math.max(totalServicios * DEFAULTS.ibc_factor, smmlv)
+  return Math.min(floor, DEFAULTS.ibc_cap_smmlv * smmlv)
 }
 
 // Base for primas/cesantías/vacaciones: the gross of incomes flagged with

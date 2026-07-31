@@ -3,7 +3,8 @@ import { describe, it, expect } from 'vitest'
 // the app's tsconfig (which has no node types).
 import html from '../../public/calculadoras/seguridad-social-independientes/index.html?raw'
 import { DEFAULTS, SMMLV_BY_YEAR } from '@/data/defaults'
-import { calcFSS } from '@/lib/calc'
+import { calcFSS, calcIBC } from '@/lib/calc'
+import type { Income } from '@/types'
 
 /**
  * The public SEO calculator (public/calculadoras/seguridad-social-independientes)
@@ -48,8 +49,9 @@ describe('calculadora SS — legal constants stay in sync with the app engine', 
     expect(L.smmlv).toBe(SMMLV_BY_YEAR[CURRENT_YEAR])
   })
 
-  it('uses the same IBC factor and contribution rates as the app', () => {
+  it('uses the same IBC factor, cap and contribution rates as the app', () => {
     expect(L.ibcFactor).toBe(DEFAULTS.ibc_factor)
+    expect(L.ibcCapSmmlv).toBe(DEFAULTS.ibc_cap_smmlv)
     expect(L.salud / 100).toBeCloseTo(DEFAULTS.ss_salud, 10)
     expect(L.pension / 100).toBeCloseTo(DEFAULTS.ss_pens, 10)
     // Risk I is the app's default ARL rate
@@ -92,10 +94,18 @@ describe('calculadora SS — FSS tiers match calcFSS()', () => {
 
 describe('calculadora SS — IBC follows the same rule as the app', () => {
   const L = legalConstants()
+  const smmlv = SMMLV_BY_YEAR[CURRENT_YEAR]
+  const cap = smmlv * DEFAULTS.ibc_cap_smmlv // 25 × SMMLV (Ley 797 de 2003, art. 5)
 
-  /** Mirrors the page's compute(): 40% of income, floored at 1 SMMLV. */
+  /** Mirrors the page's compute(): 40% of income, floored at 1 SMMLV, capped at 25. */
   function pageIBC(income: number): number {
-    return Math.max(income * L.ibcFactor, L.smmlv)
+    return Math.min(Math.max(income * L.ibcFactor, L.smmlv), L.smmlv * L.ibcCapSmmlv)
+  }
+
+  /** Drives the app engine with a single COP "servicios" income (trm irrelevant). */
+  function engineIBC(incomeCOP: number): number {
+    const income = { amount: incomeCOP, currency: 'COP', tipo: 'servicios' } as Income
+    return calcIBC([income], 1, smmlv)
   }
 
   it('floors at the SMMLV for low incomes', () => {
@@ -106,6 +116,26 @@ describe('calculadora SS — IBC follows the same rule as the app', () => {
   it('uses 40% of income once it clears the floor', () => {
     expect(pageIBC(10_000_000)).toBe(4_000_000)
     expect(pageIBC(20_000_000)).toBe(8_000_000)
+  })
+
+  it('caps the IBC at 25 SMMLV — page and engine agree below / at / above the cap', () => {
+    // Income where 40% lands exactly on the cap: cap / 0.40
+    const incomeAtCap = cap / L.ibcFactor
+    const below = incomeAtCap - 10_000_000
+    const above = incomeAtCap + 10_000_000
+
+    // Below the cap → 40% of income, uncapped
+    expect(pageIBC(below)).toBeCloseTo(below * L.ibcFactor, 6)
+    expect(engineIBC(below)).toBeCloseTo(below * DEFAULTS.ibc_factor, 6)
+
+    // Exactly at the cap → equals the cap on both sides
+    expect(pageIBC(incomeAtCap)).toBeCloseTo(cap, 6)
+    expect(engineIBC(incomeAtCap)).toBeCloseTo(cap, 6)
+
+    // Above the cap → clamped to the cap, never the raw 40%
+    expect(pageIBC(above)).toBe(cap)
+    expect(engineIBC(above)).toBe(cap)
+    expect(engineIBC(above)).toBe(pageIBC(above))
   })
 
   it('produces the documented minimum monthly contribution', () => {

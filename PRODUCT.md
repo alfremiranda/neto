@@ -136,8 +136,8 @@ Páginas públicas de adquisición: resuelven una duda concreta sin registro y l
   `netofinanzas.app/calculadoras/seguridad-social-independientes/`.
 - **Qué hace:** con los ingresos mensuales por servicios y el nivel de riesgo ARL (I–V) calcula el
   IBC, salud (12,5%), pensión (16%), ARL y Fondo de Solidaridad Pensional, con el desglose por
-  concepto, el total mensual y las fórmulas visibles paso a paso. Avisa cuando el IBC provendría del
-  piso (1 SMMLV) y cuando superaría el tope legal de 25 SMMLV (que la calculadora no aplica).
+  concepto, el total mensual y las fórmulas visibles paso a paso. Avisa cuando el IBC proviene del
+  piso (1 SMMLV) y aplica el tope legal de 25 SMMLV (Ley 797 de 2003, art. 5), informándolo cuando actúa.
 - **Cómo está construida:** página estática autónoma en `public/` — HTML/CSS/JS propios con los
   tokens del design system (claro/oscuro por preferencia del sistema) y fuentes autoalojadas. **No
   carga el bundle de la app, no hace peticiones a terceros y está excluida del service worker**
@@ -154,8 +154,9 @@ Páginas públicas de adquisición: resuelven una duda concreta sin registro y l
 ## 5. Reglas de negocio
 
 ```
-IBC          = max(40% × ingresos "servicios" del mes, SMMLV del año)
-               (si no hay ingresos de servicios ⇒ SMMLV, el piso legal)
+IBC          = min( max(40% × ingresos "servicios" del mes, SMMLV del año), 25 × SMMLV )
+               piso: SMMLV (si no hay ingresos de servicios ⇒ SMMLV)
+               tope: 25 × SMMLV (Ley 797 de 2003, art. 5) — por encima se cotiza sobre el tope
 
 Salud        = 12.5%  × IBC
 Pensión      = 16%    × IBC
