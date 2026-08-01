@@ -38,16 +38,16 @@ def tokens_css():
 {blk(NUM, "px")}
 }}
 
-[data-theme="dark"] {{
-{blk(SD)}
-{blk(CD)}
-}}
+/* Two dark selectors on purpose: [data-theme] is what the generated previews in this
+   folder use; .dark is what the app toggles (src/hooks/useTheme.ts). Keep both.
 
-@media (prefers-color-scheme: dark) {{
-  :root:not([data-theme="light"]) {{
+   There is deliberately NO @media (prefers-color-scheme: dark) block. The app already
+   reads the OS preference in JS and then writes an explicit class, so a CSS-level media
+   query would outrank the user's own choice: someone on a dark OS who picks "light" in
+   the app would get dark tokens under light classes. The toggle is the only authority. */
+[data-theme="dark"], .dark {{
 {blk(SD)}
 {blk(CD)}
-  }}
 }}
 
 /* Text styles — Rethink Sans, tabular by default */
@@ -112,7 +112,7 @@ def tokens_map_css():
    Import AFTER tokens.css, then delete the corresponding declarations from src/index.css.
    Nothing here invents a value: every line points at a token generated from Figma. */
 
-:root, [data-theme="light"], [data-theme="dark"] {"""]
+:root, [data-theme="light"], [data-theme="dark"], .dark {"""]
     for title, pairs in MAP:
         note = NOTES.get(title)
         out.append(f"\n  /* {title} — {note} */" if note else f"\n  /* {title} */")

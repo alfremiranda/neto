@@ -2,7 +2,7 @@
    Import AFTER tokens.css, then delete the corresponding declarations from src/index.css.
    Nothing here invents a value: every line points at a token generated from Figma. */
 
-:root, [data-theme="light"], [data-theme="dark"] {
+:root, [data-theme="light"], [data-theme="dark"], .dark {
 
   /* Surfaces & text */
   --background: var(--surface-wrap-default);
