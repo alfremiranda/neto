@@ -24,7 +24,7 @@
 | TopNav | `121:4745` |
 | KPI cards strip | `128:5893` |
 
-### Derived specs (verified against Figma)
+### Derived specs (verified against Figma, 2026-08-01)
 
 | Element | Spec |
 |---------|------|
@@ -38,10 +38,14 @@
 | Sidebar list padding | `px-[12px]` |
 | Sidebar list gap | `gap-2` (8px) |
 | KPI card padding | `p-[17px]` |
-| KPI label | Inter SemiBold 10px UPPERCASE `tracking-[1px]` |
-| KPI value | Geist Mono SemiBold 20px (`text-xl font-heading`) |
-| SectionCard title | Geist Mono SemiBold 14px (`font-mono font-semibold text-sm`) |
+| KPI label | text style `Label/Micro` — 10px SemiBold, uppercase, tracking 0.5px |
+| KPI value | text style `Amount/Hero` — 20px SemiBold |
+| SectionCard title | text style `Heading/Group` — 14px SemiBold |
 | IBC chip | `border border-[var(--border)] rounded-lg px-2 py-1` |
+
+Text styles are named in Figma and listed in `design-system/foundations/typography.html`.
+They are no longer described by family + weight here, because the family changed once
+and every hardcoded mention of it went stale at the same time.
 
 ---
 
@@ -63,82 +67,85 @@ Custom components in `src/components/ui/` that extend shadcn:
 
 ---
 
-## Architecture: Three-Layer Token System
+## Token architecture
 
-All visual values flow through three layers. Each layer has a clear responsibility and owner.
+**Values live in Figma and are generated into this repo. They are not written here.**
 
 ```
-Layer 1 — Primitives    Raw oklch values. No semantic meaning.
-    ↓
-Layer 2 — Shadcn Base   Semantic surface roles. Managed by shadcn.
-    ↓
-Layer 3 — Neto Domain   Financial domain meaning. Owned by this project.
+design-system/tokens/tokens.json      raw export, both modes
+design-system/tokens/tokens.css       CSS custom properties
+design-system/tokens/tokens.map.css   bridge to the names src/index.css uses
 ```
 
-**Rule**: Never skip a layer. Domain tokens reference base tokens or primitive values. Components reference Layer 2 or Layer 3. Never inline oklch/hex literals in JSX.
+This document describes *how to use* tokens in this codebase. It deliberately contains no
+colour values: a second copy of the values is a second source of truth, and that is exactly
+the drift this system spent a full audit removing.
 
----
+### Three collections, not three layers
 
-## Principles
+Figma holds four variable collections. Three of them carry colour and spacing:
 
-1. **Semantics over appearance** — tokens describe *purpose*, not color.
-   `--color-expense` not `--n-pink`. A palette change doesn't touch components.
+```
+Primitives  ──►  Semantic  ──►  Component
+raw ramps        general design    internal to one component
+```
 
-2. **Three layers, no skipping** — Primitives → Base (shadcn) → Domain (Neto).
-   Components only consume the domain layer or the shadcn base layer.
+- **Primitives** — `color/slate/500`, `spacing/12`. Raw, complete, and **never referenced directly**.
+- **Semantic** — `surface/wrap/card`, `foreground/subtle`, `interactive/primary`, `spacing/16`, `radius/xl`.
+  This is the layer you design and build with. It carries Light and Dark modes.
+- **Component** — `button/filled/background/default`, `input/color/border/focus`.
+  Private to the component that names them. **These may alias Primitives directly** — that is
+  correct, not a layering violation.
 
-3. **Tailwind as shorthand** — Tailwind classes are accepted as long as they point to existing tokens (`bg-muted`, `text-foreground`). Avoid direct `text-[oklch(...)]`.
+The rule that matters: **a node must never bind to a Primitive.** A Component token aliasing a
+Primitive is fine. A component's background reaching past two layers to grab `color/cyan/600`
+is not — it will not follow the theme.
 
----
+Full explanation: `design-system/docs/01-token-layers.md`.
 
-## Layer 1 — Primitive Palette
+**Open handoff:** values still pending in `src/index.css` are tracked in
+`design-system/docs/05-handoff-tokens.md`. That file is the executable list — this one is
+the reasoning behind it.
 
-Raw oklch values, named by color, never by role.
+### How the app consumes them
 
-| Name         | Light oklch                  | Dark oklch                   | Role               |
-|--------------|------------------------------|------------------------------|--------------------|
-| blue-500     | `oklch(0.5 0.134 242.749)`   | `oklch(0.55 0.13 240.79)`    | Primary / Income   |
-| rose-500     | `oklch(0.56 0.22 13)`        | `oklch(0.68 0.22 13)`        | Expenses           |
-| emerald-600  | `oklch(0.59 0.18 163)`       | `oklch(0.73 0.18 163)`       | Provisions         |
-| amber-400    | `oklch(0.77 0.18 73)`        | `oklch(0.83 0.18 73)`        | Taxes              |
-| cyan-500     | `oklch(0.72 0.16 201)`       | `oklch(0.82 0.16 201)`       | Net income         |
+`src/index.css` currently declares its own values. The intent is for it to import the generated
+files instead:
 
-**Why oklch:** Perceptually uniform — changing L (lightness) adjusts contrast without hue shift. Dark mode variants are formulaic: same H and C, different L.
+```css
+@import "../design-system/tokens/tokens.css";
+@import "../design-system/tokens/tokens.map.css";
+```
 
----
+**Not wired up yet** — it is a build change and needs its own review. Read the `NO EQUIVALENT`
+block at the end of `tokens.map.css` first: four variables have no counterpart and need a
+decision rather than a mapping.
 
-## Layer 2 — Shadcn Base Tokens (do not modify)
+### Domain token shape
 
-Defined in `src/index.css` under `:root` and `.dark`. Registered in `tailwind.config.js` via the `cv()` helper.
+The three-slot pattern still holds for financial and category tokens:
 
-### Surface roles
-| Token             | Use for                                 |
-|-------------------|-----------------------------------------|
-| `--background`    | Page background                         |
-| `--card`          | Card/panel surfaces                     |
-| `--popover`       | Dropdowns, tooltips                     |
-| `--muted`         | Subtle backgrounds, chips               |
-| `--sidebar`       | Sidebar surface                         |
+```
+--color-{role}      saturated: icons, chart fills, dots
+--color-{role}-bg   tinted: badge and chip backgrounds
+--color-{role}-txt  accessible text on that bg
+```
 
-### Text roles
-| Token                  | Use for                                              |
-|------------------------|------------------------------------------------------|
-| `--foreground`         | Body text, primary content                           |
-| `--muted-foreground`   | Secondary text, metadata, helper labels              |
-| `--n-txt3`             | Tertiary text — icons, timestamps, dim labels        |
+| Suffix | Use for | Required contrast |
+|--------|---------|-------------------|
+| (none) | Chart fills, bars, icons | ≥ 3:1 against background (WCAG UI) |
+| `-bg` | Badge/chip backgrounds | none (decorative) |
+| `-txt` | Text on that background | ≥ 4.5:1 (WCAG AA) |
 
-`--n-txt3` is a project token, not a shadcn token. Defined in Layer 3 by historical convention.
+Expense categories use `--cat-{id}` / `--cat-{id}-bg` and map 1:1 with `EGRESO_CATEGORIAS`.
+There are **15** of them. In dark mode every category surface is the `-950` tint and its text
+the `-300`, with two documented exceptions: `connectivity` and `other` stay lighter, because
+their neutral `-950` is indistinguishable from the page background.
 
-### Interactive roles
-| Token          | Use for                                     |
-|----------------|---------------------------------------------|
-| `--primary`    | CTAs, active states, brand accent            |
-| `--accent`     | Hover backgrounds on neutral elements        |
-| `--ring`       | Focus rings                                  |
-| `--border`     | All borders and dividers                     |
-| `--destructive`| Delete, error, danger states                |
+**Dark mode is not an inversion.** Domain tokens are re-declared under `.dark {}`; components
+need no dark-mode logic. Anything bound to a raw value will simply not follow.
 
-### The `cv()` bridge function — oklch + Tailwind v3
+### The `cv()` bridge function
 
 ```js
 // tailwind.config.js
@@ -148,114 +155,99 @@ const cv = (v) => ({ opacityValue }) =>
     : `var(${v})`
 ```
 
-Tailwind v3 wraps colors in `hsl()`, which breaks oklch values. `cv()` bypasses this by returning `var(--token)` directly. Use `cv()` for **any** token in `tailwind.config.js`. The `!important` overrides in `src/index.css` are a secondary guard for classes Tailwind generates before the custom config applies.
+Tailwind v3 wraps colour values in `hsl()`, which breaks anything that is not HSL. `cv()`
+bypasses it by returning `var(--token)` directly. Use `cv()` for **any** token registered in
+`tailwind.config.js`.
+
+> Historical note: this helper was written when the palette was oklch. The palette is hex now,
+> but the wrapper problem is the same and `color-mix` still resolves correctly, so it stays.
 
 ---
 
-## Layer 3 — Neto Domain Tokens
+## Principles
 
-Three-slot pattern: **base color** (charts, icons), **bg** (tinted background), **txt** (accessible text on that bg).
+1. **Semantics over appearance** — tokens describe *purpose*, not colour. `--color-expense`,
+   never `--n-pink`. A palette change must not touch a component.
 
-```
---color-{role}      → saturated: icons, chart fills, dots
---color-{role}-bg   → desaturated: badge/chip backgrounds
---color-{role}-txt  → WCAG AA on bg (≥ 4.5:1 contrast)
-```
+2. **Never skip a layer** — components consume Semantic or their own Component tokens. Never a
+   Primitive, never a literal.
 
-### Financial tokens
+3. **Tailwind as shorthand** — classes are fine as long as they resolve to a token
+   (`bg-muted`, `text-foreground`). Never `text-[#0e7490]`.
 
-| Token | Role | Primitive |
-|-------|------|-----------|
-| `--color-income` | Income — fill / chart | primary blue |
-| `--color-income-bg` | Income — badge background | blue-50 |
-| `--color-income-txt` | Income — badge text | blue-800 |
-| `--color-expense` | Expenses — fill / chart | rose-500 |
-| `--color-expense-bg` | Expenses — background | rose-50 |
-| `--color-expense-txt` | Expenses — text | rose-800 |
-| `--color-provision` | Provisions — fill / chart | emerald-600 |
-| `--color-provision-bg` | Provisions — background | emerald-50 |
-| `--color-provision-txt` | Provisions — text | emerald-900 |
-| `--color-tax` | Tax obligations — fill | amber-400 |
-| `--color-tax-txt` | Tax obligations — text | amber-700 (WCAG AA ✓) |
-| `--color-net` | Net income — fill / chart | cyan-500 |
-| `--color-net-bg` | Net income — background | cyan-50 |
-| `--color-net-txt` | Net income — text | cyan-700 (WCAG AA ✓) |
-
-### Color psychology
-
-```
-Blue/Primary  → Income      — trust, stability, positive input
-Rose/Red      → Expenses    — cost, outflow, attention
-Amber         → Taxes       — caution, pending obligation
-Green         → Provisions  — savings, growth, constructive
-Cyan          → Net         — result, clarity, availability
-```
-
-### Status tokens
-
-| Token | Role |
-|-------|------|
-| `--color-danger` | Error / destructive action (`var(--destructive)`) |
-| `--color-danger-bg` | Error state background |
-| `--color-danger-txt` | Error state text |
-
-### Account badge tokens
-
-| Token | Account |
-|-------|---------|
-| `--color-account-arq[-bg\|-txt]` | ARQ / Dollar App |
-| `--color-account-toptal[-bg\|-txt]` | Toptal |
-| `--color-account-bancol[-bg\|-txt]` | Bancolombia |
-| `--color-account-other[-bg\|-txt]` | Other / generic |
-
-### Expense category palette
-
-Prefix `--cat-{id}` and `--cat-{id}-bg`. Identifiers map 1:1 with `EGRESO_CATEGORIAS`.
-
-| id | Color token | Background token |
-|----|-------------|------------------|
-| `vivienda` | `--cat-home` | `--cat-home-bg` |
-| `alimentacion` | `--cat-food` | `--cat-food-bg` |
-| `tecnologia` | `--cat-tech` | `--cat-tech-bg` |
-| `bancario` | `--cat-bank` | `--cat-bank-bg` |
-| `salud` | `--cat-health` | `--cat-health-bg` |
-| `movilidad` | `--cat-transit` | `--cat-transit-bg` |
-| `familia` | `--cat-family` | `--cat-family-bg` |
-| `otro` | `--cat-other` | `--cat-other-bg` |
-
-### Token emphasis scale
-
-| Suffix | Use for | Required contrast |
-|--------|---------|-------------------|
-| (none) | Chart fills, bars, icons | ≥ 3:1 on background (WCAG UI) |
-| `-bg` | Badge/chip/highlight backgrounds | None (decorative) |
-| `-txt` | Text on white/light background | ≥ 4.5:1 (WCAG AA text) |
-
-**Dark mode rule:** Domain tokens are re-declared in `.dark {}`. Components need no dark mode logic.
+4. **Cyan is reserved for selected state and focus ring.** Hover is neutral. Two cyan states
+   side by side read as two selections.
 
 ---
 
 ## Typography
 
-| Variable | Family | Use for |
-|----------|--------|---------|
-| `--font-sans` | Inter Variable | Body, UI, form inputs |
-| `--font-mono` | Geist Mono Variable | Monetary amounts, financial numbers |
-| `--font-heading` | alias of `--font-mono` | `font-heading` Tailwind utility |
+**One family: Rethink Sans.** It replaced the Inter + Geist Mono pair in August 2026.
 
-**Rule:** All monetary values (`COP`, `USD`, `%`) must use `font-heading tabular-nums`. This prevents layout jitter as numbers change and establishes visual hierarchy between narrative text and financial data.
+| Variable | Value |
+|----------|-------|
+| `--font-sans` | Rethink Sans |
+| `--font-mono` | *(retired — see below)* |
+| `--font-heading` | *(retired — was an alias of `--font-mono`)* |
+
+### Why the monospace face is gone
+
+Monetary figures used Geist Mono so they would not jitter as values changed. Measured at 20px,
+ten digits wide:
+
+| Family | `1111111111` | `0000000000` | `8888888888` | Tabular |
+|---|---|---|---|---|
+| **Rethink Sans** | 118 | 118 | 118 | **yes, by default** |
+| Geist Mono | 120 | 120 | 120 | yes |
+| Inter | 97 | 134 | 130 | **no** |
+
+Rethink Sans is already tabular, so the second family was doing nothing the first does not.
+
+**Keep `tabular-nums` in the class list.** It is a no-op today and it is the guard if the family
+ever changes again. What changes is the rule's *reason*, not its shape:
+
+> All monetary values use `tabular-nums`. The `font-heading` half of the old rule no longer
+> applies — there is nothing to switch to.
+
+Monetary figures are ~17% narrower than before (119px vs 144px for `$4.012.550,75`). Dense
+tables and KPI strips have more room, not less.
 
 ### Type scale
 
-| Class | Size | Leading | Use for |
-|-------|------|---------|---------|
-| `text-2xs` | 0.625rem | 0.875rem | Timestamps in collapsed state |
-| `text-xs` | 0.75rem | 1rem | Badges, metadata, filter labels |
-| `text-sm` | 0.875rem | 1.25rem | **Default body text** |
-| `text-base` | 1rem | 1.5rem | Card headers, section titles |
-| `text-lg+` | ≥1.125rem | — | View titles only (h3, h2) |
+26 text styles in 6 semantic groups, named by *what the text is* rather than how large it is:
 
-**Base font-size: 14px** (on `body`). `text-sm` (0.875rem = 12.25px) is the workhorse.
+| Group | For |
+|---|---|
+| `Heading/` | Display · Section · Subsection · Card · Group |
+| `Body/` | running text, ±Emphasis at two sizes |
+| `Detail/` | metadata: Large 11 · Base 10 · Emphasis 10 · Nano 9 |
+| `Label/` | Base · Micro (the KPI label) · Badge |
+| `Amount/` | Hero · Large · Base · Small · Micro — monetary figures |
+| `Control/` | XS–XL, line height 100% for single-line control labels |
+
+Two rules that keep the scale from doubling in size:
+
+- **Emphasis in running text is Medium, never SemiBold.** SemiBold belongs to headers and figures.
+- **There are no input text styles.** Text inside a field *is* body text.
+
+`Amount/` exists as its own group even where its metrics repeat `Body/` and `Heading/`, because
+in a finance app the figures must be able to change without dragging the rest of the system.
+
+Full reference: `design-system/docs/03-typography.md` and `design-system/foundations/typography.html`.
+
+### Tailwind size classes
+
+| Class | rem | Computed | Use for |
+|-------|-----|----------|---------|
+| `text-2xs` | 0.625rem | 10px | Timestamps, collapsed labels |
+| `text-xs` | 0.75rem | 12px | Badges, metadata, filter labels |
+| `text-sm` | 0.875rem | **14px** | **Default body text** |
+| `text-base` | 1rem | 16px | Card headers, section titles |
+| `text-lg`+ | ≥1.125rem | ≥18px | View titles only |
+
+> `body` is set to `font-size: 14px`, but `rem` resolves against `html`, not `body`. The root
+> stays at the browser default of 16px, so `text-sm` computes to **14px** — not 12.25px as an
+> earlier version of this document claimed.
 
 ---
 
@@ -322,8 +314,8 @@ Domain tokens are intentionally NOT in `tailwind.config.js`. This makes domain t
 // ✅ Shadcn base token — via Tailwind utility
 <div className="bg-muted text-muted-foreground">
 
-// ❌ Never hardcode oklch/hex inline
-<div style={{ backgroundColor: 'oklch(0.94 0.03 242)' }}>
+// ❌ Never hardcode a colour inline
+<div style={{ backgroundColor: '#0e7490' }}>
 ```
 
 ### Rule 3: shadcn v4 components require conversion for Tailwind v3
@@ -487,7 +479,7 @@ Transitions are functional, never decorative.
 
 ```tsx
 // Hardcoded primitive value
-<span style={{ color: 'oklch(0.56 0.22 13)' }}>...</span>
+<span style={{ color: '#dc2626' }}>...</span>
 
 // Non-semantic color token
 <span className="text-[var(--n-pink)]">...</span>
@@ -508,7 +500,7 @@ Transitions are functional, never decorative.
 
 | Anti-pattern | Why | Instead |
 |--------------|-----|---------|
-| `style={{ color: 'oklch(...)' }}` inline | Breaks dark mode, not themeable | Use a CSS token |
+| `style={{ color: '#...' }}` inline | Breaks dark mode, not themeable | Use a CSS token |
 | `opacity-0 group-hover:opacity-100` on actions | Actions invisible by default | Always visible with `size="icon-sm"` |
 | `h-*` override on shadcn SelectTrigger | Lost to data-attribute specificity | `size="sm"` or `data-size="none"` |
 | shadcn v4 syntax (`w-(--var)`) without conversion | Compiles to nothing in Tailwind v3 | Convert to `w-[var(--var)]` |
@@ -523,7 +515,7 @@ Transitions are functional, never decorative.
 
 Before committing any new UI component:
 
-- [ ] Colors come from Layer 2 or Layer 3 tokens — no hardcoded values
+- [ ] Colours come from Semantic or Component tokens — never a Primitive, never a literal
 - [ ] Monetary values use `font-heading tabular-nums`
 - [ ] Form elements at `h-9` (or `h-7` for compact), consistent within row
 - [ ] Destructive actions have two-tap confirm pattern
@@ -531,7 +523,7 @@ Before committing any new UI component:
 - [ ] No `var(var(--token))` double-wrapping
 - [ ] shadcn component heights controlled via `size` prop or `data-size`, not `h-*` className
 - [ ] Dark mode tested (toggle with sun/moon in header)
-- [ ] No inline oklch/hex literals
+- [ ] No inline colour literals
 - [ ] TypeScript: `npx tsc --noEmit` passes clean
 
 ---
@@ -557,3 +549,4 @@ Items in `deductions.ts` carry a `color: string` field referencing a domain toke
 | v2 | Migration to `--color-{semantic}` — domain names |
 | v3 | Tailwind+shadcn rules, form heights, component patterns, anti-patterns, checklist |
 | v4 | Translated to English |
+| v5 | Token architecture rewritten against the real Figma structure (Primitives → Semantic → Component). Values moved out of this document into `design-system/tokens/`, generated. Typography collapsed to one family, Rethink Sans. Type scale replaced by 26 named text styles. Fixed the `text-sm` arithmetic — it computes to 14px, not 12.25px. |

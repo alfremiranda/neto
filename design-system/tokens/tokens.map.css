@@ -1,0 +1,101 @@
+/* Bridge: the variable names the app already uses -> the generated tokens.
+   Import AFTER tokens.css, then delete the corresponding declarations from src/index.css.
+   Nothing here invents a value: every line points at a token generated from Figma. */
+
+:root, [data-theme="light"], [data-theme="dark"] {
+
+  /* Surfaces & text */
+  --background: var(--surface-wrap-default);
+  --foreground: var(--foreground-default);
+  --card: var(--surface-wrap-card);
+  --card-foreground: var(--foreground-on-card);
+  --muted: var(--surface-wrap-subtle);
+  --muted-foreground: var(--foreground-subtle);
+  --popover: var(--surface-popover);
+  --popover-foreground: var(--foreground-on-popover);
+  --border: var(--border-default);
+  --input: var(--border-input);
+  --ring: var(--border-focus);
+  --n-txt3: var(--foreground-placeholder);
+
+  /* Interactive */
+  --primary: var(--interactive-primary);
+  --primary-foreground: var(--interactive-primary-foreground);
+  --secondary: var(--interactive-secondary);
+  --secondary-foreground: var(--interactive-secondary-foreground);
+  --accent: var(--interactive-accent);
+  --accent-foreground: var(--interactive-accent-foreground);
+  --destructive: var(--status-destructive-default);
+  --destructive-foreground: var(--status-destructive-foreground);
+
+  /* Financial KPIs */
+  --color-income: var(--kpi-income-default);
+  --color-income-bg: var(--kpi-income-surface);
+  --color-income-txt: var(--kpi-income-foreground);
+  --color-expense: var(--kpi-expense-default);
+  --color-expense-bg: var(--kpi-expense-surface);
+  --color-expense-txt: var(--kpi-expense-foreground);
+  --color-provision: var(--kpi-provision-default);
+  --color-provision-bg: var(--kpi-provision-surface);
+  --color-provision-txt: var(--kpi-provision-foreground);
+  --color-tax: var(--kpi-tax-default);
+  --color-tax-bg: var(--kpi-tax-surface);
+  --color-tax-txt: var(--kpi-tax-foreground);
+  --color-net: var(--kpi-net-default);
+  --color-net-bg: var(--kpi-net-surface);
+  --color-net-txt: var(--kpi-net-foreground);
+  --color-danger: var(--status-danger-default);
+  --color-danger-bg: var(--status-danger-surface);
+
+  /* Accounts */
+  --color-account-arq-bg: var(--account-1-surface);
+  --color-account-arq-txt: var(--account-1-foreground);
+  --color-account-toptal-bg: var(--account-2-surface);
+  --color-account-toptal-txt: var(--account-2-foreground);
+  --color-account-bancol-bg: var(--account-3-surface);
+  --color-account-bancol-txt: var(--account-3-foreground);
+  --color-account-other-bg: var(--account-4-surface);
+  --color-account-other-txt: var(--account-4-foreground);
+
+  /* Expense categories — app id -> Figma category id */
+  --cat-home: var(--category-home-default);
+  --cat-home-bg: var(--category-home-surface);
+  --cat-food: var(--category-food-default);
+  --cat-food-bg: var(--category-food-surface);
+  --cat-bank: var(--category-bank-default);
+  --cat-bank-bg: var(--category-bank-surface);
+  --cat-health: var(--category-health-default);
+  --cat-health-bg: var(--category-health-surface);
+  --cat-transit: var(--category-transit-default);
+  --cat-transit-bg: var(--category-transit-surface);
+  --cat-tech: var(--category-connectivity-default);
+  --cat-tech-bg: var(--category-connectivity-surface);
+  --cat-recreation: var(--category-recreation-default);
+  --cat-recreation-bg: var(--category-recreation-surface);
+  --cat-work: var(--category-work-default);
+  --cat-work-bg: var(--category-work-surface);
+  --cat-family: var(--category-family-default);
+  --cat-family-bg: var(--category-family-surface);
+  --cat-insurance: var(--category-insurance-default);
+  --cat-insurance-bg: var(--category-insurance-surface);
+  --cat-savings: var(--category-savings-default);
+  --cat-savings-bg: var(--category-savings-surface);
+  --cat-travel: var(--category-travel-default);
+  --cat-travel-bg: var(--category-travel-surface);
+  --cat-taxes: var(--category-tax-default);
+  --cat-taxes-bg: var(--category-tax-surface);
+  --cat-shopping: var(--category-shopping-default);
+  --cat-shopping-bg: var(--category-shopping-surface);
+  --cat-other: var(--category-other-default);
+  --cat-other-bg: var(--category-other-surface);
+}
+
+/* ── NO EQUIVALENT — these need a decision, not a mapping ──────────── */
+/* --font-sans
+     --font-family in Figma resolves to Rethink Sans. The app still ships Inter Variable; changing it is a build change, not a token swap. */
+/* --font-mono
+     Figma no longer has a mono family: Rethink Sans is tabular by default, so monospace figures are unnecessary. */
+/* --font-heading
+     In code this aliases --font-mono. That relationship does not exist in Figma any more and has to be redefined, not remapped. */
+/* --radius
+     The app derives every radius from one base with calc(). Figma has a named scale (radius/xs..2xl). Not a 1:1 mapping. */

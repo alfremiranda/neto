@@ -1,0 +1,49 @@
+<!-- @dsCard group="Components · Overlays" name="Sheet" subtitle="Device · Footer" -->
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Neto · Sheet</title>
+<link href="https://fonts.googleapis.com/css2?family=Rethink+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font-family:'Rethink Sans',ui-sans-serif,system-ui,sans-serif;background:var(--surface-wrap-default);
+ color:var(--foreground-default);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.page{max-width:1000px;margin:0 auto;padding:40px 28px 64px}
+h1{margin:0 0 4px;font-weight:800;font-size:24px;line-height:32px;letter-spacing:.5px}
+.crumb{margin:0 0 32px;font-size:11px;line-height:17px;color:var(--foreground-subtle)}
+.spec{display:flex;gap:32px;align-items:flex-start;flex-wrap:wrap;margin-bottom:28px}
+.axes{flex:0 0 200px}
+.axis{margin-bottom:8px}
+.axis .k{display:block;font-weight:600;font-size:10px;line-height:15px;letter-spacing:.5px;text-transform:uppercase;color:var(--foreground-subtle)}
+.axis .v{display:block;font-size:10px;line-height:15px;color:var(--foreground-default)}
+.count{font-size:10px;line-height:15px;color:var(--foreground-placeholder);margin-top:10px}
+.desc{flex:1 1 420px;min-width:280px;font-size:14px;line-height:21px;white-space:pre-line}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:820px){.modes{grid-template-columns:1fr}}
+.lbl{display:block;font-weight:600;font-size:10px;line-height:15px;letter-spacing:.5px;text-transform:uppercase;
+ color:var(--foreground-subtle);margin-bottom:6px}
+.stage{background:var(--surface-wrap-subtle);border-radius:var(--radius-lg);padding:20px;
+ display:flex;flex-direction:column;gap:14px;align-items:flex-start;min-height:90px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.note{font-size:10px;color:var(--foreground-placeholder)}
+</style>
+</head>
+<body>
+<main class="page">
+  <h1>Sheet</h1>
+  <p class="crumb">Overlays — Neto design system</p>
+  <div class="spec">
+    <div class="axes"><div class="axis"><span class="k">Device</span><span class="v">Mobile · Desktop</span></div><div class="axis"><span class="k">Footer</span><span class="v">True · False</span></div><div class="count">4 variantes · 936 × 936</div></div>
+    <div class="desc">The panel every form opens in. Device × Footer.
+
+Mobile slides up from the bottom with a drag handle and rounds its top corners. Desktop slides in from the right and rounds only the left side. Different patterns, not a reflow — that is why Device is a variant and not a breakpoint.
+
+The scrim behind it is surface/scrim, not part of this component. On mobile the sheet is clamped to the visual viewport so the keyboard never covers the fields.</div>
+  </div>
+  <div class="modes">
+    <div><span class="lbl">Light</span><div data-theme="light" style="border-radius:var(--radius-lg)"><div class="stage"><div class="row"><div style="width:250px;background:var(--surface-wrap-default);border:1px solid var(--border-default);border-radius:16px 16px 0 0;overflow:hidden"><div style="display:flex;justify-content:center;padding:8px 0 4px"><span style="width:40px;height:4px;border-radius:999px;background:var(--border-default)"></span></div><div style="display:flex;align-items:center;gap:8px;padding:14px 16px;border-bottom:1px solid var(--border-default)"><span style="flex:1;font-weight:600;font-size:16px;line-height:24px;letter-spacing:0.0px;color:var(--foreground-default)">Nuevo ingreso</span><span style="color:var(--foreground-subtle)">✕</span></div><div style="padding:16px;font-weight:400;font-size:14px;line-height:21px;letter-spacing:0.0px;color:var(--foreground-subtle);min-height:70px">Contenido del formulario</div><div style="padding:12px 16px 16px;border-top:1px solid var(--border-default)"><span style="display:inline-flex;align-items:center;justify-content:center;height:36px;padding:0 14px;border-radius:14px;font-weight:500;font-size:14px;line-height:1;letter-spacing:.5px;white-space:nowrap;background:var(--button-filled-background-default);color:var(--button-filled-foreground);border:1px solid transparent;">Guardar</span></div></div><div style="width:250px;background:var(--surface-wrap-default);border:1px solid var(--border-default);border-radius:16px 0 0 16px;overflow:hidden"><div style="display:flex;align-items:center;gap:8px;padding:14px 16px;border-bottom:1px solid var(--border-default)"><span style="flex:1;font-weight:600;font-size:16px;line-height:24px;letter-spacing:0.0px;color:var(--foreground-default)">Nuevo ingreso</span><span style="color:var(--foreground-subtle)">✕</span></div><div style="padding:16px;font-weight:400;font-size:14px;line-height:21px;letter-spacing:0.0px;color:var(--foreground-subtle);min-height:70px">Contenido del formulario</div></div></div></div></div></div>
+    <div><span class="lbl">Dark</span><div data-theme="dark" style="border-radius:var(--radius-lg)"><div class="stage"><div class="row"><div style="width:250px;background:var(--surface-wrap-default);border:1px solid var(--border-default);border-radius:16px 16px 0 0;overflow:hidden"><div style="display:flex;justify-content:center;padding:8px 0 4px"><span style="width:40px;height:4px;border-radius:999px;background:var(--border-default)"></span></div><div style="display:flex;align-items:center;gap:8px;padding:14px 16px;border-bottom:1px solid var(--border-default)"><span style="flex:1;font-weight:600;font-size:16px;line-height:24px;letter-spacing:0.0px;color:var(--foreground-default)">Nuevo ingreso</span><span style="color:var(--foreground-subtle)">✕</span></div><div style="padding:16px;font-weight:400;font-size:14px;line-height:21px;letter-spacing:0.0px;color:var(--foreground-subtle);min-height:70px">Contenido del formulario</div><div style="padding:12px 16px 16px;border-top:1px solid var(--border-default)"><span style="display:inline-flex;align-items:center;justify-content:center;height:36px;padding:0 14px;border-radius:14px;font-weight:500;font-size:14px;line-height:1;letter-spacing:.5px;white-space:nowrap;background:var(--button-filled-background-default);color:var(--button-filled-foreground);border:1px solid transparent;">Guardar</span></div></div><div style="width:250px;background:var(--surface-wrap-default);border:1px solid var(--border-default);border-radius:16px 0 0 16px;overflow:hidden"><div style="display:flex;align-items:center;gap:8px;padding:14px 16px;border-bottom:1px solid var(--border-default)"><span style="flex:1;font-weight:600;font-size:16px;line-height:24px;letter-spacing:0.0px;color:var(--foreground-default)">Nuevo ingreso</span><span style="color:var(--foreground-subtle)">✕</span></div><div style="padding:16px;font-weight:400;font-size:14px;line-height:21px;letter-spacing:0.0px;color:var(--foreground-subtle);min-height:70px">Contenido del formulario</div></div></div></div></div></div>
+  </div>
+</main>
+</body></html>
