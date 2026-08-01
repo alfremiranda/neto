@@ -16,7 +16,7 @@
     --muted:               #f1f5f9;   /* surface/wrap/subtle   */
     --muted-foreground:    #64748b;   /* foreground/subtle     */
     --accent:              #f1f5f9;
-    --accent-foreground:   #0f172a;
+    --accent-foreground:   #1e293b;   /* slate-800 — interactive/accent-foreground */
     --popover:             #ffffff;
     --popover-foreground:  #0f172a;
 
@@ -34,10 +34,10 @@
 
     /* Secondary */
     --secondary:           #f1f5f9;
-    --secondary-foreground: #0f172a;
+    --secondary-foreground: #1e293b;   /* slate-800 — interactive/secondary-foreground */
 
     /* Destructive */
-    --destructive:         #ef4444;
+    --destructive:         #dc2626;   /* red-600 — status/destructive/default */
     --destructive-foreground: #ffffff;
 
     /* Radius — xl=12px base, lg=8px buttons, sm=6px inputs */
@@ -72,8 +72,8 @@
 
     /* Egresos — red */
     --color-expense:     #ef4444;   /* kpi/expense/default */
-    --color-expense-bg:  #fff1f2;   /* category/health/surface */
-    --color-expense-txt: #be123c;
+    --color-expense-bg:  #fef2f2;   /* red-50  — kpi/expense/surface */
+    --color-expense-txt: #b91c1c;   /* red-700 — kpi/expense/foreground */
 
     /* Provisiones — emerald */
     --color-provision:     #059669;   /* kpi/provision/default */
@@ -91,9 +91,9 @@
     --color-net-txt: #0369a1;   /* kpi/net/foreground */
 
     /* Danger (delete, alerts) */
-    --color-danger:     #ef4444;
-    --color-danger-bg:  #fff1f2;
-    --color-danger-txt: #be123c;
+    --color-danger:     #dc2626;   /* red-600 — status/danger/default */
+    --color-danger-bg:  #fef2f2;   /* red-50  — status/danger/surface */
+    --color-danger-txt: #b91c1c;   /* red-700 — status/danger/foreground */
 
     /* Account badges */
     --color-account-arq-bg:     #ecfeff;   /* account/1/surface    */
@@ -186,11 +186,11 @@
 
     /* Destructive */
     --destructive:         #f87171;   /* kpi/expense/default dark red-400 */
-    --destructive-foreground: #083344;
+    --destructive-foreground: #450a0a; /* red-950 — was #083344 (cyan-950), wrong hue on a red button */
 
     /* Sidebar (dark nav) */
     --sidebar:                    #0f172a;   /* nav/background dark  slate-900 */
-    --sidebar-foreground:         #f1f5f9;   /* sidebar/accent-foreground      */
+    --sidebar-foreground:         #f8fafc;   /* slate-50 — sidebar/item/foreground */
     --sidebar-primary:            #06b6d4;
     --sidebar-primary-foreground: #083344;
     --sidebar-accent:             #334155;
@@ -210,7 +210,7 @@
     --n-txt3: #64748b;   /* slate-500 */
 
     /* Ingresos */
-    --color-income:     #06b6d4;
+    --color-income:     #22d3ee;   /* cyan-400 — kpi/income/default */
     --color-income-bg:  #083344;   /* account/1/surface dark  */
     --color-income-txt: #67e8f9;   /* account/1/foreground dark */
 
@@ -251,23 +251,23 @@
 
     /* Category palette dark */
     --cat-home:          #5eead4;   /* teal-300    */
-    --cat-home-bg:       #134e4a;
-    --cat-food:          #fb923c;   /* orange-400  */
+    --cat-home-bg:       #042f2e;   /* teal-950   — category/home/surface */
+    --cat-food:          #fdba74;   /* orange-300 — category/food/default */
     --cat-food-bg:       #431407;
     --cat-bank:          #93c5fd;   /* blue-300    */
-    --cat-bank-bg:       #1e3a8a;
+    --cat-bank-bg:       #172554;   /* blue-950   */
     --cat-health:        #fda4af;   /* rose-300    */
-    --cat-health-bg:     #881337;
+    --cat-health-bg:     #4c0519;   /* rose-950   */
     --cat-transit:       #fde047;   /* yellow-300  */
-    --cat-transit-bg:    #713f12;
+    --cat-transit-bg:    #422006;   /* yellow-950 */
     --cat-tech:          #d1d5db;   /* gray-300    */
-    --cat-tech-bg:       #111827;
+    --cat-tech-bg:       #111827;   /* gray-900 — stays: gray-950 is indistinguishable from the page bg */
     --cat-recreation:    #a5b4fc;   /* indigo-300  */
     --cat-recreation-bg: #1e1b4b;
     --cat-work:          #7dd3fc;   /* sky-300     */
-    --cat-work-bg:       #0c4a6e;
+    --cat-work-bg:       #082f49;   /* sky-950    */
     --cat-family:        #f9a8d4;   /* pink-300    */
-    --cat-family-bg:     #831843;
+    --cat-family-bg:     #500724;   /* pink-950   */
     --cat-insurance:     #bef264;   /* lime-300    */
     --cat-insurance-bg:  #1a2e05;
     --cat-savings:       #6ee7b7;   /* emerald-300 */
@@ -277,9 +277,9 @@
     --cat-taxes:         #fcd34d;   /* amber-300   */
     --cat-taxes-bg:      #451a03;
     --cat-shopping:      #d8b4fe;   /* purple-300  */
-    --cat-shopping-bg:   #581c87;
-    --cat-other:         #94a3b8;   /* slate-400   */
-    --cat-other-bg:      #1e293b;
+    --cat-shopping-bg:   #3b0764;   /* purple-950 */
+    --cat-other:         #cbd5e1;   /* slate-300  — category/other/default */
+    --cat-other-bg:      #1e293b;   /* slate-800 — stays: slate-950 is indistinguishable from the page bg */
 
     /* ── Button component tokens — dark (Figma 91:1925) ─────────────────────── */
     --btn-filled-bg:              #22d3ee;               /* button/filled/background/default      */
