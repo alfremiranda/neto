@@ -52,8 +52,8 @@ export function LoginScreen() {
             <img src="/icon.svg" alt="Neto" className="w-full h-full" />
           </div>
           <div className="text-center">
-            <h1 className="text-2xl font-bold font-heading">Neto</h1>
-            <p className="text-sm text-muted-foreground mt-1">Planeador financiero personal</p>
+            <h1 className="ts-heading-display">Neto</h1>
+            <p className="ts-body-base text-muted-foreground mt-1">Planeador financiero personal</p>
           </div>
         </div>
 
@@ -62,7 +62,7 @@ export function LoginScreen() {
           <button
             onClick={handleGitHub}
             disabled={loadingProvider !== null}
-            className="w-full flex items-center justify-center gap-3 h-12 px-4 rounded-xl bg-foreground text-background text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50 disabled:pointer-events-none"
+            className="w-full flex items-center justify-center gap-3 h-12 px-4 rounded-xl bg-foreground text-background ts-control-md transition-opacity hover:opacity-90 disabled:opacity-50 disabled:pointer-events-none"
           >
             {loadingProvider === 'github'
               ? <span className="w-4 h-4 border-2 border-background/30 border-t-background rounded-full animate-spin" />
@@ -73,7 +73,7 @@ export function LoginScreen() {
           <button
             onClick={handleGoogle}
             disabled={loadingProvider !== null}
-            className="w-full flex items-center justify-center gap-3 h-12 px-4 rounded-xl border border-[var(--border)] bg-[var(--card)] text-foreground text-sm font-medium transition-colors hover:bg-[var(--muted)] disabled:opacity-50 disabled:pointer-events-none"
+            className="w-full flex items-center justify-center gap-3 h-12 px-4 rounded-xl border border-[var(--border)] bg-[var(--card)] text-foreground ts-control-md transition-colors hover:bg-[var(--muted)] disabled:opacity-50 disabled:pointer-events-none"
           >
             {loadingProvider === 'google'
               ? <span className="w-4 h-4 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin" />
@@ -82,7 +82,7 @@ export function LoginScreen() {
           </button>
         </div>
 
-        <p className="text-[11px] text-muted-foreground text-center leading-relaxed">
+        <p className="ts-detail-large text-muted-foreground text-center">
           Al continuar aceptas nuestra{' '}
           <a
             href={PRIVACY_POLICY_URL}

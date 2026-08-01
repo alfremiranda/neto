@@ -39,18 +39,18 @@ export function ConsentScreen() {
     >
       <div className="w-full max-w-[380px] flex flex-col gap-6">
         <div className="space-y-3">
-          <h1 className="text-xl font-bold font-heading">Antes de empezar</h1>
-          <p className="text-sm text-muted-foreground leading-relaxed">
+          <h1 className="ts-heading-display">Antes de empezar</h1>
+          <p className="ts-body-base text-muted-foreground">
             Neto guarda tus datos financieros en tu dispositivo y los respalda en la nube
             para sincronizarlos entre tus dispositivos. Usamos tu correo para identificar tu
             cuenta y un servicio de monitoreo de errores (que <strong>no</strong> recibe datos
             financieros) para corregir fallas.
           </p>
-          <p className="text-sm text-muted-foreground leading-relaxed">
+          <p className="ts-body-base text-muted-foreground">
             Tus datos se almacenan en servidores fuera de Colombia (Estados Unidos y la Unión
             Europea).
           </p>
-          <p className="text-sm text-muted-foreground leading-relaxed">
+          <p className="ts-body-base text-muted-foreground">
             Al continuar, autorizas el tratamiento de tus datos como se describe en la{' '}
             <a
               href={PRIVACY_POLICY_URL}
@@ -68,7 +68,7 @@ export function ConsentScreen() {
             type="button"
             onClick={handleAccept}
             disabled={busy !== null}
-            className="w-full h-12 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50 disabled:pointer-events-none"
+            className="w-full h-12 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] ts-control-md transition-opacity hover:opacity-90 disabled:opacity-50 disabled:pointer-events-none"
           >
             Aceptar y continuar
           </button>
@@ -76,13 +76,13 @@ export function ConsentScreen() {
             type="button"
             onClick={handleDecline}
             disabled={busy !== null}
-            className="w-full h-11 rounded-xl border border-[var(--border)] text-muted-foreground text-sm font-medium transition-colors hover:text-foreground disabled:opacity-50 disabled:pointer-events-none"
+            className="w-full h-11 rounded-xl border border-[var(--border)] text-muted-foreground ts-control-md transition-colors hover:text-foreground disabled:opacity-50 disabled:pointer-events-none"
           >
             No acepto
           </button>
         </div>
 
-        <p className="text-[11px] text-muted-foreground leading-relaxed">
+        <p className="ts-detail-large text-muted-foreground">
           Si no aceptas, cerraremos tu sesión. Para eliminar tus datos, escríbenos a{' '}
           <a
             href="mailto:privacidad@netofinanzas.app"
