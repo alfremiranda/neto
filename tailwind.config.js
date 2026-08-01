@@ -70,9 +70,11 @@ export default {
         'chart-4': cv('--chart-4'),
         'chart-5': cv('--chart-5'),
       },
-      fontSize: {
-        '2xs': ['0.625rem', { lineHeight: '0.875rem' }],
-      },
+      // No fontSize extensions. The 26 semantic text styles ship as `.ts-*`
+      // classes from design-system/tokens/tokens.css (generated from Figma) —
+      // `text-2xs` used to duplicate `.ts-detail-base` (10/15) under a name
+      // nothing ever used, while 44 places wrote text-[10px] by hand.
+      // See design-system/docs/03-typography.md.
       // Figma's named scale (design-system/docs/06-radius-map.md). Each rung is a
       // value someone chose, not a calc() off a base — adjusting one no longer
       // drags the others. Note sm/md/lg mean 4/6/8 here, NOT the 8/10/12 they
