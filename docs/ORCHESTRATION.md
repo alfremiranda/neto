@@ -2,19 +2,26 @@
 
 > Durable protocol doc for the Dev agent (Claude Code). Read once per session alongside
 > [DIRECTION.md](./DIRECTION.md). Unlike DIRECTION.md (regenerated weekly), this file is
-> hand-maintained and changes rarely. Committed 2026-07-31.
+> hand-maintained and changes rarely. v2 — 2026-08-01 (roster corrected, repo territories
+> added after Dev's findings).
 
 ## The system
 
-Neto is built by one human (Alfredo) directing several Claude agents, each in its own tool:
+Neto is built by one human (Alfredo) directing **five** Claude agents, each in its own tool:
 
-| Agent | Where it lives | Its source of truth |
-|---|---|---|
-| **Dev (you)** | Claude Code, Antigravity, `~/Projects/Neto/app` | **This repo.** You have NO access to the claude.ai project — by design. |
-| Orchestrator | Cowork session (claude.ai) | The claude.ai Project "Neto" (shared docs hub) + this repo (public clone) + Alfredo's Mac (connected folder) |
-| Business | Cowork session | Project doc `neto-business-model.md` |
-| Legal | Cowork session | Project doc `neto-legal.md` |
-| Design | Cowork + Figma connector, plus Claude Design (claude.ai/design) | Figma file + project doc `neto-design.md` |
+| Agent | Where it lives | Its source of truth | Writes to this repo? |
+|---|---|---|---|
+| **Dev (you)** | Claude Code, Antigravity, `~/Projects/Neto/app` | **This repo.** No access to the claude.ai project — by design. | Yes — everything except Design's territory |
+| Orchestrator | Cowork (cloud) | claude.ai Project "Neto" (docs hub) + public clone of this repo + Alfredo's Mac (connected folder) | Only `docs/DIRECTION.md` and `docs/ORCHESTRATION.md` |
+| Design | **Cowork running on Alfredo's computer**, with direct repo access; also drives Figma + Claude Design | Figma file (visual truth) + `design.md` + `design-system/` | Yes — its territory only (see below) |
+| Business | Cowork (cloud) | Project doc `neto-business-model.md` | No |
+| Legal | Cowork (cloud) | Project doc `neto-legal.md` | No |
+
+There is no "Producto" or "Dominio" agent — those are project doc names (`neto-context.md`
+is the product export of this repo; `neto-domain.md` is the netofinanzas.app domain decision).
+**Escalation for domain/business rules** (like the 25-SMMLV cap): the orchestrator, via
+Alfredo — it decides with legal/business input and the decision comes back through him or
+DIRECTION.md.
 
 Agents do not talk to each other directly. Alfredo relays messages, and two automated
 channels keep everyone in sync:
@@ -26,11 +33,33 @@ channels keep everyone in sync:
    `PRODUCT.md` + `CLAUDE.md` + `NORTH_STAR.md` to the claude.ai project. **Whatever is not
    committed AND pushed to `main` does not exist for the rest of the system.**
 
+## Repo territories & git rules
+
+Two agents share this working tree. The boundary that keeps that sane:
+
+- **Design owns:** `design-system/**` and `design.md`. Generated artifacts (tokens.css,
+  previews) are regenerated, not hand-edited, by either agent.
+- **Dev owns:** everything else — `src/**`, `public/**`, configs, docs. This includes
+  `src/index.css`: when Design's token work requires changes there, Design reports the
+  finding and **Dev applies it** (the favourite-star / radius findings flow was the model).
+- **Orchestrator writes:** `docs/DIRECTION.md` (generated) and `docs/ORCHESTRATION.md`
+  (this file) via the connected folder; Alfredo or Dev commits them.
+
+Git rules for a shared tree:
+
+1. **Whoever commits, pushes — immediately.** A local-only commit is a landmine for the
+   other agent. If you find unpushed commits from the other agent when pushing `main`,
+   pushing them along is correct (verify build+tests first, and report it so the author
+   knows their commit is now on `origin/main`).
+2. Don't leave uncommitted changes at session close. If two sessions must run at the same
+   time, Alfredo makes sure only one has dirty state.
+3. Commit messages keep their owner obvious: Design uses the `design-system:` prefix.
+
 ## Your session protocol
 
 **At session start:** read `CLAUDE.md` (conventions), `docs/DIRECTION.md` (cross-domain
 priorities/constraints), and `NORTH_STAR.md` (sequencing) — in that order of authority for
-their respective concerns.
+their respective concerns. `git pull` before working: Design may have pushed.
 
 **At session close:** user-facing or business-rule changes → `PRODUCT.md`; plan changes →
 `NORTH_STAR.md`; design-system token/component changes → re-run `/design-sync`; then commit
@@ -38,7 +67,8 @@ and push. (Already in your Definition of Done.)
 
 **Reporting:** your closing summary goes to Alfredo, who relays it to the orchestrator. Flag
 explicitly: (a) decisions you made that others should know, (b) anything you found
-undocumented, (c) anything in DIRECTION.md that conflicts with the repo.
+undocumented, (c) anything in DIRECTION.md or this file that conflicts with the repo's
+reality — this file gets corrected when you do (this v2 exists because you did).
 
 ## Handoff conventions
 
@@ -48,11 +78,10 @@ undocumented, (c) anything in DIRECTION.md that conflicts with the repo.
   re-derived from scratch, SEO/tech checks). Expect follow-up tasks from it via Alfredo.
 - **Escalation:** if a task requires a cross-domain decision (pricing, legal wording, where
   something lives), don't decide silently — ship the safe version, state the open question in
-  your report (like the 25-SMMLV cap case: warn first, orchestrator decided, you applied).
-  That pattern was correct.
+  your report (the 25-SMMLV cap case: warn first, orchestrator decided, you applied).
 
 ## Where things live on disk
 
 `~/Projects/Neto/` is the macro folder (docs, assets, pitch, legal, marketing, research —
-orchestrator/Alfredo territory). `~/Projects/Neto/app/` is this repo — your territory. Don't
-write outside the repo; the orchestrator doesn't write inside it except `docs/DIRECTION.md`.
+orchestrator/Alfredo territory). `~/Projects/Neto/app/` is this repo — Dev + Design territory
+per the boundaries above.
