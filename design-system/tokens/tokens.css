@@ -187,6 +187,10 @@
   --switch-track-on: #0e7490;
   --switch-track-off: rgba(0,0,0,0.2);
   --switch-thumb: #ffffff;
+  --currency-usd-surface: #ecfeff;
+  --currency-usd-foreground: #0e7490;
+  --currency-cop-surface: #ecfdf5;
+  --currency-cop-foreground: #047857;
   --spacing-0: 0px;
   --spacing-2: 2px;
   --spacing-4: 4px;
@@ -488,6 +492,10 @@
   --switch-track-on: #0e7490;
   --switch-track-off: rgba(255,255,255,0.3);
   --switch-thumb: #ffffff;
+  --currency-usd-surface: #083344;
+  --currency-usd-foreground: #67e8f9;
+  --currency-cop-surface: #022c22;
+  --currency-cop-foreground: #6ee7b7;
 }
 
 /* Text styles — Rethink Sans, tabular by default */

@@ -54,6 +54,12 @@
   --color-fav-selected-bg: var(--fav-selected-background);
   --color-fav-selected-txt: var(--fav-selected-foreground);
 
+  /* Currency chips */
+  --color-currency-usd-bg: var(--currency-usd-surface);
+  --color-currency-usd-txt: var(--currency-usd-foreground);
+  --color-currency-cop-bg: var(--currency-cop-surface);
+  --color-currency-cop-txt: var(--currency-cop-foreground);
+
   /* Accounts */
   --color-account-arq-bg: var(--account-1-surface);
   --color-account-arq-txt: var(--account-1-foreground);

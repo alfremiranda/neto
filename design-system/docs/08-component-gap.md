@@ -196,3 +196,56 @@ Named so nobody reads more into it than it earned:
 - **Animation and transitions.** Figma holds none of it.
 - **Computed vs declared.** Read from Tailwind classes. A class that is overridden at a call site
   will not show up here.
+
+---
+
+## 7. Resolved after the fact — the `Badge` family
+
+Listed above as open. It turned out to be two findings, and the first one I had wrong.
+
+**`Badge` and `Status` were not two components.** Measured side by side they have identical
+geometry (45×20, padding 4/8, pill), identical text (`Label/Badge`), and the same six semantic
+token families. The only difference: `Badge` paints `badge/{semantic}/background` with no stroke,
+`Status` paints `badge/{semantic}/border` with no fill. Filled and outline — a *treatment*, which is
+the axis `Button` and `Icon Button` already carry.
+
+The instance count settled how to merge: **`Badge` had zero instances in the entire file** while
+`Status` had 18 in live use. So the filled set folded into the outline one, which kept every
+instance intact, and the merged set is named `Badge` with `Variant: Filled | Outline`. Verified
+after: 24 variants, 0 broken instances.
+
+What the old pair *did* carry was a purpose distinction the geometry never expressed — `Status` was
+"reserved for entry states: scheduled, unconfirmed, overdue". That would have been lost in the
+merge, so it is written into the merged component's description: **outline is the entry-state
+treatment, filled is a plain label.**
+
+**The second finding is the one that actually costs something.** The app's `Badge` paints four of
+its seven variants with `kpi/*` tokens where the system says `account/*`:
+
+| `Badge` variant | Paints with today | Should paint with | Same value today? |
+|---|---|---|---|
+| `usd` | `--color-income-bg/txt` | `--color-currency-usd-bg/txt` *(new)* | yes — `#ecfeff` |
+| `cop` | `--color-provision-bg/txt` | `--color-currency-cop-bg/txt` *(new)* | yes — `#ecfdf5` |
+| `arq` | `--color-income-bg/txt` | `--color-account-arq-bg/txt` | yes |
+| `bancol` | `--color-provision-bg/txt` | `--color-account-bancol-bg/txt` | yes |
+| `toptal` | `--color-account-toptal-*` | unchanged | — |
+| `otro` | `--color-account-other-*` | unchanged | — |
+| `ss` | `--color-income-bg/txt` | **needs a decision** — it is not an account | — |
+
+This is the favourite-star defect four more times: the values coincide *today*, so nothing looks
+wrong, and the day the KPI palette moves, four account and currency chips move with it for no
+reason. All the replacement variables already exist in `tokens.map.css`; `--color-currency-*` was
+added for this, backed by new `currency/usd/*` and `currency/cop/*` tokens in Figma that alias
+`account/1` and `account/3` — a currency is not an account, they just share a colour by convention.
+
+`ss` is the one that needs a call rather than a swap: it is a domain tag, not an account or a
+currency, so it belongs on the generic `Badge` — most likely `badge/info` or `badge/neutral`.
+
+### Still open, and deliberately not done
+
+`AccountBadge`'s variants are labelled by colour (`Cyan`, `Purple`, `Green`, `Neutral`) for what are
+account slots 1–4, and `Badge`'s are labelled `Purple`/`Green`/`Blue`/`Orange`/`Red`/`Gray` for
+tokens that are semantic (`accent`, `success`, `info`, `warning`, `danger`, `neutral`). Both should
+be renamed to what they mean. Both were left alone: instances store variant *values* as strings, and
+there are 180 `AccountBadge` instances in the file. That rename is worth doing, but not as a
+side effect of this audit.

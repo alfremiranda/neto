@@ -99,6 +99,12 @@ MAP = [
         ("--color-fav-bg", "--fav-default-background"), ("--color-fav-txt", "--fav-default-foreground"),
         ("--color-fav-selected-bg", "--fav-selected-background"), ("--color-fav-selected-txt", "--fav-selected-foreground"),
     ]),
+    ("Currency chips", [
+        # The app's Badge paints usd/cop with kpi/income and kpi/provision, which happen to hold
+        # the same values as account/1 and account/3. Same accident as the favourite star.
+        ("--color-currency-usd-bg", "--currency-usd-surface"), ("--color-currency-usd-txt", "--currency-usd-foreground"),
+        ("--color-currency-cop-bg", "--currency-cop-surface"), ("--color-currency-cop-txt", "--currency-cop-foreground"),
+    ]),
     ("Accounts", [
         ("--color-account-arq-bg", "--account-1-surface"), ("--color-account-arq-txt", "--account-1-foreground"),
         ("--color-account-toptal-bg", "--account-2-surface"), ("--color-account-toptal-txt", "--account-2-foreground"),

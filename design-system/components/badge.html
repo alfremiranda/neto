@@ -1,4 +1,4 @@
-<!-- @dsCard group="Components · Badges" name="Badge" subtitle="Color · Icon" -->
+<!-- @dsCard group="Components · Badges" name="Badge" subtitle="Variant · Color · Icon" -->
 <!DOCTYPE html>
 <html lang="es" data-theme="light">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -34,8 +34,12 @@ h1{margin:0 0 4px;font-weight:800;font-size:24px;line-height:32px;letter-spacing
   <h1>Badge</h1>
   <p class="crumb">Badges — Neto design system</p>
   <div class="spec">
-    <div class="axes"><div class="axis"><span class="k">Color</span><span class="v">Purple · Green · Blue · Orange · Red · Gray</span></div><div class="axis"><span class="k">Icon</span><span class="v">False · True</span></div><div class="count">12 variantes · 158 × 212</div></div>
-    <div class="desc">Generic label chip. Color × Icon.
+    <div class="axes"><div class="axis"><span class="k">Variant</span><span class="v">Outline · Filled</span></div><div class="axis"><span class="k">Color</span><span class="v">Purple · Green · Blue · Orange · Red · Gray</span></div><div class="axis"><span class="k">Icon</span><span class="v">False · True</span></div><div class="count">24 variantes · 158 × 212</div></div>
+    <div class="desc">Generic label chip. Variant × Color × Icon.
+
+Variant=Filled paints badge/{semantic}/background; Variant=Outline paints badge/{semantic}/border with no fill. Same geometry, same six token families — this used to be two component sets (Badge filled, Status outline), and the filled one had zero instances in the whole file. Filled and outline are a treatment, not two components.
+
+Outline is the entry-state treatment: scheduled, unconfirmed, overdue. Filled is a plain label.
 
 Colour here is decorative. The moment a badge carries meaning — an account, a category, a currency — use the specific component instead, so the semantic token layer stays the source of that meaning.</div>
   </div>
