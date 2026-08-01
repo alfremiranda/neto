@@ -40,7 +40,20 @@
     --destructive:         #dc2626;   /* red-600 — status/destructive/default */
     --destructive-foreground: #ffffff;
 
-    /* Radius — xl=12px base, lg=8px buttons, sm=6px inputs */
+    /* Radius — Figma's named scale (design-system/docs/06-radius-map.md).
+       Named, not derived: with calc() off one base, adjusting the base moves
+       every radius at once and lands on steps that belong to no scale.
+       --radius stays until the tailwind + component migration lands (blocked
+       on two design decisions — see the radius map doc). */
+    --radius-none: 0px;
+    --radius-xs:   2px;
+    --radius-sm:   4px;
+    --radius-md:   6px;    /* tooltip, skeleton, calendar day */
+    --radius-lg:   8px;    /* input, select, datepicker, popover */
+    --radius-xl:   12px;   /* cards and containers */
+    --radius-2xl:  16px;   /* sheets, menu-item */
+    --radius-full: 9999px; /* buttons, badges, avatar, toast, nav */
+
     --radius:              0.75rem;
 
     /* Sidebar (nav/background = white, selected = cyan) */
@@ -442,7 +455,7 @@
   width: 100%;
   height: 2.75rem; /* 44px — minimum touch target on mobile */
   padding: 0 0.75rem;
-  border-radius: calc(var(--radius) - 4px);   /* input/radius = 6px */
+  border-radius: var(--radius-lg);   /* input/radius = 8px (was calc(--radius - 4px), same pixels) */
   border: 1px solid var(--input);
   background-color: var(--card);
   color: var(--foreground);
