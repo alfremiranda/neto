@@ -27,6 +27,7 @@ docs/                the rules — read these before designing or generating any
 | [`docs/03-typography.md`](docs/03-typography.md) | 26 text styles in 6 semantic groups, and why `Amount/*` exists |
 | [`docs/04-accessibility.md`](docs/04-accessibility.md) | Measured contrast for every foreground/background pair |
 | [`docs/05-handoff-tokens.md`](docs/05-handoff-tokens.md) | **Open handoff to Dev** — the values still pending in `src/index.css` |
+| [`docs/06-radius-map.md`](docs/06-radius-map.md) | Which radius token each component binds — input for the `--radius` migration |
 
 ## The short version
 

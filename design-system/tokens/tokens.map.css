@@ -57,6 +57,13 @@
   --color-account-other-bg: var(--account-4-surface);
   --color-account-other-txt: var(--account-4-foreground);
 
+  /* Favourite star — was borrowing --color-tax-txt, which is the same value by accident.
+     A favourite is not a tax: if the tax amber ever moves, the star must not follow. */
+  --color-fav-bg: var(--fav-default-background);
+  --color-fav-txt: var(--fav-default-foreground);
+  --color-fav-selected-bg: var(--fav-selected-background);
+  --color-fav-selected-txt: var(--fav-selected-foreground);
+
   /* Expense categories — app id -> Figma category id */
   --cat-home: var(--category-home-default);
   --cat-home-bg: var(--category-home-surface);
