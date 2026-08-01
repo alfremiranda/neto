@@ -7,7 +7,7 @@ export function Toast() {
   return (
     <div
       className={cn(
-        'fixed left-1/2 -translate-x-1/2 bg-[var(--foreground)] text-[var(--card)] px-5 py-[10px] rounded-full text-[13px]',
+        'fixed left-1/2 -translate-x-1/2 bg-[var(--foreground)] text-[var(--card)] px-5 py-2 rounded-full ts-body-small',
         // z above the drawer (overlay z-100 / content z-101) so toasts stay visible over an open sheet
         'opacity-0 translate-y-2 pointer-events-none transition-[opacity,transform] duration-300 z-[110]',
         // Mobile: above bottom nav

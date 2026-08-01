@@ -35,7 +35,7 @@ const buttonVariants = cva(
         xs:        "h-6 px-2 gap-1 ts-control-xs [&_svg]:size-3",                            /* Figma SM  24px */
         sm:        "h-7 px-[10px] ts-control-sm [&_svg]:size-3",                             /* Figma MD  28px */
         lg:        "h-10 px-5 gap-2 ts-control-md [&_svg]:size-4",
-        xl:        "h-11 px-4 gap-2 ts-control-lg [&_svg]:size-5",                           /* Figma XL  44px */
+        xl:        "h-11 px-[18px] gap-2 ts-control-lg [&_svg]:size-5",                           /* Figma XL  44px */
         icon:      "size-9",                                                                 /* 36px */
         "icon-sm": "min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:size-8",              /* 32px */
         "icon-xs": "size-6",                                                                 /* 24px */
