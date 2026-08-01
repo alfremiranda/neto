@@ -99,13 +99,14 @@ function UserAvatar() {
             <div data-vaul-handle className="mx-auto mt-3 mb-1 h-1 w-10 rounded-full bg-[var(--border)] shrink-0" />
             <DrawerHeader>
               <DrawerTitle>Cuenta</DrawerTitle>
-              <button
+              <IconButton
+                variant="ghost"
+                size="lg"
                 onClick={() => setOpen(false)}
                 aria-label="Cerrar"
-                className="p-2 rounded-xl hover:bg-muted text-muted-foreground transition-colors"
               >
                 <X size={16} />
-              </button>
+              </IconButton>
             </DrawerHeader>
             <DrawerBody className="pb-[max(1.5rem,env(safe-area-inset-bottom))]">
               <div className="flex items-center gap-3 pb-4 mb-2 border-b border-[var(--border)]">
@@ -116,22 +117,22 @@ function UserAvatar() {
                   }
                 </div>
                 <div className="min-w-0">
-                  <div className="text-sm font-medium truncate">{name}</div>
-                  <div className="text-xs text-muted-foreground truncate">{user.email}</div>
+                  <div className="ts-body-base-emphasis truncate">{name}</div>
+                  <div className="ts-body-small text-muted-foreground truncate">{user.email}</div>
                 </div>
               </div>
-              <button type="button" onClick={goProfile} className="w-full flex items-center gap-3 px-2 py-3 rounded-xl text-sm hover:bg-[var(--muted)] transition-colors text-left">
+              <Button variant="ghost" onClick={goProfile} className="w-full justify-start gap-3 px-2 py-3 h-auto rounded-xl">
                 <UserRound size={16} className="text-muted-foreground shrink-0" />
                 Mi perfil
-              </button>
-              <button type="button" onClick={goConfig} className="w-full flex items-center gap-3 px-2 py-3 rounded-xl text-sm hover:bg-[var(--muted)] transition-colors text-left">
+              </Button>
+              <Button variant="ghost" onClick={goConfig} className="w-full justify-start gap-3 px-2 py-3 h-auto rounded-xl">
                 <Settings2 size={16} className="text-muted-foreground shrink-0" />
                 Configuración
-              </button>
-              <button type="button" onClick={doSignOut} className="w-full flex items-center gap-3 px-2 py-3 rounded-xl text-sm text-btn-danger-fg hover:bg-btn-danger-hover transition-colors text-left">
+              </Button>
+              <Button variant="ghost-danger" onClick={doSignOut} className="w-full justify-start gap-3 px-2 py-3 h-auto rounded-xl">
                 <LogOut size={16} className="shrink-0" />
                 Cerrar sesión
-              </button>
+              </Button>
             </DrawerBody>
           </DrawerContent>
         </Drawer>
@@ -147,13 +148,13 @@ function UserAvatar() {
       {open && (
         <div role="menu" className="absolute right-0 top-10 w-52 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-lg z-50 overflow-hidden">
           <div className="px-3 py-2.5 border-b border-[var(--border)]">
-            <div className="text-xs font-medium truncate">{name}</div>
-            <div className="text-[11px] text-muted-foreground truncate">{user.email}</div>
+            <div className="ts-body-small-emphasis truncate">{name}</div>
+            <div className="ts-detail-large text-muted-foreground truncate">{user.email}</div>
           </div>
           <Button
             variant="ghost"
             onClick={goProfile}
-            className="w-full justify-start gap-2 px-3 py-2.5 h-auto text-sm rounded-none"
+            className="w-full justify-start gap-2 px-3 py-2.5 h-auto rounded-none"
           >
             <UserRound size={14} className="text-muted-foreground" />
             Mi perfil
@@ -161,7 +162,7 @@ function UserAvatar() {
           <Button
             variant="ghost"
             onClick={goConfig}
-            className="w-full justify-start gap-2 px-3 py-2.5 h-auto text-sm rounded-none"
+            className="w-full justify-start gap-2 px-3 py-2.5 h-auto rounded-none"
           >
             <Settings2 size={14} className="text-muted-foreground" />
             Configuración
@@ -169,7 +170,7 @@ function UserAvatar() {
           <Button
             variant="ghost"
             onClick={doSignOut}
-            className="w-full justify-start gap-2 px-3 py-2.5 h-auto text-sm rounded-none text-btn-danger-fg hover:bg-btn-danger-hover"
+            className="w-full justify-start gap-2 px-3 py-2.5 h-auto rounded-none text-btn-danger-fg hover:bg-btn-danger-hover"
           >
             <LogOut size={14} />
             Cerrar sesión
@@ -184,13 +185,15 @@ function SidebarToggle() {
   const { toggleSidebar, state } = useSidebar()
   const collapsed = state === 'collapsed'
   return (
-    <button
+    <IconButton
+      variant="ghost"
+      size="lg"
       onClick={toggleSidebar}
       aria-label={collapsed ? 'Expandir barra lateral' : 'Colapsar barra lateral'}
-      className="hidden sm:flex p-[9px] rounded-xl text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors border-0 bg-transparent cursor-pointer shrink-0"
+      className="hidden sm:flex"
     >
       {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
-    </button>
+    </IconButton>
   )
 }
 
@@ -212,7 +215,7 @@ export function Header() {
         <SidebarToggle />
         <span className="text-base font-bold font-heading tracking-tight text-[var(--foreground)] select-none">Neto</span>
         {import.meta.env.DEV && (
-          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-lg bg-amber-500/15 text-amber-500 select-none">
+          <span className="ts-label-badge px-1.5 py-0.5 rounded-lg bg-amber-500/15 text-amber-500 select-none">
             dev
           </span>
         )}
