@@ -61,7 +61,11 @@ MAP = [
         ("--card", "--surface-wrap-card"), ("--card-foreground", "--foreground-on-card"),
         ("--muted", "--surface-wrap-subtle"), ("--muted-foreground", "--foreground-subtle"),
         ("--popover", "--surface-popover"), ("--popover-foreground", "--foreground-on-popover"),
-        ("--border", "--border-default"), ("--input", "--border-input"), ("--ring", "--border-focus"),
+        ("--border", "--border-default"),
+        # --input is shadcn's *input field* border, not a generic border. It has to follow the
+        # Input component (slate-300 / slate-700), not border/input (slate-200 / white-20),
+        # or the field boundary comes out a step lighter than the component it belongs to.
+        ("--input", "--input-color-border-default"), ("--ring", "--border-focus"),
         ("--n-txt3", "--foreground-placeholder"),
     ]),
     ("Interactive", [

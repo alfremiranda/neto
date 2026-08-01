@@ -11,7 +11,7 @@ Source of truth for the visual language of [netofinanzas.app](https://netofinanz
 ```
 tokens/
   tokens.json        raw export — every semantic and component token, both modes
-  tokens.css         CSS custom properties, light + dark + prefers-color-scheme
+  tokens.css         CSS custom properties, light + dark ([data-theme] and .dark)
   tokens.map.css     bridge from the variable names src/index.css already uses
 components/          one preview per component (58)
 foundations/         colour, typography, spacing and radius scales
@@ -28,6 +28,7 @@ docs/                the rules — read these before designing or generating any
 | [`docs/04-accessibility.md`](docs/04-accessibility.md) | Measured contrast for every foreground/background pair |
 | [`docs/05-handoff-tokens.md`](docs/05-handoff-tokens.md) | **Open handoff to Dev** — the values still pending in `src/index.css` |
 | [`docs/06-radius-map.md`](docs/06-radius-map.md) | Which radius token each component binds — input for the `--radius` migration |
+| [`docs/07-typography-rethink-sans.md`](docs/07-typography-rethink-sans.md) | **Open handoff to Dev** — the Rethink Sans migration spec: weight, tracking, and how to classify 352 declarations |
 
 ## The short version
 

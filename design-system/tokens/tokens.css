@@ -37,7 +37,7 @@
   --foreground-on-inverse: #f8fafc;
   --border-default: #e2e8f0;
   --border-input: #e2e8f0;
-  --border-focus: #cbd5e1;
+  --border-focus: #0891b2;
   --interactive-primary: #0e7490;
   --interactive-primary-foreground: #ffffff;
   --interactive-secondary: #f1f5f9;
@@ -338,7 +338,7 @@
   --foreground-on-inverse: #0f172a;
   --border-default: rgba(255,255,255,0.2);
   --border-input: rgba(255,255,255,0.2);
-  --border-focus: #475569;
+  --border-focus: #06b6d4;
   --interactive-primary: #06b6d4;
   --interactive-primary-foreground: #083344;
   --interactive-secondary: #334155;
@@ -490,29 +490,29 @@
 }
 
 /* Text styles — Rethink Sans, tabular by default */
-.ts-amount-base { font-weight:600;font-size:14px;line-height:21px;letter-spacing:0.0px; }
-.ts-amount-hero { font-weight:600;font-size:20px;line-height:24px;letter-spacing:0.0px; }
-.ts-amount-large { font-weight:700;font-size:17px;line-height:26px;letter-spacing:0.0px; }
-.ts-amount-micro { font-weight:400;font-size:10px;line-height:15px;letter-spacing:0.0px; }
-.ts-amount-small { font-weight:600;font-size:12px;line-height:18px;letter-spacing:0.0px; }
+.ts-heading-display { font-weight:700;font-size:24px;line-height:32px;letter-spacing:-0.5px; }
+.ts-heading-section { font-weight:600;font-size:20px;line-height:28px;letter-spacing:-0.25px; }
+.ts-heading-subsection { font-weight:600;font-size:18px;line-height:28px;letter-spacing:-0.25px; }
+.ts-heading-card { font-weight:600;font-size:16px;line-height:24px;letter-spacing:0.0px; }
+.ts-heading-group { font-weight:600;font-size:14px;line-height:20px;letter-spacing:0.0px; }
 .ts-body-base { font-weight:400;font-size:14px;line-height:21px;letter-spacing:0.0px; }
-.ts-body-base-emphasis { font-weight:500;font-size:14px;line-height:21px;letter-spacing:0.0px; }
 .ts-body-small { font-weight:400;font-size:12px;line-height:18px;letter-spacing:0.0px; }
+.ts-label-base { font-weight:500;font-size:11px;line-height:17px;letter-spacing:0.5px; }
+.ts-amount-base { font-weight:600;font-size:14px;line-height:21px;letter-spacing:0.0px; }
+.ts-body-base-emphasis { font-weight:500;font-size:14px;line-height:21px;letter-spacing:0.0px; }
 .ts-body-small-emphasis { font-weight:500;font-size:12px;line-height:18px;letter-spacing:0.0px; }
+.ts-detail-base { font-weight:400;font-size:10px;line-height:15px;letter-spacing:0.0px; }
+.ts-detail-emphasis { font-weight:500;font-size:10px;line-height:15px;letter-spacing:0.0px; }
+.ts-label-micro { font-weight:600;font-size:10px;line-height:15px;letter-spacing:0.5px; }
+.ts-detail-nano { font-weight:500;font-size:9px;line-height:14px;letter-spacing:0.0px; }
+.ts-detail-large { font-weight:400;font-size:11px;line-height:17px;letter-spacing:0.0px; }
+.ts-amount-small { font-weight:600;font-size:12px;line-height:18px;letter-spacing:0.0px; }
+.ts-amount-micro { font-weight:400;font-size:10px;line-height:15px;letter-spacing:0.0px; }
+.ts-amount-large { font-weight:700;font-size:17px;line-height:26px;letter-spacing:0.0px; }
+.ts-label-badge { font-weight:500;font-size:10px;line-height:10px;letter-spacing:0.0px; }
 .ts-control-xs { font-weight:500;font-size:10px;line-height:10px;letter-spacing:0.5px; }
 .ts-control-sm { font-weight:500;font-size:12px;line-height:12px;letter-spacing:0.5px; }
 .ts-control-md { font-weight:500;font-size:14px;line-height:14px;letter-spacing:0.5px; }
 .ts-control-lg { font-weight:500;font-size:16px;line-height:16px;letter-spacing:0.5px; }
 .ts-control-xl { font-weight:500;font-size:18px;line-height:18px;letter-spacing:0.5px; }
-.ts-detail-nano { font-weight:500;font-size:9px;line-height:14px;letter-spacing:0.0px; }
-.ts-detail-base { font-weight:400;font-size:10px;line-height:15px;letter-spacing:0.0px; }
-.ts-detail-emphasis { font-weight:500;font-size:10px;line-height:15px;letter-spacing:0.0px; }
-.ts-detail-large { font-weight:400;font-size:11px;line-height:17px;letter-spacing:0.0px; }
-.ts-heading-display { font-weight:800;font-size:24px;line-height:32px;letter-spacing:0.5px; }
-.ts-heading-section { font-weight:600;font-size:20px;line-height:28px;letter-spacing:0.5px; }
-.ts-heading-subsection { font-weight:600;font-size:18px;line-height:28px;letter-spacing:0.0px; }
-.ts-heading-card { font-weight:600;font-size:16px;line-height:24px;letter-spacing:0.0px; }
-.ts-heading-group { font-weight:600;font-size:14px;line-height:20px;letter-spacing:0.0px; }
-.ts-label-base { font-weight:500;font-size:11px;line-height:17px;letter-spacing:0.5px; }
-.ts-label-micro { font-weight:600;font-size:10px;line-height:15px;letter-spacing:0.5px; }
-.ts-label-badge { font-weight:500;font-size:10px;line-height:10px;letter-spacing:0.0px; }
+.ts-amount-hero { font-weight:600;font-size:20px;line-height:24px;letter-spacing:0.0px; }

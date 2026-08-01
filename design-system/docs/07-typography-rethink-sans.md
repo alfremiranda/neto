@@ -1,0 +1,218 @@
+# Typography — Rethink Sans migration spec
+
+This is the section `05-handoff-tokens.md` promised as "§7" and never had. Dev found the gap
+(`docs/reports/2026-08-01-typography-audit.md`) and was right: the migration had a decision but no
+spec, so it had nothing to be executed against. This doc is that spec. Read it with the audit —
+the audit is the spec→code map, this is the spec.
+
+Everything here is already true in Figma. The code has not moved yet.
+
+---
+
+## 1. One family
+
+**Rethink Sans is the only family in the system.** Inter and Geist Mono are out.
+
+| Variable | Today | After |
+|---|---|---|
+| `--font-sans` | `'Inter Variable', Inter, system-ui, sans-serif` | Rethink Sans |
+| `--font-mono` | `'Geist Mono Variable', 'Geist Mono', monospace` | **delete** |
+| `--font-heading` | `var(--font-mono)` | **delete** |
+
+`--font-heading` cannot keep aliasing a family that no longer exists. Both it and `--font-mono`
+collapse into `--font-sans`. If either has to survive a release for compatibility, it points at
+Rethink Sans — it does not keep its old definition alive.
+
+**This is a visible change and it is bigger than a variable swap.** The 42 `font-heading` usages
+render as Geist Mono today, which means headings currently look monospaced *on purpose*, and will
+not after. That is the intended outcome, not a regression, but it should be seen before it ships.
+
+### Figures stay tabular, for a different reason
+
+The old rule was `font-heading tabular-nums` on money, because **Inter has no tabular figures**.
+Measured at 20px, ten digits:
+
+| Family | `1111111111` | `0000000000` | `8888888888` |
+|---|---|---|---|
+| **Rethink Sans** | 118 | 118 | 118 |
+| Geist Mono | 120 | 120 | 120 |
+| Inter | 97 | 134 | 130 |
+
+Rethink Sans is tabular by default, so the `font-heading` half of that rule loses its job.
+**Keep `tabular-nums` anyway** — it is inert here and it protects the alignment if the family ever
+changes again. Amounts get ~17% narrower (119px vs 144px for `$4.012.550,75`); dense tables and
+KPI rows gain room, they do not lose it.
+
+### Weight availability — cleared
+
+Rethink Sans ships Regular, Medium, SemiBold, Bold, ExtraBold (plus italics). **No Light, no Thin.**
+The audit counted zero `font-light` and zero `font-thin` in the app, so nothing breaks on this axis.
+
+---
+
+## 2. The two questions that were blocking Dev
+
+Both were decided on 2026-08-01 against a rendered specimen in Figma
+(*Foundations → "Typography specimen — heading weight & tracking"*), not from memory.
+
+### 2.1 Is `Heading/Display` really ExtraBold? → **No. It is Bold (700).**
+
+The spec said ExtraBold 800; the app renders `h1` at SemiBold 600 and uses `font-extrabold`
+nowhere. Neither was right.
+
+- **Not ExtraBold.** At 24px Rethink Sans ExtraBold reads as a marketing weight — the counters
+  close up and it lands heavier than anything else on the screen. This is a finance app: the
+  loudest thing on a screen should be the amount, not the heading above it. `Amount/Hero` is
+  SemiBold 20; an ExtraBold 24 heading fights it and wins, which is the wrong outcome.
+- **Not SemiBold either.** `Section`, `Subsection`, `Card` and `Group` are all SemiBold. If
+  `Display` is too, it is distinguished by size alone and the scale has no display voice.
+- **Bold 700** gives Display a step of its own without the block. It is also a weight the app
+  already ships (35 `font-bold` usages), so nothing new gets loaded.
+
+Applied in Figma: `Heading/Display` binds `weight/Bold`.
+
+### 2.2 Do the negative letter-spacings survive? → **Yes, and the spec was the one that was wrong.**
+
+The app carries `-0.02em` / `-0.015em` / `-0.01em` on `h1`–`h3`. The spec bound **+0.5px** on
+`Display` and `Section`. Those are opposite corrections, and the code was closer to right.
+
+Positive tracking is a small-text device: it opens up 10–12px labels and controls where the letters
+would otherwise collide. Applied to a 24px heading it just reads loose. Rethink Sans sets
+generously by default, so large text wants pulling *in*, not pushing out. The specimen makes this
+plain at both 24 and 20.
+
+The `+0.5` on `Display`/`Section` was the `Label`/`Control` convention leaking upward. Fixed.
+
+**The rule, stated once:** *tracking goes negative as size goes up and positive as size goes down.*
+Headings 18px and over get negative; everything from 12–16px sits at 0; only `Label/*` and
+`Control/*` keep `+0.5`.
+
+### The tracking scale
+
+`tracking/tigh` was a typo. Renamed, and one step added:
+
+| Token | px | Used by |
+|---|---|---|
+| `tracking/tighter` | -1 | unused — reserved for display type above 24px |
+| `tracking/tight` | **-0.5** | `Heading/Display` (≈ -0.021em; code had -0.02em) |
+| `tracking/snug` | **-0.25** *(new)* | `Heading/Section`, `Heading/Subsection` |
+| `tracking/normal` | 0 | everything else |
+| `tracking/wide` | 0.5 | `Label/*`, `Control/*` |
+| `tracking/wider` | 1 | unused |
+
+Two negative steps, not three. `Subsection` at 18px takes the same `snug` as `Section` at 20px
+rather than earning its own value — the difference would be 0.07px, which is not a design decision,
+it is noise.
+
+---
+
+## 3. The 26 styles
+
+Generated values live in `../tokens/tokens.css` as `.ts-*` classes. This is the semantic index —
+**what each style is for**, which is the part that cannot be derived from the numbers.
+
+| Style | Spec | Use it when the text is… |
+|---|---|---|
+| `Heading/Display` | 24/32 Bold -0.5 | the title of a screen. One per view, at most |
+| `Heading/Section` | 20/28 SemiBold -0.25 | a major division inside a screen |
+| `Heading/Subsection` | 18/28 SemiBold -0.25 | a division inside a section |
+| `Heading/Card` | 16/24 SemiBold | the title of a card or panel |
+| `Heading/Group` | 14/20 SemiBold | the label over a group of rows or fields |
+| `Body/Base` | 14/21 Regular | running text. The default |
+| `Body/Base-Emphasis` | 14/21 Medium | emphasis *inside* running text |
+| `Body/Small` | 12/18 Regular | secondary running text |
+| `Body/Small-Emphasis` | 12/18 Medium | emphasis inside secondary text |
+| `Detail/Large` | 11/17 Regular | metadata, timestamps, helper text |
+| `Detail/Base` | 10/15 Regular | the smallest readable metadata |
+| `Detail/Emphasis` | 10/15 Medium | the same, when it must be picked out |
+| `Detail/Nano` | 9/14 Medium | axis ticks and legends. Nothing a user must read |
+| `Label/Base` | 11/17 Medium +0.5 | a form label or a field name |
+| `Label/Micro` | 10/15 SemiBold +0.5 | a section eyebrow above a heading |
+| `Label/Badge` | 10/10 Medium | text inside a badge or chip |
+| `Amount/Hero` | 20/24 SemiBold | the one figure a screen exists to show |
+| `Amount/Large` | 17/26 Bold | a KPI figure |
+| `Amount/Base` | 14/21 SemiBold | a figure in a row or table cell |
+| `Amount/Small` | 12/18 SemiBold | a secondary or historical figure |
+| `Amount/Micro` | 10/15 Regular | a figure inside dense chrome |
+| `Control/XS…XL` | 10·12·14·16·18, Medium +0.5, line-height = size | text inside a control — button, tab, input. Never outside one |
+
+### Why `Amount/*` exists at all
+
+`Amount/Base` and `Body/Base` are both 14/21 and differ only by weight. That is deliberate: a
+figure carries more weight than the words around it, and pairing them at the same size keeps a row
+on one baseline. **Money always takes an `Amount/*` style**, never `Body/*` — even when the size
+matches. This is the rule that resolves most of the ambiguity in §4.
+
+---
+
+## 4. How to classify the 352 declarations
+
+The audit's central finding: 14px maps to five styles and 10px to six, so **size does not identify
+a style**. The test is always *what is this text*, in this order:
+
+1. **Is it money?** → `Amount/*`, at the size the layout already uses.
+2. **Is it inside a control?** (button, tab, input, chip) → `Control/*`, sized to the control.
+3. **Is it a title?** → `Heading/*`, by depth — screen, section, subsection, card, group.
+4. **Is it a name for something else?** (form label, eyebrow, badge) → `Label/*`.
+5. **Is it prose the user reads?** → `Body/*`.
+6. **Otherwise** → `Detail/*`.
+
+Weight is not a free choice. Within `Body/*` and `Detail/*`, Medium means *emphasis*, and
+**emphasis in running text is Medium, never SemiBold.** The audit found 35 places where
+`font-semibold` sits on a body size. Each one is one of two things:
+
+- a figure wearing a body size → it becomes `Amount/Base` or `Amount/Small`, and the SemiBold is
+  correct after all;
+- a genuine emphasis → it becomes `Body/Base-Emphasis` or `Body/Small-Emphasis` (Medium).
+
+Resolve them one at a time. There is no rule that sorts them in bulk.
+
+### Off-scale sizes
+
+| Size | Uses | Goes to | Why |
+|---|---|---|---|
+| **30px** | 2 | `Heading/Display` (24) | Nothing in the system is above 24. If 30 is load-bearing somewhere, that is a request for a new style — raise it, do not just keep it |
+| **15px** | 5 | 14 or 16, by role | `Body/Base` if prose, `Heading/Card` if a title. Never split the difference |
+| **13px** | 1 | 12 or 14, by role | Same test |
+| **`text-[12px]`** | 9 | `text-xs` | Duplicate spelling of a size that already has a name |
+| **`text-[0px]`** | 1 | leave | `IngresosCard.tsx:202`, a visual-hiding hack. Not typography — replace it with `sr-only` when that file is next touched |
+
+### `text-2xs` is already `Detail/Base`
+
+`tailwind.config.js` defines `text-2xs` as 10/14 and nothing uses it, while 44 places hand-write
+`text-[10px]`. That name is `Detail/Base` (10/15) — one line-height apart. Align the config to
+15 and the 44 arbitrary values have a class to land on.
+
+### Line heights
+
+36 `leading-*` usages against 352 size declarations: most text inherits its line height today.
+All 26 styles bind one, so **most text will shift vertically** when the classes land. That is the
+change that makes ticket 3 need a visual pass, more than the family swap does.
+
+---
+
+## 5. Sequencing
+
+Dev's three-ticket shape is right and is adopted:
+
+1. **Install and collapse the family.** Add Rethink Sans, drop Geist Mono, repoint `--font-sans`,
+   delete `--font-mono` / `--font-heading`. Mechanical, reversible, safe without design review.
+2. **Encode the 26 styles** as classes, so a style is one class binding all five properties and
+   `text-[11px]` stops being a decision made 59 times.
+3. **Classify the 352 declarations** against §4, resolving the off-scale sizes and the 35 emphasis
+   cases as they come up. **This is the one carrying visual change** — it needs the same light/dark
+   pass the radius work needed, ideally in batches.
+
+Ticket 1 does not wait on anything. Ticket 3 does not ride along with ticket 1.
+
+---
+
+## 6. What this does not decide
+
+- **Italics.** Rethink Sans ships them; the system does not use them and this spec does not add
+  them. If a use appears, it gets a style, not an ad-hoc `italic`.
+- **Component-level type.** 58 previews in `design-system/components/` against 23 in
+  `src/components/ui/`, and nothing has compared form, spacing or states — only tokens. Type
+  inside components is part of that audit, not this one.
+- **The 30px case.** Two usages. Someone has to look at them and say whether the system needs a
+  step above Display or those two are wrong.

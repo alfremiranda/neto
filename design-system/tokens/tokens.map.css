@@ -14,7 +14,7 @@
   --popover: var(--surface-popover);
   --popover-foreground: var(--foreground-on-popover);
   --border: var(--border-default);
-  --input: var(--border-input);
+  --input: var(--input-color-border-default);
   --ring: var(--border-focus);
   --n-txt3: var(--foreground-placeholder);
 
