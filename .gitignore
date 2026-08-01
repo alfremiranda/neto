@@ -13,6 +13,11 @@ dist-ssr
 *.local
 .vite
 
+# Claude Code — settings.json is shared, settings.local.json is per-machine.
+# Needed here (not only in a personal global ignore) so every agent working on
+# this tree sees the same thing. Note `*.local` above does not match it.
+.claude/settings.local.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
