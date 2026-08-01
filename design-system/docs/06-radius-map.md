@@ -35,27 +35,31 @@ actually binds today — extracted from the file, not inferred.
 | Calendar | `lg` container + `md` on day cells |
 | Tooltip · Skeleton | `md` (6) |
 | Icon Account | `sm` (4) |
+| income-itemrow · transfer-itemrow | `none` (0) |
 
-## Three things this surfaced
+## Three things this surfaced — all resolved 2026-08-01
 
-**1 — `button/size/*/radius` exists but the Button component does not use it.**
+**1 — `button/size/*/radius` existed but the Button component never used it. → Deleted.**
 
-The Component collection carries `button/size/sm|md|lg|xl/radius` = 10 · 12 · 14 · 16. The Button
-component set binds `radius/full` instead. Those four tokens are currently dead, and any code that
-reads them will not match Figma.
+The Component collection carried `button/size/sm|md|lg|xl/radius` = 10 · 12 · 14 · 16 while the
+Button set binds `radius/full`. Verified dead before deleting: zero variable aliases, and zero
+node bindings across all 16 pages (~21,500 nodes scanned). The four variables are gone; the
+Component collection went from 135 to 131.
 
-Decide which is true before migrating: pill buttons (`full`) or the graduated scale (10–16). The
-rendered file says pill.
+**Buttons are pills, at every size.** That is the decision, and it is now the only thing the file
+says. The generator's button previews render `radius/full` instead of the graduated scale, so
+`design-system/components/button.html` and `icon-button.html` match the component again.
 
-**2 — Two components bind a spacing token to a radius field.**
+**2 — Two components bound a spacing token to a radius field. → Rebound.**
 
-`income-itemrow` and `transfer-itemrow` bind `spacing/0` where a radius belongs. The value is
-right (0) and the semantics are wrong. Should be `radius/none`.
+`income-itemrow` and `transfer-itemrow` bound `spacing/0` on all four corners of both `Device`
+variants. Now `radius/none`. Value unchanged (0), semantics fixed; the ~90 instances across
+*Rows* and *Blocks · Containers* inherit it, none had an override.
 
-**3 — The scale has no 10 or 14.**
+**3 — The scale has no 10 or 14. → Moot.**
 
-`button/size/*/radius` uses both. If buttons ever adopt the graduated scale, either those two
-steps get added to the semantic scale or the buttons snap to `lg` (8) and `2xl` (16).
+Those two steps existed only for the tokens deleted in #1. Nothing in the file needs them, so the
+semantic scale stays as-is: 0 · 2 · 4 · 6 · 8 · 12 · 16 · 9999.
 
 ## Suggested mapping for `src/index.css`
 

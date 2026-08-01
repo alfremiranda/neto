@@ -62,6 +62,7 @@ MAP = [
         ("--muted", "--surface-wrap-subtle"), ("--muted-foreground", "--foreground-subtle"),
         ("--popover", "--surface-popover"), ("--popover-foreground", "--foreground-on-popover"),
         ("--border", "--border-default"), ("--input", "--border-input"), ("--ring", "--border-focus"),
+        ("--n-txt3", "--foreground-placeholder"),
     ]),
     ("Interactive", [
         ("--primary", "--interactive-primary"), ("--primary-foreground", "--interactive-primary-foreground"),
@@ -76,6 +77,12 @@ MAP = [
         ("--color-tax", "--kpi-tax-default"), ("--color-tax-bg", "--kpi-tax-surface"), ("--color-tax-txt", "--kpi-tax-foreground"),
         ("--color-net", "--kpi-net-default"), ("--color-net-bg", "--kpi-net-surface"), ("--color-net-txt", "--kpi-net-foreground"),
         ("--color-danger", "--status-danger-default"), ("--color-danger-bg", "--status-danger-surface"),
+    ]),
+    ("Favourite star", [
+        # A favourite is not a tax. These shared kpi/tax/foreground by accident in light
+        # (#b45309) and already diverged in dark (#fde68a vs #fcd34d).
+        ("--color-fav-bg", "--fav-default-background"), ("--color-fav-txt", "--fav-default-foreground"),
+        ("--color-fav-selected-bg", "--fav-selected-background"), ("--color-fav-selected-txt", "--fav-selected-foreground"),
     ]),
     ("Accounts", [
         ("--color-account-arq-bg", "--account-1-surface"), ("--color-account-arq-txt", "--account-1-foreground"),
@@ -93,8 +100,12 @@ GAPS = [
     ("--font-mono", "Figma no longer has a mono family: Rethink Sans is tabular by default, so monospace figures are unnecessary."),
     ("--font-heading", "In code this aliases --font-mono. That relationship does not exist in Figma any more and has to be redefined, not remapped."),
     ("--radius", "The app derives every radius from one base with calc(). Figma has a named scale (radius/xs..2xl). Not a 1:1 mapping."),
-    ("--n-txt3", "Referenced by ui/ProgressBar.tsx, which has zero imports. The variable no longer exists — delete the component."),
 ]
+# Optional prose shown above a MAP group in tokens.map.css.
+NOTES = {
+    "Favourite star": ("was borrowing --color-tax-txt, which is the same value by accident.\n"
+                       "     A favourite is not a tax: if the tax amber ever moves, the star must not follow."),
+}
 
 def tokens_map_css():
     out = ["""/* Bridge: the variable names the app already uses -> the generated tokens.
@@ -103,7 +114,8 @@ def tokens_map_css():
 
 :root, [data-theme="light"], [data-theme="dark"] {"""]
     for title, pairs in MAP:
-        out.append(f"\n  /* {title} */")
+        note = NOTES.get(title)
+        out.append(f"\n  /* {title} — {note} */" if note else f"\n  /* {title} */")
         for app, tok in pairs:
             out.append(f"  {app}: var({tok});")
     out.append("\n  /* Expense categories — app id -> Figma category id */")
@@ -119,7 +131,9 @@ def tokens_map_css():
 # ── preview mocks ─────────────────────────────────────────────────────────
 def btn(label="Guardar", kind="filled", size="md", danger=False, disabled=False):
     px, h = NUM[f"--button-size-{size}-padding-x"], NUM[f"--button-size-{size}-height"]
-    r, fs = NUM[f"--button-size-{size}-radius"], NUM[f"--button-text-{size}-size"]
+    # Button binds radius/full at every size. The old graduated button/size/*/radius
+    # tokens (10-16) were never used by the component and were deleted from Figma.
+    r, fs = NUM["--radius-full"], NUM[f"--button-text-{size}-size"]
     if kind == "filled":
         s = (f'background:var(--button-danger-filled-background);color:var(--button-danger-filled-foreground);'
              if danger else 'background:var(--button-filled-background-default);color:var(--button-filled-foreground);') + 'border:1px solid transparent;'
@@ -174,7 +188,7 @@ def mock(n, c):
         for kind in ("filled", "outline", "ghost"):
             cells = []
             for s in ("sm", "md", "lg", "xl"):
-                px, r = NUM[f"--button-icon-size-{s}-size"], NUM[f"--button-size-{s}-radius"]
+                px, r = NUM[f"--button-icon-size-{s}-size"], NUM["--radius-full"]
                 st = ('background:var(--button-filled-background-default);color:var(--button-filled-foreground);' if kind == "filled"
                       else 'border:1px solid var(--button-outline-border);color:var(--button-outline-foreground);' if kind == "outline"
                       else 'color:var(--button-ghost-foreground);')
