@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { PRIVACY_POLICY_URL } from '@/lib/privacy'
+import { Button } from '@/components/ui/button'
 
 function GitHubIcon() {
   return (
@@ -59,27 +60,31 @@ export function LoginScreen() {
 
         {/* Auth buttons */}
         <div className="w-full flex flex-col gap-3">
-          <button
+          {/* Provider colours are deliberate brand chrome, so they override the
+              variant. Everything else — pill, focus ring, disabled, active:scale
+              — now comes from the component instead of being re-hand-rolled. */}
+          <Button
             onClick={handleGitHub}
             disabled={loadingProvider !== null}
-            className="w-full flex items-center justify-center gap-3 h-12 px-4 rounded-xl bg-foreground text-background ts-control-md transition-opacity hover:opacity-90 disabled:opacity-50 disabled:pointer-events-none"
+            className="w-full h-12 gap-3 bg-foreground text-background hover:bg-foreground hover:opacity-90"
           >
             {loadingProvider === 'github'
               ? <span className="w-4 h-4 border-2 border-background/30 border-t-background rounded-full animate-spin" />
               : <GitHubIcon />}
             Continuar con GitHub
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={handleGoogle}
+            variant="outline"
             disabled={loadingProvider !== null}
-            className="w-full flex items-center justify-center gap-3 h-12 px-4 rounded-xl border border-[var(--border)] bg-[var(--card)] text-foreground ts-control-md transition-colors hover:bg-[var(--muted)] disabled:opacity-50 disabled:pointer-events-none"
+            className="w-full h-12 gap-3 bg-[var(--card)] text-foreground hover:bg-[var(--muted)]"
           >
             {loadingProvider === 'google'
               ? <span className="w-4 h-4 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin" />
               : <GoogleIcon />}
             Continuar con Google
-          </button>
+          </Button>
         </div>
 
         <p className="ts-detail-large text-muted-foreground text-center">

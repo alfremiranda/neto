@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { useFinanceStore } from '@/store/financeStore'
 import { PRIVACY_POLICY_VERSION, PRIVACY_POLICY_URL } from '@/lib/privacy'
+import { Button } from '@/components/ui/button'
 
 // Blocking consent gate (Ley 1581). Rendered as a full-screen view in App's gating
 // chain (between login and onboarding), NOT a dismissible modal — there is no Esc,
@@ -64,22 +65,23 @@ export function ConsentScreen() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <button
+          <Button
             type="button"
             onClick={handleAccept}
             disabled={busy !== null}
-            className="w-full h-12 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] ts-control-md transition-opacity hover:opacity-90 disabled:opacity-50 disabled:pointer-events-none"
+            className="w-full h-12"
           >
             Aceptar y continuar
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="outline"
             onClick={handleDecline}
             disabled={busy !== null}
-            className="w-full h-11 rounded-xl border border-[var(--border)] text-muted-foreground ts-control-md transition-colors hover:text-foreground disabled:opacity-50 disabled:pointer-events-none"
+            className="w-full h-11 text-muted-foreground hover:text-foreground"
           >
             No acepto
-          </button>
+          </Button>
         </div>
 
         <p className="ts-detail-large text-muted-foreground">

@@ -2,10 +2,21 @@
 
 // Tailwind v3 wraps string colors in hsl() which breaks oklch vars.
 // Function-based colors bypass this and output var(...) directly.
-const cv = (v) => ({ opacityValue }) =>
-  opacityValue !== undefined
-    ? `color-mix(in oklch, var(${v}) ${Math.round(opacityValue * 100)}%, transparent)`
+//
+// `opacityValue` is NOT always a number. For ring/divide/placeholder utilities
+// Tailwind passes a CSS variable reference (e.g. `var(--tw-ring-opacity)`), and
+// `Math.round('var(...)' * 100)` is NaN — which produced
+// `color-mix(in oklch, var(--ring) NaN%, transparent)`. That whole declaration is
+// invalid, so --tw-ring-color never resolved and `focus-visible:ring-2` rendered
+// nothing. Combined with `outline-none` on the Button base class, keyboard focus
+// had no visible indicator anywhere in the app. Anything non-numeric falls back
+// to the solid colour, which is the right answer for a focus ring regardless.
+const cv = (v) => ({ opacityValue }) => {
+  const pct = Number(opacityValue)
+  return Number.isFinite(pct)
+    ? `color-mix(in oklch, var(${v}) ${Math.round(pct * 100)}%, transparent)`
     : `var(${v})`
+}
 
 export default {
   darkMode: ['class'],
