@@ -43,16 +43,16 @@ function IncomeRow({
       <Badge variant={acctVariant}>{inc.account}</Badge>
       {inc.applyProvisions === false && (
         <>
-          <span className="text-[11px] text-muted-foreground">·</span>
-          <span className="text-[11px] text-muted-foreground">sin prov.</span>
+          <span className="ts-detail-large text-muted-foreground">·</span>
+          <span className="ts-detail-large text-muted-foreground">sin prov.</span>
         </>
       )}
-      <span className="text-[11px] text-muted-foreground">·</span>
-      <span className="text-[11px] text-muted-foreground">{inc.tipo}</span>
+      <span className="ts-detail-large text-muted-foreground">·</span>
+      <span className="ts-detail-large text-muted-foreground">{inc.tipo}</span>
       {inc.date && (
         <>
-          <span className="text-[11px] text-muted-foreground">·</span>
-          <span className="text-[11px] text-muted-foreground">{fmtDate(inc.date)}</span>
+          <span className="ts-detail-large text-muted-foreground">·</span>
+          <span className="ts-detail-large text-muted-foreground">{fmtDate(inc.date)}</span>
         </>
       )}
     </div>
@@ -63,12 +63,12 @@ function IncomeRow({
       {/* Desktop */}
       <div className="hidden sm:flex items-center gap-3 py-[9px] border-b border-[var(--border)] last:border-0">
         <div className="flex-1 min-w-0 flex flex-col">
-          <div className="text-sm font-medium leading-snug truncate">{inc.desc}</div>
+          <div className="ts-body-base-emphasis truncate">{inc.desc}</div>
           <div className="mt-0.5">{meta}</div>
         </div>
         <div className="flex flex-col items-end shrink-0">
-          <span className="text-sm font-semibold tabular-nums font-mono leading-snug">{primaryAmt}</span>
-          <span className="text-[10px] tabular-nums font-mono text-muted-foreground">{secondaryAmt}</span>
+          <span className="ts-amount-base">{primaryAmt}</span>
+          <span className="ts-amount-micro text-muted-foreground">{secondaryAmt}</span>
         </div>
         <div className="flex items-center gap-0.5 shrink-0">
           <IconButton variant="ghost" size="md" onClick={onEdit} aria-label="Editar ingreso">
@@ -93,10 +93,10 @@ function IncomeRow({
       >
         <div className="flex-1 min-w-0 flex flex-col gap-1">
           <div className="flex items-end gap-2">
-            <span className="text-base font-bold tabular-nums font-heading">{primaryAmt}</span>
-            <span className="text-[11px] font-semibold tabular-nums font-mono text-muted-foreground">{secondaryAmt}</span>
+            <span className="ts-amount-large">{primaryAmt}</span>
+            <span className="ts-amount-small text-muted-foreground">{secondaryAmt}</span>
           </div>
-          <div className="text-sm font-medium leading-snug truncate">{inc.desc}</div>
+          <div className="ts-body-base-emphasis truncate">{inc.desc}</div>
           {meta}
         </div>
       </button>
@@ -198,12 +198,15 @@ function IngresosCardContent() {
             <MetricCard
               label="Total bruto equiv. COP"
               value={COP(bruto)}
+              /* text-[0px] below collapses the JSX whitespace between the two
+                 inline spans; each child sets its own size. NOT a hiding hack —
+                 sr-only here would remove the figure from view. */
               sub={totUSD > 0 ? (
                 <span className="text-[0px]">
-                  <span className="font-heading font-semibold text-[12px] leading-[18px] tabular-nums">
+                  <span className="ts-amount-small">
                     {USD(totUSD)}
                   </span>
-                  <span className="font-sans font-normal text-[11px] leading-[17px]">
+                  <span className="ts-detail-large">
                     {` · TRM mes ${month.trm.toLocaleString('es-CO', { maximumFractionDigits: 2 })}`}
                   </span>
                 </span>

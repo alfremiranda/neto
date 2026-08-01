@@ -99,8 +99,8 @@ export function DistribucionCard() {
               onBlur={() => setHovered(null)}
             >
               <span className="w-2 h-2 rounded-full shrink-0" style={{ background: `var(${seg.color})` }} />
-              <span className="text-xs text-muted-foreground">{seg.label}</span>
-              <span className="text-xs font-mono font-semibold tabular-nums">
+              <span className="ts-body-small text-muted-foreground">{seg.label}</span>
+              <span className="ts-amount-small">
                 {Math.round(seg.pct)}%
               </span>
             </button>
@@ -108,7 +108,7 @@ export function DistribucionCard() {
         </div>
 
         {/* Hovered/focused segment detail */}
-        <span aria-live="polite" aria-atomic="true" className="text-xs font-mono font-semibold tabular-nums text-foreground ml-auto min-h-[1em]">
+        <span aria-live="polite" aria-atomic="true" className="ts-amount-small text-foreground ml-auto min-h-[1em]">
           {hovSeg ? COP(hovSeg.amount) : ''}
         </span>
       </div>

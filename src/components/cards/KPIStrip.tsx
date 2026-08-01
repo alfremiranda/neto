@@ -30,8 +30,8 @@ function KPITooltipContent({ lines }: { lines: DetailLine[] }) {
           <div key={i} className="border-t border-white/20 my-1.5" />
         ) : (
           <div key={i} className={cn('flex items-baseline justify-between gap-3', line.dim && 'opacity-50')}>
-            <span className="text-[11px] text-background/60 truncate">{line.label}</span>
-            <span className="text-[11px] font-mono font-medium tabular-nums shrink-0">{line.value}</span>
+            <span className="ts-detail-large text-background/60 truncate">{line.label}</span>
+            <span className="ts-amount-small shrink-0">{line.value}</span>
           </div>
         )
       )}
@@ -55,17 +55,17 @@ function KPICard({ label, value, sub, accentToken, accent, detail, onClick }: KP
   )
   const inner = (
     <>
-      <div className="text-[10px] font-semibold font-sans uppercase tracking-[1px] text-muted-foreground">
+      <div className="ts-label-micro uppercase text-muted-foreground">
         {label}
       </div>
       <div
-        className={cn('text-xl font-semibold font-heading leading-none tabular-nums', !accentToken && (accent ?? 'text-foreground'))}
+        className={cn('ts-amount-hero', !accentToken && (accent ?? 'text-foreground'))}
         style={accentToken ? { color: `var(${accentToken})` } : undefined}
       >
         {value}
       </div>
       {sub && (
-        <div className="text-[11px] text-muted-foreground">{sub}</div>
+        <div className="ts-detail-large text-muted-foreground">{sub}</div>
       )}
     </>
   )
