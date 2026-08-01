@@ -15,10 +15,15 @@ export default {
       screens: {
         xs: '480px',
       },
+      // One family: Rethink Sans (07-typography-rethink-sans.md §1).
+      // `mono` and `heading` survive only as a bridge for the 83 existing
+      // font-mono / font-heading usages, and they point at the sans — they do
+      // NOT keep their old definitions alive. Ticket 3 removes the usages, then
+      // these two entries go with them.
       fontFamily: {
-        sans:    ['var(--font-sans)', 'Inter', 'system-ui', 'sans-serif'],
-        mono:    ['var(--font-mono)', 'Geist Mono', 'monospace'],
-        heading: ['var(--font-heading)', 'Geist Mono', 'monospace'],
+        sans:    ['var(--font-sans)', 'system-ui', 'sans-serif'],
+        mono:    ['var(--font-sans)', 'system-ui', 'sans-serif'],
+        heading: ['var(--font-sans)', 'system-ui', 'sans-serif'],
       },
       colors: {
         border:     cv('--border'),
