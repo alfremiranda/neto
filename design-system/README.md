@@ -29,6 +29,7 @@ docs/                the rules — read these before designing or generating any
 | [`docs/05-handoff-tokens.md`](docs/05-handoff-tokens.md) | **Open handoff to Dev** — the values still pending in `src/index.css` |
 | [`docs/06-radius-map.md`](docs/06-radius-map.md) | Which radius token each component binds — input for the `--radius` migration |
 | [`docs/07-typography-rethink-sans.md`](docs/07-typography-rethink-sans.md) | **Open handoff to Dev** — the Rethink Sans migration spec: weight, tracking, and how to classify 352 declarations |
+| [`docs/08-component-gap.md`](docs/08-component-gap.md) | **Open handoff to Dev** — where the components themselves disagree: form, spacing, states |
 
 ## The short version
 

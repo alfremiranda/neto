@@ -261,7 +261,7 @@
   --button-icon-size-md-padding: 8px;
   --button-icon-size-lg-padding: 10px;
   --button-icon-size-xl-padding: 12px;
-  --button-text-sm-size: 11px;
+  --button-text-sm-size: 10px;
   --button-text-md-size: 12px;
   --button-text-lg-size: 14px;
   --button-text-xl-size: 16px;
@@ -294,6 +294,7 @@
   --input-text-sm-size: 11px;
   --input-text-md-size: 12px;
   --input-text-lg-size: 14px;
+  --input-menu-radius: 8px;
 }
 
 /* Two dark selectors on purpose: [data-theme] is what the generated previews in this
