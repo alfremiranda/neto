@@ -26,6 +26,7 @@ import { LoginScreen } from '@/components/auth/LoginScreen'
 import { ConsentScreen } from '@/components/auth/ConsentScreen'
 import { OnboardingView } from '@/components/onboarding/OnboardingView'
 import { needsPrivacyConsent } from '@/lib/privacy'
+import { DEV_PREVIEW, previewDB, backupBeforeSeed } from '@/lib/devPreview'
 
 function PullIndicator({ pullY, refreshing, isPulling }: { pullY: number; refreshing: boolean; isPulling: boolean }) {
   const progress = Math.min(pullY / PTR_THRESHOLD, 1)
@@ -81,8 +82,14 @@ export default function App() {
     return () => clearTimeout(t)
   }, [])
 
-  // Initialize auth listener once on mount
+  // Initialize auth listener once on mount. Skipped under ?preview: there is no
+  // session to listen for, and not subscribing keeps the fixture off the network.
   useEffect(() => {
+    if (DEV_PREVIEW) {
+      backupBeforeSeed()
+      useFinanceStore.setState({ db: previewDB() })
+      return
+    }
     const unsub = initialize()
     return unsub
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -125,7 +132,10 @@ export default function App() {
 
   const { pullY, refreshing, isPulling } = usePullToRefresh(mainRef, handleRefresh, !user || !onboardingDone)
 
-  if (loading || !cloudReady) {
+  // Dev-only preview (?preview) walks past the four gates below so the
+  // authenticated views can be opened and screenshotted from a fixture. Every
+  // guard folds to `false` in a production build — see src/lib/devPreview.ts.
+  if (!DEV_PREVIEW && (loading || !cloudReady)) {
     return (
       <div className="h-full flex items-center justify-center bg-[var(--background)]">
         <div className="w-6 h-6 border-2 border-[var(--border)] border-t-foreground rounded-full animate-spin" />
@@ -133,7 +143,7 @@ export default function App() {
     )
   }
 
-  if (!user) {
+  if (!DEV_PREVIEW && !user) {
     return <LoginScreen />
   }
 
@@ -141,11 +151,11 @@ export default function App() {
   // user who already accepted on another device isn't re-prompted), BEFORE
   // onboarding so consent precedes entering any financial data. Catches existing
   // users too (they have onboardingDone but no consent record yet).
-  if (needsConsent) {
+  if (!DEV_PREVIEW && needsConsent) {
     return <ConsentScreen />
   }
 
-  if (!onboardingDone) {
+  if (!DEV_PREVIEW && !onboardingDone) {
     return <OnboardingView />
   }
 

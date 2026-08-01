@@ -52,3 +52,34 @@ NEEDS:
   inject a Supabase session into localStorage, which I would rather not do blind against a real
   project. My recommendation is (b) — it is small, it is useful beyond this ticket, and it never
   touches production auth.
+
+---
+
+## Follow-up — the dev preview flag is in (option b, approved)
+
+`?preview` on the dev server mounts the authenticated app from a fixture, so the ~340 declarations
+behind the auth gate are now reachable for the remaining batches.
+
+- `src/lib/devPreview.ts` holds the flag and the fixture; `App.tsx` guards its four gates with it.
+- **Proved inert in production, not assumed.** Grepped the built bundle for every fixture-unique
+  string: `previewDB`, `pre-preview`, `Toptal — proyecto corto`, the TRM `3980.5` — all **0
+  occurrences**. `import.meta.env.DEV` is statically false in a prod build, so the module folds
+  away entirely. The only near-misses were `Observer Hub` and `Salud prepagada`, which turned out
+  to be the app's own account label and expense category, not the fixture.
+- It never fabricates a Supabase session and never subscribes to auth — it seeds the store and
+  skips the gates.
+- It goes through the normal persisted store, so it replaces the dev localStorage.
+  `backupBeforeSeed()` copies the previous value to `amd-finance.pre-preview` first and logs the
+  one-line restore.
+
+One fixture bug caught by looking at the screenshot rather than the diff: the first version dated
+entries on days 3–20, and the app correctly excludes future-dated expenses, so `Gastos` rendered
+`$0` for the first eleven days of any month. Entries now land on day 01 of the current month, and
+all five KPI cards carry real figures. Screenshots: `2026-08-01-devpreview-mes-{light,dark}.png`.
+
+**Heading decision, settled:** the consent title stays `Heading/Display` (20 → 24px). The consent
+screen is a full-screen blocking gate, so its `<h1>` is the title of a screen by the same reading
+that makes `LoginScreen`'s one, and §4 classifies by role. Both screens now agree.
+
+NEEDS (updated): nothing blocking. Batch 2 can start on the authenticated views whenever the
+orchestrator wants; I can produce its light/dark screenshots myself now.
