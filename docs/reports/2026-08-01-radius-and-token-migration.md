@@ -37,6 +37,15 @@ FOUND:
 - Verification method, for reuse: every custom property was resolved to a literal from the built
   CSS before and after, per theme, and diffed. That is what caught the two above — a source diff
   would not have, since the values arrive through two levels of `var()` indirection.
+- **Typography was never scoped.** `05-handoff-tokens.md` covers 20 colour values in one file and
+  has no §7; the relay that deferred Rethink Sans "to §7 of the handoff" pointed at a section that
+  is not in the committed doc. So it had no ticket and no spec→code map. I wrote the map:
+  `docs/reports/2026-08-01-typography-audit.md`. Headline: 352 size declarations, 15 distinct sizes
+  against the spec's 10, and 14px alone maps to five different styles — it is a semantic
+  classification, not a font swap. No `font-light`/`font-thin` anywhere, so Rethink Sans is safe on
+  the axis that could have blocked it.
+- Same shape of gap on components: 58 previews in `design-system/components/` against 23 in
+  `src/components/ui/`, and nothing has compared form, spacing or states — only tokens.
 
 NEEDS:
 - **Visual review in light and dark, from Alfredo or Design.** Buttons are pills at every size
@@ -47,3 +56,11 @@ NEEDS:
 - **Design:** confirm the four accepted values above are intended, not drift.
 - Standing, Design's own: `Sidebar` binds no radius in Figma, so the `8` is judgement. Treat as
   provisional; `menu-item` at `2xl` would be much rounder.
+- **Orchestrator: typography needs tickets — three, not one** (see the audit's last section).
+  (1) install Rethink Sans, drop Geist Mono, redefine `--font-heading` — mechanical, safe alone;
+  (2) encode the 26 styles as classes so a style stops being 352 separate decisions;
+  (3) classify the declarations, resolving 8 off-scale sizes and 35 emphasis-rule violations.
+  Sequencing is yours; my input is only that (3) is the one carrying visual change, so it should
+  not ride along with (1).
+- **Design: two answers unblock the audit** — is `Heading/Display` really ExtraBold (nothing in the
+  app uses that weight), and do the negative letter-spacings on `h1`–`h3` survive the family change?
