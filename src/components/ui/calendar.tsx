@@ -51,7 +51,7 @@ function Calendar({
         // caption_label is the VISIBLE display for each dropdown (text + chevron)
         // also used as the non-dropdown month/year label — looks fine either way
         caption_label: cn(
-          "flex items-center gap-1 border border-[var(--border)] rounded-md",
+          "flex items-center gap-1 border border-[var(--border)] rounded-lg",
           "px-2.5 py-1 text-sm font-medium pointer-events-none select-none",
           "bg-transparent hover:bg-muted transition-colors"
         ),

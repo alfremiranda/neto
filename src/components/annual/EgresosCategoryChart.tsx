@@ -254,7 +254,7 @@ export function EgresosCategoryChart({ year }: EgresosCategoryChartProps) {
         <svg ref={svgRef} className="w-full block" />
         {tooltip && (
           <div
-            className="absolute z-10 pointer-events-none rounded-lg border border-[var(--border)] bg-[var(--popover)] shadow-lg px-3 py-2.5 text-[11px] min-w-[180px]"
+            className="absolute z-10 pointer-events-none rounded-xl border border-[var(--border)] bg-[var(--popover)] shadow-lg px-3 py-2.5 text-[11px] min-w-[180px]"
             style={{
               left: tooltip.x + 14,
               top:  tooltip.y - 100,

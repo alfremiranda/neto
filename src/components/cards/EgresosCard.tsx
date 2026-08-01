@@ -288,7 +288,7 @@ function EgresosCardSkeleton() {
       <div className="space-y-0">
         {[55, 70, 45, 60].map((w, i) => (
           <div key={i} className="flex items-center gap-3 py-[9px] border-b border-[var(--border)] last:border-0">
-            <Skeleton className="h-8 w-8 rounded-lg shrink-0" />
+            <Skeleton className="h-8 w-8 rounded-xl shrink-0" />
             <div className="flex-1 space-y-1.5">
               <Skeleton style={{ width: `${w}%` }} className="h-3.5" />
               <Skeleton className="h-3 w-20" />
@@ -577,7 +577,7 @@ function EgresosCardContent() {
                     <button
                       onClick={() => setFilterDrawerOpen(false)}
                       aria-label="Cerrar"
-                      className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
+                      className="p-2 rounded-xl hover:bg-muted text-muted-foreground transition-colors"
                     >
                       <X size={16} />
                     </button>
@@ -660,7 +660,7 @@ function EgresosCardContent() {
                     ))}
 
                     {/* Subtotal */}
-                    <div className="flex justify-between items-center mt-3 bg-muted rounded-lg px-3 py-2.5">
+                    <div className="flex justify-between items-center mt-3 bg-muted rounded-xl px-3 py-2.5">
                       <span className="text-sm text-muted-foreground">
                         {subtotalLabel}
                         {hasFilters && <span className="ml-1 text-xs opacity-60">(filtrado)</span>}

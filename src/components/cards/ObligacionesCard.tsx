@@ -88,7 +88,7 @@ function SSScheduleDialog({ year, month }: { year: number; month: number }) {
                 SS de {MONTH_LONG[(month - 1)]} se paga en {MONTH_LONG[(payMonth - 1)]} {payYear}
               </p>
             </div>
-            <DialogPrimitive.Close className="rounded-sm text-muted-foreground hover:text-foreground transition-colors mt-0.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+            <DialogPrimitive.Close className="rounded-lg text-muted-foreground hover:text-foreground transition-colors mt-0.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
               <X size={16} />
             </DialogPrimitive.Close>
           </div>
@@ -98,7 +98,7 @@ function SSScheduleDialog({ year, month }: { year: number; month: number }) {
             <p className="text-[11px] text-muted-foreground mb-2">
               El plazo depende de los <span className="font-medium text-foreground">últimos 2 dígitos</span> de tu cédula o NIT.
             </p>
-            <div className="rounded-lg border border-[var(--border)] overflow-hidden text-xs">
+            <div className="rounded-xl border border-[var(--border)] overflow-hidden text-xs">
               <div className="grid grid-cols-3 bg-muted px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                 <span>Dígitos</span>
                 <span className="text-center">Día hábil</span>
@@ -184,7 +184,7 @@ const FSS_BRACKETS = [
 function FSSRow({ amount, pct, trm, showUSD }: { amount: number; pct: number; trm: number; showUSD: boolean }) {
   return (
     <div className="pt-0 pb-2 border-b border-[var(--border)] last:border-0">
-      <div className="rounded-lg px-2 py-1 flex items-center gap-1.5" style={{ background: 'color-mix(in oklab, var(--muted-foreground) 8%, var(--muted))' }}>
+      <div className="rounded-xl px-2 py-1 flex items-center gap-1.5" style={{ background: 'color-mix(in oklab, var(--muted-foreground) 8%, var(--muted))' }}>
         <span className="text-xs font-medium text-muted-foreground">FSS</span>
         <span className="text-[10px] text-muted-foreground">·</span>
         <span className="text-[10px] text-muted-foreground">Fondo de Solidaridad</span>
@@ -233,7 +233,7 @@ function FSSRow({ amount, pct, trm, showUSD }: { amount: number; pct: number; tr
 
 function GroupBox({ label, children, action, trmNote, ibcRow }: { label: string; children: React.ReactNode; action?: React.ReactNode; trmNote?: string; ibcRow?: React.ReactNode }) {
   return (
-    <div className="rounded-lg bg-muted overflow-hidden">
+    <div className="rounded-xl bg-muted overflow-hidden">
       <div className="px-3 pt-2 pb-0.5 flex items-center gap-4">
         <div className="flex items-center gap-1">
           <span className="text-[10px] font-semibold uppercase tracking-[1px] text-muted-foreground/70">{label}</span>
@@ -306,7 +306,7 @@ export function ObligacionesCard() {
             action={<SSScheduleDialog year={y} month={m} />}
             trmNote={showUSD ? trmNote : undefined}
             ibcRow={
-              <div className="border border-[var(--border)] rounded-lg px-2 py-1 flex items-center gap-1.5">
+              <div className="border border-[var(--border)] rounded-xl px-2 py-1 flex items-center gap-1.5">
                 <span className="text-xs font-medium text-muted-foreground">IBC</span>
                 <span className="text-[10px] text-muted-foreground">·</span>
                 <span className="text-[10px] text-muted-foreground">

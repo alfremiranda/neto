@@ -48,7 +48,7 @@ export function MesView() {
                   onClick={() => setTab(t.id)}
                   aria-pressed={active}
                   className={cn(
-                    'shrink-0 h-9 px-3.5 rounded-lg text-sm font-medium whitespace-nowrap cursor-pointer transition-colors',
+                    'shrink-0 h-9 px-3.5 rounded-xl text-sm font-medium whitespace-nowrap cursor-pointer transition-colors',
                     active
                       ? 'bg-[var(--primary)] text-[var(--primary-foreground)]'
                       : 'text-muted-foreground hover:text-foreground hover:bg-[var(--muted)]',

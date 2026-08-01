@@ -185,7 +185,7 @@ export function AccountEditSheet() {
       <div className="space-y-4">
 
         {isLocked && (
-          <p className="text-xs text-muted-foreground bg-muted rounded-lg px-3 py-2">
+          <p className="text-xs text-muted-foreground bg-muted rounded-xl px-3 py-2">
             Bolsillo del sistema — el nombre y la moneda no se pueden cambiar.
           </p>
         )}
@@ -271,7 +271,7 @@ export function AccountEditSheet() {
           <>
             <div>
               <label className="field-label">Tipo de ahorro</label>
-              <div className="grid grid-cols-3 rounded-lg border border-[var(--border)] p-0.5 gap-0.5">
+              <div className="grid grid-cols-3 rounded-xl border border-[var(--border)] p-0.5 gap-0.5">
                 {SAVINGS_KINDS.map(({ value, label: kLabel }) => (
                   <button
                     key={value}
@@ -279,7 +279,7 @@ export function AccountEditSheet() {
                     onClick={() => setSavingsKind(value)}
                     aria-pressed={savingsKind === value}
                     className={cn(
-                      'py-1.5 rounded-md text-xs font-medium transition-colors border-0',
+                      'py-1.5 rounded-lg text-xs font-medium transition-colors border-0',
                       savingsKind === value
                         ? 'bg-[var(--primary)] text-[var(--primary-foreground)]'
                         : 'bg-transparent text-muted-foreground hover:text-foreground hover:bg-[var(--accent)]',

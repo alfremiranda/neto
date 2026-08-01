@@ -68,7 +68,7 @@ function MonthPicker({ months, onChange }: { months: number[]; onChange: (m: num
               aria-label={`${MONTH_FULL[i]}${active ? ' (activo)' : ''}`}
               aria-pressed={active}
               className={[
-                'w-10 h-10 rounded-md text-[11px] font-mono font-semibold border cursor-pointer transition-colors',
+                'w-10 h-10 rounded-lg text-[11px] font-mono font-semibold border cursor-pointer transition-colors',
                 active
                   ? 'bg-[var(--primary)] text-primary-foreground border-[var(--primary)]'
                   : 'bg-transparent text-muted-foreground border-[var(--border)] hover:border-[var(--primary)] hover:text-[var(--primary)]',
@@ -407,11 +407,11 @@ export function DeductionsPanel() {
   return (
     <div className="space-y-4">
       {/* SMMLV — legal base for the IBC floor */}
-      <div className="bg-[var(--background)] rounded-lg border border-[var(--border)] p-4">
+      <div className="bg-[var(--background)] rounded-xl border border-[var(--border)] p-4">
         <label className="block text-xs font-medium text-muted-foreground mb-1.5">
           SMMLV {year} (COP)
         </label>
-        <div className="flex items-center gap-2 border border-[var(--input)] rounded-lg px-[10px] py-2 bg-muted/50">
+        <div className="flex items-center gap-2 border border-[var(--input)] rounded-xl px-[10px] py-2 bg-muted/50">
           <span className="flex-1 font-heading tabular-nums text-foreground">{copFormat(currentSmmlv)}</span>
           <Lock size={13} className="text-muted-foreground shrink-0" />
         </div>
@@ -442,7 +442,7 @@ export function DeductionsPanel() {
             <div className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1.5">
               {section.label}
             </div>
-            <div className="bg-[var(--background)] rounded-lg border border-[var(--border)] px-3">
+            <div className="bg-[var(--background)] rounded-xl border border-[var(--border)] px-3">
               {items.map(d => (
                 <DeductionRow key={d.id} d={d} onEdit={() => openEdit(d)} />
               ))}

@@ -107,7 +107,7 @@ function AccountsStep({ added, onAdd, onRemove }: {
             <p className="text-sm font-medium">{a.label}</p>
             <p className="text-xs text-muted-foreground">Siempre incluida</p>
           </div>
-          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-muted text-muted-foreground shrink-0">
+          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-lg bg-muted text-muted-foreground shrink-0">
             {a.currency}
           </span>
         </div>
@@ -127,7 +127,7 @@ function AccountsStep({ added, onAdd, onRemove }: {
             </p>
           </div>
           <span className={cn(
-            'text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0',
+            'text-[10px] font-bold px-1.5 py-0.5 rounded-lg shrink-0',
             a.currency === 'USD'
               ? 'bg-[var(--color-income)]/15 text-[var(--color-income-txt)]'
               : 'bg-muted text-muted-foreground',
@@ -137,7 +137,7 @@ function AccountsStep({ added, onAdd, onRemove }: {
           <button
             type="button"
             onClick={() => onRemove(i)}
-            className="shrink-0 w-7 h-7 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-[var(--accent)] transition-colors"
+            className="shrink-0 w-7 h-7 flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-[var(--accent)] transition-colors"
             aria-label="Eliminar cuenta"
           >
             <X size={14} />
@@ -150,14 +150,14 @@ function AccountsStep({ added, onAdd, onRemove }: {
         <p className="text-sm font-semibold">Agregar cuenta</p>
 
         {/* Type */}
-        <div className="flex rounded-lg border border-[var(--border)] p-0.5 gap-0.5">
+        <div className="flex rounded-xl border border-[var(--border)] p-0.5 gap-0.5">
           {([['account', 'Cuenta', Landmark], ['cash', 'Efectivo', Wallet], ['credit', 'Crédito', CreditCard]] as const).map(([t, tLabel, Icon]) => (
             <button
               key={t}
               type="button"
               onClick={() => setType(t)}
               className={cn(
-                'flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-medium transition-colors border-0',
+                'flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-medium transition-colors border-0',
                 type === t
                   ? 'bg-[var(--primary)] text-[var(--primary-foreground)]'
                   : 'bg-transparent text-muted-foreground hover:text-foreground',
@@ -179,14 +179,14 @@ function AccountsStep({ added, onAdd, onRemove }: {
             placeholder={isCredit ? 'Ej: Visa Bancolombia' : type === 'cash' ? 'Ej: Billetera, Menudo…' : 'Ej: Bancolombia Ahorros'}
             className="field-input flex-1 min-w-0"
           />
-          <div className="flex rounded-lg border border-[var(--border)] p-0.5 gap-0.5 shrink-0">
+          <div className="flex rounded-xl border border-[var(--border)] p-0.5 gap-0.5 shrink-0">
             {(['COP', 'USD'] as const).map(c => (
               <button
                 key={c}
                 type="button"
                 onClick={() => setCurrency(c)}
                 className={cn(
-                  'px-2.5 py-1 rounded-md text-xs font-bold transition-colors border-0',
+                  'px-2.5 py-1 rounded-lg text-xs font-bold transition-colors border-0',
                   currency === c
                     ? 'bg-[var(--primary)] text-[var(--primary-foreground)]'
                     : 'bg-transparent text-muted-foreground hover:text-foreground',
@@ -308,7 +308,7 @@ function ProfileStep({ profile, onSelect }: {
               )}
             >
               <span className={cn(
-                'w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors',
+                'w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors',
                 selected ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'bg-muted text-muted-foreground',
               )}>
                 <Icon size={17} />
@@ -329,7 +329,7 @@ function ProfileStep({ profile, onSelect }: {
       </div>
 
       {profile === 'ambos' && (
-        <div className="rounded-lg bg-muted/60 border border-[var(--border)] px-3.5 py-3">
+        <div className="rounded-xl bg-muted/60 border border-[var(--border)] px-3.5 py-3">
           <p className="text-[12px] text-muted-foreground leading-relaxed">
             Al registrar tu salario, márcalo como ingreso <strong>"otro"</strong> para excluirlo
             de los aportes — tus ingresos independientes sí los calcularán.

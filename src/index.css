@@ -41,10 +41,10 @@
     --destructive-foreground: #ffffff;
 
     /* Radius — Figma's named scale (design-system/docs/06-radius-map.md).
-       Named, not derived: with calc() off one base, adjusting the base moves
-       every radius at once and lands on steps that belong to no scale.
-       --radius stays until the tailwind + component migration lands (blocked
-       on two design decisions — see the radius map doc). */
+       Named, not derived: with calc() off one base, adjusting the base moved
+       every radius at once and landed on steps belonging to no scale. The old
+       --radius base is gone; tailwind's borderRadius maps onto these directly.
+       Changing a rung here changes exactly that rung. */
     --radius-none: 0px;
     --radius-xs:   2px;
     --radius-sm:   4px;
@@ -53,8 +53,6 @@
     --radius-xl:   12px;   /* cards and containers */
     --radius-2xl:  16px;   /* sheets, menu-item */
     --radius-full: 9999px; /* buttons, badges, avatar, toast, nav */
-
-    --radius:              0.75rem;
 
     /* Sidebar (nav/background = white, selected = cyan) */
     --sidebar:                    #ffffff;

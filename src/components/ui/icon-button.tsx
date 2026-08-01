@@ -17,10 +17,10 @@ const iconButtonVariants = cva(
         "ghost-danger":   "bg-transparent text-btn-danger-fg hover:bg-btn-danger-hover",
       },
       size: {
-        sm: "size-6 rounded-[10px] [&_svg]:size-3",   // 24px, r=10px, icon=12px
-        md: "size-7 rounded-[12px] [&_svg]:size-3",   // 28px, r=12px, icon=12px
-        lg: "size-9 rounded-[14px] [&_svg]:size-4",   // 36px, r=14px, icon=16px
-        xl: "size-11 rounded-[16px] [&_svg]:size-5",  // 44px, r=16px, icon=20px
+        sm: "size-6 rounded-full [&_svg]:size-3",   // 24px, icon=12px — pill
+        md: "size-7 rounded-full [&_svg]:size-3",   // 28px, icon=12px — pill
+        lg: "size-9 rounded-full [&_svg]:size-4",   // 36px, icon=16px — pill
+        xl: "size-11 rounded-full [&_svg]:size-5",  // 44px, icon=20px — pill
       },
     },
     defaultVariants: {

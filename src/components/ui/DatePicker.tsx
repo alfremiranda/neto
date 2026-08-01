@@ -36,7 +36,7 @@ export function DatePicker({ value, onChange, className, placeholder = 'Seleccio
           type="button"
           data-slot="datepicker-trigger"
           className={cn(
-            'flex w-full items-center gap-2 h-11 sm:h-9 rounded-sm border border-input bg-[var(--card)] px-3 text-left text-base sm:text-sm whitespace-nowrap transition-colors outline-none select-none focus-visible:border-2 focus-visible:border-foreground disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive',
+            'flex w-full items-center gap-2 h-11 sm:h-9 rounded-lg border border-input bg-[var(--card)] px-3 text-left text-base sm:text-sm whitespace-nowrap transition-colors outline-none select-none focus-visible:border-2 focus-visible:border-foreground disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive',
             !selected && 'text-muted-foreground',
             className,
           )}

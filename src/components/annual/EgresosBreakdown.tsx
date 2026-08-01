@@ -77,7 +77,7 @@ export function EgresosBreakdown({ year }: EgresosBreakdownProps) {
         {categories.map(cat => (
           <div key={cat.id} className="flex items-center gap-3">
             <div
-              className="shrink-0 w-6 h-6 rounded-md flex items-center justify-center"
+              className="shrink-0 w-6 h-6 rounded-lg flex items-center justify-center"
               style={{ background: `var(${cat.bgColor})`, color: `var(${cat.color})` }}
             >
               <cat.Icon size={12} strokeWidth={2.5} />

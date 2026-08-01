@@ -26,7 +26,7 @@ function NavButton({ id, label, Icon }: { id: ViewType; label: string; Icon: typ
     <button
       onClick={() => setView(id)}
       className={cn(
-        'flex w-full items-center h-10 rounded-[12px] overflow-hidden transition-colors cursor-pointer border-0 bg-transparent font-[inherit]',
+        'flex w-full items-center h-10 rounded-xl overflow-hidden transition-colors cursor-pointer border-0 bg-transparent font-[inherit]',
         collapsed ? 'p-[12px] gap-0 justify-start' : 'px-3 py-2 gap-2',
         active
           ? 'bg-[var(--sidebar-primary)] text-[var(--sidebar-primary-foreground)] hover:bg-[var(--sidebar-primary)] hover:text-[var(--sidebar-primary-foreground)]'

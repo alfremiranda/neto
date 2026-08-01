@@ -14,7 +14,7 @@ import { useUIStore } from '@/store/uiStore'
 function ProvisionesCardSkeleton() {
   return (
     <SectionCard icon={PiggyBank} title="Provisiones">
-      <div className="rounded-lg bg-muted overflow-hidden">
+      <div className="rounded-xl bg-muted overflow-hidden">
         <div className="px-3 pt-2 pb-0.5">
           <Skeleton className="h-2.5 w-32" />
         </div>
@@ -131,7 +131,7 @@ function ProvisionesCardContent() {
 
         {/* Legal provisions group */}
         {provItems.length > 0 && (
-          <div className="rounded-lg bg-muted overflow-hidden">
+          <div className="rounded-xl bg-muted overflow-hidden">
             <div className="px-3 pt-2 pb-0.5 flex items-center gap-1">
               <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70">Provisiones legales</span>
               {showUSD && trmNote && (

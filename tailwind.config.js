@@ -73,10 +73,19 @@ export default {
       fontSize: {
         '2xs': ['0.625rem', { lineHeight: '0.875rem' }],
       },
+      // Figma's named scale (design-system/docs/06-radius-map.md). Each rung is a
+      // value someone chose, not a calc() off a base — adjusting one no longer
+      // drags the others. Note sm/md/lg mean 4/6/8 here, NOT the 8/10/12 they
+      // meant while they were derived; component classes were migrated with this.
       borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
+        none: 'var(--radius-none)',
+        xs: 'var(--radius-xs)',
+        sm: 'var(--radius-sm)',
+        md: 'var(--radius-md)',
+        lg: 'var(--radius-lg)',
+        xl: 'var(--radius-xl)',
+        '2xl': 'var(--radius-2xl)',
+        full: 'var(--radius-full)',
       },
     },
   },

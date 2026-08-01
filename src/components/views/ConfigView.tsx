@@ -44,7 +44,7 @@ export function ConfigView() {
         <div className="mt-8 pt-6 border-t border-[var(--border)] space-y-4">
           {/* Dev environment warning */}
           {import.meta.env.DEV && (
-            <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2.5 text-xs text-amber-600 dark:text-amber-400">
+            <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-2.5 text-xs text-amber-600 dark:text-amber-400">
               <span className="font-semibold">Ambiente de desarrollo</span> — la nube apunta a Supabase dev (vacío).
               No uses "Jalar desde la nube" o perderás los datos locales.
             </div>

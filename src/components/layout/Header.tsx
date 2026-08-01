@@ -102,7 +102,7 @@ function UserAvatar() {
               <button
                 onClick={() => setOpen(false)}
                 aria-label="Cerrar"
-                className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
+                className="p-2 rounded-xl hover:bg-muted text-muted-foreground transition-colors"
               >
                 <X size={16} />
               </button>
@@ -120,15 +120,15 @@ function UserAvatar() {
                   <div className="text-xs text-muted-foreground truncate">{user.email}</div>
                 </div>
               </div>
-              <button type="button" onClick={goProfile} className="w-full flex items-center gap-3 px-2 py-3 rounded-lg text-sm hover:bg-[var(--muted)] transition-colors text-left">
+              <button type="button" onClick={goProfile} className="w-full flex items-center gap-3 px-2 py-3 rounded-xl text-sm hover:bg-[var(--muted)] transition-colors text-left">
                 <UserRound size={16} className="text-muted-foreground shrink-0" />
                 Mi perfil
               </button>
-              <button type="button" onClick={goConfig} className="w-full flex items-center gap-3 px-2 py-3 rounded-lg text-sm hover:bg-[var(--muted)] transition-colors text-left">
+              <button type="button" onClick={goConfig} className="w-full flex items-center gap-3 px-2 py-3 rounded-xl text-sm hover:bg-[var(--muted)] transition-colors text-left">
                 <Settings2 size={16} className="text-muted-foreground shrink-0" />
                 Configuración
               </button>
-              <button type="button" onClick={doSignOut} className="w-full flex items-center gap-3 px-2 py-3 rounded-lg text-sm text-btn-danger-fg hover:bg-btn-danger-hover transition-colors text-left">
+              <button type="button" onClick={doSignOut} className="w-full flex items-center gap-3 px-2 py-3 rounded-xl text-sm text-btn-danger-fg hover:bg-btn-danger-hover transition-colors text-left">
                 <LogOut size={16} className="shrink-0" />
                 Cerrar sesión
               </button>
@@ -187,7 +187,7 @@ function SidebarToggle() {
     <button
       onClick={toggleSidebar}
       aria-label={collapsed ? 'Expandir barra lateral' : 'Colapsar barra lateral'}
-      className="hidden sm:flex p-[9px] rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors border-0 bg-transparent cursor-pointer shrink-0"
+      className="hidden sm:flex p-[9px] rounded-xl text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors border-0 bg-transparent cursor-pointer shrink-0"
     >
       {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
     </button>
@@ -212,7 +212,7 @@ export function Header() {
         <SidebarToggle />
         <span className="text-base font-bold font-heading tracking-tight text-[var(--foreground)] select-none">Neto</span>
         {import.meta.env.DEV && (
-          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-amber-500/15 text-amber-500 select-none">
+          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-lg bg-amber-500/15 text-amber-500 select-none">
             dev
           </span>
         )}
@@ -221,7 +221,7 @@ export function Header() {
       {/* Right: chips + actions */}
       <div className="flex items-center gap-2">
         {/* Date chip — desktop only */}
-        <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-[5px] rounded-lg border border-[var(--border)] text-[11px] text-[var(--muted-foreground)] whitespace-nowrap select-none">
+        <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-[5px] rounded-xl border border-[var(--border)] text-[11px] text-[var(--muted-foreground)] whitespace-nowrap select-none">
           <CalendarDays size={11} className="shrink-0" />
           <span>{todayLabel()}</span>
         </div>
@@ -230,7 +230,7 @@ export function Header() {
         {trm && (
           <div
             title={fresh ? 'TRM en vivo (Banco República)' : 'TRM desde caché (< 8h)'}
-            className="flex items-center gap-1 px-2 py-1 rounded-lg bg-[var(--muted)] text-[11px] whitespace-nowrap select-none"
+            className="flex items-center gap-1 px-2 py-1 rounded-xl bg-[var(--muted)] text-[11px] whitespace-nowrap select-none"
           >
             <span className="relative flex h-[7px] w-[7px] shrink-0">
               {fresh && (

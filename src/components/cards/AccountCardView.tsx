@@ -155,7 +155,7 @@ export function AccountCardView({ account, size = 'lg', selected = false, onClic
         <button
           type="button"
           onClick={e => { e.stopPropagation(); openEdit() }}
-          className="mt-auto self-start inline-flex items-center gap-1 rounded-lg border border-[var(--border)] px-2 py-1 text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          className="mt-auto self-start inline-flex items-center gap-1 rounded-xl border border-[var(--border)] px-2 py-1 text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
         >
           <Pencil size={11} />
           Editar

@@ -104,7 +104,7 @@ export function SheetBase({ id, title, children, footer }: SheetBaseProps) {
           <button
             onClick={closeSheet}
             aria-label="Cerrar"
-            className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
+            className="p-2 rounded-xl hover:bg-muted text-muted-foreground transition-colors"
           >
             <X size={16} />
           </button>

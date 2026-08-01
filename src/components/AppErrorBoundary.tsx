@@ -46,14 +46,14 @@ function PanicScreen() {
         <button
           type="button"
           onClick={reload}
-          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
         >
           Recargar la app
         </button>
         <button
           type="button"
           onClick={signOutAndReload}
-          className="rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground"
+          className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground"
         >
           Cerrar sesión
         </button>

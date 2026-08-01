@@ -234,7 +234,7 @@ export function TransferSheet() {
 
         {/* Live TRM banner */}
         {liveTRM.trm && (
-          <div className="flex justify-between items-center bg-muted rounded-lg px-3 py-2">
+          <div className="flex justify-between items-center bg-muted rounded-xl px-3 py-2">
             <span className="text-xs text-muted-foreground">TRM en vivo</span>
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium tabular-nums">
@@ -343,7 +343,7 @@ export function TransferSheet() {
 
         {/* Effective TRM info when received is specified */}
         {hasReceived && effectiveTRM != null && (
-          <div className="rounded-lg border border-[var(--border)] px-3 py-2.5 space-y-1.5">
+          <div className="rounded-xl border border-[var(--border)] px-3 py-2.5 space-y-1.5">
             <div className="flex justify-between items-center">
               <span className="text-xs text-muted-foreground">TRM efectiva</span>
               <span className="text-sm font-semibold font-heading tabular-nums">
@@ -373,14 +373,14 @@ export function TransferSheet() {
 
         {/* Calculated result (when not using received amount) */}
         {getResultLabel() && (
-          <div className="text-sm text-muted-foreground bg-muted rounded-lg px-3 py-2">
+          <div className="text-sm text-muted-foreground bg-muted rounded-xl px-3 py-2">
             {getResultLabel()}
           </div>
         )}
 
         {/* Balance preview — always visible */}
         {from && to && (
-          <div className="rounded-lg border border-[var(--border)] overflow-hidden">
+          <div className="rounded-xl border border-[var(--border)] overflow-hidden">
             <div className="px-3 py-2 bg-muted/50 border-b border-[var(--border)]">
               <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
                 {amt.numericValue > 0 ? 'Saldos después del movimiento' : 'Saldos disponibles'}

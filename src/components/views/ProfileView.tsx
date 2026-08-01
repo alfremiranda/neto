@@ -114,7 +114,7 @@ export function ProfileView() {
         <button
           type="button"
           onClick={goBack}
-          className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[var(--muted)] transition-colors text-muted-foreground hover:text-foreground"
+          className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-[var(--muted)] transition-colors text-muted-foreground hover:text-foreground"
           aria-label="Volver"
         >
           <ArrowLeft size={16} />
