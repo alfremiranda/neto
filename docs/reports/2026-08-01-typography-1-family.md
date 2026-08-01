@@ -33,12 +33,52 @@ FOUND:
   a reference and `tokens.css` deliberately never defines it. `.ts-heading-display` now resolves
   to `700 / 24px / 32px / -0.5px`. The design of that seam worked exactly as documented.
 
+## Addendum — I can verify visually after all
+
+I had been reporting "I cannot verify this from here" as a standing constraint. That was wrong.
+**Playwright 1.61 is a declared devDependency with Chromium already installed**, and the repo
+already tracks `ss-fonts.mjs`, a script that drives the dev server and reads computed styles. I
+found it while processing this ticket. Its URL still points at the old `/neto/` base, which is
+probably why nobody had run it lately.
+
+Ran against the dev server, both themes:
+
+- `document.fonts` lists **only Rethink Sans Variable**. Zero stale Inter or Geist Mono entries.
+- `--font-mono` and `--font-heading` resolve to nothing — deleted, confirmed at runtime.
+- `body`, headings and the bridged `.font-heading` class all compute to Rethink Sans.
+- Probed three `.ts-*` classes live: `heading-display` = 700 / 24px / 32px / -0.5px,
+  `body-base` = 400 / 14 / 21, `amount-hero` = 600 / 20 / 24 **with `tabular-nums`**.
+- Screenshots in light and dark: login screen renders correctly in both, contrast intact.
+
+So the "15 seconds in light and dark" I asked for in NEEDS — I did it myself. What I still cannot
+reach is everything behind the auth gate, which is most of the app.
+
+### And it corrected a claim of mine
+
+I reported that `815f15aa` made "buttons pills at every size". **That is only true of buttons using
+the `Button` / `IconButton` components.** The rendered login screen shows 12px buttons, so I
+probed: they are hand-rolled `<button>` elements carrying their own `rounded-xl`.
+
+They are *correct* — they were `rounded-lg` (12px) before and the rename preserved the pixel
+exactly, which is what that migration promised. But the count is the point:
+
+| | |
+|---|---|
+| `<Button>` + `<IconButton>` usages | **76** |
+| raw `<button>` elements with their own radius | **54** |
+
+Roughly two in five buttons are hand-rolled, spread across `OnboardingView` (16), `Header` (9),
+`ObligacionesCard` (6), `EgresosCard` (5) and others. **The pill ratification does not reach
+them**, so the app now renders two button shapes: pills where the component is used, 12px
+rectangles where it is not. Nothing is broken, but the decision is not enforced app-wide, and it
+was ratified as if it would be.
+
 NEEDS:
-- **A look at the app before ticket 3 starts.** Not a formal sign-off — ticket 1's DoD does not
-  ask for one and I am not inventing a gate. But every heading in the app stopped being monospaced
-  in this commit, which §1 calls out as "intended, not a regression, but it should be seen before
-  it ships". Fifteen seconds in light and dark is enough to catch a surprise while the change is
-  still one commit wide.
-- Nothing else. Ticket 3 is unblocked whenever the orchestrator wants it; the audit's size-by-size
-  table plus §4's ordered test are the inputs, and it should run in batches with a visual pass per
-  batch, per its own ticket.
+- **Design/orchestrator: the pill decision is enforced by component, not by element.** 54 raw
+  `<button>`s keep their own radius. Either they migrate to the `Button` component (the real fix,
+  and it would also give them its states and focus ring), or the decision is scoped explicitly to
+  component-rendered buttons. I did not change any of them — that is a visual change and it is
+  not mine to decide.
+- Ticket 3 is unblocked whenever the orchestrator wants it. Its per-batch visual pass is now
+  something I can produce myself for public screens; for the authenticated views I still need
+  either a seeded session or screenshots from Alfredo.
