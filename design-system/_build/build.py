@@ -24,7 +24,9 @@ def ts(name):
            f'line-height:{lh};letter-spacing:{t["ls"]}px;')
     # Rethink Sans is tabular by default, so this is inert today. It stays because the alignment
     # of a column of money must not depend on which family happens to be installed.
-    if name.startswith("Amount/"):
+    # Label/Badge joins them: a badge usually holds a count, and 9 -> 10 -> 99 must not
+    # reflow the chip. Inert on non-numeric badge text.
+    if name.startswith("Amount/") or name == "Label/Badge":
         out += "font-variant-numeric:tabular-nums;"
     return out
 

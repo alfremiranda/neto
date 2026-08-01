@@ -222,3 +222,80 @@ Ticket 1 does not wait on anything. Ticket 3 does not ride along with ticket 1.
   inside components is part of that audit, not this one.
 - **The 30px case.** Two usages. Someone has to look at them and say whether the system needs a
   step above Display or those two are wrong.
+
+---
+
+## 7. Call log — header, batch 2
+
+Three questions from `docs/reports/2026-08-01-buttons-batch2-header.md`. Answered here because the
+answers are spec, not one-offs.
+
+### The "Neto" wordmark → **no text style. It is brand chrome.**
+
+Not `Heading/Card`, not anything else. A text style is a *semantic role in running UI*; a wordmark's
+job is to be invariant. Binding it to `Heading/Card` means the logotype moves the next time card
+titles do, which is exactly the coupling to avoid — same reasoning that kept the provider colours
+out of the palette.
+
+It keeps explicit values, frozen: **16px · Bold · -0.4px tracking**, which is what it renders today.
+The one thing that must change is the family reference — it read `var(--font-heading)`, and that
+variable is gone. Point it at `var(--font-sans)` and the pixels stay put.
+
+If the wordmark ever becomes a real logotype (drawn, not typeset), this whole question disappears.
+
+### The notification count → **yes: 9px → 10px, `Label/Badge`.**
+
+That style exists for this: `line-height` equals `font-size` so a single line centres inside a chip
+without fighting the padding. The weight drops Bold → Medium; at 10px on a solid `--primary` fill
+that holds, and if it reads thin in the screenshot that is a finding about `Label/Badge` itself, not
+a reason to special-case the header.
+
+**`Label/Badge` now carries `tabular-nums`** in the generator. A badge usually holds a count, and
+9 → 10 → 99 must not reflow the chip. That removes the hand-written `tabular-nums` at the call site.
+
+### Avatar initials → **not a text style at all.**
+
+They are a graphic stand-in for an image, sized by the component that holds them:
+
+| Avatar | `avatar/size/*` | `avatar/font-size/*` |
+|---|---|---|
+| SM | 32 | **12** |
+| MD | 40 | **14** |
+| LG | 48 | **16** |
+| XL | 56 | **18** |
+
+Weight is SemiBold, from the component. So: the 32px header avatar takes **12px** (it ships 10 — a
+real change), and the 44px drawer avatar already ships 14px, which is right for its size but the
+**44px itself is off-scale** — the Avatar steps are 32 · 40 · 48 · 56. That one resolves in the
+Avatar migration, not here.
+
+While confirming this I found the Figma `Avatar` was still typesetting its initials in **Inter**,
+with `fontFamily` and `fontStyle` unbound. Fixed, and see §8.
+
+### And one that was not asked: the 32px icon button
+
+`IconButton` has no 32px step, and that is deliberate — 24 · 28 · 36 · 44 pairs with the Button
+heights at `sm`/`md`/`lg`/`xl`. Adding a 32 to fit one avatar trigger would break that pairing for
+everything else. Growing it to 36px was the right call.
+
+---
+
+## 8. The family sweep nobody had run
+
+Deciding on one family is not the same as the file using one. Swept all 16 pages:
+
+| Where | Off-family text nodes | Now |
+|---|---|---|
+| `Screens · Neto (WIP)` | **246 of 246** — Inter 190, Geist Mono 56 | converted |
+| `Foundations` | **378** — the documentation page itself, all Inter | converted |
+| `Components · Rows` | 14 masters — the `·` separator glyph, Inter | converted |
+| `Components · Icons & Avatar` | 4 — the Avatar initials, Inter | converted |
+| `Screens & exploration` | 7 | converted |
+| everything else | 0 | — |
+
+**649 text nodes were still on a family the system had already dropped**, including the Foundations
+page that documents the family decision. Reversible through Figma version history if any of the WIP
+screens were being kept as a deliberate "before".
+
+The lesson generalises past fonts: a decision recorded in tokens and styles does not propagate to
+nodes that were authored before it. Anything ratified needs a sweep, not just a token edit.
