@@ -20,7 +20,7 @@ function NotificationBell() {
         <Bell size={16} />
       </IconButton>
       {count > 0 && (
-        <span className="absolute top-0.5 right-0.5 min-w-[15px] h-[15px] px-1 rounded-full bg-[var(--primary)] text-[var(--primary-foreground)] text-[9px] font-bold leading-none flex items-center justify-center pointer-events-none tabular-nums">
+        <span className="absolute top-0.5 right-0.5 min-w-[15px] h-[15px] px-1 rounded-full bg-[var(--primary)] text-[var(--primary-foreground)] ts-label-badge flex items-center justify-center pointer-events-none">
           {count > 9 ? '9+' : count}
         </span>
       )}
@@ -84,7 +84,7 @@ function UserAvatar() {
     >
       {avatarUrl
         ? <img src={avatarUrl} alt={name} className="w-full h-full object-cover" />
-        : <span className="w-full h-full flex items-center justify-center bg-[var(--muted)] text-[10px] font-bold">{initials}</span>
+        : <span className="w-full h-full flex items-center justify-center bg-[var(--muted)] text-[12px] font-semibold">{initials}</span>
       }
     </button>
   )
@@ -213,7 +213,7 @@ export function Header() {
       {/* Left: sidebar toggle (desktop) + logo */}
       <div className="flex items-center gap-3">
         <SidebarToggle />
-        <span className="text-base font-bold font-heading tracking-tight text-[var(--foreground)] select-none">Neto</span>
+        <span className="text-base font-bold font-sans tracking-[-0.4px] text-[var(--foreground)] select-none">Neto</span>
         {import.meta.env.DEV && (
           <span className="ts-label-badge px-1.5 py-0.5 rounded-lg bg-amber-500/15 text-amber-500 select-none">
             dev
