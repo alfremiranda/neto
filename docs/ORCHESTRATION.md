@@ -3,7 +3,8 @@
 > Durable protocol doc for the Dev agent (Claude Code). Read once per session alongside
 > [DIRECTION.md](./DIRECTION.md). Unlike DIRECTION.md (regenerated weekly), this file is
 > hand-maintained and changes rarely. v3 — 2026-08-01 (v2: roster + territories; v3: repo
-> mailbox replaces human copy-paste, daily sync, terse message format).
+> mailbox replaces human copy-paste, daily sync, terse message format). v3.1: Design push
+> exception below.
 
 ## The system
 
@@ -58,6 +59,10 @@ Git rules for a shared tree:
    other agent. If you find unpushed commits from the other agent when pushing `main`,
    pushing them along is correct (verify build+tests first, and report it so the author
    knows their commit is now on `origin/main`).
+   **Exception — Design cannot push:** its local sandbox has no network route to GitHub.
+   Design commits and ends its close message with "unpushed: <hashes>"; Alfredo pushes, or
+   you sweep them at your next session start (that IS your job under this rule, not a favor).
+   You and Design share the same working tree, so you see its commits even before any push.
 2. Don't leave uncommitted changes at session close. If two sessions must run at the same
    time, Alfredo makes sure only one has dirty state.
 3. Commit messages keep their owner obvious: Design uses the `design-system:` prefix.
