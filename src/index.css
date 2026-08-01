@@ -1,44 +1,36 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/inter";
 @import "@fontsource-variable/geist-mono";
+
+/* Generated from Figma — do not hand-edit. tokens.css carries the values,
+   tokens.map.css aliases them onto the names this app already used, so a
+   change in Figma reaches the UI without touching this file. Whatever stays
+   defined below is NOT in the map: see design-system/tokens/tokens.map.css. */
+@import "../design-system/tokens/tokens.css";
+@import "../design-system/tokens/tokens.map.css";
+
+/* Pinned against the map — each one contradicts a decision recorded in
+   design-system/docs/05-handoff-tokens.md §5. Unlayered on purpose: the map is
+   unlayered too, so @layer base would lose to it. Delete a line here the moment
+   Figma is fixed; do not "fix" it by editing the generated files.
+
+   --ring: Figma's border/focus is a neutral (#cbd5e1 / #475569). Adopting it
+   drops every focus ring to ~1.4:1 on white — a WCAG 2.4.7/2.4.11 failure.
+   §5 says the cyan-for-focus criterion was the one carried into Figma.
+   --border (dark): §5 says this stays at white/14 (0.141); Figma now says 0.2. */
+:root {
+  --ring: #0891b2;
+}
+.dark {
+  --ring: #06b6d4;
+  --border: rgba(255,255,255,0.141);
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* ── Figma token map: Light ──────────────────────────────────────────── */
-
-    /* Surfaces */
-    --background:          #f8fafc;   /* surface/wrap/default  */
-    --card:                #ffffff;   /* surface/wrap/card     */
-    --card-foreground:     #0f172a;
-    --muted:               #f1f5f9;   /* surface/wrap/subtle   */
-    --muted-foreground:    #64748b;   /* foreground/subtle     */
-    --accent:              #f1f5f9;
-    --accent-foreground:   #1e293b;   /* slate-800 — interactive/accent-foreground */
-    --popover:             #ffffff;
-    --popover-foreground:  #0f172a;
-
-    /* Foreground */
-    --foreground:          #0f172a;   /* foreground/default    */
-
-    /* Border / input */
-    --border:              #e2e8f0;   /* border/default        */
-    --input:               #cbd5e1;   /* input/color/border    */
-    --ring:                #0891b2;
-
-    /* Primary — interactive/primary cyan-700 (contrast 5.35:1 vs white, WCAG AA) */
-    --primary:             #0e7490;
-    --primary-foreground:  #ffffff;
-
-    /* Secondary */
-    --secondary:           #f1f5f9;
-    --secondary-foreground: #1e293b;   /* slate-800 — interactive/secondary-foreground */
-
-    /* Destructive */
-    --destructive:         #dc2626;   /* red-600 — status/destructive/default */
-    --destructive-foreground: #ffffff;
 
     /* Radius — Figma's named scale (design-system/docs/06-radius-map.md).
        Named, not derived: with calc() off one base, adjusting the base moved
@@ -71,82 +63,8 @@
     --chart-4: #0284c7;   /* net / sky      */
     --chart-5: #0891b2;   /* income / cyan  */
 
-    /* ── Neto domain tokens — Light ─────────────────────────────────────── */
-
-    /* Tertiary text — dimmer than muted-foreground */
-    --n-txt3: #94a3b8;   /* foreground/placeholder */
-
-    /* Ingresos — cyan (primary) */
-    --color-income:     #0891b2;
-    --color-income-bg:  #ecfeff;   /* account/1/surface */
-    --color-income-txt: #0e7490;   /* account/1/foreground */
-
-    /* Egresos — red */
-    --color-expense:     #ef4444;   /* kpi/expense/default */
-    --color-expense-bg:  #fef2f2;   /* red-50  — kpi/expense/surface */
-    --color-expense-txt: #b91c1c;   /* red-700 — kpi/expense/foreground */
-
-    /* Provisiones — emerald */
-    --color-provision:     #059669;   /* kpi/provision/default */
-    --color-provision-bg:  #ecfdf5;   /* account/3/surface     */
-    --color-provision-txt: #047857;   /* account/3/foreground  */
-
-    /* Obligaciones tributarias — amber */
-    --color-tax:     #fbbf24;   /* kpi/tax/default    */
-    --color-tax-txt: #b45309;   /* kpi/tax/foreground */
-    --color-tax-bg:  #fffbeb;
-
-    /* Neto libre — sky */
-    --color-net:     #0284c7;   /* kpi/net/default    */
-    --color-net-bg:  #f0f9ff;   /* category/work/surface */
-    --color-net-txt: #0369a1;   /* kpi/net/foreground */
-
     /* Danger (delete, alerts) */
-    --color-danger:     #dc2626;   /* red-600 — status/danger/default */
-    --color-danger-bg:  #fef2f2;   /* red-50  — status/danger/surface */
     --color-danger-txt: #b91c1c;   /* red-700 — status/danger/foreground */
-
-    /* Account badges */
-    --color-account-arq-bg:     #ecfeff;   /* account/1/surface    */
-    --color-account-arq-txt:    #0e7490;   /* account/1/foreground */
-    --color-account-toptal-bg:  #f5f3ff;   /* account/2/surface    */
-    --color-account-toptal-txt: #7c3aed;   /* account/2/foreground */
-    --color-account-bancol-bg:  #ecfdf5;   /* account/3/surface    */
-    --color-account-bancol-txt: #047857;   /* account/3/foreground */
-    --color-account-other-bg:   #f1f5f9;   /* account/4/surface    */
-    --color-account-other-txt:  #475569;   /* account/4/foreground */
-
-    /* Category palette — egreso categories */
-    --cat-home:          #0d9488;   /* category/home         teal-700  */
-    --cat-home-bg:       #f0fdfa;
-    --cat-food:          #ea580c;   /* category/food         orange-600 */
-    --cat-food-bg:       #fff7ed;
-    --cat-bank:          #2563eb;   /* category/bank         blue-600  */
-    --cat-bank-bg:       #eff6ff;
-    --cat-health:        #e11d48;   /* category/health       rose-600  */
-    --cat-health-bg:     #fff1f2;
-    --cat-transit:       #ca8a04;   /* category/transit      yellow-600 */
-    --cat-transit-bg:    #fefce8;
-    --cat-tech:          #4b5563;   /* category/connectivity gray-600  */
-    --cat-tech-bg:       #f9fafb;
-    --cat-recreation:    #4f46e5;   /* category/recreation   indigo-600 */
-    --cat-recreation-bg: #eef2ff;
-    --cat-work:          #0284c7;   /* category/work         sky-600   */
-    --cat-work-bg:       #f0f9ff;
-    --cat-family:        #db2777;   /* category/family       pink-600  */
-    --cat-family-bg:     #fdf2f8;
-    --cat-insurance:     #65a30d;   /* category/insurance    lime-600  */
-    --cat-insurance-bg:  #f7fee7;
-    --cat-savings:       #059669;   /* category/savings      emerald-600 */
-    --cat-savings-bg:    #ecfdf5;
-    --cat-travel:        #7c3aed;   /* category/travel       violet-700 */
-    --cat-travel-bg:     #f5f3ff;
-    --cat-taxes:         #d97706;   /* category/taxes        amber-600 */
-    --cat-taxes-bg:      #fffbeb;
-    --cat-shopping:      #9333ea;   /* category/shopping     purple-600 */
-    --cat-shopping-bg:   #faf5ff;
-    --cat-other:         #64748b;   /* category/other        slate-500  */
-    --cat-other-bg:      #f1f5f9;
 
     /* ── Button component tokens — light (Figma 30:530) ─────────────────────── */
     --btn-filled-bg:              #0891b2;               /* button/filled/background/default      */
@@ -166,38 +84,6 @@
   }
 
   .dark {
-    /* ── Figma token map: Dark ───────────────────────────────────────────── */
-
-    /* Surfaces */
-    --background:          #020617;   /* surface/wrap/default   slate-950 */
-    --card:                #1e293b;   /* surface/wrap/card      slate-800 */
-    --card-foreground:     #f8fafc;
-    --muted:               #334155;   /* surface/wrap/subtle    slate-700 */
-    --muted-foreground:    #94a3b8;   /* foreground/subtle      */
-    --accent:              #334155;
-    --accent-foreground:   #f1f5f9;
-    --popover:             #1e293b;
-    --popover-foreground:  #f8fafc;
-
-    /* Foreground */
-    --foreground:          #f8fafc;   /* foreground/default     */
-
-    /* Border / input */
-    --border:              rgba(255,255,255,0.141);   /* border/default #ffffff24 */
-    --input:               #334155;
-    --ring:                #06b6d4;
-
-    /* Primary — interactive/primary cyan (brighter in dark) */
-    --primary:             #06b6d4;   /* interactive/primary    cyan-500 */
-    --primary-foreground:  #083344;   /* button/filled/foreground        */
-
-    /* Secondary */
-    --secondary:           #334155;
-    --secondary-foreground: #f1f5f9;
-
-    /* Destructive */
-    --destructive:         #f87171;   /* kpi/expense/default dark red-400 */
-    --destructive-foreground: #450a0a; /* red-950 — was #083344 (cyan-950), wrong hue on a red button */
 
     /* Sidebar (dark nav) */
     --sidebar:                    #0f172a;   /* nav/background dark  slate-900 */
@@ -216,81 +102,8 @@
     --chart-4: #7dd3fc;   /* net / sky-300      */
     --chart-5: #22d3ee;   /* income / cyan-400  */
 
-    /* ── Neto domain tokens — Dark ──────────────────────────────────────── */
-
-    --n-txt3: #64748b;   /* slate-500 */
-
-    /* Ingresos */
-    --color-income:     #22d3ee;   /* cyan-400 — kpi/income/default */
-    --color-income-bg:  #083344;   /* account/1/surface dark  */
-    --color-income-txt: #67e8f9;   /* account/1/foreground dark */
-
-    /* Egresos */
-    --color-expense:     #f87171;   /* kpi/expense/default dark */
-    --color-expense-bg:  #450a0a;
-    --color-expense-txt: #fca5a5;
-
-    /* Provisiones */
-    --color-provision:     #34d399;   /* kpi/provision/default dark */
-    --color-provision-bg:  #022c22;   /* account/3/surface dark     */
-    --color-provision-txt: #6ee7b7;   /* account/3/foreground dark  */
-
-    /* Obligaciones */
-    --color-tax:     #fcd34d;   /* kpi/tax/default dark    amber-300 */
-    --color-tax-txt: #fcd34d;
-    --color-tax-bg:  #451a03;
-
-    /* Neto libre */
-    --color-net:     #7dd3fc;   /* kpi/net/default dark   sky-300 */
-    --color-net-bg:  #0c4a6e;   /* category/work/surface dark     */
-    --color-net-txt: #e0f2fe;   /* kpi/net/foreground dark        */
-
     /* Danger */
-    --color-danger:     #f87171;
-    --color-danger-bg:  #450a0a;
     --color-danger-txt: #fca5a5;
-
-    /* Account badges dark */
-    --color-account-arq-bg:     #083344;   /* account/1/surface dark    */
-    --color-account-arq-txt:    #67e8f9;   /* account/1/foreground dark */
-    --color-account-toptal-bg:  #4c1d95;   /* account/2/surface dark    */
-    --color-account-toptal-txt: #c4b5fd;   /* account/2/foreground dark */
-    --color-account-bancol-bg:  #022c22;   /* account/3/surface dark    */
-    --color-account-bancol-txt: #6ee7b7;   /* account/3/foreground dark */
-    --color-account-other-bg:   #334155;   /* account/4/surface dark    */
-    --color-account-other-txt:  #cbd5e1;   /* account/4/foreground dark */
-
-    /* Category palette dark */
-    --cat-home:          #5eead4;   /* teal-300    */
-    --cat-home-bg:       #042f2e;   /* teal-950   — category/home/surface */
-    --cat-food:          #fdba74;   /* orange-300 — category/food/default */
-    --cat-food-bg:       #431407;
-    --cat-bank:          #93c5fd;   /* blue-300    */
-    --cat-bank-bg:       #172554;   /* blue-950   */
-    --cat-health:        #fda4af;   /* rose-300    */
-    --cat-health-bg:     #4c0519;   /* rose-950   */
-    --cat-transit:       #fde047;   /* yellow-300  */
-    --cat-transit-bg:    #422006;   /* yellow-950 */
-    --cat-tech:          #d1d5db;   /* gray-300    */
-    --cat-tech-bg:       #111827;   /* gray-900 — stays: gray-950 is indistinguishable from the page bg */
-    --cat-recreation:    #a5b4fc;   /* indigo-300  */
-    --cat-recreation-bg: #1e1b4b;
-    --cat-work:          #7dd3fc;   /* sky-300     */
-    --cat-work-bg:       #082f49;   /* sky-950    */
-    --cat-family:        #f9a8d4;   /* pink-300    */
-    --cat-family-bg:     #500724;   /* pink-950   */
-    --cat-insurance:     #bef264;   /* lime-300    */
-    --cat-insurance-bg:  #1a2e05;
-    --cat-savings:       #6ee7b7;   /* emerald-300 */
-    --cat-savings-bg:    #022c22;
-    --cat-travel:        #c4b5fd;   /* violet-300  */
-    --cat-travel-bg:     #2e1065;
-    --cat-taxes:         #fcd34d;   /* amber-300   */
-    --cat-taxes-bg:      #451a03;
-    --cat-shopping:      #d8b4fe;   /* purple-300  */
-    --cat-shopping-bg:   #3b0764;   /* purple-950 */
-    --cat-other:         #cbd5e1;   /* slate-300  — category/other/default */
-    --cat-other-bg:      #1e293b;   /* slate-800 — stays: slate-950 is indistinguishable from the page bg */
 
     /* ── Button component tokens — dark (Figma 91:1925) ─────────────────────── */
     --btn-filled-bg:              #22d3ee;               /* button/filled/background/default      */
