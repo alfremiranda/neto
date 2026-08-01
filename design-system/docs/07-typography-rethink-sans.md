@@ -111,6 +111,12 @@ it is noise.
 Generated values live in `../tokens/tokens.css` as `.ts-*` classes. This is the semantic index —
 **what each style is for**, which is the part that cannot be derived from the numbers.
 
+Each class binds all five properties. `font-family` is a **reference** — `var(--font-sans)` — and
+`tokens.css` deliberately does not define that variable: defining it there would swap the family
+the moment the file is imported, before the font is installed. The app owns `--font-sans`, so
+ticket 1 flips all 26 classes in one move. The `Amount/*` classes also carry `tabular-nums`
+(inert under Rethink Sans, insurance against the next family).
+
 | Style | Spec | Use it when the text is… |
 |---|---|---|
 | `Heading/Display` | 24/32 Bold -0.5 | the title of a screen. One per view, at most |
@@ -177,11 +183,11 @@ Resolve them one at a time. There is no rule that sorts them in bulk.
 | **`text-[12px]`** | 9 | `text-xs` | Duplicate spelling of a size that already has a name |
 | **`text-[0px]`** | 1 | leave | `IngresosCard.tsx:202`, a visual-hiding hack. Not typography — replace it with `sr-only` when that file is next touched |
 
-### `text-2xs` is already `Detail/Base`
+### `text-2xs` — resolved
 
-`tailwind.config.js` defines `text-2xs` as 10/14 and nothing uses it, while 44 places hand-write
-`text-[10px]`. That name is `Detail/Base` (10/15) — one line-height apart. Align the config to
-15 and the 44 arbitrary values have a class to land on.
+It defined 10/14 under a name nothing used, while 44 places hand-wrote `text-[10px]`. Dev deleted
+it in `2eb15cd7`; the replacement already existed as `.ts-detail-base` (10/15). Those 44 usages
+land there.
 
 ### Line heights
 

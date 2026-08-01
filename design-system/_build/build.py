@@ -17,7 +17,16 @@ W = {"Regular": 400, "Medium": 500, "SemiBold": 600, "Bold": 700, "ExtraBold": 8
 def ts(name):
     t = TS[name]
     lh = t["lh"] if t["lh"] == "normal" else f'{t["lh"]}px'
-    return f'font-weight:{W[t["weight"]]};font-size:{t["size"]}px;line-height:{lh};letter-spacing:{t["ls"]}px;'
+    # font-family is referenced, not emitted: tokens.css must not define --font-sans, or importing
+    # it would swap the family before the font is installed. The app owns that variable; when
+    # ticket 1 points it at Rethink Sans, all 26 classes follow in one move.
+    out = (f'font-family:var(--font-sans);font-weight:{W[t["weight"]]};font-size:{t["size"]}px;'
+           f'line-height:{lh};letter-spacing:{t["ls"]}px;')
+    # Rethink Sans is tabular by default, so this is inert today. It stays because the alignment
+    # of a column of money must not depend on which family happens to be installed.
+    if name.startswith("Amount/"):
+        out += "font-variant-numeric:tabular-nums;"
+    return out
 
 def slug(s):
     s = s.lower().replace("/", "-").replace(" ", "-")
