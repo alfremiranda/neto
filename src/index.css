@@ -147,9 +147,12 @@
     overflow: hidden;
   }
 
-  /* iOS: prevenir auto-zoom en inputs */
+  /* Field text comes from the input rungs: mobile fields are LG (44 tall), desktop
+     MD (36). 07 §3 — a field's value is body text sized to the field, never a
+     Control style. The 16px on mobile is also what stops iOS zooming on focus, so
+     the old override and the system now say the same thing. */
   input, select, textarea {
-    font-size: 16px;
+    font-size: var(--input-text-lg-size);
   }
   /* 14px = Body/Base. Text inside a field IS body text (07 §3), and 13px is on
      no rung of the scale — it also disagreed with the .field-input rule below,
@@ -157,7 +160,7 @@
      the page on focus, and that is a real behaviour, not a type decision. */
   @media (min-width: 640px) {
     input, select, textarea {
-      font-size: 0.875rem;
+      font-size: var(--input-text-md-size);
     }
   }
 
