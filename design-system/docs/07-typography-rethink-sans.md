@@ -189,13 +189,20 @@ Resolve them one at a time. There is no rule that sorts them in bulk.
 | Size | Uses | Goes to | Why |
 |---|---|---|---|
 | **30px** | ~~2~~ 0 | `Heading/Display` (24) | Already gone by the time the fixes landed |
-| **15px** | 5 | 14 or 16, by role | `Body/Base` if prose, `Heading/Card` if a title. Never split the difference |
+| **15px** | 5 | `Amount/Large` (1) · `Amount/Base` (4) | **All five are money**, so the prose test does not apply — the `Amount/*` scale does. `AnnualTable.tsx:54` is the donut's principal figure and already Bold → `Amount/Large` (17/26). The four the file itself calls "Secondary KPIs" → `Amount/Base` (14/21), which is *a figure in a row or table cell* |
 | **13px** | ~~1~~ 0 | `Body/Small` (12) | Was Toast's only usage; closed in `590fbf8f` |
 | **`text-[12px]`** | 9 | `text-xs` | Duplicate spelling of a size that already has a name |
 | **`text-[0px]`** | 1 | leave | `IngresosCard.tsx:202`. **This row was wrong.** Dev checked it: nothing is being hidden — it is `font-size: 0` collapsing the JSX whitespace between two inline spans that each set their own size. `sr-only` there would remove a visible figure from the page. The mechanism stays, now with a comment saying why |
 
-**Remaining after the component-gap fixes:** 15px (5) and 9px (2). The gap audit and this one were
-closing the same debt from opposite ends — see `08-component-gap.md` §2.
+**Remaining after the component-gap fixes:** 15px only. The gap audit and this one were closing the
+same debt from opposite ends — see `08-component-gap.md` §2.
+
+**9px was never off-scale.** `Detail/Nano` is 9/14 Medium and exists for exactly it.
+`Sidebar.tsx:90` is `9px / medium / leading-14 / tracking-0` — the same five values, hand-written;
+it is a class swap, not a decision. The other 9px, `EgresosCard.tsx:518`, is not Nano at all: it is
+a filter-count bubble, the same element as the header's notification count, so it takes
+`Label/Badge` and its circle grows 14 → 15px to match. One piece of UI living at two sizes in two
+files is the §5 symptom of `08-component-gap.md`, not a typography question.
 
 ### `text-2xs` — resolved
 
