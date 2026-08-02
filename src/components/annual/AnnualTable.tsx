@@ -135,7 +135,7 @@ export function AnnualTable({ year }: AnnualTableProps) {
       <div className={cn('flex flex-col gap-2', showDonut && 'lg:flex-1 lg:min-w-0')}>
         <MetricCard
           label="Bruto total año"
-          value={<span className="text-xl font-heading tabular-nums">{COP(totBruto)}</span>}
+          value={<span className="ts-amount-hero">{COP(totBruto)}</span>}
           sub={`${USD(totUSD)} + ${COP(totCOP)}`}
         />
         <div className="flex flex-wrap gap-2">

@@ -78,7 +78,7 @@ export function AccountCardView({ account, size = 'lg', selected = false, onClic
       {/* Header: icon · name · favorite (gap 6) */}
       <div className="flex items-center gap-1.5 w-full">
         <TypeIcon size={13} className="text-muted-foreground shrink-0" />
-        <span className="flex-1 min-w-0 text-xs font-medium text-muted-foreground truncate">{account.label}</span>
+        <span className="flex-1 min-w-0 ts-body-small-emphasis text-muted-foreground truncate">{account.label}</span>
         <button
           type="button"
           onClick={e => { e.stopPropagation(); toggleAccountFavorite(account.id) }}
@@ -102,15 +102,15 @@ export function AccountCardView({ account, size = 'lg', selected = false, onClic
           {metaParts.map((p, i) => (
             <Fragment key={i}>
               <span className="text-[11px] text-muted-foreground/50">|</span>
-              <span className="text-[11px] font-mono tabular-nums text-muted-foreground truncate">{p}</span>
+              <span className="ts-amount-small text-muted-foreground truncate">{p}</span>
             </Fragment>
           ))}
         </div>
 
         {/* Amount */}
         {amountStr
-          ? <div className="text-xl font-bold font-heading tabular-nums leading-snug text-foreground">{amountStr}</div>
-          : <div className="text-sm font-normal text-muted-foreground">Sin configurar</div>}
+          ? <div className="ts-amount-hero text-foreground">{amountStr}</div>
+          : <div className="ts-body-base text-muted-foreground">Sin configurar</div>}
 
         {/* Primary sub-lines (large only) */}
         {!sm && hasConfig && account.type === 'account' && account.rate > 0 && (
@@ -120,7 +120,7 @@ export function AccountCardView({ account, size = 'lg', selected = false, onClic
         )}
         {!sm && hasConfig && isCredit && (
           <>
-            <div className="text-xs font-mono tabular-nums text-[var(--color-danger-txt)]">
+            <div className="ts-amount-small text-[var(--color-danger-txt)]">
               −{fmt(cc!.debt)} deuda
             </div>
             <div className="text-[11px] tabular-nums text-muted-foreground">
@@ -155,7 +155,7 @@ export function AccountCardView({ account, size = 'lg', selected = false, onClic
         <button
           type="button"
           onClick={e => { e.stopPropagation(); openEdit() }}
-          className="mt-auto self-start inline-flex items-center gap-1 rounded-xl border border-[var(--border)] px-2 py-1 text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          className="mt-auto self-start inline-flex items-center gap-1 rounded-xl border border-[var(--border)] px-2 py-1 ts-label-base text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
         >
           <Pencil size={11} />
           Editar

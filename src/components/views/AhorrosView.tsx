@@ -63,7 +63,7 @@ export function AhorrosView() {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Ahorros e inversiones</h2>
+        <h2 className="ts-label-micro text-muted-foreground uppercase">Ahorros e inversiones</h2>
         <div className="flex items-center gap-2">
           <Button size="sm" variant="outline" onClick={() => { setEditingTransfer(null); openSheet('transfer') }}>
             <ArrowLeftRight />
@@ -91,10 +91,10 @@ export function AhorrosView() {
         <>
           {/* Total saved */}
           <SectionCard icon={TrendingUp} title="Total ahorrado">
-            <div className="text-2xl font-bold font-heading tabular-nums text-[var(--color-net-txt)]">
+            <div className="ts-amount-hero text-[var(--color-net-txt)]">
               {fmtPrimary(totalPrimary)}
             </div>
-            <div className="text-xs text-muted-foreground mt-0.5">
+            <div className="ts-body-small text-muted-foreground mt-0.5">
               {savings.length} {savings.length === 1 ? 'cuenta' : 'cuentas'} · equivalente en {primaryCurrency}
             </div>
           </SectionCard>
@@ -119,17 +119,17 @@ export function AhorrosView() {
               <div className="px-4 py-3 border-b border-[var(--border)] flex items-center justify-between gap-3">
                 <div className="min-w-0">
                   <div className="flex items-center gap-1">
-                    <span className="text-sm font-semibold truncate">{selected.label}</span>
+                    <span className="ts-body-base-emphasis truncate">{selected.label}</span>
                     <IconButton variant="ghost" size="md" className="shrink-0" onClick={() => { setEditingAccount(selected.id); openSheet('account-edit') }} aria-label="Editar cuenta">
                       <Pencil size={12} />
                     </IconButton>
                   </div>
-                  <div className="text-xs text-muted-foreground">{ledger.length} movimiento{ledger.length !== 1 ? 's' : ''}</div>
+                  <div className="ts-body-small text-muted-foreground">{ledger.length} movimiento{ledger.length !== 1 ? 's' : ''}</div>
                   {acctDetail && <div className="text-[11px] text-muted-foreground tabular-nums mt-0.5">{acctDetail}</div>}
                 </div>
                 <div className="text-right shrink-0">
                   <div className="text-[10px] text-muted-foreground">Saldo</div>
-                  <div className="text-sm font-bold tabular-nums font-heading text-[var(--color-net-txt)]">
+                  <div className="ts-amount-base text-[var(--color-net-txt)]">
                     {fmtSel(selBalance)}
                   </div>
                 </div>
@@ -149,11 +149,11 @@ export function AhorrosView() {
                     return (
                       <div key={e.id} className="flex items-center gap-3 py-2.5 border-b border-[var(--border)] last:border-0">
                         <div className="flex-1 min-w-0">
-                          <div className="text-sm truncate">{e.desc}</div>
-                          <div className="text-xs text-muted-foreground">{fmtDate(e.date)}</div>
+                          <div className="ts-body-base truncate">{e.desc}</div>
+                          <div className="ts-body-small text-muted-foreground">{fmtDate(e.date)}</div>
                         </div>
                         <div className="text-right shrink-0">
-                          <div className={cn('text-sm font-semibold tabular-nums font-heading', inflow ? 'text-[var(--color-provision)]' : 'text-foreground')}>
+                          <div className={cn('ts-amount-base', inflow ? 'text-[var(--color-provision)]' : 'text-foreground')}>
                             {inflow ? '+' : ''}{fmtSel(e.convertedAmount)}
                           </div>
                           <div className="text-[10px] text-muted-foreground tabular-nums">{fmtSel(e.balance)}</div>

@@ -35,7 +35,7 @@ export function ConfigView() {
 
   return (
     <div className="max-w-xl mx-auto">
-      <h1 className="text-lg font-semibold mb-4">Configuración</h1>
+      <h1 className="ts-heading-subsection mb-4">Configuración</h1>
 
       <DeductionsPanel />
 
@@ -44,15 +44,15 @@ export function ConfigView() {
         <div className="mt-8 pt-6 border-t border-[var(--border)] space-y-4">
           {/* Dev environment warning */}
           {import.meta.env.DEV && (
-            <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-2.5 text-xs text-amber-600 dark:text-amber-400">
-              <span className="font-semibold">Ambiente de desarrollo</span> — la nube apunta a Supabase dev (vacío).
+            <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-2.5 ts-body-small text-amber-600 dark:text-amber-400">
+              <span className="ts-body-small-emphasis">Ambiente de desarrollo</span> — la nube apunta a Supabase dev (vacío).
               No uses "Jalar desde la nube" o perderás los datos locales.
             </div>
           )}
           {/* Sync actions — automatic on open/focus; these are manual overrides
               (e.g. to reconcile two devices: push from the one with the good data). */}
           <div>
-            <div className="text-xs font-medium text-muted-foreground mb-2">Sincronización</div>
+            <div className="ts-body-small-emphasis text-muted-foreground mb-2">Sincronización</div>
             <p className="text-[11px] text-muted-foreground mb-2">
               La sincronización es automática al abrir la app y al volver a ella. Usa estos botones solo si necesitas forzarla.
             </p>
@@ -87,8 +87,8 @@ export function ConfigView() {
           {/* Account */}
           <div className="flex items-center justify-between pt-2 border-t border-[var(--border)]">
             <div className="min-w-0">
-              <div className="text-xs font-medium text-muted-foreground">Cuenta</div>
-              <div className="text-sm truncate mt-0.5">{user.email ?? user.user_metadata?.user_name ?? 'Usuario'}</div>
+              <div className="ts-body-small-emphasis text-muted-foreground">Cuenta</div>
+              <div className="ts-body-base truncate mt-0.5">{user.email ?? user.user_metadata?.user_name ?? 'Usuario'}</div>
             </div>
             <Button variant="ghost" size="sm" onClick={signOut} className="shrink-0 text-muted-foreground hover:text-foreground">
               <LogOut size={14} />
@@ -98,12 +98,12 @@ export function ConfigView() {
 
           {/* Privacy */}
           <div className="pt-2 border-t border-[var(--border)]">
-            <div className="text-xs font-medium text-muted-foreground mb-1">Privacidad</div>
+            <div className="ts-body-small-emphasis text-muted-foreground mb-1">Privacidad</div>
             <a
               href={PRIVACY_POLICY_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-[var(--primary)] underline underline-offset-2 hover:opacity-80"
+              className="ts-body-base text-[var(--primary)] underline underline-offset-2 hover:opacity-80"
             >
               Política de Privacidad
             </a>

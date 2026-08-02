@@ -33,7 +33,7 @@ function CurrencyCard({
     >
       <span className="text-2xl leading-none select-none">{meta.flag}</span>
       <div className="text-center">
-        <p className="text-sm font-bold">{currency}</p>
+        <p className="ts-body-base-emphasis">{currency}</p>
         <p className="text-[11px] text-muted-foreground leading-snug">{meta.name}</p>
       </div>
       {selected && (
@@ -123,14 +123,14 @@ export function ProfileView() {
         <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-[var(--border)] shrink-0">
           {avatarUrl
             ? <img src={avatarUrl} alt={displayedName} className="w-full h-full object-cover" />
-            : <span className="w-full h-full flex items-center justify-center bg-[var(--muted)] text-xl font-bold text-muted-foreground select-none">{initials}</span>
+            : <span className="w-full h-full flex items-center justify-center bg-[var(--muted)] ts-heading-card text-muted-foreground select-none">{initials}</span>
           }
         </div>
         <div className="text-center">
-          <p className="font-semibold text-base">{displayedName}</p>
-          <p className="text-sm text-muted-foreground">{email}</p>
+          <p className="ts-heading-card">{displayedName}</p>
+          <p className="ts-body-base text-muted-foreground">{email}</p>
           {providerLabel && (
-            <span className="inline-flex items-center gap-1 mt-1.5 text-[11px] font-medium px-2 py-0.5 rounded-full bg-[var(--muted)] text-muted-foreground">
+            <span className="inline-flex items-center gap-1 mt-1.5 ts-label-base px-2 py-0.5 rounded-full bg-[var(--muted)] text-muted-foreground">
               {providerLabel}
             </span>
           )}
@@ -140,7 +140,7 @@ export function ProfileView() {
       {/* Display name */}
       <section className="bg-[var(--card)] rounded-xl border border-[var(--border)] divide-y divide-[var(--border)] overflow-hidden">
         <div className="px-4 py-3">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Nombre de display</p>
+          <p className="ts-label-micro text-muted-foreground uppercase mb-3">Nombre de display</p>
           <input
             type="text"
             value={nameInput}
@@ -159,7 +159,7 @@ export function ProfileView() {
       {/* Currency preferences */}
       <section className="bg-[var(--card)] rounded-xl border border-[var(--border)] overflow-hidden">
         <div className="px-4 pt-4 pb-3">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Moneda principal</p>
+          <p className="ts-label-micro text-muted-foreground uppercase mb-1">Moneda principal</p>
           <p className="text-[12px] text-muted-foreground mb-3">Cómo se muestran los valores en la app</p>
           <div className="flex gap-3">
             <CurrencyCard currency="COP" selected={primary === 'COP'} onClick={() => handleSelectPrimary('COP')} />
@@ -168,7 +168,7 @@ export function ProfileView() {
         </div>
 
         <div className="px-4 py-3 border-t border-[var(--border)]">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Moneda secundaria</p>
+          <p className="ts-label-micro text-muted-foreground uppercase mb-1">Moneda secundaria</p>
           <p className="text-[12px] text-muted-foreground mb-3">Equivalencia visible junto a los valores principales</p>
           <div className="flex flex-col gap-2">
             {secondaryOptions.map(opt => (
@@ -184,8 +184,8 @@ export function ProfileView() {
                 )}
               >
                 {opt.flag && <span className="text-lg leading-none select-none">{opt.flag}</span>}
-                {!opt.flag && <span className="w-[26px] h-[26px] flex items-center justify-center rounded-full bg-muted text-muted-foreground text-sm font-bold shrink-0">–</span>}
-                <span className="text-sm font-medium">
+                {!opt.flag && <span className="w-[26px] h-[26px] flex items-center justify-center rounded-full bg-muted text-muted-foreground ts-body-base-emphasis shrink-0">–</span>}
+                <span className="ts-body-base-emphasis">
                   {opt.value ? <><strong>{opt.value}</strong> · {opt.label}</> : opt.label}
                 </span>
                 {secondary === opt.value && (

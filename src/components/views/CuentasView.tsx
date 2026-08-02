@@ -91,19 +91,19 @@ function LedgerRow({ entry, account, accounts }: { entry: LedgerEntry; account: 
         {/* Description + date */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 min-w-0">
-            <span className="text-sm truncate">{desc}</span>
+            <span className="ts-body-base truncate">{desc}</span>
             {entry.scheduled && (
-              <span className="shrink-0 text-[10px] font-medium text-[var(--color-tax-txt)] bg-[var(--color-tax)]/10 px-1.5 py-0.5 rounded-full">
+              <span className="shrink-0 ts-label-badge text-[var(--color-tax-txt)] bg-[var(--color-tax)]/10 px-1.5 py-0.5 rounded-full">
                 Programado
               </span>
             )}
           </div>
-          <div className="text-xs text-muted-foreground">{fmtDate(entry.date)} · {fmtMonth(entry.monthKey)}</div>
+          <div className="ts-body-small text-muted-foreground">{fmtDate(entry.date)} · {fmtMonth(entry.monthKey)}</div>
         </div>
 
         {/* Amount + running balance */}
         <div className="text-right shrink-0">
-          <div className={cn('text-sm font-semibold tabular-nums font-heading', isCredit ? 'text-[var(--color-provision)]' : 'text-foreground')}>
+          <div className={cn('ts-amount-base', isCredit ? 'text-[var(--color-provision)]' : 'text-foreground')}>
             {isCredit ? '+' : ''}{fmt(entry.convertedAmount)}
           </div>
           <div className="text-[10px] text-muted-foreground tabular-nums">{fmt(runningBalance)}</div>
@@ -218,7 +218,7 @@ export function CuentasView() {
       {/* Accounts header + grid */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Cuentas</h2>
+          <h2 className="ts-label-micro text-muted-foreground uppercase">Cuentas</h2>
           <div className="flex items-center gap-2">
             <Button size="sm" variant="outline" onClick={() => openSheet('transfer')}>
               <ArrowLeftRight />
@@ -268,7 +268,7 @@ export function CuentasView() {
           <div className="px-4 py-3 border-b border-[var(--border)] flex flex-wrap items-center gap-3">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1">
-                <span className="text-sm font-semibold truncate">{selectedAccount.label}</span>
+                <span className="ts-body-base-emphasis truncate">{selectedAccount.label}</span>
                 <IconButton
                   variant="ghost"
                   size="md"
@@ -279,7 +279,7 @@ export function CuentasView() {
                   <Pencil size={12} />
                 </IconButton>
               </div>
-              <div className="text-xs text-muted-foreground">
+              <div className="ts-body-small text-muted-foreground">
                 {ledger.length} movimiento{ledger.length !== 1 ? 's' : ''}
               </div>
               {acctDetail && (
@@ -290,17 +290,17 @@ export function CuentasView() {
             <div className="hidden sm:flex items-center gap-4 text-right">
               <div>
                 <div className="text-[10px] text-muted-foreground">Entradas</div>
-                <div className="text-sm font-semibold tabular-nums text-[var(--color-provision)]">+{fmt(totalCredits)}</div>
+                <div className="ts-amount-base text-[var(--color-provision)]">+{fmt(totalCredits)}</div>
               </div>
               <div>
                 <div className="text-[10px] text-muted-foreground">Salidas</div>
-                <div className="text-sm font-semibold tabular-nums">{fmt(totalDebits)}</div>
+                <div className="ts-amount-base">{fmt(totalDebits)}</div>
               </div>
             </div>
             {/* Saldo — the Movimiento action lives in the page header above */}
             <div className="text-right shrink-0">
               <div className="text-[10px] text-muted-foreground">{selIsCredit ? 'Deuda actual' : 'Saldo actual'}</div>
-              <div className={cn('text-sm font-bold tabular-nums font-heading', selIsCredit && 'text-[var(--color-expense-txt)]')}>
+              <div className={cn('ts-amount-base', selIsCredit && 'text-[var(--color-expense-txt)]')}>
                 {fmt(selIsCredit ? Math.max(-currentBalance, 0) : currentBalance)}
               </div>
             </div>
@@ -309,8 +309,8 @@ export function CuentasView() {
           {/* Starting balance row */}
           {selectedAccount.startingBalance != null && (
             <div className="px-4 py-2 flex items-center justify-between bg-muted/50 border-b border-[var(--border)]">
-              <span className="text-xs text-muted-foreground">{selIsCredit ? 'Deuda inicial' : 'Saldo inicial'}</span>
-              <span className="text-xs font-mono tabular-nums font-medium">
+              <span className="ts-body-small text-muted-foreground">{selIsCredit ? 'Deuda inicial' : 'Saldo inicial'}</span>
+              <span className="ts-amount-small">
                 {fmt(selIsCredit ? Math.max(-selectedAccount.startingBalance, 0) : selectedAccount.startingBalance)}
               </span>
             </div>

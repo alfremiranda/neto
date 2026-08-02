@@ -43,7 +43,7 @@ function DashboardHeader() {
   return (
     <div className="flex items-center justify-between gap-4 pb-1">
       <div>
-        <h1 className="text-xl font-bold font-heading leading-tight">
+        <h1 className="ts-heading-section">
           {greeting()}{firstName ? `, ${firstName}` : ''}
         </h1>
       </div>
@@ -63,7 +63,7 @@ function DashboardHeader() {
               key={label}
               type="button"
               onClick={() => { setOpen(false); setTimeout(onClick, 50) }}
-              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-[var(--muted)] transition-colors text-left"
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg ts-control-md hover:bg-[var(--muted)] transition-colors text-left"
             >
               <Icon size={13} className="text-[var(--primary)] shrink-0" />
               {label}
