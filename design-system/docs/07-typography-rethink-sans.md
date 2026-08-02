@@ -94,11 +94,17 @@ Headings 18px and over get negative; everything from 12–16px sits at 0; only `
 | Token | px | Used by |
 |---|---|---|
 | `tracking/tighter` | -1 | unused — reserved for display type above 24px |
-| `tracking/tight` | **-0.5** | `Heading/Display` (≈ -0.021em; code had -0.02em) |
+| `tracking/tight` | **-0.5** | unused since 2026-08-02 — `Heading/Display` moved to `wide` |
 | `tracking/snug` | **-0.25** *(new)* | `Heading/Section`, `Heading/Subsection` |
 | `tracking/normal` | 0 | everything else |
-| `tracking/wide` | 0.5 | `Label/*`, `Control/*` |
+| `tracking/wide` | 0.5 | `Label/*`, `Control/*`, and `Heading/Display` |
 | `tracking/wider` | 1 | unused |
+
+**Superseded in part on 2026-08-02.** `Heading/Display` was rescaled to 28/36 and moved back to
+`tracking/wide` (+0.5), so it is now the one heading that tracks out and also the largest. The rule
+below still holds for `Section` and `Subsection`, which kept `snug`; Display is an explicit
+exception in the file. Figma is the source of truth — this is recorded, not argued with, and it is
+the first thing to check if display headings ever read loose.
 
 Two negative steps, not three. `Subsection` at 18px takes the same `snug` as `Section` at 20px
 rather than earning its own value — the difference would be 0.07px, which is not a design decision,
@@ -119,27 +125,27 @@ ticket 1 flips all 26 classes in one move. The `Amount/*` classes also carry `ta
 
 | Style | Spec | Use it when the text is… |
 |---|---|---|
-| `Heading/Display` | 24/32 Bold -0.5 | the title of a screen. One per view, at most |
+| `Heading/Display` | 28/36 Bold +0.5 | the title of a screen. One per view, at most |
 | `Heading/Section` | 20/28 SemiBold -0.25 | a major division inside a screen |
 | `Heading/Subsection` | 18/28 SemiBold -0.25 | a division inside a section |
 | `Heading/Card` | 16/24 SemiBold | the title of a card or panel |
 | `Heading/Group` | 14/20 SemiBold | the label over a group of rows or fields |
-| `Body/Base` | 14/21 Regular | running text. The default |
+| `Body/Base` | 16/24 Regular | running text. The default |
 | `Body/Base-Emphasis` | 14/21 Medium | emphasis *inside* running text |
-| `Body/Small` | 12/18 Regular | secondary running text |
+| `Body/Small` | 14/20 Regular | secondary running text |
 | `Body/Small-Emphasis` | 12/18 Medium | emphasis inside secondary text |
-| `Detail/Large` | 11/17 Regular | metadata, timestamps, helper text |
-| `Detail/Base` | 10/15 Regular | the smallest readable metadata |
-| `Detail/Emphasis` | 10/15 Medium | the same, when it must be picked out |
-| `Detail/Nano` | 9/14 Medium | axis ticks and legends. Nothing a user must read |
-| `Label/Base` | 11/17 Medium +0.5 | a form label or a field name |
+| `Detail/Large` | 12/18 Regular | metadata, timestamps, helper text |
+| `Detail/Base` | 11/16 Regular | the smallest readable metadata |
+| `Detail/Emphasis` | 11/16 Medium | the same, when it must be picked out |
+| `Detail/Nano` | 10/15 Medium | axis ticks and legends. Nothing a user must read |
+| `Label/Base` | 12/17 Medium +0.5 | a form label or a field name |
 | `Label/Micro` | 10/15 SemiBold +0.5 | a section eyebrow above a heading |
-| `Label/Badge` | 10/10 Medium | text inside a badge or chip |
-| `Amount/Hero` | 20/24 SemiBold | a headline figure — the ones a user opens the screen to read. The KPI strip is five of them |
-| `Amount/Large` | 17/26 Bold | a figure inside a card — `MetricCard`, a metric beside other content |
-| `Amount/Base` | 14/21 SemiBold | a figure in a row or table cell |
-| `Amount/Small` | 12/18 SemiBold | a secondary or historical figure |
-| `Amount/Micro` | 10/15 Regular | a figure inside dense chrome |
+| `Label/Badge` | 11/11 Medium | text inside a badge or chip. Carries `tabular-nums`: a badge usually holds a count |
+| `Amount/Hero` | 24/24 SemiBold | a headline figure — the ones a user opens the screen to read. The KPI strip is five of them |
+| `Amount/Large` | 22/26 SemiBold | a figure inside a card — `MetricCard`, a metric beside other content |
+| `Amount/Base` | 16/20 SemiBold | a figure in a row or table cell |
+| `Amount/Small` | 14/18 SemiBold | a secondary or historical figure |
+| `Amount/Micro` | 12/16 Regular | a figure inside dense chrome |
 | `Control/XS…XL` | 10·12·14·16·18, Medium +0.5, line-height = size | the label of something you press — button, tab, chip. **Not a field's value**, see below |
 
 ### Fields: the value is content, not an affordance
@@ -151,21 +157,22 @@ binds one of these:
 
 | Field size | Height | Value style |
 |---|---|---|
-| SM | 28 | `Detail/Large` — 11 Regular |
-| MD | 36 | `Body/Small` — 12 Regular |
-| LG | 44 | `Body/Base` — 14 Regular |
+| SM | 28 | `Detail/Large` — 12 Regular |
+| MD | 36 | `Body/Small` — 14 Regular |
+| LG | 44 | `Body/Base` — 16 Regular |
 
 The reason is the distinction `Control/*` exists for: a button's label is an *affordance* — a fixed
 string the system writes, centred on one line, which is why `Control/*` has line-height equal to
 size and +0.5 tracking. A field's value is *content the user typed*. Tracking it out and collapsing
 its line height treats their data like a button label.
 
-The `input/text/{sm,md,lg}/size` tokens (11 · 12 · 14) are the same three rungs expressed as
-component numbers. They agree; nothing here is new, it was just never written in one place.
+The `input/text/{sm,md,lg}/size` tokens are the same three rungs expressed as component numbers.
+They were 11 · 12 · 14 and were realigned to **12 · 14 · 16** when the scale moved on 2026-08-02.
 
-**One platform override.** Mobile fields render at 16px, not the LG rung's 14, because anything
-below 16 makes iOS zoom the page on focus. That is a behaviour, not a type decision — keep it, and
-keep the comment saying why.
+**The platform override dissolved.** Mobile fields had to render at 16px — anything below makes iOS
+zoom the page on focus — while the LG rung said 14. The rung is now 16, so the override and the
+system agree and no exception is needed. Keep the comment saying why 16 matters; it is still a
+behaviour, and it now constrains the rung.
 
 ### Overflow — the gap this closed
 
@@ -223,7 +230,7 @@ Resolve them one at a time. There is no rule that sorts them in bulk.
 | Size | Uses | Goes to | Why |
 |---|---|---|---|
 | **30px** | ~~2~~ 0 | `Heading/Display` (24) | Already gone by the time the fixes landed |
-| **15px** | 5 | `Amount/Large` (1) · `Amount/Base` (4) | **All five are money**, so the prose test does not apply — the `Amount/*` scale does. `AnnualTable.tsx:54` is the donut's principal figure and already Bold → `Amount/Large` (17/26). The four the file itself calls "Secondary KPIs" → `Amount/Base` (14/21), which is *a figure in a row or table cell* |
+| **15px** | 5 | `Amount/Large` (1) · `Amount/Base` (4) — now 22 and 16 | **All five are money**, so the prose test does not apply — the `Amount/*` scale does. `AnnualTable.tsx:54` is the donut's principal figure and already Bold → `Amount/Large` (17/26). The four the file itself calls "Secondary KPIs" → `Amount/Base` (14/21), which is *a figure in a row or table cell* |
 | **13px** | ~~1~~ 0 | `Body/Small` (12) | Was Toast's only usage; closed in `590fbf8f` |
 | **`text-[12px]`** | 9 | `text-xs` | Duplicate spelling of a size that already has a name |
 | **`text-[0px]`** | 1 | leave | `IngresosCard.tsx:202`. **This row was wrong.** Dev checked it: nothing is being hidden — it is `font-size: 0` collapsing the JSX whitespace between two inline spans that each set their own size. `sr-only` there would remove a visible figure from the page. The mechanism stays, now with a comment saying why |

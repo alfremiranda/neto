@@ -295,9 +295,9 @@
   --input-menu-padding-y: 4px;
   --input-menu-item-height: 32px;
   --input-menu-item-padding-x: 8px;
-  --input-text-sm-size: 11px;
-  --input-text-md-size: 12px;
-  --input-text-lg-size: 14px;
+  --input-text-sm-size: 12px;
+  --input-text-md-size: 14px;
+  --input-text-lg-size: 16px;
   --input-menu-radius: 8px;
 }
 
@@ -420,55 +420,53 @@
   --category-shopping-surface: #3b0764;
   --category-other-default: #cbd5e1;
   --category-other-surface: #1e293b;
+  --badge-accent-background: #334155;
+  --badge-accent-foreground: #f1f5f9;
+  --badge-success-background: #022c22;
+  --badge-success-foreground: #6ee7b7;
+  --badge-info-background: #083344;
+  --badge-info-foreground: #67e8f9;
+  --badge-warning-background: #451a03;
+  --badge-warning-foreground: #fcd34d;
+  --badge-danger-background: #450a0a;
+  --badge-danger-foreground: #fca5a5;
+  --badge-neutral-background: #334155;
+  --badge-neutral-foreground: #94a3b8;
   --button-filled-background-default: #22d3ee;
   --button-filled-foreground: #083344;
   --button-filled-background-hover: #67e8f9;
   --button-outline-border: #475569;
   --button-outline-foreground: #f1f5f9;
   --button-outline-background-hover: rgba(100,116,139,0.3);
-  --button-ghost-foreground: #64748b;
+  --button-ghost-foreground: #94a3b8;
   --button-ghost-background-hover: rgba(100,116,139,0.3);
   --button-danger-filled-background: #f87171;
   --button-danger-filled-foreground: #450a0a;
   --button-danger-filled-background-hover: #fca5a5;
   --button-danger-border: #991b1b;
   --button-danger-foreground: #fca5a5;
-  --button-danger-background-hover: rgba(239,68,68,0.3);
-  --badge-accent-background: #f1f5f9;
-  --badge-accent-foreground: #1e293b;
-  --badge-accent-border: #475569;
-  --badge-success-background: #ecfdf5;
-  --badge-success-foreground: #047857;
-  --badge-success-border: #059669;
-  --badge-info-background: #ecfeff;
-  --badge-info-foreground: #0e7490;
-  --badge-info-border: #0891b2;
-  --badge-warning-background: #fffbeb;
-  --badge-warning-foreground: #b45309;
   --badge-warning-border: #d97706;
-  --badge-danger-background: #fef2f2;
-  --badge-danger-foreground: #b91c1c;
   --badge-danger-border: #dc2626;
-  --badge-neutral-background: #f1f5f9;
-  --badge-neutral-foreground: #64748b;
   --badge-neutral-border: #475569;
-  --badge-primary-background: rgba(6,182,212,0.2);
-  --badge-primary-foreground: #22d3ee;
-  --badge-primary-border: #164e63;
-  --notification-primary-background: #0e7490;
-  --notification-primary-foreground: #ffffff;
-  --notification-secondary-background: #f1f5f9;
-  --notification-secondary-foreground: #64748b;
+  --badge-accent-border: #475569;
+  --badge-success-border: #059669;
+  --badge-info-border: #0891b2;
+  --notification-primary-background: #06b6d4;
+  --notification-primary-foreground: #083344;
+  --notification-secondary-background: #334155;
+  --notification-secondary-foreground: #94a3b8;
   --avatar-background: #1e293b;
   --avatar-foreground: #e2e8f0;
   --avatar-border: #334155;
   --nav-background: #0f172a;
+  --button-danger-background-hover: rgba(239,68,68,0.3);
   --sidebar-surface: #1e293b;
   --sidebar-item-foreground: #f8fafc;
   --sidebar-item-background-selected: #06b6d4;
   --sidebar-item-foreground-selected: #083344;
   --sidebar-accent: #334155;
   --sidebar-accent-foreground: #f1f5f9;
+  --sidebar-border: rgba(255,255,255,0.2);
   --sidebar-ring: #06b6d4;
   --sidebar-item-background-hover: rgba(100,116,139,0.3);
   --input-color-background: #020617;
@@ -489,7 +487,10 @@
   --fav-default-foreground: #64748b;
   --fav-selected-background: #78350f;
   --fav-selected-foreground: #fde68a;
-  --switch-track-on: #0e7490;
+  --badge-primary-background: rgba(6,182,212,0.2);
+  --badge-primary-foreground: #22d3ee;
+  --badge-primary-border: #164e63;
+  --switch-track-on: #06b6d4;
   --switch-track-off: rgba(255,255,255,0.3);
   --switch-thumb: #ffffff;
   --currency-usd-surface: #083344;
@@ -499,29 +500,29 @@
 }
 
 /* Text styles — Rethink Sans, tabular by default */
-.ts-heading-display { font-family:var(--font-sans);font-weight:700;font-size:24px;line-height:32px;letter-spacing:-0.5px; }
+.ts-heading-display { font-family:var(--font-sans);font-weight:700;font-size:28px;line-height:36px;letter-spacing:0.5px; }
 .ts-heading-section { font-family:var(--font-sans);font-weight:600;font-size:20px;line-height:28px;letter-spacing:-0.25px; }
 .ts-heading-subsection { font-family:var(--font-sans);font-weight:600;font-size:18px;line-height:28px;letter-spacing:-0.25px; }
 .ts-heading-card { font-family:var(--font-sans);font-weight:600;font-size:16px;line-height:24px;letter-spacing:0.0px; }
 .ts-heading-group { font-family:var(--font-sans);font-weight:600;font-size:14px;line-height:20px;letter-spacing:0.0px; }
-.ts-body-base { font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:21px;letter-spacing:0.0px; }
-.ts-body-small { font-family:var(--font-sans);font-weight:400;font-size:12px;line-height:18px;letter-spacing:0.0px; }
-.ts-label-base { font-family:var(--font-sans);font-weight:500;font-size:11px;line-height:17px;letter-spacing:0.5px; }
-.ts-amount-base { font-family:var(--font-sans);font-weight:600;font-size:14px;line-height:21px;letter-spacing:0.0px;font-variant-numeric:tabular-nums; }
-.ts-body-base-emphasis { font-family:var(--font-sans);font-weight:500;font-size:14px;line-height:21px;letter-spacing:0.0px; }
-.ts-body-small-emphasis { font-family:var(--font-sans);font-weight:500;font-size:12px;line-height:18px;letter-spacing:0.0px; }
-.ts-detail-base { font-family:var(--font-sans);font-weight:400;font-size:10px;line-height:15px;letter-spacing:0.0px; }
-.ts-detail-emphasis { font-family:var(--font-sans);font-weight:500;font-size:10px;line-height:15px;letter-spacing:0.0px; }
+.ts-body-base { font-family:var(--font-sans);font-weight:400;font-size:16px;line-height:24px;letter-spacing:0.0px; }
+.ts-body-base-emphasis { font-family:var(--font-sans);font-weight:500;font-size:16px;line-height:24px;letter-spacing:0.0px; }
+.ts-body-small { font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px; }
+.ts-label-base { font-family:var(--font-sans);font-weight:500;font-size:12px;line-height:17px;letter-spacing:0.5px; }
+.ts-amount-micro { font-family:var(--font-sans);font-weight:400;font-size:12px;line-height:16px;letter-spacing:0.0px;font-variant-numeric:tabular-nums; }
+.ts-body-small-emphasis { font-family:var(--font-sans);font-weight:500;font-size:14px;line-height:20px;letter-spacing:0.0px; }
+.ts-detail-base { font-family:var(--font-sans);font-weight:400;font-size:11px;line-height:16px;letter-spacing:0.0px; }
+.ts-detail-emphasis { font-family:var(--font-sans);font-weight:500;font-size:11px;line-height:16px;letter-spacing:0.0px; }
 .ts-label-micro { font-family:var(--font-sans);font-weight:600;font-size:10px;line-height:15px;letter-spacing:0.5px; }
-.ts-detail-nano { font-family:var(--font-sans);font-weight:500;font-size:9px;line-height:14px;letter-spacing:0.0px; }
-.ts-detail-large { font-family:var(--font-sans);font-weight:400;font-size:11px;line-height:17px;letter-spacing:0.0px; }
-.ts-amount-small { font-family:var(--font-sans);font-weight:600;font-size:12px;line-height:18px;letter-spacing:0.0px;font-variant-numeric:tabular-nums; }
-.ts-amount-micro { font-family:var(--font-sans);font-weight:400;font-size:10px;line-height:15px;letter-spacing:0.0px;font-variant-numeric:tabular-nums; }
-.ts-amount-large { font-family:var(--font-sans);font-weight:700;font-size:17px;line-height:26px;letter-spacing:0.0px;font-variant-numeric:tabular-nums; }
-.ts-label-badge { font-family:var(--font-sans);font-weight:500;font-size:10px;line-height:10px;letter-spacing:0.0px;font-variant-numeric:tabular-nums; }
+.ts-detail-nano { font-family:var(--font-sans);font-weight:500;font-size:10px;line-height:15px;letter-spacing:0.0px; }
+.ts-detail-large { font-family:var(--font-sans);font-weight:400;font-size:12px;line-height:18px;letter-spacing:0.0px; }
+.ts-amount-small { font-family:var(--font-sans);font-weight:600;font-size:14px;line-height:18px;letter-spacing:0.0px;font-variant-numeric:tabular-nums; }
+.ts-amount-base { font-family:var(--font-sans);font-weight:600;font-size:16px;line-height:20px;letter-spacing:0.0px;font-variant-numeric:tabular-nums; }
+.ts-amount-large { font-family:var(--font-sans);font-weight:600;font-size:22px;line-height:26px;letter-spacing:0.0px;font-variant-numeric:tabular-nums; }
+.ts-label-badge { font-family:var(--font-sans);font-weight:500;font-size:11px;line-height:11px;letter-spacing:0.0px;font-variant-numeric:tabular-nums; }
 .ts-control-xs { font-family:var(--font-sans);font-weight:500;font-size:10px;line-height:10px;letter-spacing:0.5px; }
 .ts-control-sm { font-family:var(--font-sans);font-weight:500;font-size:12px;line-height:12px;letter-spacing:0.5px; }
 .ts-control-md { font-family:var(--font-sans);font-weight:500;font-size:14px;line-height:14px;letter-spacing:0.5px; }
 .ts-control-lg { font-family:var(--font-sans);font-weight:500;font-size:16px;line-height:16px;letter-spacing:0.5px; }
 .ts-control-xl { font-family:var(--font-sans);font-weight:500;font-size:18px;line-height:18px;letter-spacing:0.5px; }
-.ts-amount-hero { font-family:var(--font-sans);font-weight:600;font-size:20px;line-height:24px;letter-spacing:0.0px;font-variant-numeric:tabular-nums; }
+.ts-amount-hero { font-family:var(--font-sans);font-weight:600;font-size:24px;line-height:24px;letter-spacing:0.0px;font-variant-numeric:tabular-nums; }
