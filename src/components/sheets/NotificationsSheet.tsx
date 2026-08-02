@@ -69,7 +69,7 @@ export function NotificationsSheet() {
             if (list.length === 0) return null
             return (
               <div key={bucket}>
-                <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground mb-1.5 px-1">
+                <div className="ts-label-micro uppercase text-muted-foreground mb-1.5 px-1">
                   {BUCKET_LABEL[bucket]}
                 </div>
                 <div className="rounded-xl border border-[var(--border)] divide-y divide-[var(--border)] overflow-hidden">
@@ -84,9 +84,9 @@ export function NotificationsSheet() {
                       >
                         <CategoryIcon category={item.category} />
                         <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium leading-snug truncate">{item.desc}</div>
+                          <div className="ts-body-base-emphasis truncate">{item.desc}</div>
                           <div className={cn(
-                            'text-[11px] leading-snug',
+                            'ts-detail-large',
                             bucket === 'overdue' ? 'text-[var(--color-danger-txt)]'
                               : bucket === 'today' ? 'text-[var(--color-tax-txt)]'
                               : 'text-muted-foreground',
@@ -95,7 +95,7 @@ export function NotificationsSheet() {
                           </div>
                         </div>
                         <div className="text-right shrink-0">
-                          <div className="text-sm font-semibold tabular-nums font-mono">
+                          <div className="ts-amount-base">
                             {item.currency === 'USD' ? USD(item.amount) : COP(amtCOP!)}
                           </div>
                         </div>

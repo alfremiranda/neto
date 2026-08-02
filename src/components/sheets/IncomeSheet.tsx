@@ -180,8 +180,8 @@ export function IncomeSheet() {
         {tipo === 'servicios' && (
           <div className="flex items-center justify-between py-1">
             <div>
-              <div className="text-sm font-medium">Aplicar provisiones</div>
-              <div className="text-xs text-muted-foreground">Incluir en el cálculo de primas y cesantías</div>
+              <div className="ts-body-base-emphasis">Aplicar provisiones</div>
+              <div className="ts-body-small text-muted-foreground">Incluir en el cálculo de primas y cesantías</div>
             </div>
             <Switch checked={applyProvisions} onCheckedChange={setApply} />
           </div>

@@ -23,26 +23,26 @@ function BalanceRow({
   const delta = after - current
   return (
     <div className="px-3 py-2.5">
-      <div className="text-[11px] text-muted-foreground mb-1.5 font-medium">
-        {account.label} <span className="font-normal opacity-60">({account.currency})</span>
+      <div className="ts-label-base text-muted-foreground mb-1.5">
+        {account.label} <span className="ts-detail-large opacity-60">({account.currency})</span>
       </div>
       <div className="flex items-center gap-2">
         <span className={cn(
-          'text-sm tabular-nums font-heading',
-          showProjection ? 'text-muted-foreground' : 'font-semibold text-foreground',
+          'ts-amount-base',
+          showProjection ? 'text-muted-foreground' : 'ts-body-base-emphasis text-foreground',
         )}>
           {fmt(current)}
         </span>
         {showProjection && <>
           <ArrowRight size={12} className="text-muted-foreground/40 shrink-0" />
           <span className={cn(
-            'text-sm tabular-nums font-heading font-semibold',
+            'ts-amount-base',
             after < 0 ? 'text-[var(--color-expense-txt)]' : 'text-foreground',
           )}>
             {fmt(after)}
           </span>
           <span className={cn(
-            'text-xs tabular-nums ml-auto',
+            'ts-amount-small ml-auto',
             delta > 0 ? 'text-[var(--color-provision-txt)]' : 'text-[var(--color-expense-txt)]',
           )}>
             {delta > 0 ? '+' : ''}{fmt(delta)}
@@ -235,13 +235,13 @@ export function TransferSheet() {
         {/* Live TRM banner */}
         {liveTRM.trm && (
           <div className="flex justify-between items-center bg-muted rounded-xl px-3 py-2">
-            <span className="text-xs text-muted-foreground">TRM en vivo</span>
+            <span className="ts-body-small text-muted-foreground">TRM en vivo</span>
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium tabular-nums">
+              <span className="ts-amount-base">
                 {liveTRM.trm.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
               <button
-                className="text-xs text-primary border-none bg-transparent cursor-pointer hover:underline"
+                className="ts-body-small text-primary border-none bg-transparent cursor-pointer hover:underline"
                 onClick={() => {
                   setTrmDisplay(liveTRM.trm!.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
                   setTrmManual(true)
@@ -282,7 +282,7 @@ export function TransferSheet() {
             {!isEditing && fromBalance > 0 && (
               <button
                 type="button"
-                className="text-xs text-primary border-none bg-transparent cursor-pointer hover:underline"
+                className="ts-body-small text-primary border-none bg-transparent cursor-pointer hover:underline"
                 onClick={() => amt.setValue(fromBalance)}
               >
                 Todo → {from?.currency === 'USD' ? USD(fromBalance) : COP(fromBalance)}
@@ -298,12 +298,12 @@ export function TransferSheet() {
             <div className="flex items-center justify-between mb-0.5">
               <label htmlFor="tr-recv" className="field-label">
                 Monto recibido{to ? ` (${to.currency})` : ''}
-                <span className="ml-1 text-muted-foreground/60 font-normal">— opcional</span>
+                <span className="ml-1 ts-detail-large text-muted-foreground/60">— opcional</span>
               </label>
               {hasReceived && (
                 <button
                   type="button"
-                  className="text-xs text-muted-foreground border-none bg-transparent cursor-pointer hover:text-foreground"
+                  className="ts-body-small text-muted-foreground border-none bg-transparent cursor-pointer hover:text-foreground"
                   onClick={() => amtReceived.setValue(0)}
                 >
                   Limpiar
@@ -345,22 +345,22 @@ export function TransferSheet() {
         {hasReceived && effectiveTRM != null && (
           <div className="rounded-xl border border-[var(--border)] px-3 py-2.5 space-y-1.5">
             <div className="flex justify-between items-center">
-              <span className="text-xs text-muted-foreground">TRM efectiva</span>
-              <span className="text-sm font-semibold font-heading tabular-nums">
+              <span className="ts-body-small text-muted-foreground">TRM efectiva</span>
+              <span className="ts-amount-base">
                 {effectiveTRM.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-xs text-muted-foreground">TRM BanRep</span>
-              <span className="text-xs tabular-nums text-muted-foreground">
+              <span className="ts-body-small text-muted-foreground">TRM BanRep</span>
+              <span className="ts-amount-small text-muted-foreground">
                 {officialTRM.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
             {trmDelta != null && trmDeltaPct != null && (
               <div className="flex justify-between items-center pt-0.5 border-t border-[var(--border)]">
-                <span className="text-xs text-muted-foreground">Diferencia (fee implícito)</span>
+                <span className="ts-body-small text-muted-foreground">Diferencia (fee implícito)</span>
                 <span className={cn(
-                  'text-xs font-medium tabular-nums',
+                  'ts-amount-small',
                   trmDelta >= 0 ? 'text-[var(--color-provision-txt)]' : 'text-[var(--color-expense-txt)]',
                 )}>
                   {trmDelta >= 0 ? '+' : ''}{trmDelta.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -373,7 +373,7 @@ export function TransferSheet() {
 
         {/* Calculated result (when not using received amount) */}
         {getResultLabel() && (
-          <div className="text-sm text-muted-foreground bg-muted rounded-xl px-3 py-2">
+          <div className="ts-body-base text-muted-foreground bg-muted rounded-xl px-3 py-2">
             {getResultLabel()}
           </div>
         )}
@@ -382,7 +382,7 @@ export function TransferSheet() {
         {from && to && (
           <div className="rounded-xl border border-[var(--border)] overflow-hidden">
             <div className="px-3 py-2 bg-muted/50 border-b border-[var(--border)]">
-              <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
+              <span className="ts-label-micro uppercase text-muted-foreground">
                 {amt.numericValue > 0 ? 'Saldos después del movimiento' : 'Saldos disponibles'}
               </span>
             </div>

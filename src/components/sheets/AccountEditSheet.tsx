@@ -166,7 +166,7 @@ export function AccountEditSheet() {
           )}
           {isEditing && !isLocked && confirmingDelete && (
             <div className="space-y-3">
-              <p className="text-sm text-center text-muted-foreground">
+              <p className="ts-body-base text-center text-muted-foreground">
                 ¿Eliminar esta cuenta? Sus movimientos dejarán de estar asociados.
               </p>
               <div className="flex gap-2">
@@ -185,7 +185,7 @@ export function AccountEditSheet() {
       <div className="space-y-4">
 
         {isLocked && (
-          <p className="text-xs text-muted-foreground bg-muted rounded-xl px-3 py-2">
+          <p className="ts-body-small text-muted-foreground bg-muted rounded-xl px-3 py-2">
             Bolsillo del sistema — el nombre y la moneda no se pueden cambiar.
           </p>
         )}
@@ -212,7 +212,7 @@ export function AccountEditSheet() {
               </SelectContent>
             </Select>
             {isEditing && (
-              <p className="text-[11px] text-muted-foreground mt-1">El tipo no se puede cambiar. Para reclasificar, elimina y crea de nuevo.</p>
+              <p className="ts-detail-large text-muted-foreground mt-1">El tipo no se puede cambiar. Para reclasificar, elimina y crea de nuevo.</p>
             )}
           </div>
         )}
@@ -279,7 +279,7 @@ export function AccountEditSheet() {
                     onClick={() => setSavingsKind(value)}
                     aria-pressed={savingsKind === value}
                     className={cn(
-                      'py-1.5 rounded-lg text-xs font-medium transition-colors border-0',
+                      'py-1.5 rounded-lg ts-control-sm transition-colors border-0',
                       savingsKind === value
                         ? 'bg-[var(--primary)] text-[var(--primary-foreground)]'
                         : 'bg-transparent text-muted-foreground hover:text-foreground hover:bg-[var(--accent)]',
@@ -342,7 +342,7 @@ export function AccountEditSheet() {
                 />
               </div>
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="ts-body-small text-muted-foreground">
               Las compras se registran como egresos a la tarjeta (suben la deuda) y los pagos como movimientos desde tu cuenta (la bajan).
             </p>
           </>
@@ -380,8 +380,8 @@ export function AccountEditSheet() {
         {/* Favorite — pin to dashboard */}
         <div className="flex items-center justify-between py-1 border-t border-[var(--border)] pt-4">
           <div>
-            <div className="text-sm font-medium">Favorito</div>
-            <div className="text-xs text-muted-foreground">Fíjala en el dashboard como card compacto</div>
+            <div className="ts-body-base-emphasis">Favorito</div>
+            <div className="ts-body-small text-muted-foreground">Fíjala en el dashboard como card compacto</div>
           </div>
           <Switch checked={favorite} onCheckedChange={setFavorite} />
         </div>

@@ -176,7 +176,7 @@ export function EgresoSheet() {
 
         {/* Account (optional) */}
         <div>
-          <label htmlFor="eg-acc" className="field-label">Cuenta que paga <span className="text-muted-foreground font-normal">(opcional)</span></label>
+          <label htmlFor="eg-acc" className="field-label">Cuenta que paga <span className="ts-detail-large text-muted-foreground">(opcional)</span></label>
           <Select value={account || '_none'} onValueChange={v => setAccount(v === '_none' ? '' : v)}>
             <SelectTrigger id="eg-acc" className="w-full">
               <SelectValue />
@@ -202,8 +202,8 @@ export function EgresoSheet() {
         {/* Recurring toggle */}
         <div className="flex items-center justify-between py-1">
           <div>
-            <div className="text-sm font-medium">Recurrente</div>
-            <div className="text-xs text-muted-foreground">Se copiará al siguiente mes · si tiene fecha futura, no se suma al total hasta que llegue</div>
+            <div className="ts-body-base-emphasis">Recurrente</div>
+            <div className="ts-body-small text-muted-foreground">Se copiará al siguiente mes · si tiene fecha futura, no se suma al total hasta que llegue</div>
           </div>
           <Switch checked={recurring} onCheckedChange={setRecurring} />
         </div>

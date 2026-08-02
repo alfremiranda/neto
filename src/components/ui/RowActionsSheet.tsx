@@ -66,11 +66,11 @@ export function RowActionsSheet({
 
           {/* Item info */}
           <div className="px-5 pt-2 pb-4 border-b border-[var(--border)]">
-            <DialogPrimitive.Title className="text-sm font-semibold truncate">
+            <DialogPrimitive.Title className="ts-body-base-emphasis truncate">
               {title}
             </DialogPrimitive.Title>
             {subtitle && (
-              <p className="text-xs text-muted-foreground mt-0.5 truncate">{subtitle}</p>
+              <p className="ts-body-small text-muted-foreground mt-0.5 truncate">{subtitle}</p>
             )}
           </div>
 
@@ -81,7 +81,7 @@ export function RowActionsSheet({
                 key={i}
                 variant="ghost"
                 onClick={() => { close(); a.onClick() }}
-                className="h-auto py-4 px-4 w-full justify-start gap-3 text-sm font-medium rounded-xl"
+                className="h-auto py-4 px-4 w-full justify-start gap-3 rounded-xl"
               >
                 {a.icon}
                 {a.label}
@@ -91,7 +91,7 @@ export function RowActionsSheet({
             <Button
               variant="ghost"
               onClick={handleEdit}
-              className="h-auto py-4 px-4 w-full justify-start gap-3 text-sm font-medium rounded-xl"
+              className="h-auto py-4 px-4 w-full justify-start gap-3 rounded-xl"
             >
               <Pencil size={18} className="text-muted-foreground shrink-0" />
               Editar
@@ -101,7 +101,7 @@ export function RowActionsSheet({
               variant="ghost"
               onClick={handleDelete}
               className={cn(
-                'h-auto py-4 px-4 w-full justify-start gap-3 text-sm font-medium rounded-xl',
+                'h-auto py-4 px-4 w-full justify-start gap-3 rounded-xl',
                 confirming
                   ? 'bg-[var(--color-danger-bg)] text-[var(--color-danger)] hover:bg-[var(--color-danger-bg)] hover:text-[var(--color-danger)]'
                   : 'text-muted-foreground hover:bg-[var(--color-danger-bg)] hover:text-[var(--color-danger)]',
@@ -117,7 +117,7 @@ export function RowActionsSheet({
             <Button
               variant="outline"
               onClick={close}
-              className="h-auto py-4 w-full text-sm font-semibold rounded-xl"
+              className="h-auto py-4 w-full rounded-xl"
             >
               Cancelar
             </Button>
