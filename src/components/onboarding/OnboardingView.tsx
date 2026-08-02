@@ -458,8 +458,11 @@ function CurrencyStep({
 function WelcomeStep() {
   return (
     <div className="flex-1 flex flex-col items-center justify-center text-center gap-6">
-      <div className="w-16 h-16 rounded-2xl bg-foreground flex items-center justify-center shadow-lg">
-        <span className="text-background font-bold text-[30px] leading-none select-none">N</span>
+      {/* The designed mark — the same asset as the favicon and the PWA icon.
+          It carries its own background, so the container only clips and shadows,
+          exactly as LoginScreen does it. */}
+      <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-lg">
+        <img src="/icon.svg" alt="Neto" className="w-full h-full" />
       </div>
       <div>
         <h1 className="ts-heading-display">Bienvenido a Neto</h1>

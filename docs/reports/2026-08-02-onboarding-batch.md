@@ -20,10 +20,16 @@ DID:
 
 DECISIONS — three things deliberately left as they are:
 
-- **Two emoji and a logotype keep raw sizes.** `text-3xl` on a flag emoji and `text-xl` on
-  another are glyph sizing, not typography; the "N" keeps `text-[30px]` as brand chrome, on the
-  same reading Design applied to the wordmark. Binding any of them to a text style would make a
-  logo follow body copy.
+- **Two emoji keep raw sizes.** `text-3xl` on a flag emoji and `text-xl` on another are glyph
+  sizing, not typography.
+- **The "N" was never brand chrome — it was a stand-in.** I first classified it as a logotype to
+  be left alone, and Alfredo caught that the app already ships the designed mark: `/icon.svg`,
+  the same asset as the favicon and the PWA icon, which `LoginScreen` was already using.
+  `OnboardingView` was drawing a letter in a rounded square instead. Replaced with the asset,
+  matching LoginScreen exactly — the SVG carries its own background, so the container only clips
+  and shadows. **`text-[30px]` is now 0 occurrences and no hand-drawn logomark is left in the
+  app.** Worth recording as a miss on my part: I reasoned about how to *style* the mark and never
+  asked whether it should have been text at all.
 - **Five of the seven buttons are not `Button`s.** Two are segmented-control chips
   (`flex-1`, `px-2.5 py-1`) and three are option cards you tap to choose an account type or
   currency — the same pattern as `ProfileView`'s currency selector. They belong to the §1
