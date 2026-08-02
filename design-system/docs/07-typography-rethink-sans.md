@@ -125,8 +125,8 @@ ticket 1 flips all 26 classes in one move. The `Amount/*` classes also carry `ta
 
 | Style | Spec | Use it when the text is… |
 |---|---|---|
-| `Heading/Display` | 28/36 Bold +0.5 | the title of a screen. One per view, at most |
-| `Heading/Section` | 24/32 SemiBold -0.25 | a major division inside a screen |
+| `Heading/Display` | 28/36 Bold +0.5 | the title of a screen that has **no app chrome around it** — login, consent, onboarding. See below |
+| `Heading/Section` | 24/32 SemiBold -0.25 | a page title **inside the app shell**, and a major division inside a screen |
 | `Heading/Subsection` | 20/24 SemiBold -0.25 | a division inside a section |
 | `Heading/Card` | 18/26 SemiBold | the title of a card or panel |
 | `Heading/Group` | 16/20 SemiBold | the label over a group of rows or fields |
@@ -147,6 +147,29 @@ ticket 1 flips all 26 classes in one move. The `Amount/*` classes also carry `ta
 | `Amount/Small` | 14/18 SemiBold | a secondary or historical figure |
 | `Amount/Micro` | 12/16 Regular | a figure inside dense chrome |
 | `Control/XS…XL` | 10·12·14·16·18, Medium +0.5, line-height = size | the label of something you press — button, tab, chip. **Not a field's value**, see below |
+
+### Page titles: Display is a voice, not a size
+
+The spec used to say Display was "the title of a screen", which read as *every* screen. Dev applied
+it consistently and found page titles wearing four different styles — Display, Section, Subsection
+and even `Label/Micro`. Settled on 2026-08-02, and the split Dev landed on is right:
+
+| Screen | Title style |
+|---|---|
+| No app chrome — login, consent, onboarding | `Heading/Display` |
+| Inside the app shell — Dashboard, Cuentas, Ahorros, Perfil, Configuración | `Heading/Section` |
+
+The reason is not size, it is competition. A login screen is a room with one object in it and
+Display earns its 28px. A dashboard is a room full of them: the loudest thing there should be the
+figures the user opened the app to read, not the word above them. Display inside the shell fights
+the KPI strip and wins, which is the wrong outcome.
+
+**The collision this leaves, named so the batch pass can judge it.** `Heading/Section` is 24/32
+SemiBold and `Amount/Hero` is 24/24 SemiBold — same size, same weight. An in-app page title and a
+hero figure are now typographically identical. They never sit adjacent, so context separates them,
+but if they read as competing in the visual review **the lever is `Amount/Hero`, not the title**:
+move the figure to 28 and let it match Display's size while staying SemiBold. Moving the page title
+instead would undo the wayfinding hierarchy this split just established.
 
 ### Fields: the value is content, not an affordance
 
