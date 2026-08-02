@@ -515,7 +515,7 @@ function EgresosCardContent() {
                       <SlidersHorizontal size={14} />
                     </Button>
                     {hasFilters && (
-                      <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-[var(--primary)] rounded-full text-[9px] font-bold text-white flex items-center justify-center leading-none pointer-events-none">
+                      <span className="absolute -top-1 -right-1 w-[15px] h-[15px] bg-[var(--primary)] rounded-full ts-label-badge text-white flex items-center justify-center pointer-events-none">
                         {[filterAccount, filterDate].filter(Boolean).length}
                       </span>
                     )}

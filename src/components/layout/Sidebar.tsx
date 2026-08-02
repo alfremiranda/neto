@@ -87,7 +87,7 @@ export function Sidebar_MobileNav() {
             )}
           >
             <Icon size={20} strokeWidth={active ? 2 : 1.75} />
-            <span className="text-[9px] font-medium leading-[14px] tracking-[0] select-none">
+            <span className="ts-detail-nano select-none">
               {mobileLabel}
             </span>
           </button>

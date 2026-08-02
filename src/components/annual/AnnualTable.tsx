@@ -51,7 +51,7 @@ function AnnualDonut({ segments, total, centerValue }: { segments: DonutSeg[]; t
         {/* Center reflects the tapped segment, or the gross by default */}
         <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center pointer-events-none">
           <div
-            className="text-[15px] font-bold font-heading tabular-nums leading-tight"
+            className="ts-amount-large"
             style={sel ? { color: `var(${sel.color})` } : undefined}
           >
             {sel ? COP(sel.amount) : centerValue}
@@ -117,10 +117,10 @@ export function AnnualTable({ year }: AnnualTableProps) {
 
   // Secondary KPIs — the gross ("Bruto") is shown separately as the principal.
   const restKpis: { key: string; label: string; value: ReactNode; sub: string }[] = []
-  if (showOblig) restKpis.push({ key: 'oblig', label: 'Obligaciones tributarias', value: <span className="text-[15px] font-heading tabular-nums" style={{ color: `var(${obligColor})` }}>{COP(totOblig)}</span>, sub: `${pct(totOblig, totBruto)} del bruto` })
-  if (showProv)  restKpis.push({ key: 'prov',  label: 'Provisiones',              value: <span className="text-[15px] font-heading tabular-nums" style={{ color: `var(${provColor})` }}>{COP(totProv)}</span>,  sub: `${pct(totProv, totBruto)} del bruto` })
-  restKpis.push({ key: 'gast', label: 'Gastos',            value: <span className="text-[15px] font-heading tabular-nums text-[var(--color-expense)]">{COP(totGast)}</span>, sub: `${pct(totGast, totBruto)} del bruto` })
-  restKpis.push({ key: 'neto', label: 'Neto libre acum.',  value: <span className="text-[15px] font-heading tabular-nums text-[var(--color-net-txt)]">{COP(totNeto)}</span>, sub: `${pct(totNeto, totBruto)} del bruto` })
+  if (showOblig) restKpis.push({ key: 'oblig', label: 'Obligaciones tributarias', value: <span className="ts-amount-base" style={{ color: `var(${obligColor})` }}>{COP(totOblig)}</span>, sub: `${pct(totOblig, totBruto)} del bruto` })
+  if (showProv)  restKpis.push({ key: 'prov',  label: 'Provisiones',              value: <span className="ts-amount-base" style={{ color: `var(${provColor})` }}>{COP(totProv)}</span>,  sub: `${pct(totProv, totBruto)} del bruto` })
+  restKpis.push({ key: 'gast', label: 'Gastos',            value: <span className="ts-amount-base text-[var(--color-expense)]">{COP(totGast)}</span>, sub: `${pct(totGast, totBruto)} del bruto` })
+  restKpis.push({ key: 'neto', label: 'Neto libre acum.',  value: <span className="ts-amount-base text-[var(--color-net-txt)]">{COP(totNeto)}</span>, sub: `${pct(totNeto, totBruto)} del bruto` })
 
   return (
     <div className={cn('space-y-4', showDonut && 'lg:flex lg:flex-row lg:items-center lg:gap-5 lg:space-y-0')}>
