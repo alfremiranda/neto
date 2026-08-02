@@ -140,7 +140,40 @@ ticket 1 flips all 26 classes in one move. The `Amount/*` classes also carry `ta
 | `Amount/Base` | 14/21 SemiBold | a figure in a row or table cell |
 | `Amount/Small` | 12/18 SemiBold | a secondary or historical figure |
 | `Amount/Micro` | 10/15 Regular | a figure inside dense chrome |
-| `Control/XS…XL` | 10·12·14·16·18, Medium +0.5, line-height = size | text inside a control — button, tab, input. Never outside one |
+| `Control/XS…XL` | 10·12·14·16·18, Medium +0.5, line-height = size | the label of something you press — button, tab, chip. **Not a field's value**, see below |
+
+### Fields: the value is content, not an affordance
+
+`03-typography.md` had this right and this doc contradicted it by listing "input" under
+`Control/*`. Corrected above. **A field's value is body text**, sized to the field — confirmed
+against the Figma components on 2026-08-02, where every `Input`, `Select` and `DatePicker` value
+binds one of these:
+
+| Field size | Height | Value style |
+|---|---|---|
+| SM | 28 | `Detail/Large` — 11 Regular |
+| MD | 36 | `Body/Small` — 12 Regular |
+| LG | 44 | `Body/Base` — 14 Regular |
+
+The reason is the distinction `Control/*` exists for: a button's label is an *affordance* — a fixed
+string the system writes, centred on one line, which is why `Control/*` has line-height equal to
+size and +0.5 tracking. A field's value is *content the user typed*. Tracking it out and collapsing
+its line height treats their data like a button label.
+
+The `input/text/{sm,md,lg}/size` tokens (11 · 12 · 14) are the same three rungs expressed as
+component numbers. They agree; nothing here is new, it was just never written in one place.
+
+**One platform override.** Mobile fields render at 16px, not the LG rung's 14, because anything
+below 16 makes iOS zoom the page on focus. That is a behaviour, not a type decision — keep it, and
+keep the comment saying why.
+
+### Overflow — the gap this closed
+
+The system specified the field's box and said nothing about what happens when a value is longer
+than it. Figma now does: **the value fills the remaining width and truncates with an ellipsis; the
+icons hug and never shrink.** The fill half was already modelled (`FILL` on the value, `HUG` on the
+icons in `Select` and `DatePicker`); the truncation was added to all 54 value nodes across `Input`,
+`Select` and `DatePicker`.
 
 ### Why `Amount/*` exists at all
 
@@ -168,7 +201,8 @@ The audit's central finding: 14px maps to five styles and 10px to six, so **size
 a style**. The test is always *what is this text*, in this order:
 
 1. **Is it money?** → `Amount/*`, at the size the layout already uses.
-2. **Is it inside a control?** (button, tab, input, chip) → `Control/*`, sized to the control.
+2. **Is it the label of something you press?** (button, tab, chip) → `Control/*`, sized to the control.
+   A *field's value* is not this — see the field rule below.
 3. **Is it a title?** → `Heading/*`, by depth — screen, section, subsection, card, group.
 4. **Is it a name for something else?** (form label, eyebrow, badge) → `Label/*`.
 5. **Is it prose the user reads?** → `Body/*`.
