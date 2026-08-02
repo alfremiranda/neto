@@ -177,6 +177,35 @@ and each has already cost something concrete:
   `NotificationBadge`, `category-badge`, `Status`) against one code `Badge` plus inline spans — which
   is why the notification count ended up at 9px with a hand-written `tabular-nums`.
 
+### The order, settled 2026-08-02
+
+`typography-3` closed, which unparked this. Dev measured the code half by reuse and I measured the
+Figma half by readiness; the two rankings disagreed, and the disagreement is the useful part.
+
+| Group | Reuse in code | Figma today | Design work before extraction |
+|---|---|---|---|
+| Avatar | 3 duplicates | 1 set, 4 sizes, complete | **none** |
+| Badges | 2 duplicates | 7 sets, complete | one rename |
+| Item rows | **~14 structures** | 5 sets / 11 variants | states, and 2 missing components |
+
+**Order: Avatar → badges → item rows.** Rows are three to seven times the reuse of either other
+group, and that is exactly why they go last: their design half is the one that is incomplete, and
+the largest consolidation is the one you least want to redo.
+
+What the audit could not see until both halves were on the table:
+
+- **No item row has a hover or selected state in Figma**, while the code has hover copied across
+  files. Extracting first would freeze an undesigned state into a component.
+- **`ItemRow` (ObligacionesCard) and `LedgerRow` (CuentasView) have no Figma component at all.**
+  `ss-itemrow` covers `FSSRow`; `savings-itemrow` is AhorrosView, not the ledger. Two of the six
+  named renderers are undesigned, which the 37-vs-21 count could not show because it only looked
+  for code counterparts to Figma components, never the reverse.
+- Figma carries behaviour the code does not: `outcome-itemrow` has `Schedule` and `Monthly`,
+  `savings-itemrow` has `Show hint`.
+- `AccountBadge` labels its variants `Cyan/Purple/Green/Neutral` for what are account slots 1–4.
+  Extracting before renaming would bake `Color="Cyan"` into code as the way to say "account 1" —
+  which is why the rename deferred earlier in this doc has to happen between steps 1 and 2.
+
 Also surfaced while measuring: the Figma `Sidebar` row is **40px** and the app's is 32; the drawer
 avatar is **44px** when the Avatar scale is 32 · 40 · 48 · 56. Both are the same symptom — geometry
 drifting where no component holds it.
