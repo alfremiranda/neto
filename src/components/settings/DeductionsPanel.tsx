@@ -170,7 +170,7 @@ function DeductionDrawer({
         <DrawerBody className="space-y-5">
           {/* Label */}
           <div className="space-y-1.5">
-            <label className="field-label">Nombre</label>
+            <label className="field-label ts-label-base">Nombre</label>
             {locked ? (
               <p className="text-sm font-medium">{label}</p>
             ) : (
@@ -185,7 +185,7 @@ function DeductionDrawer({
 
           {/* Base type */}
           <div className="space-y-1.5">
-            <label className="field-label">Tipo de cálculo</label>
+            <label className="field-label ts-label-base">Tipo de cálculo</label>
             {locked || d?.base === 'ibc' ? (
               <p className="text-sm font-medium">{BASE_LABELS[base]}</p>
             ) : (
@@ -211,7 +211,7 @@ function DeductionDrawer({
           {isBaseUsd ? (
             <>
               <div className="space-y-1.5">
-                <label className="field-label">Ingreso base (USD)</label>
+                <label className="field-label ts-label-base">Ingreso base (USD)</label>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground shrink-0">U$</span>
                   <Input
@@ -227,7 +227,7 @@ function DeductionDrawer({
                 </p>
               </div>
               <div className="space-y-1.5">
-                <label className="field-label">Porcentaje (%)</label>
+                <label className="field-label ts-label-base">Porcentaje (%)</label>
                 <div className="flex items-center gap-2">
                   <Input
                     type="number" min="0" max="100" step="0.001"
@@ -241,7 +241,7 @@ function DeductionDrawer({
             </>
           ) : !isFixed ? (
             <div className="space-y-1.5">
-              <label className="field-label">Porcentaje (%)</label>
+              <label className="field-label ts-label-base">Porcentaje (%)</label>
               <div className="flex items-center gap-2">
                 <Input
                   type="number" min="0" max="100" step="0.001"
@@ -255,7 +255,7 @@ function DeductionDrawer({
             </div>
           ) : (
             <div className="space-y-1.5">
-              <label className="field-label">Valor fijo ({base === 'fixed_cop' ? 'COP' : 'USD'})</label>
+              <label className="field-label ts-label-base">Valor fijo ({base === 'fixed_cop' ? 'COP' : 'USD'})</label>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground shrink-0">{base === 'fixed_cop' ? '$' : 'U$'}</span>
                 <Input
@@ -270,14 +270,14 @@ function DeductionDrawer({
 
           {/* Months */}
           <div className="space-y-1.5">
-            <label className="field-label">Meses en que aplica</label>
+            <label className="field-label ts-label-base">Meses en que aplica</label>
             <MonthPicker months={months} onChange={setMonths} />
           </div>
 
           {/* Reserve destination — provisions only */}
           {isProvision && (
             <div className="space-y-1.5">
-              <label className="field-label">Cuenta de reserva (opcional)</label>
+              <label className="field-label ts-label-base">Cuenta de reserva (opcional)</label>
               <Select value={destAccount || '_none'} onValueChange={v => setDestAccount(v === '_none' ? '' : v)}>
                 <SelectTrigger className="w-full">
                   <SelectValue />

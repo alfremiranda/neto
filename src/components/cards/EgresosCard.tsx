@@ -587,7 +587,7 @@ function EgresosCardContent() {
 
                   <DrawerBody className="space-y-4">
                     <div className="flex flex-col gap-1.5">
-                      <label className="field-label">Cuenta</label>
+                      <label className="field-label ts-label-base">Cuenta</label>
                       <Select value={filterAccount || 'all'} onValueChange={v => setFilterAccount(v === 'all' ? '' : v)}>
                         <SelectTrigger data-size="none" className="w-full h-10">
                           <SelectValue placeholder="Todas las cuentas" />
@@ -603,7 +603,7 @@ function EgresosCardContent() {
                       </Select>
                     </div>
                     <div className="flex flex-col gap-1.5">
-                      <label className="field-label">Fecha</label>
+                      <label className="field-label ts-label-base">Fecha</label>
                       <div className="flex items-center gap-2">
                         <DatePicker
                           value={filterDate}

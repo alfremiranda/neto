@@ -104,7 +104,7 @@ export function IncomeSheet() {
     >
       <div className="space-y-4">
         <div>
-          <label htmlFor="inc-desc" className="field-label">Descripción</label>
+          <label htmlFor="inc-desc" className="field-label ts-label-base">Descripción</label>
           <input
             id="inc-desc"
             type="text"
@@ -117,7 +117,7 @@ export function IncomeSheet() {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label htmlFor="inc-cur" className="field-label">Moneda</label>
+            <label htmlFor="inc-cur" className="field-label ts-label-base">Moneda</label>
             <Select value={currency} onValueChange={v => { setCurrency(v as 'USD' | 'COP'); amt.setValue(0) }}>
               <SelectTrigger id="inc-cur" className="w-full">
                 <SelectValue />
@@ -139,7 +139,7 @@ export function IncomeSheet() {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label htmlFor="inc-acc" className="field-label">Cuenta</label>
+            <label htmlFor="inc-acc" className="field-label ts-label-base">Cuenta</label>
             <Select value={account} onValueChange={v => {
               const selected = accounts.find(a => a.id === v)
               setAccount(v)
@@ -159,7 +159,7 @@ export function IncomeSheet() {
             </Select>
           </div>
           <div>
-            <label htmlFor="inc-tipo" className="field-label">Tipo</label>
+            <label htmlFor="inc-tipo" className="field-label ts-label-base">Tipo</label>
             <Select value={tipo} onValueChange={v => setTipo(v as 'servicios' | 'otro')}>
               <SelectTrigger id="inc-tipo" className="w-full">
                 <SelectValue />
@@ -173,7 +173,7 @@ export function IncomeSheet() {
         </div>
 
         <div>
-          <label htmlFor="inc-date" className="field-label">Fecha de ingreso</label>
+          <label htmlFor="inc-date" className="field-label ts-label-base">Fecha de ingreso</label>
           <DatePicker id="inc-date" value={date} onChange={setDate} />
         </div>
 

@@ -151,9 +151,13 @@
   input, select, textarea {
     font-size: 16px;
   }
-  @media (min-width: 601px) {
+  /* 14px = Body/Base. Text inside a field IS body text (07 §3), and 13px is on
+     no rung of the scale — it also disagreed with the .field-input rule below,
+     which already said 14. The 16px above stays: it is what stops iOS zooming
+     the page on focus, and that is a real behaviour, not a type decision. */
+  @media (min-width: 640px) {
     input, select, textarea {
-      font-size: 13px;
+      font-size: 0.875rem;
     }
   }
 
@@ -236,13 +240,14 @@
 .outline-ring { outline-color: var(--ring); }
 
 /* Shared form field styles */
+/* Layout only. The type is Label/Base and comes from the generated styles, so
+   call sites carry `field-label ts-label-base` — one source for the text, one
+   for the field's own spacing. It used to set 11px/500/0.01em by hand, which
+   was Label/Base with the letter-spacing slightly wrong. */
 .field-label {
   display: block;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  color: var(--muted-foreground);
+  color: var(--input-color-label);
   margin-bottom: 4px;
-  letter-spacing: 0.01em;
 }
 .field-input,
 .field-select {

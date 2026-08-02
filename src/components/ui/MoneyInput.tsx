@@ -15,7 +15,7 @@ export const MoneyInput = forwardRef<HTMLInputElement, MoneyInputProps>(
     return (
       <div className="space-y-0.5">
         {label && (
-          <label htmlFor={id} className="field-label">
+          <label htmlFor={id} className="field-label ts-label-base">
             {label}{currency ? ` (${currency})` : ''}
           </label>
         )}

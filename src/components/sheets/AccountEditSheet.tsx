@@ -193,7 +193,7 @@ export function AccountEditSheet() {
         {/* Type selector — shown when creating and editing (locked system accounts excluded) */}
         {!isLocked && (
           <div>
-            <label htmlFor="acc-type" className="field-label">Tipo</label>
+            <label htmlFor="acc-type" className="field-label ts-label-base">Tipo</label>
             {/* Type is fixed after creation (asset vs liability is the account's identity);
                 shown but disabled when editing — to change it, delete and recreate. */}
             <Select value={type} onValueChange={v => setType(v as AccountType)} disabled={isEditing}>
@@ -218,7 +218,7 @@ export function AccountEditSheet() {
         )}
 
         <div>
-          <label htmlFor="acc-name" className="field-label">Nombre</label>
+          <label htmlFor="acc-name" className="field-label ts-label-base">Nombre</label>
           <input
             id="acc-name"
             type="text"
@@ -232,7 +232,7 @@ export function AccountEditSheet() {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label htmlFor="acc-cur" className="field-label">Moneda</label>
+            <label htmlFor="acc-cur" className="field-label ts-label-base">Moneda</label>
             <Select
               value={currency}
               onValueChange={v => { setCurrency(v as 'USD' | 'COP'); balanceAmt.setValue(0); limitAmt.setValue(0); debtAmt.setValue(0) }}
@@ -250,7 +250,7 @@ export function AccountEditSheet() {
 
           {!isCash && (
             <div>
-              <label htmlFor="acc-rate" className="field-label">
+              <label htmlFor="acc-rate" className="field-label ts-label-base">
                 {isCredit ? 'Tasa E.A. % (opcional)' : isSavings ? 'Rendimiento E.A. % (opcional)' : 'Tasa anual % (opcional)'}
               </label>
               <input
@@ -270,7 +270,7 @@ export function AccountEditSheet() {
         {isSavings && (
           <>
             <div>
-              <label className="field-label">Tipo de ahorro</label>
+              <label className="field-label ts-label-base">Tipo de ahorro</label>
               <div className="grid grid-cols-3 rounded-xl border border-[var(--border)] p-0.5 gap-0.5">
                 {SAVINGS_KINDS.map(({ value, label: kLabel }) => (
                   <button
@@ -292,7 +292,7 @@ export function AccountEditSheet() {
             </div>
             {savingsKind === 'cdt' && (
               <div>
-                <label htmlFor="acc-maturity" className="field-label">Fecha de vencimiento</label>
+                <label htmlFor="acc-maturity" className="field-label ts-label-base">Fecha de vencimiento</label>
                 <DatePicker id="acc-maturity" value={maturity} onChange={setMaturity} />
               </div>
             )}
@@ -318,7 +318,7 @@ export function AccountEditSheet() {
             />
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label htmlFor="acc-cutoff" className="field-label">Día de corte</label>
+                <label htmlFor="acc-cutoff" className="field-label ts-label-base">Día de corte</label>
                 <input
                   id="acc-cutoff"
                   type="text"
@@ -330,7 +330,7 @@ export function AccountEditSheet() {
                 />
               </div>
               <div>
-                <label htmlFor="acc-due" className="field-label">Día de pago</label>
+                <label htmlFor="acc-due" className="field-label ts-label-base">Día de pago</label>
                 <input
                   id="acc-due"
                   type="text"
@@ -351,7 +351,7 @@ export function AccountEditSheet() {
         {/* Account number — bank + credit */}
         {!isCash && (
           <div>
-            <label htmlFor="acc-num" className="field-label">
+            <label htmlFor="acc-num" className="field-label ts-label-base">
               {isCredit ? 'Últimos 4 dígitos (opcional)' : 'Número de cuenta — últimos 4 dígitos (opcional)'}
             </label>
             <input

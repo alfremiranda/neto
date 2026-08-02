@@ -256,7 +256,7 @@ export function TransferSheet() {
         {/* From / To accounts */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label htmlFor="tr-from" className="field-label">Desde</label>
+            <label htmlFor="tr-from" className="field-label ts-label-base">Desde</label>
             <Select value={fromId} onValueChange={setFromId}>
               <SelectTrigger id="tr-from" className="w-full"><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -265,7 +265,7 @@ export function TransferSheet() {
             </Select>
           </div>
           <div>
-            <label htmlFor="tr-to" className="field-label">Hacia</label>
+            <label htmlFor="tr-to" className="field-label ts-label-base">Hacia</label>
             <Select value={toId} onValueChange={setToId}>
               <SelectTrigger id="tr-to" className="w-full"><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -278,7 +278,7 @@ export function TransferSheet() {
         {/* Sent amount */}
         <div>
           <div className="flex items-center justify-between mb-0.5">
-            <label htmlFor="tr-amt" className="field-label">Monto enviado{from ? ` (${from.currency})` : ''}</label>
+            <label htmlFor="tr-amt" className="field-label ts-label-base">Monto enviado{from ? ` (${from.currency})` : ''}</label>
             {!isEditing && fromBalance > 0 && (
               <button
                 type="button"
@@ -296,7 +296,7 @@ export function TransferSheet() {
         {isCross && (
           <div>
             <div className="flex items-center justify-between mb-0.5">
-              <label htmlFor="tr-recv" className="field-label">
+              <label htmlFor="tr-recv" className="field-label ts-label-base">
                 Monto recibido{to ? ` (${to.currency})` : ''}
                 <span className="ml-1 ts-detail-large text-muted-foreground/60">— opcional</span>
               </label>
@@ -328,7 +328,7 @@ export function TransferSheet() {
 
         {/* Date */}
         <div>
-          <label htmlFor="tr-date" className="field-label">Fecha</label>
+          <label htmlFor="tr-date" className="field-label ts-label-base">Fecha</label>
           <DatePicker id="tr-date" value={date} onChange={setDate} />
         </div>
 

@@ -111,7 +111,7 @@ export function EgresoSheet() {
 
         {/* Description */}
         <div>
-          <label htmlFor="eg-desc" className="field-label">Descripción</label>
+          <label htmlFor="eg-desc" className="field-label ts-label-base">Descripción</label>
           <input
             id="eg-desc"
             type="text"
@@ -124,7 +124,7 @@ export function EgresoSheet() {
 
         {/* Category select */}
         <div>
-          <label htmlFor="eg-cat" className="field-label">Categoría</label>
+          <label htmlFor="eg-cat" className="field-label ts-label-base">Categoría</label>
           <Select value={category} onValueChange={setCategory}>
             <SelectTrigger id="eg-cat" className="w-full">
               <SelectValue />
@@ -148,7 +148,7 @@ export function EgresoSheet() {
         {/* Amount + Currency */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label htmlFor="eg-cur" className="field-label">Moneda</label>
+            <label htmlFor="eg-cur" className="field-label ts-label-base">Moneda</label>
             <Select value={currency} onValueChange={v => { setCurrency(v as 'USD' | 'COP'); amt.setValue(0) }}>
               <SelectTrigger id="eg-cur" className="w-full">
                 <SelectValue />
@@ -170,13 +170,13 @@ export function EgresoSheet() {
 
         {/* Date */}
         <div>
-          <label htmlFor="eg-date" className="field-label">Fecha</label>
+          <label htmlFor="eg-date" className="field-label ts-label-base">Fecha</label>
           <DatePicker id="eg-date" value={date} onChange={setDate} />
         </div>
 
         {/* Account (optional) */}
         <div>
-          <label htmlFor="eg-acc" className="field-label">Cuenta que paga <span className="ts-detail-large text-muted-foreground">(opcional)</span></label>
+          <label htmlFor="eg-acc" className="field-label ts-label-base">Cuenta que paga <span className="ts-detail-large text-muted-foreground">(opcional)</span></label>
           <Select value={account || '_none'} onValueChange={v => setAccount(v === '_none' ? '' : v)}>
             <SelectTrigger id="eg-acc" className="w-full">
               <SelectValue />
