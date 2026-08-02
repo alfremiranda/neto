@@ -68,11 +68,11 @@ function ProvisionesCardContent() {
 
   const totalAction = grandTotal > 0 ? (
     <div className="text-right">
-      <div className="text-base font-bold font-heading tabular-nums" style={{ color: `var(${provColor})` }}>
+      <div className="ts-amount-large" style={{ color: `var(${provColor})` }}>
         {COP(grandTotal)}
       </div>
       {showUSD && (
-        <div className="text-[10px] text-muted-foreground tabular-nums">{USD(grandTotal / month.trm)}</div>
+        <div className="ts-amount-micro text-muted-foreground">{USD(grandTotal / month.trm)}</div>
       )}
     </div>
   ) : undefined
@@ -133,9 +133,9 @@ function ProvisionesCardContent() {
         {provItems.length > 0 && (
           <div className="rounded-xl bg-muted overflow-hidden">
             <div className="px-3 pt-2 pb-0.5 flex items-center gap-1">
-              <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70">Provisiones legales</span>
+              <span className="ts-label-micro uppercase text-muted-foreground/70">Provisiones legales</span>
               {showUSD && trmNote && (
-                <span className="ml-auto text-[10px] tabular-nums text-muted-foreground/50">{trmNote}</span>
+                <span className="ml-auto ts-amount-micro text-muted-foreground/50">{trmNote}</span>
               )}
             </div>
             <div className="px-3">
@@ -147,12 +147,12 @@ function ProvisionesCardContent() {
                 return (
                   <div key={item.id} className="py-[9px] border-b border-[var(--border)] last:border-0">
                     <div className="flex items-center gap-2">
-                      <span className="flex-1 min-w-0 text-sm text-foreground">{item.label}</span>
-                      <span className="text-[10px] text-muted-foreground tabular-nums font-mono shrink-0">{badge}</span>
+                      <span className="flex-1 min-w-0 ts-body-base text-foreground">{item.label}</span>
+                      <span className="ts-amount-micro text-muted-foreground shrink-0">{badge}</span>
                       <div className="w-[104px] shrink-0 flex flex-col items-end">
-                        <span className="text-sm font-semibold tabular-nums font-mono">{COP(item.amount)}</span>
+                        <span className="ts-amount-base">{COP(item.amount)}</span>
                         {showUSD && transferTRM > 0 && (
-                          <span className="text-[10px] tabular-nums font-mono text-muted-foreground">{USD(item.amount / transferTRM)}</span>
+                          <span className="ts-amount-micro text-muted-foreground">{USD(item.amount / transferTRM)}</span>
                         )}
                       </div>
                     </div>

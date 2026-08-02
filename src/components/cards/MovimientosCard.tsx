@@ -30,19 +30,19 @@ function TransferRow({
 
   const content = (
     <div className="flex-1 min-w-0 flex flex-col">
-      <span className="text-xs font-medium leading-snug truncate">{title}</span>
+      <span className="ts-body-small-emphasis truncate">{title}</span>
       <div className="flex items-center gap-1 mt-0.5 flex-wrap">
-        <span className="text-sm font-semibold tabular-nums font-mono">{primaryAmt}</span>
+        <span className="ts-amount-base">{primaryAmt}</span>
         {secondaryCOP && (
           <>
-            <span className="text-[11px] text-muted-foreground">·</span>
-            <span className="text-[11px] text-muted-foreground tabular-nums">{secondaryCOP}</span>
+            <span className="ts-detail-large text-muted-foreground">·</span>
+            <span className="ts-amount-small text-muted-foreground">{secondaryCOP}</span>
           </>
         )}
         {dateStr && (
           <>
-            <span className="text-[11px] text-muted-foreground">·</span>
-            <span className="text-[11px] text-muted-foreground">{dateStr}</span>
+            <span className="ts-detail-large text-muted-foreground">·</span>
+            <span className="ts-detail-large text-muted-foreground">{dateStr}</span>
           </>
         )}
       </div>

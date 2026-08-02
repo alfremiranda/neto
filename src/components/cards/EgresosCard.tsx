@@ -84,12 +84,12 @@ function EgresosBar({ egresos, trm }: { egresos: Egreso[]; trm: number }) {
             onMouseLeave={() => setHovered(null)}
           >
             <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: `var(${seg.color})` }} />
-            <span className="text-xs text-muted-foreground">{seg.label}</span>
-            <span className="text-xs font-mono font-semibold tabular-nums">{seg.pct.toLocaleString('es-CO', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%</span>
+            <span className="ts-body-small text-muted-foreground">{seg.label}</span>
+            <span className="ts-amount-small">{seg.pct.toLocaleString('es-CO', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%</span>
           </button>
         ))}
         {hovered && (
-          <span className="text-xs font-mono font-semibold tabular-nums ml-auto">
+          <span className="ts-amount-small ml-auto">
             {COP(segments.find(s => s.id === hovered)?.amount ?? 0)}
           </span>
         )}
@@ -131,7 +131,7 @@ function EgresoRow({
   const usdLabel  = fmtUSDSecondary(usdAmount)
 
   const ScheduledBadge = () => (
-    <span className="inline-flex items-center gap-1 text-[10px] font-medium text-[var(--color-tax-txt)] border border-[#fdba74] px-1.5 py-0.5 rounded-full">
+    <span className="inline-flex items-center gap-1 ts-label-badge text-[var(--color-tax-txt)] border border-[#fdba74] px-1.5 py-0.5 rounded-full">
       <Clock size={9} />
       Programado
     </span>
@@ -141,8 +141,8 @@ function EgresoRow({
     <div className="flex items-center gap-1 mt-1 flex-wrap">
       {acctLabel && <Badge variant={acctVariant}>{acctLabel}</Badge>}
       {isScheduled && <ScheduledBadge />}
-      {dateStr && <span className="text-[11px] text-muted-foreground">·</span>}
-      {dateStr && <span className="text-[11px] text-muted-foreground tabular-nums">{dateStr}</span>}
+      {dateStr && <span className="ts-detail-large text-muted-foreground">·</span>}
+      {dateStr && <span className="ts-amount-small text-muted-foreground">{dateStr}</span>}
     </div>
   )
 
@@ -153,7 +153,7 @@ function EgresoRow({
         <CategoryIcon category={category} />
 
         <div className="flex-1 min-w-0 flex flex-col">
-          <span className="text-sm font-medium leading-snug truncate">{desc}</span>
+          <span className="ts-body-base-emphasis truncate">{desc}</span>
           <MetaRow />
         </div>
 
@@ -165,7 +165,7 @@ function EgresoRow({
                   <TooltipTrigger asChild>
                     <RefreshCw size={12} className={cn('shrink-0 cursor-default', isScheduled ? 'text-[var(--color-tax-txt)]' : 'text-muted-foreground')} />
                   </TooltipTrigger>
-                  <TooltipContent side="left" className="max-w-[200px] text-center text-xs">
+                  <TooltipContent side="left" className="max-w-[200px] text-center ts-body-small">
                     {isScheduled
                       ? 'Programado — no se suma al total hasta que llegue la fecha'
                       : 'Recurrente — se copia al siguiente mes'}
@@ -173,11 +173,11 @@ function EgresoRow({
                 </Tooltip>
               </TooltipProvider>
             )}
-            <span className={cn('text-sm font-semibold tabular-nums font-mono', isScheduled && 'text-muted-foreground')}>
+            <span className={cn('ts-amount-base', isScheduled && 'text-muted-foreground')}>
               {COP(amtCOP)}
             </span>
           </div>
-          <span className="text-[10px] tabular-nums font-mono text-muted-foreground">{usdLabel}</span>
+          <span className="ts-amount-micro text-muted-foreground">{usdLabel}</span>
         </div>
 
         <div className="flex items-center gap-0.5 shrink-0">
@@ -218,14 +218,14 @@ function EgresoRow({
             {egreso.recurring && (
               <RefreshCw size={14} className={cn('shrink-0', isScheduled ? 'text-[var(--color-tax-txt)]' : 'text-muted-foreground')} />
             )}
-            <span className={cn('text-base font-bold tabular-nums font-heading', isScheduled && 'text-muted-foreground')}>
+            <span className={cn('ts-amount-large', isScheduled && 'text-muted-foreground')}>
               {COP(amtCOP)}
             </span>
-            <span className="text-[11px] font-semibold tabular-nums font-mono text-muted-foreground shrink-0">
+            <span className="ts-amount-small text-muted-foreground shrink-0">
               {usdLabel}
             </span>
           </div>
-          <span className="text-sm leading-snug">{desc}</span>
+          <span className="ts-body-base">{desc}</span>
           <MetaRow />
         </div>
       </button>
@@ -238,7 +238,7 @@ function EgresoRow({
 function ChipBadge({ count, active }: { count: number; active: boolean }) {
   return (
     <span className={cn(
-      'inline-flex items-center justify-center h-5 min-w-[20px] px-1 rounded-full text-[10px] font-medium leading-none tabular-nums transition-colors',
+      'inline-flex items-center justify-center h-5 min-w-[20px] px-1 rounded-full ts-label-badge transition-colors',
       active
         ? 'bg-[var(--primary)] text-[var(--primary-foreground)]'
         : 'bg-[var(--accent)] text-[var(--muted-foreground)]',
@@ -265,7 +265,7 @@ function CategoryChip({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        'shrink-0 gap-1 h-auto min-h-[30px] pl-[9px] pr-[5px] py-[5px] text-[10px] font-medium whitespace-nowrap cursor-pointer transition-colors',
+        'shrink-0 gap-1 h-auto min-h-[30px] pl-[9px] pr-[5px] py-[5px] ts-label-badge whitespace-nowrap cursor-pointer transition-colors',
         active
           ? 'border-[var(--primary)] text-[var(--primary)]'
           : 'border-[var(--input)] text-[var(--muted-foreground)] hover:border-[var(--muted-foreground)] hover:text-foreground',
@@ -493,7 +493,7 @@ function EgresosCardContent() {
                 {/* Mobile filter bar */}
                 <div className="sm:hidden px-4 py-2 flex items-center gap-2">
                   <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger data-size="none" className="flex-1 h-11 gap-1.5 text-sm">
+                    <SelectTrigger data-size="none" className="flex-1 h-11 gap-1.5">
                       <ArrowUpDown size={12} className="text-muted-foreground shrink-0" />
                       <SelectValue />
                     </SelectTrigger>
@@ -525,7 +525,7 @@ function EgresosCardContent() {
                 {/* Desktop filter bar */}
                 <div className="hidden sm:flex px-4 py-2 items-center gap-2">
                   <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger data-size="none" className="shrink-0 h-7 w-auto gap-1.5 text-xs">
+                    <SelectTrigger data-size="none" className="shrink-0 h-7 w-auto gap-1.5">
                       <ArrowUpDown size={12} className="text-muted-foreground shrink-0" />
                       <SelectValue />
                     </SelectTrigger>
@@ -539,7 +539,7 @@ function EgresosCardContent() {
                   </Select>
 
                   <Select value={filterAccount || 'all'} onValueChange={v => setFilterAccount(v === 'all' ? '' : v)}>
-                    <SelectTrigger data-size="none" className="min-w-0 flex-1 h-7 text-xs">
+                    <SelectTrigger data-size="none" className="min-w-0 flex-1 h-7">
                       <SelectValue placeholder="Todas las cuentas" />
                     </SelectTrigger>
                     <SelectContent>
@@ -557,7 +557,7 @@ function EgresosCardContent() {
                       value={filterDate}
                       onChange={setFilterDate}
                       placeholder="Todas las fechas"
-                      className="h-7 text-xs flex-1 min-w-0"
+                      className="h-7 flex-1 min-w-0"
                     />
                     {filterDate && (
                       <IconButton variant="ghost" size="md" onClick={() => setFilterDate('')} aria-label="Limpiar fecha">
@@ -589,7 +589,7 @@ function EgresosCardContent() {
                     <div className="flex flex-col gap-1.5">
                       <label className="field-label">Cuenta</label>
                       <Select value={filterAccount || 'all'} onValueChange={v => setFilterAccount(v === 'all' ? '' : v)}>
-                        <SelectTrigger data-size="none" className="w-full h-10 text-sm">
+                        <SelectTrigger data-size="none" className="w-full h-10">
                           <SelectValue placeholder="Todas las cuentas" />
                         </SelectTrigger>
                         <SelectContent>
@@ -609,7 +609,7 @@ function EgresosCardContent() {
                           value={filterDate}
                           onChange={setFilterDate}
                           placeholder="Todas las fechas"
-                          className="h-10 text-sm flex-1"
+                          className="h-10 flex-1"
                         />
                         {filterDate && (
                           <IconButton variant="ghost" size="md" onClick={() => setFilterDate('')} aria-label="Limpiar fecha">
@@ -644,7 +644,7 @@ function EgresosCardContent() {
               {/* Content */}
               <div className="px-4 pb-4">
                 {visible.length === 0 ? (
-                  <div className="py-8 text-center text-sm text-muted-foreground">
+                  <div className="py-8 text-center ts-body-base text-muted-foreground">
                     Sin egresos con los filtros seleccionados
                   </div>
                 ) : (
@@ -663,14 +663,14 @@ function EgresosCardContent() {
 
                     {/* Subtotal */}
                     <div className="flex justify-between items-center mt-3 bg-muted rounded-xl px-3 py-2.5">
-                      <span className="text-sm text-muted-foreground">
+                      <span className="ts-body-base text-muted-foreground">
                         {subtotalLabel}
-                        {hasFilters && <span className="ml-1 text-xs opacity-60">(filtrado)</span>}
+                        {hasFilters && <span className="ml-1 ts-body-small opacity-60">(filtrado)</span>}
                       </span>
                       <div className="text-right">
-                        <span className="text-base font-semibold font-heading tabular-nums">{COP(subtotal)}</span>
+                        <span className="ts-amount-large">{COP(subtotal)}</span>
                         {hasFilters && subtotal !== grandTotal && (
-                          <div className="text-[10px] text-muted-foreground tabular-nums">
+                          <div className="ts-amount-micro text-muted-foreground">
                             de {COP(grandTotal)} total
                           </div>
                         )}

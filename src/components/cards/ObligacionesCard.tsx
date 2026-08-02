@@ -83,8 +83,8 @@ function SSScheduleDialog({ year, month }: { year: number; month: number }) {
           {/* Header */}
           <div className="flex items-start justify-between gap-3 px-5 pt-5 pb-3">
             <div>
-              <h2 className="text-sm font-semibold">Fechas de pago — Seguridad Social</h2>
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <h2 className="ts-heading-group">Fechas de pago — Seguridad Social</h2>
+              <p className="ts-body-small text-muted-foreground mt-0.5">
                 SS de {MONTH_LONG[(month - 1)]} se paga en {MONTH_LONG[(payMonth - 1)]} {payYear}
               </p>
             </div>
@@ -95,11 +95,11 @@ function SSScheduleDialog({ year, month }: { year: number; month: number }) {
 
           {/* Table */}
           <div className="px-5 pb-2">
-            <p className="text-[11px] text-muted-foreground mb-2">
-              El plazo depende de los <span className="font-medium text-foreground">últimos 2 dígitos</span> de tu cédula o NIT.
+            <p className="ts-detail-large text-muted-foreground mb-2">
+              El plazo depende de los <span className="ts-body-base-emphasis text-foreground">últimos 2 dígitos</span> de tu cédula o NIT.
             </p>
-            <div className="rounded-xl border border-[var(--border)] overflow-hidden text-xs">
-              <div className="grid grid-cols-3 bg-muted px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+            <div className="rounded-xl border border-[var(--border)] overflow-hidden">
+              <div className="grid grid-cols-3 bg-muted px-3 py-1.5 ts-label-micro uppercase text-muted-foreground">
                 <span>Dígitos</span>
                 <span className="text-center">Día hábil</span>
                 <span className="text-right">Aprox. {MONTH_SHORT[payMonth - 1]}</span>
@@ -111,7 +111,7 @@ function SSScheduleDialog({ year, month }: { year: number; month: number }) {
                     key={digits}
                     className="grid grid-cols-3 px-3 py-1.5 border-t border-[var(--border)] tabular-nums"
                   >
-                    <span className="font-mono text-foreground">{digits}</span>
+                    <span className="ts-amount-small text-foreground">{digits}</span>
                     <span className="text-center text-muted-foreground">{bizDay}°</span>
                     <span className="text-right text-muted-foreground">{fmtBizDate(d)}</span>
                   </div>
@@ -122,14 +122,14 @@ function SSScheduleDialog({ year, month }: { year: number; month: number }) {
 
           {/* Footer note */}
           <div className="px-5 py-4">
-            <p className="text-[11px] text-muted-foreground/70">
+            <p className="ts-detail-large text-muted-foreground/70">
               Las fechas son aproximadas — excluyen festivos colombianos. Consulta el calendario oficial en miplanilla.com para las fechas exactas.
             </p>
             <a
               href="https://empresas.miplanilla.com/PublicoEmpresas/Publico/FechasPago"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-2 inline-flex items-center gap-1 text-[11px] font-medium text-[var(--primary)] hover:underline"
+              className="mt-2 inline-flex items-center gap-1 ts-label-base text-[var(--primary)] hover:underline"
             >
               Ver calendario oficial
               <ExternalLink size={10} />
@@ -160,12 +160,12 @@ function ItemRow({ label, amount, badge, trm, showUSD, dim, noBorder }: ItemRowP
       dim && 'opacity-35',
       noBorder && 'border-b-0',
     )}>
-      <span className="flex-1 min-w-0 text-sm text-foreground">{label}</span>
-      <span className="text-[10px] text-muted-foreground tabular-nums font-mono shrink-0">{badge}</span>
+      <span className="flex-1 min-w-0 ts-body-base text-foreground">{label}</span>
+      <span className="ts-amount-micro text-muted-foreground shrink-0">{badge}</span>
       <div className="w-[104px] shrink-0 flex flex-col items-end">
-        <span className="text-sm font-semibold tabular-nums font-mono">{COP(amount)}</span>
+        <span className="ts-amount-base">{COP(amount)}</span>
         {showUSD && trm > 0 && (
-          <span className="text-[10px] tabular-nums font-mono text-muted-foreground">{USD(amount / trm)}</span>
+          <span className="ts-amount-micro text-muted-foreground">{USD(amount / trm)}</span>
         )}
       </div>
     </div>
@@ -185,9 +185,9 @@ function FSSRow({ amount, pct, trm, showUSD }: { amount: number; pct: number; tr
   return (
     <div className="pt-0 pb-2 border-b border-[var(--border)] last:border-0">
       <div className="rounded-xl px-2 py-1 flex items-center gap-1.5" style={{ background: 'color-mix(in oklab, var(--muted-foreground) 8%, var(--muted))' }}>
-        <span className="text-xs font-medium text-muted-foreground">FSS</span>
-        <span className="text-[10px] text-muted-foreground">·</span>
-        <span className="text-[10px] text-muted-foreground">Fondo de Solidaridad</span>
+        <span className="ts-body-small-emphasis text-muted-foreground">FSS</span>
+        <span className="ts-detail-base text-muted-foreground">·</span>
+        <span className="ts-detail-base text-muted-foreground">Fondo de Solidaridad</span>
         <Popover>
           <PopoverTrigger asChild>
             <button
@@ -198,32 +198,32 @@ function FSSRow({ amount, pct, trm, showUSD }: { amount: number; pct: number; tr
               <Info size={10} />
             </button>
           </PopoverTrigger>
-          <PopoverContent side="left" align="start" className="w-64 p-0 text-xs">
+          <PopoverContent side="left" align="start" className="w-64 p-0">
             <div className="px-3 pt-3 pb-2">
-              <p className="font-semibold text-[11px]">Fondo de Solidaridad y Subsistencia</p>
-              <p className="text-muted-foreground text-[10px] mt-0.5 leading-relaxed">
+              <p className="ts-label-base">Fondo de Solidaridad y Subsistencia</p>
+              <p className="text-muted-foreground ts-detail-base mt-0.5">
                 Ley 100 de 1993, art. 25. Aplica cuando el IBC supera 4 SMMLV.
               </p>
             </div>
             <div className="border-t border-[var(--border)]">
-              <div className="grid grid-cols-2 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground bg-muted">
+              <div className="grid grid-cols-2 px-3 py-1.5 ts-label-micro uppercase text-muted-foreground bg-muted">
                 <span>IBC entre</span>
                 <span className="text-right">Aporte</span>
               </div>
               {FSS_BRACKETS.map(b => (
                 <div key={b.range} className="grid grid-cols-2 px-3 py-1.5 border-t border-[var(--border)]">
                   <span className="text-muted-foreground">{b.range}</span>
-                  <span className="text-right font-mono">{b.pct}</span>
+                  <span className="ts-amount-small text-right">{b.pct}</span>
                 </div>
               ))}
             </div>
           </PopoverContent>
         </Popover>
-        <span className="text-[10px] text-muted-foreground tabular-nums font-mono shrink-0">{pct}%</span>
+        <span className="ts-amount-micro text-muted-foreground shrink-0">{pct}%</span>
         <div className="flex-1 flex flex-col items-end">
-          <span className="text-xs font-semibold tabular-nums font-mono text-muted-foreground">{COP(amount)}</span>
+          <span className="ts-amount-small text-muted-foreground">{COP(amount)}</span>
           {showUSD && trm > 0 && (
-            <span className="text-[10px] tabular-nums font-mono text-muted-foreground/60">{USD(amount / trm)}</span>
+            <span className="ts-amount-micro text-muted-foreground/60">{USD(amount / trm)}</span>
           )}
         </div>
       </div>
@@ -236,11 +236,11 @@ function GroupBox({ label, children, action, trmNote, ibcRow }: { label: string;
     <div className="rounded-xl bg-muted overflow-hidden">
       <div className="px-3 pt-2 pb-0.5 flex items-center gap-4">
         <div className="flex items-center gap-1">
-          <span className="text-[10px] font-semibold uppercase tracking-[1px] text-muted-foreground/70">{label}</span>
+          <span className="ts-label-micro uppercase text-muted-foreground/70">{label}</span>
           {action}
         </div>
         {trmNote && (
-          <span className="ml-auto text-[10px] tabular-nums text-muted-foreground/50">{trmNote}</span>
+          <span className="ml-auto ts-amount-micro text-muted-foreground/50">{trmNote}</span>
         )}
       </div>
       {ibcRow && (
@@ -286,11 +286,11 @@ export function ObligacionesCard() {
 
   const totalAction = (
     <div className="text-right">
-      <div className="text-base font-bold font-heading tabular-nums text-[var(--color-tax-txt)]">
+      <div className="ts-amount-large text-[var(--color-tax-txt)]">
         {COP(totalOblig)}
       </div>
       {showUSD && (
-        <div className="text-[10px] text-muted-foreground tabular-nums">{USD(totalOblig / month.trm)}</div>
+        <div className="ts-amount-micro text-muted-foreground">{USD(totalOblig / month.trm)}</div>
       )}
     </div>
   )
@@ -307,12 +307,12 @@ export function ObligacionesCard() {
             trmNote={showUSD ? trmNote : undefined}
             ibcRow={
               <div className="border border-[var(--border)] rounded-xl px-2 py-1 flex items-center gap-1.5">
-                <span className="text-xs font-medium text-muted-foreground">IBC</span>
-                <span className="text-[10px] text-muted-foreground">·</span>
-                <span className="text-[10px] text-muted-foreground">
+                <span className="ts-body-small-emphasis text-muted-foreground">IBC</span>
+                <span className="ts-detail-base text-muted-foreground">·</span>
+                <span className="ts-detail-base text-muted-foreground">
                   {ibcIsMin ? 'mínimo SMMLV' : '40% servicios'}
                 </span>
-                <span className="flex-1 text-right text-xs font-semibold font-mono tabular-nums text-muted-foreground">
+                <span className="flex-1 text-right ts-amount-small text-muted-foreground">
                   {COP(ibc)}
                 </span>
               </div>
@@ -332,11 +332,11 @@ export function ObligacionesCard() {
                   />
             ))}
             <div className="flex items-center gap-2 py-[9px]">
-              <span className="flex-1 min-w-0 text-xs font-semibold text-foreground">Total SS</span>
+              <span className="flex-1 min-w-0 ts-body-small-emphasis text-foreground">Total SS</span>
               <div className="w-[104px] shrink-0 flex flex-col items-end">
-                <span className="text-sm font-bold tabular-nums font-mono">{COP(res.ssTotal)}</span>
+                <span className="ts-amount-base">{COP(res.ssTotal)}</span>
                 {showUSD && transferTRM > 0 && (
-                  <span className="text-[10px] tabular-nums font-mono text-muted-foreground">{USD(res.ssTotal / transferTRM)}</span>
+                  <span className="ts-amount-micro text-muted-foreground">{USD(res.ssTotal / transferTRM)}</span>
                 )}
               </div>
             </div>
