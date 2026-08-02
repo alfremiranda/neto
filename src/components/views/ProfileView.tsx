@@ -1,3 +1,4 @@
+import { IconButton } from '@/components/ui/icon-button'
 import { useState, useEffect } from 'react'
 import { ArrowLeft, LogOut, Check } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
@@ -111,15 +112,10 @@ export function ProfileView() {
 
       {/* Back + title */}
       <div className="flex items-center gap-3">
-        <button
-          type="button"
-          onClick={goBack}
-          className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-[var(--muted)] transition-colors text-muted-foreground hover:text-foreground"
-          aria-label="Volver"
-        >
+        <IconButton variant="ghost" size="lg" onClick={goBack} aria-label="Volver">
           <ArrowLeft size={16} />
-        </button>
-        <h1 className="text-lg font-bold font-heading">Perfil</h1>
+        </IconButton>
+        <h1 className="ts-heading-subsection">Perfil</h1>
       </div>
 
       {/* Avatar + identity */}

@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button'
 import * as Sentry from '@sentry/react'
 import { useEffect, type ReactNode } from 'react'
 import { useAuthStore } from '@/store/authStore'
@@ -43,20 +44,12 @@ function PanicScreen() {
         </p>
       </div>
       <div className="flex w-full max-w-xs flex-col gap-2">
-        <button
-          type="button"
-          onClick={reload}
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
-        >
+        <Button type="button" onClick={reload}>
           Recargar la app
-        </button>
-        <button
-          type="button"
-          onClick={signOutAndReload}
-          className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground"
-        >
+        </Button>
+        <Button type="button" variant="outline" onClick={signOutAndReload}>
           Cerrar sesión
-        </button>
+        </Button>
       </div>
     </div>
   )

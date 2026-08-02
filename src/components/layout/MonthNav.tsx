@@ -24,25 +24,29 @@ export function MonthNav() {
       <div className="flex-1" />
 
       <div className="flex items-center gap-2">
-        <button
+        <Button
+          variant="outline"
+          size="icon-sm"
           onClick={prevMonth}
           disabled={m === 1}
           aria-label="Mes anterior"
-          className="w-11 h-11 sm:w-8 sm:h-8 flex items-center justify-center rounded-xl border border-[var(--border)] bg-transparent text-[var(--foreground)] hover:bg-[var(--muted)] disabled:opacity-25 disabled:pointer-events-none transition-all duration-100 active:scale-95"
+          className="disabled:opacity-25"
         >
           <ChevronLeft size={16} />
-        </button>
-        <h1 className="text-[17px] font-bold font-heading whitespace-nowrap min-w-[148px] text-center">
+        </Button>
+        <h1 className="ts-heading-subsection whitespace-nowrap min-w-[148px] text-center">
           {MONTHS[m - 1]} {y}
         </h1>
-        <button
+        <Button
+          variant="outline"
+          size="icon-sm"
           onClick={nextMonth}
           disabled={m === 12}
           aria-label="Mes siguiente"
-          className="w-11 h-11 sm:w-8 sm:h-8 flex items-center justify-center rounded-xl border border-[var(--border)] bg-transparent text-[var(--foreground)] hover:bg-[var(--muted)] disabled:opacity-25 disabled:pointer-events-none transition-all duration-100 active:scale-95"
+          className="disabled:opacity-25"
         >
           <ChevronRight size={16} />
-        </button>
+        </Button>
       </div>
 
       <div className="flex-1 flex justify-end">

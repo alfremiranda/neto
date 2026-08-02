@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button'
 import { useState, useEffect } from 'react'
 import { Plus, TrendingUp, TrendingDown, ArrowLeftRight } from 'lucide-react'
 import { useUIStore } from '@/store/uiStore'
@@ -12,13 +13,13 @@ interface Action {
 
 function FABAction({ label, Icon, onTrigger, delay }: Action) {
   return (
-    <button
+    <Button
+      variant="outline"
       onClick={onTrigger}
       style={{ animationDelay: `${delay}ms` }}
       className={cn(
-        'flex items-center gap-2.5 h-11 pl-3.5 pr-4 rounded-full shadow-lg',
-        'bg-[var(--card)] border border-[var(--border)]',
-        'text-sm font-medium text-[var(--foreground)]',
+        'gap-2.5 h-11 pl-3.5 pr-4 shadow-lg',
+        'bg-[var(--card)] text-[var(--foreground)]',
         // Press feedback
         'active:scale-95 transition-transform duration-100',
         // Entrance: fade + scale up from slightly below — fill-mode-backwards holds
@@ -28,7 +29,7 @@ function FABAction({ label, Icon, onTrigger, delay }: Action) {
     >
       <span className="text-[var(--primary)]"><Icon size={16} /></span>
       {label}
-    </button>
+    </Button>
   )
 }
 

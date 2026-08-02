@@ -258,12 +258,14 @@ function CategoryChip({
   onClick: () => void
 }) {
   return (
-    <button
+    <Button
       type="button"
+      variant="outline"
+      size="xs"
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        'shrink-0 inline-flex items-center gap-1 min-h-[30px] pl-[9px] pr-[5px] py-[5px] rounded-xl border text-[10px] font-medium whitespace-nowrap cursor-pointer transition-colors',
+        'shrink-0 gap-1 h-auto min-h-[30px] pl-[9px] pr-[5px] py-[5px] text-[10px] font-medium whitespace-nowrap cursor-pointer transition-colors',
         active
           ? 'border-[var(--primary)] text-[var(--primary)]'
           : 'border-[var(--input)] text-[var(--muted-foreground)] hover:border-[var(--muted-foreground)] hover:text-foreground',
@@ -273,7 +275,7 @@ function CategoryChip({
       {Icon && <Icon size={12} strokeWidth={2} className="shrink-0" />}
       {label}
       <ChipBadge count={count} active={active} />
-    </button>
+    </Button>
   )
 }
 

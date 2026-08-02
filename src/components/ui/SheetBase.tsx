@@ -1,3 +1,4 @@
+import { IconButton } from '@/components/ui/icon-button'
 import { type ReactNode, useEffect, useMemo, useState } from 'react'
 import { X } from 'lucide-react'
 import { useUIStore } from '@/store/uiStore'
@@ -101,13 +102,11 @@ export function SheetBase({ id, title, children, footer }: SheetBaseProps) {
 
         <DrawerHeader>
           <DrawerTitle>{title}</DrawerTitle>
-          <button
-            onClick={closeSheet}
-            aria-label="Cerrar"
-            className="p-2 rounded-xl hover:bg-muted text-muted-foreground transition-colors"
-          >
+          <IconButton variant="ghost" size="lg" onClick={closeSheet} aria-label="Cerrar">
+
             <X size={16} />
-          </button>
+
+          </IconButton>
         </DrawerHeader>
 
         <DrawerBody>
