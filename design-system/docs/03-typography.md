@@ -19,7 +19,7 @@ Rethink Sans is already tabular, so the monospace face was doing nothing the fam
 Each group answers *what is this text*, not *how big is it*.
 
 ### `Heading/` — structural titles
-`Display` 28/36 Bold +0.5 · `Section` 20/28 SemiBold −0.25 · `Subsection` 18/28 SemiBold −0.25 · `Card` 16/24 SemiBold · `Group` 14/20 SemiBold
+`Display` 28/36 Bold +0.5 · `Section` 24/32 SemiBold −0.25 · `Subsection` 20/24 SemiBold −0.25 · `Card` 18/26 SemiBold · `Group` 16/20 SemiBold
 
 `Heading/Group` is the most-used header in the app, because `SectionCard` uses it and ten files import `SectionCard`.
 
@@ -34,7 +34,7 @@ Each group answers *what is this text*, not *how big is it*.
 `Detail/Nano` is the floor. Collapsed sidebar labels only — nothing a user must actually read.
 
 ### `Label/` — tracked labels
-`Base` 12/17 Medium · `Micro` 10/15 SemiBold · `Badge` 11/11 Medium
+`Base` 12/16 Medium · `Micro` 10/15 SemiBold · `Badge` 11/11 Medium
 
 `Label/Micro` is the KPI label: uppercase, wide tracking. `Label/Badge` has line height equal to its size so a badge hugs its text.
 
@@ -56,18 +56,21 @@ Sixteen of the 26 styles were resized in Figma in one pass. The **structure did 
 
 | Group | Before | Now |
 |---|---|---|
+| `Heading/` Group→Display | 14 · 16 · 18 · 20 · 24 | **16 · 18 · 20 · 24 · 28** |
 | `Body/` | 14 · 12 | **16 · 14** |
 | `Detail/` | 11 · 10 · 9 | **12 · 11 · 10** |
 | `Label/Base` · `Label/Badge` | 11 · 10 | **12 · 11** |
 | `Amount/` Micro→Hero | 10 · 12 · 14 · 17 · 20 | **12 · 14 · 16 · 22 · 24** |
-| `Heading/Display` | 24/32 | **28/36** |
 
-Unchanged: `Heading/Section`, `Subsection`, `Card`, `Group`, `Label/Micro`, and the whole `Control/` ramp (10 · 12 · 14 · 16 · 18). Nothing was added, renamed or removed.
+**Every heading moved**, not just `Display`. Line heights moved with them: `Section` 24/32, `Subsection` 20/24, `Card` 18/26, `Group` 16/20.
+
+Unchanged: `Label/Micro` (10/15) and the whole `Control/` ramp (10 · 12 · 14 · 16 · 18). Nothing was added, renamed or removed.
 
 Two consequences worth stating outright:
 
 - **`Amount/Large` dropped from Bold to SemiBold** while growing 17 → 22. `Amount/` is now SemiBold throughout except `Micro`, which stays Regular. Weight no longer separates the figure sizes; size does.
 - **`Heading/Display` tracks out at +0.5** where `Section` and `Subsection` track in at −0.25. It is both the largest heading and the only one tracking positive. Figma is the source of truth and this is what it says — recorded here so nobody "fixes" it by inference from the rule in `07 §2.2`.
+- **`Control/` is now the only group that did not move.** It is pinned to the control heights, which did not change, so the gap between a control's label and the body text around it narrowed by one rung everywhere.
 
 ## Picking a style
 

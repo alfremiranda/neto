@@ -126,10 +126,10 @@ ticket 1 flips all 26 classes in one move. The `Amount/*` classes also carry `ta
 | Style | Spec | Use it when the text is… |
 |---|---|---|
 | `Heading/Display` | 28/36 Bold +0.5 | the title of a screen. One per view, at most |
-| `Heading/Section` | 20/28 SemiBold -0.25 | a major division inside a screen |
-| `Heading/Subsection` | 18/28 SemiBold -0.25 | a division inside a section |
-| `Heading/Card` | 16/24 SemiBold | the title of a card or panel |
-| `Heading/Group` | 14/20 SemiBold | the label over a group of rows or fields |
+| `Heading/Section` | 24/32 SemiBold -0.25 | a major division inside a screen |
+| `Heading/Subsection` | 20/24 SemiBold -0.25 | a division inside a section |
+| `Heading/Card` | 18/26 SemiBold | the title of a card or panel |
+| `Heading/Group` | 16/20 SemiBold | the label over a group of rows or fields |
 | `Body/Base` | 16/24 Regular | running text. The default |
 | `Body/Base-Emphasis` | 14/21 Medium | emphasis *inside* running text |
 | `Body/Small` | 14/20 Regular | secondary running text |
@@ -138,7 +138,7 @@ ticket 1 flips all 26 classes in one move. The `Amount/*` classes also carry `ta
 | `Detail/Base` | 11/16 Regular | the smallest readable metadata |
 | `Detail/Emphasis` | 11/16 Medium | the same, when it must be picked out |
 | `Detail/Nano` | 10/15 Medium | axis ticks and legends. Nothing a user must read |
-| `Label/Base` | 12/17 Medium +0.5 | a form label or a field name |
+| `Label/Base` | 12/16 Medium +0.5 | a form label or a field name |
 | `Label/Micro` | 10/15 SemiBold +0.5 | a section eyebrow above a heading |
 | `Label/Badge` | 11/11 Medium | text inside a badge or chip. Carries `tabular-nums`: a badge usually holds a count |
 | `Amount/Hero` | 24/24 SemiBold | a headline figure — the ones a user opens the screen to read. The KPI strip is five of them |

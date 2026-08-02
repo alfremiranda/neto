@@ -501,14 +501,14 @@
 
 /* Text styles — Rethink Sans, tabular by default */
 .ts-heading-display { font-family:var(--font-sans);font-weight:700;font-size:28px;line-height:36px;letter-spacing:0.5px; }
-.ts-heading-section { font-family:var(--font-sans);font-weight:600;font-size:20px;line-height:28px;letter-spacing:-0.25px; }
-.ts-heading-subsection { font-family:var(--font-sans);font-weight:600;font-size:18px;line-height:28px;letter-spacing:-0.25px; }
-.ts-heading-card { font-family:var(--font-sans);font-weight:600;font-size:16px;line-height:24px;letter-spacing:0.0px; }
-.ts-heading-group { font-family:var(--font-sans);font-weight:600;font-size:14px;line-height:20px;letter-spacing:0.0px; }
+.ts-heading-section { font-family:var(--font-sans);font-weight:600;font-size:24px;line-height:32px;letter-spacing:-0.25px; }
+.ts-heading-subsection { font-family:var(--font-sans);font-weight:600;font-size:20px;line-height:24px;letter-spacing:-0.25px; }
+.ts-heading-card { font-family:var(--font-sans);font-weight:600;font-size:18px;line-height:26px;letter-spacing:0.0px; }
+.ts-heading-group { font-family:var(--font-sans);font-weight:600;font-size:16px;line-height:20px;letter-spacing:0.0px; }
 .ts-body-base { font-family:var(--font-sans);font-weight:400;font-size:16px;line-height:24px;letter-spacing:0.0px; }
 .ts-body-base-emphasis { font-family:var(--font-sans);font-weight:500;font-size:16px;line-height:24px;letter-spacing:0.0px; }
 .ts-body-small { font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px; }
-.ts-label-base { font-family:var(--font-sans);font-weight:500;font-size:12px;line-height:17px;letter-spacing:0.5px; }
+.ts-label-base { font-family:var(--font-sans);font-weight:500;font-size:12px;line-height:16px;letter-spacing:0.5px; }
 .ts-amount-micro { font-family:var(--font-sans);font-weight:400;font-size:12px;line-height:16px;letter-spacing:0.0px;font-variant-numeric:tabular-nums; }
 .ts-body-small-emphasis { font-family:var(--font-sans);font-weight:500;font-size:14px;line-height:20px;letter-spacing:0.0px; }
 .ts-detail-base { font-family:var(--font-sans);font-weight:400;font-size:11px;line-height:16px;letter-spacing:0.0px; }
