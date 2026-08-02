@@ -1,3 +1,4 @@
+import { IconButton } from '@/components/ui/icon-button'
 import { useState } from 'react'
 import { Check, ChevronRight, Landmark, Wallet, CreditCard, Plus, X, Briefcase, UserRound, Layers } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -91,8 +92,8 @@ function AccountsStep({ added, onAdd, onRemove }: {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h2 className="text-xl font-bold font-heading">Tus cuentas</h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <h2 className="ts-heading-section">Tus cuentas</h2>
+        <p className="ts-body-base text-muted-foreground mt-1">
           Agrega las cuentas que usas. Puedes editar detalles y agregar más en <strong>Cuentas</strong>.
         </p>
       </div>
@@ -104,10 +105,10 @@ function AccountsStep({ added, onAdd, onRemove }: {
             <Check size={10} className="text-[var(--primary-foreground)]" strokeWidth={3} />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium">{a.label}</p>
-            <p className="text-xs text-muted-foreground">Siempre incluida</p>
+            <p className="ts-body-base-emphasis">{a.label}</p>
+            <p className="ts-body-small text-muted-foreground">Siempre incluida</p>
           </div>
-          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-lg bg-muted text-muted-foreground shrink-0">
+          <span className="ts-label-badge px-1.5 py-0.5 rounded-lg bg-muted text-muted-foreground shrink-0">
             {a.currency}
           </span>
         </div>
@@ -120,34 +121,34 @@ function AccountsStep({ added, onAdd, onRemove }: {
             <Check size={10} className="text-[var(--primary-foreground)]" strokeWidth={3} />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">{a.label}</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="ts-body-base-emphasis truncate">{a.label}</p>
+            <p className="ts-body-small text-muted-foreground">
               {ACC_TYPE_LABEL[a.type]}
               {a.type === 'credit' && a.creditLimit ? ` · cupo ${a.creditLimit.toLocaleString('es-CO')}` : ''}
             </p>
           </div>
           <span className={cn(
-            'text-[10px] font-bold px-1.5 py-0.5 rounded-lg shrink-0',
+            'ts-label-badge px-1.5 py-0.5 rounded-lg shrink-0',
             a.currency === 'USD'
               ? 'bg-[var(--color-income)]/15 text-[var(--color-income-txt)]'
               : 'bg-muted text-muted-foreground',
           )}>
             {a.currency}
           </span>
-          <button
-            type="button"
+          <IconButton
+            variant="ghost"
+            size="md"
             onClick={() => onRemove(i)}
-            className="shrink-0 w-7 h-7 flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-[var(--accent)] transition-colors"
             aria-label="Eliminar cuenta"
           >
             <X size={14} />
-          </button>
+          </IconButton>
         </div>
       ))}
 
       {/* Add form */}
       <div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--card)] p-4 space-y-3">
-        <p className="text-sm font-semibold">Agregar cuenta</p>
+        <p className="ts-body-base-emphasis">Agregar cuenta</p>
 
         {/* Type */}
         <div className="flex rounded-xl border border-[var(--border)] p-0.5 gap-0.5">
@@ -285,8 +286,8 @@ function ProfileStep({ profile, onSelect }: {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h2 className="text-xl font-bold font-heading">¿Cómo trabajas?</h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <h2 className="ts-heading-section">¿Cómo trabajas?</h2>
+        <p className="ts-body-base text-muted-foreground mt-1">
           Esto define si Neto calcula tus aportes y provisiones.
         </p>
       </div>
@@ -314,7 +315,7 @@ function ProfileStep({ profile, onSelect }: {
                 <Icon size={17} />
               </span>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold">{opt.label}</p>
+                <p className="ts-body-base-emphasis">{opt.label}</p>
                 <p className="text-[12px] text-muted-foreground leading-snug mt-0.5">{opt.desc}</p>
               </div>
               <div className={cn(
@@ -337,7 +338,7 @@ function ProfileStep({ profile, onSelect }: {
         </div>
       )}
 
-      <p className="text-xs text-muted-foreground pb-2">
+      <p className="ts-body-small text-muted-foreground pb-2">
         Puedes ajustar deducciones y porcentajes en <strong>Configuración</strong>.
       </p>
     </div>
@@ -365,15 +366,15 @@ function CurrencyStep({
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="text-xl font-bold font-heading">Tu moneda principal</h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <h2 className="ts-heading-section">Tu moneda principal</h2>
+        <p className="ts-body-base text-muted-foreground mt-1">
           Elige cómo quieres ver los valores en Neto.
         </p>
       </div>
 
       {/* Primary */}
       <div className="space-y-2">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide px-1">Moneda principal</p>
+        <p className="ts-label-micro text-muted-foreground uppercase px-1">Moneda principal</p>
         <div className="flex gap-3">
           {(['COP', 'USD'] as Currency[]).map(c => {
             const meta = CURRENCY_META[c]
@@ -395,7 +396,7 @@ function CurrencyStep({
               >
                 <span className="text-3xl leading-none select-none">{meta.flag}</span>
                 <div className="text-center">
-                  <p className="text-sm font-bold">{meta.name}</p>
+                  <p className="ts-body-base-emphasis">{meta.name}</p>
                   <p className="text-[11px] text-muted-foreground">{meta.desc}</p>
                 </div>
                 <div className={cn(
@@ -412,7 +413,7 @@ function CurrencyStep({
 
       {/* Secondary */}
       <div className="space-y-2">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide px-1">Moneda secundaria</p>
+        <p className="ts-label-micro text-muted-foreground uppercase px-1">Moneda secundaria</p>
         <p className="text-[12px] text-muted-foreground px-1">Equivalencia visible junto a los valores</p>
         <div className="flex flex-col gap-2">
           {secondaryOptions.map(opt => {
@@ -431,10 +432,10 @@ function CurrencyStep({
               >
                 {opt.flag
                   ? <span className="text-xl leading-none select-none">{opt.flag}</span>
-                  : <span className="w-7 h-7 flex items-center justify-center rounded-full bg-muted text-muted-foreground font-bold shrink-0">–</span>
+                  : <span className="w-7 h-7 flex items-center justify-center rounded-full bg-muted text-muted-foreground ts-detail-emphasis shrink-0">–</span>
                 }
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium">{opt.value ? <><strong>{opt.label}</strong> · {opt.sub}</> : opt.label}</p>
+                  <p className="ts-body-base-emphasis">{opt.value ? <><strong>{opt.label}</strong> · {opt.sub}</> : opt.label}</p>
                   {!opt.value && <p className="text-[11px] text-muted-foreground">{opt.sub}</p>}
                 </div>
                 <div className={cn(
@@ -458,11 +459,11 @@ function WelcomeStep() {
   return (
     <div className="flex-1 flex flex-col items-center justify-center text-center gap-6">
       <div className="w-16 h-16 rounded-2xl bg-foreground flex items-center justify-center shadow-lg">
-        <span className="text-background font-heading font-black text-3xl leading-none select-none">N</span>
+        <span className="text-background font-bold text-[30px] leading-none select-none">N</span>
       </div>
       <div>
-        <h1 className="text-2xl font-bold font-heading">Bienvenido a Neto</h1>
-        <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+        <h1 className="ts-heading-display">Bienvenido a Neto</h1>
+        <p className="ts-body-base text-muted-foreground mt-2">
           Vamos a configurar tu moneda, tus cuentas<br />y tu perfil en unos pasos rápidos.
         </p>
       </div>
@@ -477,8 +478,8 @@ function DoneStep() {
         <Check size={28} className="text-[var(--primary-foreground)]" strokeWidth={2.5} />
       </div>
       <div>
-        <h2 className="text-2xl font-bold font-heading">¡Todo listo!</h2>
-        <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+        <h2 className="ts-heading-display">¡Todo listo!</h2>
+        <p className="ts-body-base text-muted-foreground mt-2">
           Puedes ajustar cuentas, deducciones y más<br />en <strong>Configuración</strong> cuando quieras.
         </p>
       </div>
@@ -597,13 +598,14 @@ export function OnboardingView() {
           {step < TOTAL_STEPS - 1 && <ChevronRight size={18} />}
         </Button>
         {isContentStep && step !== TOTAL_STEPS - 1 && (
-          <button
+          <Button
             type="button"
+            variant="link"
             onClick={() => setStep(s => s + 1)}
-            className="w-full text-center text-sm text-muted-foreground py-2.5 hover:text-foreground transition-colors"
+            className="w-full text-muted-foreground hover:text-foreground no-underline"
           >
             Omitir este paso
-          </button>
+          </Button>
         )}
       </div>
     </div>

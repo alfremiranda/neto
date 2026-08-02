@@ -18,12 +18,24 @@
  * `amd-finance.pre-preview` first, so a dev session is recoverable.
  *
  * Usage: `npm run dev` then open http://localhost:5173/?preview
+ *        (or ?preview=onboarding to land on the onboarding flow instead)
  */
 import { TRANSFER_ACCOUNTS } from '@/data/defaults'
 import type { FinanceDB } from '@/types'
 
-export const DEV_PREVIEW =
-  import.meta.env.DEV && new URLSearchParams(window.location.search).has('preview')
+const PARAM = import.meta.env.DEV
+  ? new URLSearchParams(window.location.search).get('preview')
+  : null
+
+/** True for any preview mode: walks past the auth and consent gates. */
+export const DEV_PREVIEW = import.meta.env.DEV && PARAM !== null
+
+/**
+ * `?preview=onboarding` keeps the onboarding gate CLOSED instead of skipping it,
+ * so that view can be reached too. Plain `?preview` still lands on the app.
+ * Anything else is treated as plain `?preview`.
+ */
+export const DEV_PREVIEW_ONBOARDING = DEV_PREVIEW && PARAM === 'onboarding' 
 
 /**
  * The fixture lands in whatever month the app opens on, and dates every entry on

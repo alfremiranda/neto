@@ -26,7 +26,7 @@ import { LoginScreen } from '@/components/auth/LoginScreen'
 import { ConsentScreen } from '@/components/auth/ConsentScreen'
 import { OnboardingView } from '@/components/onboarding/OnboardingView'
 import { needsPrivacyConsent } from '@/lib/privacy'
-import { DEV_PREVIEW, previewDB, backupBeforeSeed } from '@/lib/devPreview'
+import { DEV_PREVIEW, DEV_PREVIEW_ONBOARDING, previewDB, backupBeforeSeed } from '@/lib/devPreview'
 
 function PullIndicator({ pullY, refreshing, isPulling }: { pullY: number; refreshing: boolean; isPulling: boolean }) {
   const progress = Math.min(pullY / PTR_THRESHOLD, 1)
@@ -155,7 +155,7 @@ export default function App() {
     return <ConsentScreen />
   }
 
-  if (!DEV_PREVIEW && !onboardingDone) {
+  if (DEV_PREVIEW_ONBOARDING || (!DEV_PREVIEW && !onboardingDone)) {
     return <OnboardingView />
   }
 
