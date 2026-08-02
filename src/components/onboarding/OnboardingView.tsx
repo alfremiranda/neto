@@ -481,7 +481,7 @@ function DoneStep() {
         <Check size={28} className="text-[var(--primary-foreground)]" strokeWidth={2.5} />
       </div>
       <div>
-        <h2 className="ts-heading-display">¡Todo listo!</h2>
+        <h1 className="ts-heading-display">¡Todo listo!</h1>
         <p className="ts-body-base text-muted-foreground mt-2">
           Puedes ajustar cuentas, deducciones y más<br />en <strong>Configuración</strong> cuando quieras.
         </p>

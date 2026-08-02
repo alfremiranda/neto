@@ -63,7 +63,7 @@ export function AhorrosView() {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between gap-2">
-        <h2 className="ts-label-micro text-muted-foreground uppercase">Ahorros e inversiones</h2>
+        <h2 className="ts-heading-section">Ahorros e inversiones</h2>
         <div className="flex items-center gap-2">
           <Button size="sm" variant="outline" onClick={() => { setEditingTransfer(null); openSheet('transfer') }}>
             <ArrowLeftRight />

@@ -35,7 +35,7 @@ export function ConfigView() {
 
   return (
     <div className="max-w-xl mx-auto">
-      <h1 className="ts-heading-subsection mb-4">Configuración</h1>
+      <h1 className="ts-heading-section mb-4">Configuración</h1>
 
       <DeductionsPanel />
 

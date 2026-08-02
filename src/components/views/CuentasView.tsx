@@ -218,7 +218,7 @@ export function CuentasView() {
       {/* Accounts header + grid */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="ts-label-micro text-muted-foreground uppercase">Cuentas</h2>
+          <h2 className="ts-heading-section">Cuentas</h2>
           <div className="flex items-center gap-2">
             <Button size="sm" variant="outline" onClick={() => openSheet('transfer')}>
               <ArrowLeftRight />

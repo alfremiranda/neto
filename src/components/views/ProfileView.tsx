@@ -115,7 +115,7 @@ export function ProfileView() {
         <IconButton variant="ghost" size="lg" onClick={goBack} aria-label="Volver">
           <ArrowLeft size={16} />
         </IconButton>
-        <h1 className="ts-heading-subsection">Perfil</h1>
+        <h1 className="ts-heading-section">Perfil</h1>
       </div>
 
       {/* Avatar + identity */}
