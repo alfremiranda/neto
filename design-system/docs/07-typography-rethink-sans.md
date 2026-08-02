@@ -135,8 +135,8 @@ ticket 1 flips all 26 classes in one move. The `Amount/*` classes also carry `ta
 | `Label/Base` | 11/17 Medium +0.5 | a form label or a field name |
 | `Label/Micro` | 10/15 SemiBold +0.5 | a section eyebrow above a heading |
 | `Label/Badge` | 10/10 Medium | text inside a badge or chip |
-| `Amount/Hero` | 20/24 SemiBold | the one figure a screen exists to show |
-| `Amount/Large` | 17/26 Bold | a KPI figure |
+| `Amount/Hero` | 20/24 SemiBold | a headline figure — the ones a user opens the screen to read. The KPI strip is five of them |
+| `Amount/Large` | 17/26 Bold | a figure inside a card — `MetricCard`, a metric beside other content |
 | `Amount/Base` | 14/21 SemiBold | a figure in a row or table cell |
 | `Amount/Small` | 12/18 SemiBold | a secondary or historical figure |
 | `Amount/Micro` | 10/15 Regular | a figure inside dense chrome |
@@ -148,6 +148,17 @@ ticket 1 flips all 26 classes in one move. The `Amount/*` classes also carry `ta
 figure carries more weight than the words around it, and pairing them at the same size keeps a row
 on one baseline. **Money always takes an `Amount/*` style**, never `Body/*` — even when the size
 matches. This is the rule that resolves most of the ambiguity in §4.
+
+Two corollaries, both settled against live code on 2026-08-02:
+
+- **Never `Heading/*` either.** Figma's own `KPI-Card` had its figure bound to `Heading/Section`
+  (20/28) — a heading style on money, which this rule forbids. Rebound to `Amount/Hero`, which is
+  the same 20 SemiBold at the tighter 24 line height.
+- **A figure is never smaller than the label beside it.** The `Amount/*` scale has no 11px rung
+  (10 · 12 · 14 · 17 · 20) while `Detail/Large` and `Label/Base` both sit at 11. So money rendered
+  at 11 rounds *up* to `Amount/Small` (12), not down to `Amount/Micro` (10). `Micro` is for figures
+  inside dense chrome where there is no label to lose to. No 11px rung is being added: a rung that
+  exists only to tie with a label defeats the reason `Amount/*` is heavier in the first place.
 
 ---
 
@@ -177,11 +188,14 @@ Resolve them one at a time. There is no rule that sorts them in bulk.
 
 | Size | Uses | Goes to | Why |
 |---|---|---|---|
-| **30px** | 2 | `Heading/Display` (24) | Nothing in the system is above 24. If 30 is load-bearing somewhere, that is a request for a new style — raise it, do not just keep it |
+| **30px** | ~~2~~ 0 | `Heading/Display` (24) | Already gone by the time the fixes landed |
 | **15px** | 5 | 14 or 16, by role | `Body/Base` if prose, `Heading/Card` if a title. Never split the difference |
-| **13px** | 1 | 12 or 14, by role | Same test |
+| **13px** | ~~1~~ 0 | `Body/Small` (12) | Was Toast's only usage; closed in `590fbf8f` |
 | **`text-[12px]`** | 9 | `text-xs` | Duplicate spelling of a size that already has a name |
-| **`text-[0px]`** | 1 | leave | `IngresosCard.tsx:202`, a visual-hiding hack. Not typography — replace it with `sr-only` when that file is next touched |
+| **`text-[0px]`** | 1 | leave | `IngresosCard.tsx:202`. **This row was wrong.** Dev checked it: nothing is being hidden — it is `font-size: 0` collapsing the JSX whitespace between two inline spans that each set their own size. `sr-only` there would remove a visible figure from the page. The mechanism stays, now with a comment saying why |
+
+**Remaining after the component-gap fixes:** 15px (5) and 9px (2). The gap audit and this one were
+closing the same debt from opposite ends — see `08-component-gap.md` §2.
 
 ### `text-2xs` — resolved
 
