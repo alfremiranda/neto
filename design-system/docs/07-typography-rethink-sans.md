@@ -164,12 +164,23 @@ Display earns its 28px. A dashboard is a room full of them: the loudest thing th
 figures the user opened the app to read, not the word above them. Display inside the shell fights
 the KPI strip and wins, which is the wrong outcome.
 
-**The collision this leaves, named so the batch pass can judge it.** `Heading/Section` is 24/32
-SemiBold and `Amount/Hero` is 24/24 SemiBold — same size, same weight. An in-app page title and a
-hero figure are now typographically identical. They never sit adjacent, so context separates them,
-but if they read as competing in the visual review **the lever is `Amount/Hero`, not the title**:
-move the figure to 28 and let it match Display's size while staying SemiBold. Moving the page title
-instead would undo the wayfinding hierarchy this split just established.
+**The collision this left, and how it was settled.** The rescale put `Heading/Section` at 24/32
+SemiBold and `Amount/Hero` at 24/24 SemiBold — identical size and weight. I filed it as something
+for the visual pass to judge, on the premise that a page title and a hero figure never sit
+adjacent. **That premise was wrong**, and Dev measured it rather than accepting it: on *Cuentas*
+the title sits at y78 and the first of **six** balances at y188 — same viewport, same scroll, 78px
+apart, 24px w600 both. *Resumen* has one title against three. Six figures at the title's exact
+weight do not tie with it, they beat it on repetition.
+
+**`Amount/Hero` moved to 28/28** on 2026-08-02. The order on a shell screen is now Hero 28 >
+Section 24 > Subsection 20, which is what it should have been from the start: on a screen full of
+figures the figures win outright. Line height stayed equal to size — Hero has always been the one
+`Amount/` style without the +4, money has no descenders, and the KPI card stays compact. The only
+other style at 28 is `Heading/Display` (28/36 **Bold** +0.5), which by the rule above never appears
+inside the shell, so nothing new collides.
+
+The lesson is not about type. "They never sit adjacent" was a claim about the *rendered app* — the
+half this file cannot see — stated as if it were a fact about the file. One command settled it.
 
 ### Fields: the value is content, not an affordance
 
