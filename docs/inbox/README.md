@@ -6,6 +6,8 @@ in the same commit as the response/work.
 
 - `dev/` — messages **for Dev**: TASK tickets from the orchestrator, `Q-`/`FYI-` from Design.
 - `design/` — messages **for Design**: `Q-`/`FYI-` from Dev.
+- `orchestrator/` — mid-session questions **for the orchestrator** (verifications,
+  cross-domain calls). Read on every daily sync and on demand. See its README.
 
 File naming: `TASK-` (orchestrator only) · `Q-` (question, expects an answer file or a commit)
 · `FYI-` (finding, no answer needed). Then `YYYY-MM-DD-<slug>.md`. Body ≤10 lines, pointers

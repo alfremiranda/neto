@@ -4,7 +4,8 @@
 > [DIRECTION.md](./DIRECTION.md). Unlike DIRECTION.md (regenerated weekly), this file is
 > hand-maintained and changes rarely. v3 — 2026-08-01 (v2: roster + territories; v3: repo
 > mailbox replaces human copy-paste, daily sync, terse message format). v3.1: Design push
-> exception. v3.2: peer mail — Dev and Design write to each other's inbox directly.
+> exception. v3.2: peer mail. v3.3: `docs/inbox/orchestrator/` — the fast lane for
+> mid-session verifications with the orchestrator.
 
 ## The system
 
@@ -39,8 +40,11 @@ through the repo:
    not committed AND pushed to `main` does not exist for the rest of the system.**
 3. **Peer mail — Dev ↔ Design, no humans in the loop:** you write `Q-`/`FYI-` files into
    `docs/inbox/design/`; Design writes into `docs/inbox/dev/`. Questions and findings flow
-   directly; ONLY decisions escalate (your report's `NEEDS`). You share the working tree, so
-   peer mail is visible to the other side even before any push.
+   directly. You share the working tree, so peer mail is visible before any push.
+   **Verifications with the orchestrator:** mid-session → drop a `Q-` in
+   `docs/inbox/orchestrator/` (fast lane; answered on the daily sync or when Alfredo pings
+   it); at close → your report's `NEEDS`, as always. Decisions that are Alfredo's get
+   escalated by the orchestrator — never decided in a mailbox.
 4. **Message style:** relays are ≤5 lines and point to docs. If a message needs paragraphs,
    the paragraphs belong in a doc and the message is the pointer.
 
