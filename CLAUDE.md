@@ -30,6 +30,32 @@ se confirmó antes y se probó en dev/local primero.
 - Si tocaste **tokens o componentes del design system** → re-correr `/design-sync` para republicar.
 - **Push al cerrar cada tarea** (no acumular commits locales). `docs/DIRECTION.md` es entrada, no se edita a mano.
 
+## ⚠️ El design system manda sobre Tailwind — siempre
+
+**El sistema de diseño (Diseño + Figma) es el SSOT de toda la UI.** Tokens, primitivas,
+elementos y componentes están *por encima* de lo que Tailwind pueda ofrecer. Tailwind es el
+**respaldo**: entra cuando algo no existe en el DS y no hay antecedente de un componente
+parecido — como último recurso, no como punto de partida.
+
+El orden al resolver cualquier decisión de UI:
+
+1. ¿Existe el **token**? (`design-system/tokens/tokens.css`) → úsalo.
+2. ¿Existe el **estilo de texto**? (`.ts-*`, 26 estilos) → úsalo. Nunca `text-[Npx]`/`font-*`.
+3. ¿Existe el **componente**? (`Button`, `IconButton`, `Input`…) → úsalo, no lo re-implementes
+   con markup crudo.
+4. ¿Hay un **antecedente** de algo equivalente en `design-system/components/`? → síguelo.
+5. Solo si nada de lo anterior aplica, Tailwind — y entonces **pregúntale a Diseño**
+   (`docs/inbox/design/Q-…`) si eso debería existir en el DS.
+
+Corolarios que ya nos costaron trabajo:
+- Una utilidad de Tailwind que pisa un `.ts-*` es un bug, no una preferencia: las utilidades
+  ganan en cascada, así que el estilo semántico queda mudo (fue el caso de `size="xl"` en
+  `Button`, y de `.field-label` escribiendo `Label/Base` a mano en 35 sitios).
+- Un token generado que nadie lee es deuda: `input/menu/*`, `input/color/label` y
+  `border/focus` estuvieron ahí sin consumirse.
+- Si el DS **no** especifica algo (p. ej. el truncamiento del valor de un select), implementa lo
+  seguro y **abre un `Q-` a Diseño** para que el DS lo cubra. No lo dejes como criterio del código.
+
 ## ⚠️ Tailwind v3 — restricciones críticas
 Este proyecto usa **Tailwind CSS v3**, NO v4. Cualquier sintaxis v4 es silenciosamente ignorada.
 
