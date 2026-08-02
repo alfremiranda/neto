@@ -158,7 +158,7 @@ function AccountsStep({ added, onAdd, onRemove }: {
               type="button"
               onClick={() => setType(t)}
               className={cn(
-                'flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-medium transition-colors border-0',
+                'flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg ts-control-sm transition-colors border-0',
                 type === t
                   ? 'bg-[var(--primary)] text-[var(--primary-foreground)]'
                   : 'bg-transparent text-muted-foreground hover:text-foreground',
@@ -187,7 +187,7 @@ function AccountsStep({ added, onAdd, onRemove }: {
                 type="button"
                 onClick={() => setCurrency(c)}
                 className={cn(
-                  'px-2.5 py-1 rounded-lg text-xs font-bold transition-colors border-0',
+                  'px-2.5 py-1 rounded-lg ts-control-sm transition-colors border-0',
                   currency === c
                     ? 'bg-[var(--primary)] text-[var(--primary-foreground)]'
                     : 'bg-transparent text-muted-foreground hover:text-foreground',

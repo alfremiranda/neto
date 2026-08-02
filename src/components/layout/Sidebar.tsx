@@ -34,7 +34,7 @@ function NavButton({ id, label, Icon }: { id: ViewType; label: string; Icon: typ
       )}
     >
       <Icon size={16} className="shrink-0" />
-      {!collapsed && <span className="text-sm font-medium truncate">{label}</span>}
+      {!collapsed && <span className="ts-body-base-emphasis truncate">{label}</span>}
     </button>
   )
 

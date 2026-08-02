@@ -36,8 +36,8 @@ function PanicScreen() {
   return (
     <div className="fixed inset-0 z-[10000] flex flex-col items-center justify-center gap-6 bg-background px-6 text-center text-foreground">
       <div className="max-w-sm space-y-2">
-        <h1 className="text-lg font-semibold">Algo salió mal</h1>
-        <p className="text-sm text-muted-foreground">
+        <h1 className="ts-heading-card">Algo salió mal</h1>
+        <p className="ts-body-small text-muted-foreground">
           La app encontró un error inesperado. Tus datos siguen guardados en este
           dispositivo. Intenta recargar; si el problema persiste, cierra sesión y
           vuelve a entrar.

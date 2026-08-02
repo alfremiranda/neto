@@ -52,15 +52,15 @@ function Calendar({
         // also used as the non-dropdown month/year label — looks fine either way
         caption_label: cn(
           "flex items-center gap-1 border border-[var(--border)] rounded-lg",
-          "px-2.5 py-1 text-sm font-medium pointer-events-none select-none",
+          "px-2.5 py-1 ts-body-base-emphasis pointer-events-none select-none",
           "bg-transparent hover:bg-muted transition-colors"
         ),
 
         month_grid: "w-full border-collapse",
         weekdays: "flex",
-        weekday: "text-muted-foreground w-8 font-normal text-[0.8rem] text-center",
+        weekday: "text-muted-foreground w-8 ts-detail-base text-center",
         week: "flex w-full mt-2",
-        day: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20",
+        day: "relative p-0 text-center ts-body-small focus-within:relative focus-within:z-20",
         day_button: cn(
           buttonVariants({ variant: "ghost" }),
           "h-8 w-8 p-0 font-normal",

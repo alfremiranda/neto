@@ -17,7 +17,7 @@ export function SectionCard({ icon: Icon, title, action, children, className }: 
       <div className="flex items-center justify-between gap-3 px-4 pt-4 pb-2">
         <div className="flex items-center gap-2 text-foreground min-w-0">
           <Icon size={16} className="text-foreground shrink-0" />
-          <span className="text-sm font-semibold font-mono leading-none truncate">{title}</span>
+          <span className="ts-heading-group truncate">{title}</span>
         </div>
         {action && <div className="shrink-0">{action}</div>}
       </div>
