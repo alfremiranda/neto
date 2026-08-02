@@ -68,7 +68,7 @@ export function EgresosBreakdown({ year }: EgresosBreakdownProps) {
       icon={LayoutList}
       title="Gastos por categoría"
       action={
-        <span className="text-sm font-semibold font-heading tabular-nums text-[var(--color-expense)]">
+        <span className="ts-amount-base text-[var(--color-expense)]">
           {COP(grandTotal)}
         </span>
       }
@@ -83,7 +83,7 @@ export function EgresosBreakdown({ year }: EgresosBreakdownProps) {
               <cat.Icon size={12} strokeWidth={2.5} />
             </div>
 
-            <span className="text-xs text-muted-foreground w-20 shrink-0 truncate">
+            <span className="ts-body-small text-muted-foreground w-20 shrink-0 truncate">
               {cat.label}
             </span>
 
@@ -98,7 +98,7 @@ export function EgresosBreakdown({ year }: EgresosBreakdownProps) {
             </div>
 
             <div className="shrink-0 text-right w-36">
-              <span className="text-xs font-mono font-semibold tabular-nums">{COP(cat.total)}</span>
+              <span className="ts-amount-small">{COP(cat.total)}</span>
               <span className="text-[10px] text-muted-foreground ml-1.5">{Math.round(cat.pct)}%</span>
             </div>
           </div>

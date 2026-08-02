@@ -263,7 +263,7 @@ export function EgresosCategoryChart({ year }: EgresosCategoryChartProps) {
                 : 'none',
             }}
           >
-            <div className="font-heading font-semibold text-[12px] mb-2">
+            <div className="ts-body-small-emphasis mb-2">
               {tooltip.datum.label} — {COP(tooltip.datum.total)}
             </div>
             <div className="space-y-1">
@@ -271,7 +271,7 @@ export function EgresosCategoryChart({ year }: EgresosCategoryChartProps) {
                 <div key={cat.id} className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full shrink-0" style={{ background: `var(${cat.color})` }} />
                   <span className="text-muted-foreground flex-1">{cat.label}</span>
-                  <span className="font-mono tabular-nums">{COP(cat.amount)}</span>
+                  <span className="ts-amount-small">{COP(cat.amount)}</span>
                 </div>
               ))}
             </div>

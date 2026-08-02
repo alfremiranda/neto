@@ -275,14 +275,14 @@ export function TrendChart() {
                 : 'none',
             }}
           >
-            <div className="font-heading font-semibold text-[12px] text-[var(--popover-foreground)] mb-2">
+            <div className="ts-body-small-emphasis text-[var(--popover-foreground)] mb-2">
               {tooltip.label}
             </div>
             {tooltip.values.map(v => (
               <div key={v.label} className="flex items-center gap-1.5 py-[1px]">
                 <span className="w-2 h-2 rounded-[3px] shrink-0" style={{ background: v.color }} />
                 <span className="text-[var(--muted-foreground)] flex-1">{v.label}</span>
-                <span className="font-heading tabular-nums text-[var(--popover-foreground)] pl-3">
+                <span className="ts-amount-small text-[var(--popover-foreground)] pl-3">
                   {COP(v.value)}
                 </span>
               </div>

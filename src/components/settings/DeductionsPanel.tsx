@@ -68,7 +68,7 @@ function MonthPicker({ months, onChange }: { months: number[]; onChange: (m: num
               aria-label={`${MONTH_FULL[i]}${active ? ' (activo)' : ''}`}
               aria-pressed={active}
               className={[
-                'w-10 h-10 rounded-lg text-[11px] font-mono font-semibold border cursor-pointer transition-colors',
+                'w-10 h-10 rounded-lg ts-control-sm border cursor-pointer transition-colors',
                 active
                   ? 'bg-[var(--primary)] text-primary-foreground border-[var(--primary)]'
                   : 'bg-transparent text-muted-foreground border-[var(--border)] hover:border-[var(--primary)] hover:text-[var(--primary)]',
@@ -79,7 +79,7 @@ function MonthPicker({ months, onChange }: { months: number[]; onChange: (m: num
           )
         })}
       </div>
-      <p className="text-xs text-muted-foreground">
+      <p className="ts-body-small text-muted-foreground">
         {months.length === 0
           ? 'Aplica todos los meses. Toca un mes para restringir.'
           : monthsLabel(months)}
@@ -172,7 +172,7 @@ function DeductionDrawer({
           <div className="space-y-1.5">
             <label className="field-label ts-label-base">Nombre</label>
             {locked ? (
-              <p className="text-sm font-medium">{label}</p>
+              <p className="ts-body-base-emphasis">{label}</p>
             ) : (
               <Input
                 value={label}
@@ -187,7 +187,7 @@ function DeductionDrawer({
           <div className="space-y-1.5">
             <label className="field-label ts-label-base">Tipo de cálculo</label>
             {locked || d?.base === 'ibc' ? (
-              <p className="text-sm font-medium">{BASE_LABELS[base]}</p>
+              <p className="ts-body-base-emphasis">{BASE_LABELS[base]}</p>
             ) : (
               <>
                 <Select value={base} onValueChange={v => setBase(v as DeductionBase)}>
@@ -213,12 +213,12 @@ function DeductionDrawer({
               <div className="space-y-1.5">
                 <label className="field-label ts-label-base">Ingreso base (USD)</label>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground shrink-0">U$</span>
+                  <span className="ts-body-base text-muted-foreground shrink-0">U$</span>
                   <Input
                     type="number" min="0" step="100"
                     value={amount}
                     onChange={e => setAmount(parseFloat(e.target.value) || 0)}
-                    className="font-mono text-right"
+                    className="ts-amount-small text-right"
                     placeholder="8800"
                   />
                 </div>
@@ -233,9 +233,9 @@ function DeductionDrawer({
                     type="number" min="0" max="100" step="0.001"
                     value={pct}
                     onChange={e => setPct(parseFloat(e.target.value) || 0)}
-                    className="font-mono text-right"
+                    className="ts-amount-small text-right"
                   />
-                  <span className="text-sm text-muted-foreground shrink-0">%</span>
+                  <span className="ts-body-base text-muted-foreground shrink-0">%</span>
                 </div>
               </div>
             </>
@@ -247,22 +247,22 @@ function DeductionDrawer({
                   type="number" min="0" max="100" step="0.001"
                   value={pct}
                   onChange={e => setPct(parseFloat(e.target.value) || 0)}
-                  className="font-mono text-right"
+                  className="ts-amount-small text-right"
                   disabled={locked}
                 />
-                <span className="text-sm text-muted-foreground shrink-0">%</span>
+                <span className="ts-body-base text-muted-foreground shrink-0">%</span>
               </div>
             </div>
           ) : (
             <div className="space-y-1.5">
               <label className="field-label ts-label-base">Valor fijo ({base === 'fixed_cop' ? 'COP' : 'USD'})</label>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground shrink-0">{base === 'fixed_cop' ? '$' : 'U$'}</span>
+                <span className="ts-body-base text-muted-foreground shrink-0">{base === 'fixed_cop' ? '$' : 'U$'}</span>
                 <Input
                   type="number" min="0" step={base === 'fixed_cop' ? 1000 : 1}
                   value={amount}
                   onChange={e => setAmount(parseFloat(e.target.value) || 0)}
-                  className="font-mono text-right"
+                  className="ts-amount-small text-right"
                 />
               </div>
             </div>
@@ -333,8 +333,8 @@ function DeductionRow({
     <div className={['py-3 border-b border-[var(--border)] last:border-0 flex items-center gap-2.5', !d.enabled ? 'opacity-50' : ''].join(' ')}>
       {/* Label + base badge */}
       <div className="flex-1 min-w-0 flex items-center gap-2 flex-wrap">
-        <span className="text-sm font-medium leading-none truncate">{d.label}</span>
-        <span className="text-[10px] bg-muted text-muted-foreground px-1.5 py-0.5 rounded font-mono select-none shrink-0">
+        <span className="ts-body-base-emphasis truncate">{d.label}</span>
+        <span className="ts-label-badge bg-muted text-muted-foreground px-1.5 py-0.5 rounded select-none shrink-0">
           {BASE_LABELS[d.base]}
         </span>
       </div>
@@ -345,7 +345,7 @@ function DeductionRow({
       </span>
 
       {/* Value display */}
-      <span className="text-xs font-mono tabular-nums text-right shrink-0 w-20">
+      <span className="ts-amount-small text-right shrink-0 w-20">
         {d.base === 'fixed_cop' ? `$${(d.amount ?? 0).toLocaleString('es-CO')}` :
          d.base === 'fixed_usd' ? `U$${d.amount ?? 0}` :
          d.base === 'base_usd'  ? `${d.pct}% U$${d.amount ?? 0}` :
@@ -408,20 +408,20 @@ export function DeductionsPanel() {
     <div className="space-y-4">
       {/* SMMLV — legal base for the IBC floor */}
       <div className="bg-[var(--background)] rounded-xl border border-[var(--border)] p-4">
-        <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+        <label className="block ts-body-small-emphasis text-muted-foreground mb-1.5">
           SMMLV {year} (COP)
         </label>
         <div className="flex items-center gap-2 border border-[var(--input)] rounded-xl px-[10px] py-2 bg-muted/50">
-          <span className="flex-1 font-heading tabular-nums text-foreground">{copFormat(currentSmmlv)}</span>
+          <span className="flex-1 ts-amount-small text-foreground">{copFormat(currentSmmlv)}</span>
           <Lock size={13} className="text-muted-foreground shrink-0" />
         </div>
-        <p className="text-xs text-muted-foreground mt-2">
+        <p className="ts-body-small text-muted-foreground mt-2">
           Valor legal fijado por decreto. Base mínima para calcular el IBC de seguridad social.
         </p>
       </div>
 
       <div className="flex items-start justify-between gap-3">
-        <p className="text-xs text-muted-foreground">
+        <p className="ts-body-small text-muted-foreground">
           Activa deducciones y ajusta el tipo de cálculo, meses y monto desde el formulario de edición.
         </p>
         <IconButton
@@ -439,7 +439,7 @@ export function DeductionsPanel() {
         const items = deductions.filter(section.filter)
         return (
           <div key={section.label}>
-            <div className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1.5">
+            <div className="ts-label-micro uppercase text-muted-foreground mb-1.5">
               {section.label}
             </div>
             <div className="bg-[var(--background)] rounded-xl border border-[var(--border)] px-3">
@@ -447,7 +447,7 @@ export function DeductionsPanel() {
                 <DeductionRow key={d.id} d={d} onEdit={() => openEdit(d)} />
               ))}
               {items.length === 0 && (
-                <p className="text-xs text-muted-foreground text-center py-4">
+                <p className="ts-body-small text-muted-foreground text-center py-4">
                   Sin deducciones en este grupo
                 </p>
               )}
@@ -468,7 +468,7 @@ export function DeductionsPanel() {
       })}
 
       <p className="text-[11px] text-muted-foreground pt-1">
-        <span className="font-mono bg-muted px-1 rounded">IBC</span> = max(40% × ingresos por servicios, SMMLV)
+        <span className="ts-amount-small bg-muted px-1 rounded">IBC</span> = max(40% × ingresos por servicios, SMMLV)
       </p>
 
       <DeductionDrawer
