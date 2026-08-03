@@ -92,7 +92,28 @@ contenedor centrado a 1024 con padding. `Mes` no:
 Está como cuarta plantilla en la página precisamente porque es la excepción, y las
 excepciones son lo que se implementa mal cuando no están dibujadas.
 
-## 5. Lo que este documento no decide
+## 5. Cómo se organiza el lienzo
+
+Las dos páginas de pantallas (`Layouts` y `Page - Accounts`) siguen ahora la misma retícula, y
+conviene que las siguientes también:
+
+- **Secciones de Figma, una por dispositivo** — `Escritorio · 1440`, `Móvil · 412`. La sección
+  es lo que hace que la página se lea de un vistazo cuando está alejada.
+- **Padding 64 dentro de la sección, 120 entre marcos, 160 entre secciones.**
+- **Todos los marcos de una fila comparten alto**, aunque a alguno le sobre espacio. Una fila
+  con bases desparejas se lee como error antes que como contenido.
+- **Nada de rótulos propios encima de los marcos.** Figma ya dibuja el nombre del marco ahí;
+  un texto mío en el mismo sitio son dos etiquetas peleando. El nombre del marco *es* el
+  rótulo, así que vale la pena que diga algo: `Desktop · 2 · Cuenta (detalle)`.
+- **Los paneles de spec van debajo de su marco**, a 24, alineados a su borde izquierdo.
+
+Dos errores que corregí al ordenar, por si vuelven: **ensanché los marcos de escritorio de
+1024 a 1440 y no los reespacié**, así que se solapaban 280px — el segundo tapaba al primero y
+parecían recortes blancos sueltos. Y **dentro de una `SECTION` las coordenadas de los hijos
+son relativas a la sección**, no absolutas como en la página: puse `x = 3352` esperando
+posición de página y los marcos móviles se fueron a `x = 6640`.
+
+## 6. Lo que este documento no decide
 
 Si el sidebar debería ser translúcido (§2), y si los 255 de Figma o los 256 del código son
 los buenos (§3). Las dos son de Alfredo.
