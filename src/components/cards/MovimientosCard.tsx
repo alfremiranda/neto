@@ -1,6 +1,7 @@
 import { Trash2, ArrowLeftRight, Pencil } from 'lucide-react'
 import { useHasHydrated } from '@/hooks/useHasHydrated'
 import { Skeleton } from '@/components/ui/skeleton'
+import { byDateDesc } from '@/lib/sortEntries'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { COP, USD, fmtDate } from '@/lib/format'
@@ -124,7 +125,7 @@ function MovimientosCardContent() {
         </Empty>
       ) : (
         <div>
-          {[...(month.transfers || [])].sort((a, b) => (b.date ?? '').localeCompare(a.date ?? '')).map(t => (
+          {[...(month.transfers || [])].sort(byDateDesc).map(t => (
             <TransferRow
               key={t.id}
               t={t}

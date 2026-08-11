@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { Pencil, Trash2, Receipt, RefreshCw, X, ChevronLeft, ChevronRight, ArrowUpDown, Clock, SlidersHorizontal } from 'lucide-react'
 import { useHasHydrated } from '@/hooks/useHasHydrated'
 import { Skeleton } from '@/components/ui/skeleton'
+import { byDateAsc, byDateDesc } from '@/lib/sortEntries'
 import { useFinanceStore } from '@/store/financeStore'
 import { useMonthData } from '@/hooks/useMonthData'
 import { useUIStore } from '@/store/uiStore'
@@ -381,11 +382,11 @@ function EgresosCardContent() {
       const amtA = a.currency === 'USD' ? a.amount * month.trm : a.amount
       const amtB = b.currency === 'USD' ? b.amount * month.trm : b.amount
       switch (sortBy) {
-        case 'date-asc':    return (a.date || '').localeCompare(b.date || '')
+        case 'date-asc':    return byDateAsc(a, b)
         case 'amount-desc': return amtB - amtA
         case 'amount-asc':  return amtA - amtB
         case 'name-asc':    return (a.desc || '').localeCompare(b.desc || '', 'es')
-        default:            return (b.date || '').localeCompare(a.date || '') // date-desc
+        default:            return byDateDesc(a, b) // date-desc
       }
     })
 

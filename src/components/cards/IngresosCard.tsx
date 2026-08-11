@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Trash2, Pencil, Banknote, Receipt } from 'lucide-react'
 import { useHasHydrated } from '@/hooks/useHasHydrated'
 import { Skeleton } from '@/components/ui/skeleton'
+import { byDateDesc } from '@/lib/sortEntries'
 import { useFinanceStore } from '@/store/financeStore'
 import { useMonthData } from '@/hooks/useMonthData'
 import { useUIStore } from '@/store/uiStore'
@@ -182,7 +183,7 @@ function IngresosCardContent() {
       ) : (
         <div>
           {[...month.incomes]
-            .sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''))
+            .sort(byDateDesc)
             .map(inc => (
               <IncomeRow
                 key={inc.id}
