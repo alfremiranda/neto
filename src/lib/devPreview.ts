@@ -74,12 +74,19 @@ export function backupBeforeSeed(): void {
 export function previewDB(): FinanceDB {
   return {
     _settings: {
-      accounts: TRANSFER_ACCOUNTS.map(a => ({
-        ...a,
-        startingBalance: a.currency === 'USD' ? 4200 : 6_500_000,
-        favorite: a.id === 'ARQ' || a.id === 'Bancolombia',
-        updatedAt: TS,
-      })),
+      accounts: [
+        ...TRANSFER_ACCOUNTS.map(a => ({
+          ...a,
+          startingBalance: a.currency === 'USD' ? 4200 : 6_500_000,
+          favorite: a.id === 'ARQ' || a.id === 'Bancolombia',
+          updatedAt: TS,
+        })),
+        // A credit card, so the type with the most derived figures — debt,
+        // available, % used, cutoff and due dates — is reachable in preview.
+        { id: 'CMR', label: 'CMR Falabella', currency: 'COP', type: 'credit',
+          number: '0205', rate: 0, startingBalance: 0, creditLimit: 500_000,
+          cutoffDay: 19, dueDay: 5, favorite: true, updatedAt: TS },
+      ],
       onboardingDone: true,
       displayName: 'Preview',
       primaryCurrency: 'COP',
@@ -100,6 +107,9 @@ export function previewDB(): FinanceDB {
         { id: 13, desc: 'Salud prepagada', category: 'salud', amount: 512_000, currency: 'COP', date: DAY_ONE, recurring: true, confirmed: true, account: 'Bancolombia', updatedAt: TS },
         { id: 14, desc: 'Internet y celular', category: 'tecnologia', amount: 210_000, currency: 'COP', date: DAY_ONE, recurring: true, confirmed: true, account: 'NU', updatedAt: TS },
         { id: 15, desc: 'Transporte', category: 'movilidad', amount: 340_000, currency: 'COP', date: DAY_ONE, confirmed: true, account: 'Efectivo', updatedAt: TS },
+        { id: 17, desc: 'Purchase - Tiendas D1', category: 'alimentacion', amount: 13_240, currency: 'COP', date: DAY_ONE, confirmed: true, account: 'CMR', updatedAt: TS },
+        { id: 18, desc: 'Purchase - Rebaja pl', category: 'alimentacion', amount: 26_800, currency: 'COP', date: DAY_ONE, confirmed: true, account: 'CMR', updatedAt: TS },
+        { id: 19, desc: 'Purchase - Rebaja Pl', category: 'alimentacion', amount: 22_200, currency: 'COP', date: DAY_ONE, confirmed: true, account: 'CMR', updatedAt: TS },
         { id: 16, desc: 'Suscripciones', category: 'tecnologia', amount: 128_000, currency: 'COP', date: DAY_ONE, recurring: true, confirmed: true, account: 'NU', updatedAt: TS },
       ],
       transfers: [],

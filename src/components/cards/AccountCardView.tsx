@@ -51,7 +51,11 @@ export function AccountCardView({ account, size = 'lg', selected = false, onClic
 
   const monthlyYield = account.rate > 0 ? balance * (account.rate / 100) / 12 : 0
   const maturityDays = isSavings && account.maturityDate ? daysUntil(account.maturityDate) : null
-  const amountStr    = !hasConfig ? null : isCredit ? fmt(cc!.limit) : fmt(balance)
+  // A credit card's headline is what is left to spend, not the limit. The limit
+  // never moves, so on the small tile — where the debt and %-used lines are
+  // hidden — the card showed a static number and looked like it ignored every
+  // purchase. Available is the analogue of the balance every other type shows.
+  const amountStr    = !hasConfig ? null : isCredit ? fmt(cc!.available) : fmt(balance)
 
   // Meta line parts after the currency badge (pipe-separated)
   const metaParts: string[] = []

@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 // ?raw so the test never evaluates the module: devPreview reads window.location at
 // import time and would fail under the node environment.
 import source from './devPreview.ts?raw'
-import { EGRESO_CATEGORIAS } from '@/data/defaults'
+import { EGRESO_CATEGORIAS, TRANSFER_ACCOUNTS } from '@/data/defaults'
 
 /**
  * The ?preview fixture invents its own entries, so nothing stops it referencing a
@@ -20,9 +20,14 @@ describe('devPreview fixture', () => {
   })
 
   it('only uses account ids the fixture itself seeds', () => {
-    // accounts come from TRANSFER_ACCOUNTS, so any `account:` must be one of those ids
+    // Derived, not hardcoded: the first cut listed the ids by hand and failed the
+    // moment a credit card was added to the fixture, which is a maintenance
+    // failure rather than the bug this guards against.
+    const seeded = new Set([
+      ...TRANSFER_ACCOUNTS.map(a => a.id),
+      ...[...source.matchAll(/\{\s*id:\s*'([^']+)',\s*label:/g)].map(m => m[1]),
+    ])
     const used = [...source.matchAll(/account:\s*'([^']+)'/g)].map(m => m[1])
-    const seeded = new Set(['ARQ', 'Toptal', 'Bancolombia', 'NU', 'Nequi', 'Efectivo'])
     expect(used.filter(a => !seeded.has(a))).toEqual([])
   })
 })
