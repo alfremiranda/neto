@@ -30,6 +30,27 @@ se confirmó antes y se probó en dev/local primero.
 - Si tocaste **tokens o componentes del design system** → re-correr `/design-sync` para republicar.
 - **Push al cerrar cada tarea** (no acumular commits locales). `docs/DIRECTION.md` es entrada, no se edita a mano.
 
+**El push no termina hasta que el run termina.** `git push` y esperar el workflow son **una sola
+operación**, no dos pasos opcionales:
+
+```
+git push origin main && gh run watch $(gh run list --limit 1 --json databaseId -q '.[0].databaseId') --exit-status
+```
+
+Y verificar el resultado, no el color: `gh run list --status success --limit 1 --json headSha`
+debe coincidir con `git rev-parse HEAD`. Un run verde de *otro* commit no dice nada del tuyo.
+
+Por qué está aquí: el deploy corre `npm audit --audit-level=high` y los tests antes de construir,
+así que **puede bloquear producción en silencio**. Un aviso nuevo en una dependencia transitiva
+—que aparece sin que nadie toque el repo— deja el run en rojo y prod congelada en el último commit
+que pasó. Ocurrió: `nanoid` entró por `postcss` y prod sirvió el mismo build durante siete commits,
+incluidos dos fixes que el usuario había reportado. Estaban committeados, pusheados y verificados
+en local; no habían llegado a su teléfono. Lo detectó él abriendo Actions, no yo.
+
+Si el run falla por un aviso nuevo: `npm audit fix` (suele ser solo el lockfile), verificar
+`npm audit --audit-level=high` en local, y volver a empujar. **No** re-correr el run fallido
+(apila artifacts — ver la sección de deploy más abajo).
+
 ## ⚠️ El design system manda sobre Tailwind — siempre
 
 **El sistema de diseño (Diseño + Figma) es el SSOT de toda la UI.** Tokens, primitivas,
