@@ -128,6 +128,31 @@ NOTES = {
                        "     A favourite is not a tax: if the tax amber ever moves, the star must not follow."),
 }
 
+def check_map_sources():
+    """Every MAP target must be a token that actually exists.
+
+    tokens_map_css() emits `var(--x)` verbatim, so a MAP line pointing at a token the
+    export no longer produces breaks SILENTLY: the CSS is still valid, the variable is
+    just undefined, and the colour falls back to nothing. Nobody sees a build error —
+    they see an uncoloured badge, weeks later.
+
+    This is not hypothetical. `rename-map.json` kills --account-{1..4}-{surface,foreground},
+    which lines 109-112 below still reference; whoever accepts that kill has to retarget
+    those four pairs in the SAME commit. This turns that into a loud failure.
+    """
+    known = set(SL) | set(SD) | set(CL) | set(CD) | set(NUM)
+    missing = [(app, tok) for _, pairs in MAP for app, tok in pairs if tok not in known]
+    missing += [(f"--cat-{app}", f"--category-{fig}-{kind}")
+                for app, fig in CATS for kind in ("default", "surface")
+                if f"--category-{fig}-{kind}" not in known]
+    if missing:
+        raise SystemExit(
+            "build.py: MAP points at tokens that this export does not produce.\n"
+            "Retarget them (or restore the tokens) — do not ship a dangling var():\n"
+            + "\n".join(f"  {app} -> var({tok})   [missing]" for app, tok in missing)
+        )
+
+
 def tokens_map_css():
     out = ["""/* Bridge: the variable names the app already uses -> the generated tokens.
    Import AFTER tokens.css, then delete the corresponding declarations from src/index.css.
@@ -610,6 +635,8 @@ def scale_inner():
             f'<h2>Espaciado</h2>{sph}<h2>Radios</h2><div class="grid">{rdh}</div>')
 
 # ── write ─────────────────────────────────────────────────────────────────
+# Validate BEFORE rmtree: a bad export must leave the previous design-system/ intact.
+check_map_sources()
 if os.path.isdir(OUT):
     shutil.rmtree(OUT)
 for d in ("tokens", "components", "foundations", "docs"):

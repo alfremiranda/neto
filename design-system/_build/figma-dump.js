@@ -23,6 +23,40 @@
  *   python3 design-system/_build/build.py
  */
 const collections = await figma.variables.getLocalVariableCollectionsAsync()
+const collectionsById = Object.fromEntries(collections.map(c => [c.id, c]))
+
+/**
+ * Aliases must be followed BY MODE NAME, not by mode id.
+ *
+ * Every collection has its own mode ids, and the names differ in case too
+ * (Semantic is `Light`/`Dark`, Component is `light`/`dark`). A Component token
+ * in dark mode consumes its Semantic target's *dark* value — that is the whole
+ * point of the indirection, since most Component tokens alias the SAME semantic
+ * variable in both modes and let the semantic layer carry the mode difference.
+ *
+ * Resolving against the target's default mode instead collapses dark to light
+ * for exactly those tokens, and — this is why it went unnoticed — leaves correct
+ * any token whose alias points at a DIFFERENT target per mode. Measured: 19 of
+ * 92 component tokens wrong, the other 73 right. A partly-correct dump is worse
+ * than a broken one; it reads as a value disagreement with the published output.
+ */
+function modeIdFor(collection, modeName) {
+  const match = collection.modes.find(m => m.name.toLowerCase() === modeName.toLowerCase())
+  return (match || collection.modes[0]).modeId
+}
+
+async function resolveByModeName(variable, modeName, depth = 0) {
+  if (depth > 10) return { value: null, alias: '<cycle>' }   // alias chains are not trusted to terminate
+  const collection = collectionsById[variable.variableCollectionId]
+  const raw = variable.valuesByMode[modeIdFor(collection, modeName)]
+  if (raw && typeof raw === 'object' && raw.type === 'VARIABLE_ALIAS') {
+    const target = await figma.variables.getVariableByIdAsync(raw.id)
+    if (!target) return { value: null, alias: `<missing:${raw.id}>` }
+    const resolved = await resolveByModeName(target, modeName, depth + 1)
+    return { value: resolved.value, alias: target.name }
+  }
+  return { value: raw, alias: null }
+}
 
 /** Figma colours are 0–1 floats; tokens.json carries hex. Alpha becomes rgba(). */
 function toCss(value) {
@@ -44,17 +78,11 @@ for (const collection of collections) {
     const values = {}
     const aliases = {}
     for (const mode of modes) {
-      const raw = v.valuesByMode[mode.id]
-      if (raw && typeof raw === 'object' && raw.type === 'VARIABLE_ALIAS') {
-        // Record the alias AND resolve it, so stage 2 can emit a value while the
-        // report can still say which keys are aliases rather than sources.
-        const target = await figma.variables.getVariableByIdAsync(raw.id)
-        aliases[mode.name] = target ? target.name : `<missing:${raw.id}>`
-        const targetValue = target ? target.valuesByMode[mode.id] : null
-        values[mode.name] = toCss(targetValue)
-      } else {
-        values[mode.name] = toCss(raw)
-      }
+      // Record the alias AND resolve it, so stage 2 can emit a value while the
+      // report can still say which keys are aliases rather than sources.
+      const { value, alias } = await resolveByModeName(v, mode.name)
+      if (alias) aliases[mode.name] = alias
+      values[mode.name] = toCss(value)
     }
     variables.push({
       collection: collection.name,
