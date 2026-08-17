@@ -92,7 +92,7 @@ export function AccountCardView({ account, size = 'lg', selected = false, onClic
         >
           <Star
             size={14}
-            className={cn(account.favorite ? 'text-[var(--color-tax-txt)]' : 'text-muted-foreground/60')}
+            className={cn(account.favorite ? 'text-[var(--color-fav-selected-txt)]' : 'text-muted-foreground/60')}
             fill={account.favorite ? 'currentColor' : 'none'}
           />
         </button>

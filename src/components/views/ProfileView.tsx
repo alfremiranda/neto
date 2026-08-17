@@ -121,10 +121,7 @@ export function ProfileView() {
 
       {/* Avatar + identity */}
       <div className="flex flex-col items-center gap-3 py-4">
-        {/* 80px sits 24px above the scale's top rung (56). Held at 80 until
-            Design decides — see Q-2026-08-17-avatar-off-scale. */}
-        <Avatar size="xl" src={avatarUrl} name={displayedName} initials={initials}
-                className="w-20 h-20 border-2 ts-heading-card" />
+        <Avatar size="xl" src={avatarUrl} name={displayedName} initials={initials} />
         <div className="text-center">
           <p className="ts-heading-card">{displayedName}</p>
           <p className="ts-body-base text-muted-foreground">{email}</p>

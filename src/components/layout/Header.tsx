@@ -110,10 +110,7 @@ function UserAvatar() {
             </DrawerHeader>
             <DrawerBody className="pb-[max(1.5rem,env(safe-area-inset-bottom))]">
               <div className="flex items-center gap-3 pb-4 mb-2 border-b border-[var(--border)]">
-                {/* 44px is off the 32·40·48·56 scale. Held at 44 until Design
-                    picks the rung — see Q-2026-08-17-avatar-off-scale. */}
-                <Avatar size="md" src={avatarUrl} name={name} initials={initials}
-                        className="w-11 h-11 text-[length:var(--avatar-font-size-md)]" />
+                <Avatar size="md" src={avatarUrl} name={name} initials={initials} />
                 <div className="min-w-0">
                   <div className="ts-body-base-emphasis truncate">{name}</div>
                   <div className="ts-body-small text-muted-foreground truncate">{user.email}</div>

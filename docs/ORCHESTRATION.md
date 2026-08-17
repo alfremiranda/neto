@@ -6,7 +6,10 @@
 > mailbox replaces human copy-paste, daily sync, terse message format). v3.1: Design push
 > exception. v3.2: peer mail. v3.3: orchestrator fast-lane mailbox. v3.4 (2026-08-17):
 > delivery self-checks — adopted from Design's automation proposal
-> (`claude/neto-propuesta-automatizacion.md`).
+> (`claude/neto-propuesta-automatizacion.md`). v3.4.1 (2026-08-17): no route → no
+> production, not just no delivery. v3.5 (2026-08-17): roles outlive sessions; a handoff
+> doc is mandatory at close when work is in flight — proposed by Design, adopted after a
+> Design session died mid-queue and only its handoff saved the continuity.
 
 ## The system
 
@@ -49,6 +52,31 @@ through the repo:
 4. **Message style:** relays are ≤5 lines and point to docs. If a message needs paragraphs,
    the paragraphs belong in a doc and the message is the pointer.
 
+## Roles outlive sessions (v3.5)
+
+The roster above is a list of **five roles, not five continuous agents**. A session ends for
+reasons that have nothing to do with the work — a bridge dies, a laptop closes, a scheduled run
+finishes, context runs out — and its successor inherits the role with **no memory of it**. This
+has already happened to Design (17-ago, mid-queue) and to Dev.
+
+**Continuity is a document, not a memory.** Two artifacts, and they are not the same thing:
+
+| | Says | Written |
+|---|---|---|
+| **Report** (`docs/reports/`) | what happened this session | every close, first thing |
+| **Handoff** (`docs/handoff/<role>.md`, or `claude/neto-handoff-<role>.md` for cloud roles) | what the successor does first, what is settled and must not be relitigated, and `unpushed: <hashes>` | every close **with work in flight** |
+
+Three rules that follow:
+
+1. **`unpushed: <hashes>` lives in the handoff**, not only in a closing chat message nobody
+   replays. A hash that exists only in a conversation is a hash that is lost.
+2. **Do not relitigate what the handoff marks settled.** A successor arriving with fresh opinions
+   about a closed decision costs the project a week; if the decision is genuinely wrong, that is a
+   `Q-`, not a redo.
+3. **A session on the bridge has no git identity.** The bridge VM does not inherit `~/.gitconfig`,
+   so set `user.name`/`user.email` explicitly. A commit authored by something like `rcw-...@claude`
+   is that, not a compromise.
+
 ## Repo territories & git rules
 
 Two agents share this working tree. The boundary that keeps that sane:
@@ -88,17 +116,23 @@ business-rule changes → `PRODUCT.md`; plan changes → `NORTH_STAR.md`; design
 token/component changes → re-run `/design-sync`; then commit and push. A session that closed
 without a report is a protocol failure the sync will flag as a blocker, not absorb.
 
+**And if work is in flight, write the handoff before you stop** (v3.5) — the report is for
+the system, the handoff is for whoever holds your role next, and they are not the same reader.
+
 **Reporting:** the report file replaces pasted summaries. Its `FOUND` section is where
 protocol/reality conflicts go — this file gets corrected when you flag them (v2 and v3
 exist because you did). Its `NEEDS` section is the only thing that escalates to Alfredo.
 
-## Delivery & self-checks (v3.4)
+## Delivery & self-checks (v3.4 · v3.4.1)
 
 1. **No route → fail loudly.** A sync without a route to the repo produces NO delivery
    files and its first output line lists what was withheld. (Cloud git/API writes are
    blocked by the sandbox — verified 2026-08-17; the routes are the Mac bridge and the
    local "On your computer" sync.) Producing files that can't land is the failure mode
-   that cost a week — banned.
+   that cost a week — banned. **v3.4.1: the ban is on producing, not only on delivering.**
+   Check the route FIRST; if there is none, say so and stop. A zip Alfredo has to unpack by
+   hand is a fallback, not a route — the 17-ago zip was never unpacked and its whole payload
+   had to be rewritten from scratch by the next session.
 2. **The mailbox is the queue; the hub is an index.** A pendiente exists if and only if it
    has a file in `docs/inbox/**`. The pendientes table in `claude/neto-status.md` is
    REGENERATED from the mailboxes every sync, never hand-maintained. (Domain-doc backlogs
