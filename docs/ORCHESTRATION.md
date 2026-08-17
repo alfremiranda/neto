@@ -4,8 +4,9 @@
 > [DIRECTION.md](./DIRECTION.md). Unlike DIRECTION.md (regenerated weekly), this file is
 > hand-maintained and changes rarely. v3 — 2026-08-01 (v2: roster + territories; v3: repo
 > mailbox replaces human copy-paste, daily sync, terse message format). v3.1: Design push
-> exception. v3.2: peer mail. v3.3: `docs/inbox/orchestrator/` — the fast lane for
-> mid-session verifications with the orchestrator.
+> exception. v3.2: peer mail. v3.3: orchestrator fast-lane mailbox. v3.4 (2026-08-17):
+> delivery self-checks — adopted from Design's automation proposal
+> (`claude/neto-propuesta-automatizacion.md`).
 
 ## The system
 
@@ -57,8 +58,9 @@ Two agents share this working tree. The boundary that keeps that sane:
 - **Dev owns:** everything else — `src/**`, `public/**`, configs, docs. This includes
   `src/index.css`: when Design's token work requires changes there, Design reports the
   finding and **Dev applies it** (the favourite-star / radius findings flow was the model).
-- **Orchestrator writes:** `docs/DIRECTION.md` (generated) and `docs/ORCHESTRATION.md`
-  (this file) via the connected folder; Alfredo or Dev commits them.
+- **Orchestrator writes:** `docs/DIRECTION.md`, `docs/ORCHESTRATION.md` and
+  `docs/inbox/**` tickets/answers, via the Mac bridge (interactive sessions) or the local
+  daily sync (see v3.4 delivery rules); Alfredo or Dev commits them.
 
 Git rules for a shared tree:
 
@@ -80,13 +82,31 @@ Git rules for a shared tree:
 `NORTH_STAR.md` — and **process `docs/inbox/dev/`** (move handled items to `dev/done/` in
 the same commit as the work/answer).
 
-**At session close:** user-facing or business-rule changes → `PRODUCT.md`; plan changes →
-`NORTH_STAR.md`; design-system token/component changes → re-run `/design-sync`; **write your
-session report to `docs/reports/YYYY-MM-DD-<slug>.md`**; then commit and push.
+**At session close — the report comes FIRST, not last:** write
+`docs/reports/YYYY-MM-DD-<slug>.md` before anything else in the close; then user-facing or
+business-rule changes → `PRODUCT.md`; plan changes → `NORTH_STAR.md`; design-system
+token/component changes → re-run `/design-sync`; then commit and push. A session that closed
+without a report is a protocol failure the sync will flag as a blocker, not absorb.
 
 **Reporting:** the report file replaces pasted summaries. Its `FOUND` section is where
 protocol/reality conflicts go — this file gets corrected when you flag them (v2 and v3
 exist because you did). Its `NEEDS` section is the only thing that escalates to Alfredo.
+
+## Delivery & self-checks (v3.4)
+
+1. **No route → fail loudly.** A sync without a route to the repo produces NO delivery
+   files and its first output line lists what was withheld. (Cloud git/API writes are
+   blocked by the sandbox — verified 2026-08-17; the routes are the Mac bridge and the
+   local "On your computer" sync.) Producing files that can't land is the failure mode
+   that cost a week — banned.
+2. **The mailbox is the queue; the hub is an index.** A pendiente exists if and only if it
+   has a file in `docs/inbox/**`. The pendientes table in `claude/neto-status.md` is
+   REGENERATED from the mailboxes every sync, never hand-maintained. (Domain-doc backlogs
+   are working notes, not queues.)
+3. **Freshness dates.** Every domain doc in the project carries its last-updated date; the
+   sync flags any doc older than recorded activity in its territory.
+4. **Push-state truth.** When the bridge is available, the sync verifies what is actually on
+   `origin/main` vs local claims, and corrects whichever doc is lying.
 
 ## Handoff conventions
 
