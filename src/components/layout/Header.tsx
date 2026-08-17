@@ -8,6 +8,7 @@ import { useSettingsStore } from '@/store/settingsStore'
 import { useUIStore } from '@/store/uiStore'
 import { useSidebar } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
+import { Avatar } from '@/components/ui/Avatar'
 import { IconButton } from '@/components/ui/icon-button'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerBody } from '@/components/ui/drawer'
 
@@ -75,18 +76,17 @@ function UserAvatar() {
   const doSignOut = () => { setOpen(false); signOut() }
 
   const trigger = (
-    <button
+    <IconButton
+      variant="ghost"
+      size="lg"
       onClick={() => setOpen(v => !v)}
       aria-label="Cuenta"
       aria-haspopup="menu"
       aria-expanded={open}
-      className="w-8 h-8 rounded-full overflow-hidden border-2 border-[var(--border)] hover:border-[var(--primary)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] cursor-pointer shrink-0"
+      className="p-0 hover:opacity-80"
     >
-      {avatarUrl
-        ? <img src={avatarUrl} alt={name} className="w-full h-full object-cover" />
-        : <span className="w-full h-full flex items-center justify-center bg-[var(--muted)] text-[12px] font-semibold">{initials}</span>
-      }
-    </button>
+      <Avatar size="sm" src={avatarUrl} name={name} initials={initials} />
+    </IconButton>
   )
 
   // Mobile: bottom sheet (matches the app sheet pattern + native focus trap/a11y from vaul)
@@ -110,12 +110,10 @@ function UserAvatar() {
             </DrawerHeader>
             <DrawerBody className="pb-[max(1.5rem,env(safe-area-inset-bottom))]">
               <div className="flex items-center gap-3 pb-4 mb-2 border-b border-[var(--border)]">
-                <div className="w-11 h-11 rounded-full overflow-hidden border border-[var(--border)] shrink-0">
-                  {avatarUrl
-                    ? <img src={avatarUrl} alt={name} className="w-full h-full object-cover" />
-                    : <span className="w-full h-full flex items-center justify-center bg-[var(--muted)] text-sm font-bold">{initials}</span>
-                  }
-                </div>
+                {/* 44px is off the 32·40·48·56 scale. Held at 44 until Design
+                    picks the rung — see Q-2026-08-17-avatar-off-scale. */}
+                <Avatar size="md" src={avatarUrl} name={name} initials={initials}
+                        className="w-11 h-11 text-[length:var(--avatar-font-size-md)]" />
                 <div className="min-w-0">
                   <div className="ts-body-base-emphasis truncate">{name}</div>
                   <div className="ts-body-small text-muted-foreground truncate">{user.email}</div>

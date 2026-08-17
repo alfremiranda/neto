@@ -1,3 +1,4 @@
+import { Avatar } from '@/components/ui/Avatar'
 import { IconButton } from '@/components/ui/icon-button'
 import { useState, useEffect } from 'react'
 import { ArrowLeft, LogOut, Check } from 'lucide-react'
@@ -120,12 +121,10 @@ export function ProfileView() {
 
       {/* Avatar + identity */}
       <div className="flex flex-col items-center gap-3 py-4">
-        <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-[var(--border)] shrink-0">
-          {avatarUrl
-            ? <img src={avatarUrl} alt={displayedName} className="w-full h-full object-cover" />
-            : <span className="w-full h-full flex items-center justify-center bg-[var(--muted)] ts-heading-card text-muted-foreground select-none">{initials}</span>
-          }
-        </div>
+        {/* 80px sits 24px above the scale's top rung (56). Held at 80 until
+            Design decides — see Q-2026-08-17-avatar-off-scale. */}
+        <Avatar size="xl" src={avatarUrl} name={displayedName} initials={initials}
+                className="w-20 h-20 border-2 ts-heading-card" />
         <div className="text-center">
           <p className="ts-heading-card">{displayedName}</p>
           <p className="ts-body-base text-muted-foreground">{email}</p>

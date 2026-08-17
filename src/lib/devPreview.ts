@@ -10,8 +10,10 @@
  *    There is no runtime flag, header or cookie that can turn this on in prod.
  * 2. It is opt-in per page load (`?preview`), so ordinary `npm run dev` work is
  *    untouched — you get the real login screen unless you ask for this.
- * 3. It never fabricates a Supabase session — it seeds the store and tells `App`
- *    to skip the gates. Nothing here can reach the network or the real auth flow.
+ * 3. It never fabricates a Supabase *session* — no token, no auth subscription,
+ *    no network. `previewUser()` below is a display object for the account menu,
+ *    which renders nothing without one; it is fixture data like the rest, and the
+ *    gates it would satisfy are already bypassed by DEV_PREVIEW anyway.
  *
  * It does go through the normal persisted store, so it replaces whatever is in
  * the dev localStorage. `backupBeforeSeed()` copies the previous value to
@@ -116,4 +118,17 @@ export function previewDB(): FinanceDB {
       updatedAt: TS,
     },
   } as unknown as FinanceDB
+}
+
+/**
+ * The account menu returns null without a user, so the header avatar cannot be
+ * seen — or screenshotted — in preview. This is display data only: the shape the
+ * menu reads, nothing Supabase would recognise as a session.
+ */
+export function previewUser() {
+  return {
+    id: 'preview-user',
+    email: 'preview@netofinanzas.app',
+    user_metadata: { full_name: 'Preview User', avatar_url: null },
+  }
 }

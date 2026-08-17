@@ -26,7 +26,7 @@ import { LoginScreen } from '@/components/auth/LoginScreen'
 import { ConsentScreen } from '@/components/auth/ConsentScreen'
 import { OnboardingView } from '@/components/onboarding/OnboardingView'
 import { needsPrivacyConsent } from '@/lib/privacy'
-import { DEV_PREVIEW, DEV_PREVIEW_ONBOARDING, previewDB, backupBeforeSeed } from '@/lib/devPreview'
+import { DEV_PREVIEW, DEV_PREVIEW_ONBOARDING, previewDB, previewUser, backupBeforeSeed } from '@/lib/devPreview'
 
 function PullIndicator({ pullY, refreshing, isPulling }: { pullY: number; refreshing: boolean; isPulling: boolean }) {
   const progress = Math.min(pullY / PTR_THRESHOLD, 1)
@@ -88,6 +88,7 @@ export default function App() {
     if (DEV_PREVIEW) {
       backupBeforeSeed()
       useFinanceStore.setState({ db: previewDB() })
+      useAuthStore.setState({ user: previewUser() as never, loading: false, cloudReady: true })
       return
     }
     const unsub = initialize()
