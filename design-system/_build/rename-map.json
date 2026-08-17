@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "authored_by": "design",
+  "generated": false,
+  "measured": "2026-08-17",
+  "note": "Figma variable name -> published CSS key. AUTHORED, not generated: the exporter reads this, and must never derive it from existing output. Reasoning, coverage and the killed keys are in design-system/docs/13-rename-map.md. Scope: COLOR variables of Semantic and Component. Numerics and text styles are NOT covered yet — see the doc.",
+
+  "component": {
+    "rule": "slug",
+    "detail": "'--' + name.replace(/\\//g, '-')",
+    "verified": 77,
+    "newly_published": 15
+  },
+
+  "semantic": {
+    "rule": "first matching prefix wins; the remainder is slugged ('/' -> '-') and appended",
+    "prefixes": [
+      ["color/wrap/",         "--surface-wrap-"],
+      ["color/surface/",      "--surface-"],
+      ["color/status/",       "--surface-status-"],
+      ["color/feedback/",     "--surface-feedback-"],
+      ["color/brand/",        "--surface-brand-"],
+      ["color/foreground/",   "--foreground-"],
+      ["color/border/",       "--border-"],
+      ["color/interactive/",  "--interactive-"],
+      ["color/danger/",       "--status-danger-"],
+      ["color/destructive/",  "--status-destructive-"],
+      ["color/live/",         "--status-live-"],
+      ["color/income/",       "--kpi-income-"],
+      ["color/expense/",      "--kpi-expense-"],
+      ["color/provision/",    "--kpi-provision-"],
+      ["color/tax/",          "--kpi-tax-"],
+      ["color/net/",          "--kpi-net-"],
+      ["color/categorical/",  "--data-categorical-"],
+      ["color/sequential/",   "--data-sequential-"],
+      ["color/category/",     "--category-"],
+      ["color/account/",      "--account-"],
+      ["color/overlay/",      "--overlay-"],
+      ["account-accent/",     "--account-accent-"]
+    ],
+    "verified_against_current_output": 103,
+    "value_conflicts": 0,
+    "newly_published": 25
+  },
+
+  "killed": {
+    "reason": "Every one encodes a fixed account slot (ARQ / Toptal / Bancolombia / other) from before Alfredo decided the account colour is chosen by the user. There is no Figma source for any of them; --account-2-surface has no matching value anywhere in the file. Publishing them again would re-publish a dead model under names that mean nothing.",
+    "keys": [
+      "--account-1-surface", "--account-1-foreground",
+      "--account-2-surface", "--account-2-foreground",
+      "--account-3-surface", "--account-3-foreground",
+      "--account-4-surface", "--account-4-foreground"
+    ],
+    "precondition": "build.py MAP lines 109-112 and two src/ call sites migrate first — see docs/inbox/dev/A-2026-08-17-rename-map.md. Slot 4 is byte-identical to color/account/*, so --color-account-other-{bg,txt} -> --account-{surface,foreground} is a pixel-preserving rename.",
+    "adopted": 0
+  },
+
+  "not_covered_yet": [
+    "Numeric variables (the `num` block, 108 keys). Component numerics look like the same slug rule (avatar/size/sm -> --avatar-size-sm) but this has NOT been verified key by key. Do not assume it.",
+    "Text styles (the `text` block, 26 rows). Different shape entirely: name|weight|size|lineHeight|letterSpacing.",
+    "Primitives and Typography collections are not published and need no map."
+  ]
+}
