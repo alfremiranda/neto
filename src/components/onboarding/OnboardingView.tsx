@@ -286,7 +286,8 @@ const PROFILE_OPTIONS: Array<{ value: Profile; icon: typeof Briefcase; label: st
 ]
 
 function ProfileStep({ profile, onSelect }: {
-  profile: Profile
+  /** null = still unanswered; nothing is highlighted. */
+  profile: Profile | null
   onSelect: (p: Profile) => void
 }) {
   return (
@@ -357,8 +358,10 @@ function CurrencyStep({
   primary, secondary,
   onPrimary, onSecondary,
 }: {
-  primary: Currency
-  secondary: Currency | null
+  /** null = unanswered. */
+  primary: Currency | null
+  /** undefined = unanswered; null is the real answer "No mostrar". */
+  secondary: Currency | null | undefined
   onPrimary: (c: Currency) => void
   onSecondary: (c: Currency | null) => void
 }) {
@@ -508,20 +511,39 @@ export function OnboardingView() {
   const { setDeductionsEnabled, setDisplayCurrency } = useSettingsStore()
   const { setView } = useUIStore()
 
-  const [step,      setStep]      = useState(0)
-  const [added,     setAdded]     = useState<NewAccount[]>([])
-  const [primary,   setPrimary]   = useState<Currency>('COP')
-  const [secondary, setSecondary] = useState<Currency | null>('USD')
-  const [profile,   setProfile]   = useState<Profile>('independiente')
+  const [step,  setStep]  = useState(0)
+  const [added, setAdded] = useState<NewAccount[]>([])
+  // Nothing starts selected. "Omitir este paso" means "decido después", so a step
+  // must not show a choice it will not save — a highlighted radio is a promise.
+  // For the secondary currency `null` is a real answer ("No mostrar"), so
+  // `undefined` is what carries "not answered yet".
+  const [primary,   setPrimary]   = useState<Currency | null>(null)
+  const [secondary, setSecondary] = useState<Currency | null | undefined>(undefined)
+  const [profile,   setProfile]   = useState<Profile | null>(null)
+
+  // Skipping is only offered while the step is unanswered. Once a choice exists,
+  // offering "omitir" is how the previous version silently discarded it.
+  const answered = step === 1
+    ? primary !== null || secondary !== undefined
+    : step === 3
+      ? profile !== null
+      : false
 
   function handleAdd(a: NewAccount) { setAdded(prev => [...prev, a]) }
   function handleRemove(idx: number) { setAdded(prev => prev.filter((_, i) => i !== idx)) }
 
   function handleNext() {
-    if (step === 1) {
-      setDisplayCurrency(primary, secondary)
+    // Persist only what was actually answered. An untouched step keeps the store
+    // default (COP/USD, deductions on), which is what "decido después" means —
+    // and it is reachable later from Configuración.
+    if (step === 1 && (primary !== null || secondary !== undefined)) {
+      const main = primary ?? 'COP'
+      // An unanswered secondary defaults to *the other* currency, which is what the
+      // shipped default (COP main / USD secondary) actually means. A fixed 'USD'
+      // would render USD/USD for anyone who picks USD as their main.
+      setDisplayCurrency(main, secondary === undefined ? (main === 'USD' ? 'COP' : 'USD') : secondary)
     }
-    if (step === 3) {
+    if (step === 3 && profile !== null) {
       // Employees have no self-managed deductions; independents/mixed keep them on
       setDeductionsEnabled(profile !== 'empleado')
     }
@@ -606,7 +628,7 @@ export function OnboardingView() {
               : 'Continuar'}
           {step < TOTAL_STEPS - 1 && <ChevronRight size={18} />}
         </Button>
-        {isContentStep && step !== TOTAL_STEPS - 1 && (
+        {isContentStep && step !== TOTAL_STEPS - 1 && !answered && (
           <Button
             type="button"
             variant="link"

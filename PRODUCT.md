@@ -120,7 +120,14 @@ Primas (8.33%), Cesantías (8.33%) y Vacaciones (4.17%) sobre el ingreso bruto c
 Derivadas de gastos **con fecha y sin confirmar** (típicamente recurrentes recién sembrados). Se agrupan en **Vencidos / Vence hoy / Próximos (7 días)**. El badge solo cuenta vencidos + hoy. Tocar un ítem lleva a su mes y abre el gasto para confirmarlo. Son in-app; no hay notificaciones push.
 
 ### 4.10 Onboarding
-Asistente de 5 pasos: bienvenida → **moneda principal y secundaria** → **cuentas** (Efectivo incluido siempre; se pueden agregar bancarias y tarjetas con cupo/deuda/fechas) → **perfil de trabajo** → listo. Cada paso se puede omitir.
+Asistente de 5 pasos: bienvenida → **moneda principal y secundaria** → **cuentas** (Efectivo incluido siempre; se pueden agregar bancarias y tarjetas con cupo/deuda/fechas) → **perfil de trabajo** → listo.
+
+**Omitir un paso significa "decido después", no "descarta lo que elegí".** Por eso ningún
+paso arranca con una opción preseleccionada: una opción marcada es una promesa de que se va
+a guardar. Al omitir no se escribe nada y queda el default (COP principal / USD secundaria,
+deducciones activas), ajustable después en Configuración. Y en cuanto eliges algo, el enlace
+"Omitir este paso" desaparece — con una elección real en pantalla, omitir solo podría
+significar descartarla en silencio.
 
 ### 4.11 Privacidad y consentimiento (Ley 1581)
 - **Pantalla de consentimiento bloqueante** antes de usar la app: al entrar —usuarios nuevos **y** existentes que aún no aceptaron— Neto pide aceptar la política de tratamiento de datos. El flujo es **login → consentimiento → onboarding**. "No acepto" cierra sesión.
