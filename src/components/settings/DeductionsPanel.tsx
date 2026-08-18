@@ -45,7 +45,14 @@ const BASE_OPTIONS: { value: DeductionBase; label: string; desc: string }[] = [
 
 // ─── Month picker ─────────────────────────────────────────────────────────────
 
-function MonthPicker({ months, onChange }: { months: number[]; onChange: (m: number[]) => void }) {
+function MonthPicker({ months, onChange, labelledBy }: {
+  months: number[]
+  onChange: (m: number[]) => void
+  /** Id of the text naming this group. It is a set of toggles, not a single
+      control, so it takes role="group" + aria-labelledby — a <label for> has
+      nothing to point at. */
+  labelledBy?: string
+}) {
   function toggle(monthNum: number) {
     onChange(
       months.includes(monthNum)
@@ -56,7 +63,7 @@ function MonthPicker({ months, onChange }: { months: number[]; onChange: (m: num
 
   return (
     <div className="space-y-2">
-      <div className="flex gap-1.5 flex-wrap">
+      <div role="group" aria-labelledby={labelledBy} className="flex gap-1.5 flex-wrap">
         {MONTH_ABBR.map((abbr, i) => {
           const monthNum = i + 1
           const active = months.length === 0 || months.includes(monthNum)
@@ -65,7 +72,9 @@ function MonthPicker({ months, onChange }: { months: number[]; onChange: (m: num
               key={monthNum}
               type="button"
               onClick={() => toggle(monthNum)}
-              aria-label={`${MONTH_FULL[i]}${active ? ' (activo)' : ''}`}
+              // No "(activo)" in the name: aria-pressed already announces the
+              // state, and baking it into the label says it twice.
+              aria-label={MONTH_FULL[i]}
               aria-pressed={active}
               className={[
                 'w-10 h-10 rounded-lg ts-control-sm border cursor-pointer transition-colors',
@@ -170,11 +179,14 @@ function DeductionDrawer({
         <DrawerBody className="space-y-5">
           {/* Label */}
           <div className="space-y-1.5">
-            <label className="field-label ts-label-base">Nombre</label>
+            {/* htmlFor only in the branch that actually renders a control: when locked
+                the value is a <p>, and a label pointing at nothing is its own a11y bug. */}
+            <label htmlFor={locked ? undefined : 'ded-label'} className="field-label ts-label-base">Nombre</label>
             {locked ? (
               <p className="ts-body-base-emphasis">{label}</p>
             ) : (
               <Input
+                id="ded-label"
                 value={label}
                 onChange={e => setLabel(e.target.value)}
                 placeholder="Ej. Seguro de vida"
@@ -185,13 +197,16 @@ function DeductionDrawer({
 
           {/* Base type */}
           <div className="space-y-1.5">
-            <label className="field-label ts-label-base">Tipo de cálculo</label>
+            <label
+              htmlFor={locked || d?.base === 'ibc' ? undefined : 'ded-base'}
+              className="field-label ts-label-base"
+            >Tipo de cálculo</label>
             {locked || d?.base === 'ibc' ? (
               <p className="ts-body-base-emphasis">{BASE_LABELS[base]}</p>
             ) : (
               <>
                 <Select value={base} onValueChange={v => setBase(v as DeductionBase)}>
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger id="ded-base" className="w-full">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -211,10 +226,11 @@ function DeductionDrawer({
           {isBaseUsd ? (
             <>
               <div className="space-y-1.5">
-                <label className="field-label ts-label-base">Ingreso base (USD)</label>
+                <label htmlFor="ded-usd-amount" className="field-label ts-label-base">Ingreso base (USD)</label>
                 <div className="flex items-center gap-2">
                   <span className="ts-body-base text-muted-foreground shrink-0">U$</span>
                   <Input
+                    id="ded-usd-amount"
                     type="number" min="0" step="100"
                     value={amount}
                     onChange={e => setAmount(parseFloat(e.target.value) || 0)}
@@ -227,9 +243,10 @@ function DeductionDrawer({
                 </p>
               </div>
               <div className="space-y-1.5">
-                <label className="field-label ts-label-base">Porcentaje (%)</label>
+                <label htmlFor="ded-usd-pct" className="field-label ts-label-base">Porcentaje (%)</label>
                 <div className="flex items-center gap-2">
                   <Input
+                    id="ded-usd-pct"
                     type="number" min="0" max="100" step="0.001"
                     value={pct}
                     onChange={e => setPct(parseFloat(e.target.value) || 0)}
@@ -241,9 +258,10 @@ function DeductionDrawer({
             </>
           ) : !isFixed ? (
             <div className="space-y-1.5">
-              <label className="field-label ts-label-base">Porcentaje (%)</label>
+              <label htmlFor="ded-pct" className="field-label ts-label-base">Porcentaje (%)</label>
               <div className="flex items-center gap-2">
                 <Input
+                  id="ded-pct"
                   type="number" min="0" max="100" step="0.001"
                   value={pct}
                   onChange={e => setPct(parseFloat(e.target.value) || 0)}
@@ -255,10 +273,11 @@ function DeductionDrawer({
             </div>
           ) : (
             <div className="space-y-1.5">
-              <label className="field-label ts-label-base">Valor fijo ({base === 'fixed_cop' ? 'COP' : 'USD'})</label>
+              <label htmlFor="ded-fixed" className="field-label ts-label-base">Valor fijo ({base === 'fixed_cop' ? 'COP' : 'USD'})</label>
               <div className="flex items-center gap-2">
                 <span className="ts-body-base text-muted-foreground shrink-0">{base === 'fixed_cop' ? '$' : 'U$'}</span>
                 <Input
+                  id="ded-fixed"
                   type="number" min="0" step={base === 'fixed_cop' ? 1000 : 1}
                   value={amount}
                   onChange={e => setAmount(parseFloat(e.target.value) || 0)}
@@ -270,16 +289,16 @@ function DeductionDrawer({
 
           {/* Months */}
           <div className="space-y-1.5">
-            <label className="field-label ts-label-base">Meses en que aplica</label>
-            <MonthPicker months={months} onChange={setMonths} />
+            <span id="ded-months-label" className="field-label ts-label-base">Meses en que aplica</span>
+            <MonthPicker months={months} onChange={setMonths} labelledBy="ded-months-label" />
           </div>
 
           {/* Reserve destination — provisions only */}
           {isProvision && (
             <div className="space-y-1.5">
-              <label className="field-label ts-label-base">Cuenta de reserva (opcional)</label>
+              <label htmlFor="ded-dest" className="field-label ts-label-base">Cuenta de reserva (opcional)</label>
               <Select value={destAccount || '_none'} onValueChange={v => setDestAccount(v === '_none' ? '' : v)}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger id="ded-dest" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -408,9 +427,11 @@ export function DeductionsPanel() {
     <div className="space-y-4">
       {/* SMMLV — legal base for the IBC floor */}
       <div className="bg-[var(--background)] rounded-xl border border-[var(--border)] p-4">
-        <label className="block ts-body-small-emphasis text-muted-foreground mb-1.5">
+        {/* Not a <label>: there is no control here, only a locked legal value.
+            A label with nothing to label is an a11y bug, not decoration. */}
+        <p className="block ts-body-small-emphasis text-muted-foreground mb-1.5">
           SMMLV {year} (COP)
-        </label>
+        </p>
         <div className="flex items-center gap-2 border border-[var(--input)] rounded-xl px-[10px] py-2 bg-muted/50">
           <span className="flex-1 ts-amount-small text-foreground">{copFormat(currentSmmlv)}</span>
           <Lock size={13} className="text-muted-foreground shrink-0" />

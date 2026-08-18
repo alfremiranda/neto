@@ -213,7 +213,7 @@ export function DashboardView() {
           action={
             <div className="flex items-center gap-2">
               <Select value={String(year)} onValueChange={v => setYear(parseInt(v))}>
-                <SelectTrigger size="sm" className="w-auto">
+                <SelectTrigger size="sm" className="w-auto" aria-label="Año del resumen">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

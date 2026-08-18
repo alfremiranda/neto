@@ -270,8 +270,8 @@ export function AccountEditSheet() {
         {isSavings && (
           <>
             <div>
-              <label className="field-label ts-label-base">Tipo de ahorro</label>
-              <div className="grid grid-cols-3 rounded-xl border border-[var(--border)] p-0.5 gap-0.5">
+              <span id="acc-savings-kind-label" className="field-label ts-label-base">Tipo de ahorro</span>
+              <div role="group" aria-labelledby="acc-savings-kind-label" className="grid grid-cols-3 rounded-xl border border-[var(--border)] p-0.5 gap-0.5">
                 {SAVINGS_KINDS.map(({ value, label: kLabel }) => (
                   <button
                     key={value}

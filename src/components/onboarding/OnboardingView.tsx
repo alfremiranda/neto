@@ -177,6 +177,7 @@ function AccountsStep({ added, onAdd, onRemove }: {
             value={label}
             onChange={e => setLabel(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && !isCredit && handleAdd()}
+            aria-label="Nombre de la cuenta"
             placeholder={isCredit ? 'Ej: Visa Bancolombia' : type === 'cash' ? 'Ej: Billetera, Menudo…' : 'Ej: Bancolombia Ahorros'}
             className="field-input flex-1 min-w-0"
           />
@@ -186,6 +187,7 @@ function AccountsStep({ added, onAdd, onRemove }: {
                 key={c}
                 type="button"
                 onClick={() => setCurrency(c)}
+                aria-pressed={currency === c}
                 className={cn(
                   'px-2.5 py-1 rounded-lg ts-control-sm transition-colors border-0',
                   currency === c
@@ -208,6 +210,7 @@ function AccountsStep({ added, onAdd, onRemove }: {
                 inputMode="numeric"
                 value={cupo}
                 onChange={e => onMoneyChange(setCupo)(e.target.value)}
+                aria-label="Cupo total"
                 placeholder="Cupo total"
                 className="field-input flex-1 min-w-0"
               />
@@ -216,6 +219,7 @@ function AccountsStep({ added, onAdd, onRemove }: {
                 inputMode="numeric"
                 value={deuda}
                 onChange={e => onMoneyChange(setDeuda)(e.target.value)}
+                aria-label="Deuda actual"
                 placeholder="Deuda actual"
                 className="field-input flex-1 min-w-0"
               />
@@ -226,6 +230,7 @@ function AccountsStep({ added, onAdd, onRemove }: {
                 inputMode="numeric"
                 value={cutoff}
                 onChange={e => setCutoff(e.target.value.replace(/[^\d]/g, '').slice(0, 2))}
+                aria-label="Día de corte"
                 placeholder="Día de corte"
                 className="field-input flex-1 min-w-0"
               />
@@ -234,6 +239,7 @@ function AccountsStep({ added, onAdd, onRemove }: {
                 inputMode="numeric"
                 value={due}
                 onChange={e => setDue(e.target.value.replace(/[^\d]/g, '').slice(0, 2))}
+                aria-label="Día de pago"
                 placeholder="Día de pago"
                 className="field-input flex-1 min-w-0"
               />

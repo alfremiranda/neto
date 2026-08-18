@@ -136,8 +136,9 @@ export function ProfileView() {
       {/* Display name */}
       <section className="bg-[var(--card)] rounded-xl border border-[var(--border)] divide-y divide-[var(--border)] overflow-hidden">
         <div className="px-4 py-3">
-          <p className="ts-label-micro text-muted-foreground uppercase mb-3">Nombre de display</p>
+          <label htmlFor="profile-display-name" className="block ts-label-micro text-muted-foreground uppercase mb-3">Nombre de display</label>
           <input
+            id="profile-display-name"
             type="text"
             value={nameInput}
             onChange={e => setNameInput(e.target.value)}

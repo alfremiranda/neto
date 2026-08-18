@@ -150,8 +150,17 @@ Dos proyectos Supabase separados para evitar contaminar datos de producción dur
 4. Migrar storage a Supabase (auth con GitHub o Google)
 5. PWA completa con service worker
 6. ~~Fix: primas mensual~~ ✓ (provisión mensual 8.33%, pago real en jun/dic)
-7. Fix: aria-labels en botones icono y htmlFor en formularios
-8. Fix: rows de AnnualTable con role="button" + teclado
+7. ~~Fix: aria-labels en botones icono y htmlFor en formularios~~ ✓ (2026-08-17). Los
+   botones icono ya estaban: 29/31 con `aria-label`, los otros 2 con `sr-only` (su texto
+   sí estaba en inglés — traducido). Lo real eran los formularios; verificado en el DOM,
+   no en el source. La causa de fondo era `MoneyInput`: emitía `htmlFor={id}`/`id={id}`
+   con `id` opcional, así que **todo call site que lo omitía quedaba sin nombre accesible**
+   — ahora cae a `useId()`. Los grupos de toggles (meses, tipo de ahorro) llevan
+   `role="group"` + `aria-labelledby`: un `<label for>` no puede apuntar a un grupo.
+8. ~~Fix: AnnualTable accesible por teclado~~ ✓ (2026-08-17). El ticket decía "rows con
+   role=button" pero no hay filas clicables: es el **donut** de composición, `<circle>`
+   con `onClick` y nada más. Ahora `role="button"` + `tabIndex` + Enter/Espacio +
+   `aria-label` con etiqueta y monto + `aria-pressed`.
 
 ## Cross-domain direction (business · legal · design)
 

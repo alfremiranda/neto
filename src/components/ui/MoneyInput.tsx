@@ -1,4 +1,4 @@
-import { forwardRef, type InputHTMLAttributes } from 'react'
+import { forwardRef, useId, type InputHTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 
 interface MoneyInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value'> {
@@ -12,16 +12,21 @@ interface MoneyInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'o
 
 export const MoneyInput = forwardRef<HTMLInputElement, MoneyInputProps>(
   ({ value, onChange, hint, label, currency, error, className, id, ...rest }, ref) => {
+    // Without a fallback, a caller that omits `id` leaves htmlFor AND the input id
+    // undefined: the label points at nothing and the field has no accessible name.
+    // Most call sites omit it, so the default has to be correct, not the exception.
+    const autoId = useId()
+    const fieldId = id ?? autoId
     return (
       <div className="space-y-0.5">
         {label && (
-          <label htmlFor={id} className="field-label ts-label-base">
+          <label htmlFor={fieldId} className="field-label ts-label-base">
             {label}{currency ? ` (${currency})` : ''}
           </label>
         )}
         <input
           ref={ref}
-          id={id}
+          id={fieldId}
           type="text"
           inputMode="decimal"
           value={value}

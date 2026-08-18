@@ -34,14 +34,25 @@ function AnnualDonut({ segments, total, centerValue }: { segments: DonutSeg[]; t
           {segments.map(s => {
             const len = total > 0 ? (s.amount / total) * circ : 0
             const dim = sel != null && sel.key !== s.key
+            const toggle = () => setSelected(k => (k === s.key ? null : s.key))
             const seg = (
+              // A clickable segment is a control, so it needs a name, a role and a
+              // key. Without these the donut is mouse-only: the amounts it reveals
+              // are unreachable by keyboard and unannounced to a screen reader.
               <circle
                 key={s.key} cx={c} cy={c} r={r} fill="none"
                 stroke={`var(${s.color})`} strokeWidth={stroke}
                 strokeDasharray={`${len} ${circ - len}`} strokeDashoffset={-acc}
-                className="cursor-pointer transition-opacity"
+                className="cursor-pointer transition-opacity outline-none focus-visible:opacity-100"
                 style={{ opacity: dim ? 0.25 : 1 }}
-                onClick={() => setSelected(k => (k === s.key ? null : s.key))}
+                role="button"
+                tabIndex={0}
+                aria-pressed={sel?.key === s.key}
+                aria-label={`${s.label}: ${COP(s.amount)}`}
+                onClick={toggle}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle() }
+                }}
               />
             )
             acc += len

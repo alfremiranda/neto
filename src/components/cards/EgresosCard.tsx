@@ -494,7 +494,7 @@ function EgresosCardContent() {
                 {/* Mobile filter bar */}
                 <div className="sm:hidden px-4 py-2 flex items-center gap-2">
                   <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger data-size="none" className="flex-1 h-11 gap-1.5">
+                    <SelectTrigger data-size="none" className="flex-1 h-11 gap-1.5" aria-label="Ordenar gastos">
                       <ArrowUpDown size={12} className="text-muted-foreground shrink-0" />
                       <SelectValue />
                     </SelectTrigger>
@@ -526,7 +526,7 @@ function EgresosCardContent() {
                 {/* Desktop filter bar */}
                 <div className="hidden sm:flex px-4 py-2 items-center gap-2">
                   <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger data-size="none" className="shrink-0 h-7 w-auto gap-1.5">
+                    <SelectTrigger data-size="none" className="shrink-0 h-7 w-auto gap-1.5" aria-label="Ordenar gastos">
                       <ArrowUpDown size={12} className="text-muted-foreground shrink-0" />
                       <SelectValue />
                     </SelectTrigger>
@@ -540,7 +540,7 @@ function EgresosCardContent() {
                   </Select>
 
                   <Select value={filterAccount || 'all'} onValueChange={v => setFilterAccount(v === 'all' ? '' : v)}>
-                    <SelectTrigger data-size="none" className="min-w-0 flex-1 h-7">
+                    <SelectTrigger data-size="none" className="min-w-0 flex-1 h-7" aria-label="Filtrar por cuenta">
                       <SelectValue placeholder="Todas las cuentas" />
                     </SelectTrigger>
                     <SelectContent>
@@ -588,9 +588,9 @@ function EgresosCardContent() {
 
                   <DrawerBody className="space-y-4">
                     <div className="flex flex-col gap-1.5">
-                      <label className="field-label ts-label-base">Cuenta</label>
+                      <label htmlFor="egr-filter-account" className="field-label ts-label-base">Cuenta</label>
                       <Select value={filterAccount || 'all'} onValueChange={v => setFilterAccount(v === 'all' ? '' : v)}>
-                        <SelectTrigger data-size="none" className="w-full h-10">
+                        <SelectTrigger id="egr-filter-account" data-size="none" className="w-full h-10">
                           <SelectValue placeholder="Todas las cuentas" />
                         </SelectTrigger>
                         <SelectContent>
@@ -604,9 +604,10 @@ function EgresosCardContent() {
                       </Select>
                     </div>
                     <div className="flex flex-col gap-1.5">
-                      <label className="field-label ts-label-base">Fecha</label>
+                      <label htmlFor="egr-filter-date" className="field-label ts-label-base">Fecha</label>
                       <div className="flex items-center gap-2">
                         <DatePicker
+                          id="egr-filter-date"
                           value={filterDate}
                           onChange={setFilterDate}
                           placeholder="Todas las fechas"
