@@ -27,6 +27,22 @@ no lo hay: las guías de marca de Google prohíben recolorear el logotipo. Escri
 hexadecimales crudos no es descuido — es la única forma de decir *esto no se toca*. Por eso la
 exención está en el validador y no en la memoria de nadie.
 
+## Las banderas entran por la misma puerta (2026-08-19)
+
+`CurrencyRadio` trajo el caso más puro de todos: **una bandera de país**. Amarillo, azul y rojo
+de Colombia; el rojo, blanco y azul de Estados Unidos. No hay ninguna versión de esto en la que
+tokenizarlos tenga sentido — no son nuestros, no tienen modo oscuro, y cambiarlos no es un
+ajuste de diseño sino un error.
+
+Por eso el set se llama **`brand-mark/flag`** y vive en `Brand`, junto al logo y a la marca de
+Google. El prefijo hace todo el trabajo: los diez rellenos crudos de sus franjas quedan exentos
+de `C1` por configuración, y **la exención viaja con la instancia** — al meter la bandera dentro
+de `CurrencyRadio`, la instancia hereda el nombre del set y el chequeo la salta sin que haya que
+tocar nada. Verificado: `CurrencyRadio` audita **77 nodos con cero violaciones**.
+
+Es la prueba de que la regla estaba bien puesta en el nombre y no en una lista de nodos. La
+tercera marca ajena no costó ninguna decisión nueva.
+
 ## La regla
 
 > **Un color de marca ajena nunca sube a la capa de tokens.** Si el ícono hereda color, es un

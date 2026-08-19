@@ -135,13 +135,16 @@ async function auditPage(pageId) {
   for (const n of page.findAll(() => true)) {
     const path = n.name;
     const ajeno = esMarcaAjena(n);
+    // El borde punteado de un COMPONENT_SET lo pinta Figma, no nosotros: no es un stroke
+    // sin token, es cromo del editor. Contarlo hacia C1b hace ruido en cada set del archivo.
+    const esSet = n.type === 'COMPONENT_SET';
     if (CONFIG.genericNames.test(n.name)) add('C4_nombre_generico', path, n.type);
     if (n.type === 'TEXT') {
       if (n.textStyleId === figma.mixed) add('C2_texto_estilos_mezclados', path);
       else if (!n.textStyleId || !known.has(n.textStyleId)) add('C2_texto_sin_text_style', path);
     }
-    if (!ajeno && unbound(n.fills))   add('C1_fill_sin_variable', path, n.type);
-    if (!ajeno && unbound(n.strokes)) add('C1b_stroke_sin_variable', path, n.type);
+    if (!ajeno && !esSet && unbound(n.fills))   add('C1_fill_sin_variable', path, n.type);
+    if (!ajeno && !esSet && unbound(n.strokes)) add('C1b_stroke_sin_variable', path, n.type);
   }
 
   return { scope: 'page', page: page.name, violaciones: V };

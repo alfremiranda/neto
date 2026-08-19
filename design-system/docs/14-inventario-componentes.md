@@ -125,6 +125,14 @@ Se anota para que nadie lo vuelva a proponer sin medir.
 
 ---
 
+## Añadidos posteriores al inventario
+
+| fecha | componente | de dónde salió |
+|---|---|---|
+| 2026-08-18 | `Spinner` | 6 copias a mano en el código, ver §A1 |
+| 2026-08-19 | `github` (glifo) y `brand-mark/google` | §A5 y §A6 |
+| 2026-08-19 | **`CurrencyRadio`** + `brand-mark/flag` | dibujado por Alfredo; saneado, documentado y aplicado a las 8 pantallas del paso Moneda |
+
 ## Orden sugerido
 
 1. ~~**C2 movimiento**~~ — ✅ hecho 2026-08-19, ver `15-movimiento.md`.
