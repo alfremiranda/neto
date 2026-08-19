@@ -151,6 +151,11 @@ los nombres que la app ya usaba.
 - **Figma ↔ Storybook**: Figma es la verdad de lo que debe ser; Storybook es la prueba de lo
   que es. Cuando difieren, gana Figma y la diferencia es un defecto. Solo entran componentes
   ya extraídos a código.
+- **Idioma**: la documentación **dentro de Figma** (descripciones de componente, marcos `doc:`)
+  va en **inglés**, porque viaja pegada al código por Dev Mode. La documentación **del repo**
+  (`design-system/docs/**`, informes, buzones) va en **español**. Un archivo bilingüe no es
+  bilingüe: es un archivo donde nadie sabe cuál de los dos idiomas es el descuido. Corregido el
+  2026-08-18, cuando el `Spinner` entró en español a una página que estaba entera en inglés.
 - **Territorio en el repo**: `design-system/**` y `design.md` son de Diseño; `src/**` es de
   Dev. Un cambio de token que toque `src` se reporta como hallazgo, no se aplica.
 
