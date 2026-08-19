@@ -92,7 +92,7 @@ popover · modal`) cubre los 19 y deja los 2 anillos donde deben estar, que es e
 
 **Espera decisión de Alfredo sobre alcance.** No la propongo como hecha.
 
-### C2. Movimiento — **0 tokens, 28 duraciones escritas a mano**
+### C2. Movimiento — **0 tokens, 28 duraciones escritas a mano** · ✅ resuelto 2026-08-19
 
 `grep duration-` en `src/`: `150` ×10 · `200` ×7 · `100` ×7 · `300` ×3 · `500` ×1. Cero
 tokens de duración o de curva en `tokens.css`.
@@ -101,8 +101,11 @@ Cinco duraciones para tres intenciones reales (micro-respuesta, transición, ent
 superficie) es la misma clase de deriva que tenían los colores antes de la capa semántica: no
 está mal ninguna en particular, está mal que no haya un lugar donde se decida.
 
-Esto además **bloquea al `Spinner` recién creado**: su rotación necesita una duración, y no hay
-de dónde sacarla.
+~~Esto además bloquea al `Spinner` recién creado.~~ **Resuelto el 2026-08-19:** la capa de
+movimiento existe — 5 duraciones y 4 curvas, nombradas desde el recuento de arriba. Ver
+`15-movimiento.md`. El `Spinner` ya gira con `motion/duration/spin` sobre `motion/easing/spin`.
+Lo que sigue abierto es la **migración** de las 28 duraciones a mano, que es un cambio en
+`src/**` y por tanto de Dev.
 
 ---
 
@@ -121,7 +124,7 @@ Se anota para que nadie lo vuelva a proponer sin medir.
 
 ## Orden sugerido
 
-1. **C2 movimiento** — barato, desbloquea el `Spinner` y para la deriva de las 28 duraciones.
+1. ~~**C2 movimiento**~~ — ✅ hecho 2026-08-19, ver `15-movimiento.md`.
 2. **A5 + A6 marcas** — dos piezas, decisión ya tomada arriba, cierran la pantalla de entrada.
 3. **C1 elevación** — espera alcance de Alfredo.
 4. **A2–A4 gráficas y barra** — el bloque más grande y el que más se beneficia de que 1 y 3 ya

@@ -2,7 +2,7 @@
   "version": 1,
   "authored_by": "design",
   "generated": false,
-  "measured": "2026-08-18",
+  "measured": "2026-08-19",
   "note": "Figma variable name -> published CSS key. AUTHORED, not generated: the exporter reads this, and must never derive it from existing output. Reasoning, coverage and the killed keys are in design-system/docs/13-rename-map.md. Scope: COLOR variables of Semantic and Component. Numerics and text styles are NOT covered yet — see the doc.",
   "component": {
     "rule": "slug",
@@ -13,6 +13,10 @@
   "semantic": {
     "rule": "first matching prefix wins; the remainder is slugged ('/' -> '-') and appended",
     "prefixes": [
+      [
+        "motion/",
+        "--motion-"
+      ],
       [
         "color/wrap/",
         "--surface-wrap-"
@@ -104,7 +108,10 @@
     ],
     "verified_against_current_output": 103,
     "value_conflicts": 0,
-    "newly_published": 25
+    "newly_published": 25,
+    "notes": [
+      "motion/* added 2026-08-19. It is the only non-colour family covered here on purpose: 5 FLOAT durations (ms) and 4 STRING easing curves, all authored with codeSyntax already set, so the map and Dev Mode agree by construction. The prefix goes FIRST because it must not fall through to a colour rule."
+    ]
   },
   "killed": {
     "reason": "Every one encodes a fixed account slot (ARQ / Toptal / Bancolombia / other) from before Alfredo decided the account colour is chosen by the user. There is no Figma source for any of them; --account-2-surface has no matching value anywhere in the file. Publishing them again would re-publish a dead model under names that mean nothing.",
@@ -122,7 +129,7 @@
     "adopted": 0
   },
   "not_covered_yet": [
-    "Numeric variables (the `num` block, 108 keys). Component numerics look like the same slug rule (avatar/size/sm -> --avatar-size-sm) but this has NOT been verified key by key. Do not assume it.",
+    "Numeric variables (the `num` block, 108 keys, now 108 + the 5 motion durations, which ARE covered - see the `motion` block). Component numerics look like the same slug rule (avatar/size/sm -> --avatar-size-sm) but this has NOT been verified key by key. Do not assume it.",
     "Text styles (the `text` block, 26 rows). Different shape entirely: name|weight|size|lineHeight|letterSpacing.",
     "Primitives and Typography collections are not published and need no map."
   ],
@@ -135,5 +142,21 @@
     },
     "expect_in_next_dump": "3 REMOVED (--badge-primary-*) + 3 ADDED (--action-chip-selected-*). Not drift. No consumer in src/, so nothing has to migrate first.",
     "also_fixed": "action-chip's selected label and icon were bound to notification/primary/background - a background token doing a foreground's job, borrowed from a third component. Rebound to action-chip/selected/foreground. Light is byte-identical (#0e7490 both ways); dark goes #06b6d4 -> #22d3ee, which takes the label from 4.23:1 to 5.68:1 over the composited chip fill. The AA failure was real and is gone."
+  },
+  "motion": {
+    "rule": "slug, same as component: '--' + name.replace('/', '-')",
+    "keys": [
+      "--motion-duration-instant",
+      "--motion-duration-fast",
+      "--motion-duration-moderate",
+      "--motion-duration-slow",
+      "--motion-duration-spin",
+      "--motion-easing-enter",
+      "--motion-easing-exit",
+      "--motion-easing-move",
+      "--motion-easing-spin"
+    ],
+    "types": "the five durations are FLOAT in milliseconds; the four curves are STRING and ship verbatim (a cubic-bezier(...) or 'linear'). build.py has to emit the durations with a 'ms' unit - a bare number is not a valid CSS duration.",
+    "expect_in_next_dump": "9 ADDED. Nothing removed, nothing changed. No consumer in src/ yet: the 28 hand-written duration-* classes migrate afterwards, one by one, and that is a src/ change."
   }
 }

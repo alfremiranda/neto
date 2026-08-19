@@ -22,6 +22,11 @@ const CONFIG = {
   ownerDepth: 1,                   // 'badge/primary/fg' → dueño = 'badge'
   genericNames: /^(Frame|Group|Rectangle|Vector|Ellipse|Line|Container|Component|Text|Slice|Polygon|Star|Union|Subtract|Mask)\s*\d*$/i,
   maxExamples: 8,
+  // Variables que no pueden llevar scope porque Figma no tiene nada a qué atarlas.
+  // Una duracion o una curva no se enlazan a ninguna propiedad de nodo: existen para que
+  // Dev Mode diga el nombre de la variable CSS, no para pintar. Scope vacio ahi no es
+  // "se me olvido", es la verdad. T1 existe para cazar lo primero, no lo segundo.
+  unbindable: [/^motion\//],
 };
 
 // ── auditoría de tokens ─────────────────────────────────────────────────────
@@ -54,7 +59,8 @@ async function auditTokens() {
     const layer = layerOf(v.variableCollectionId);
     const sc = v.scopes || [];
 
-    if (layer !== 'primitive' && (sc.length === 0 || sc.includes('ALL_SCOPES')))
+    const unbindable = (CONFIG.unbindable || []).some(re => re.test(v.name));
+    if (layer !== 'primitive' && !unbindable && (sc.length === 0 || sc.includes('ALL_SCOPES')))
       add('T1_scopes_abiertos', v.name);
     if (layer === 'primitive' && !v.hiddenFromPublishing)
       add('T2_primitiva_expuesta', v.name);
