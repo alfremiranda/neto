@@ -1,6 +1,6 @@
 # FYI-2026-08-18 — `NotificationBadge` existe, y `EgresosCard` lo redibuja a mano
 
-Medido al inventariar componentes (`design-system/docs/14-inventario-componentes.md`).
+Medido al inventariar componentes (`design-system/docs/14-component-inventory.md`).
 
 `NotificationBadge` está en Figma (`Components · Badges`, 2 variantes, documentado). Referencias
 en `src/`: **0**. Y sin embargo [EgresosCard.tsx:519](../../src/components/cards/EgresosCard.tsx#L519):
@@ -14,7 +14,7 @@ text-white flex items-center justify-center pointer-events-none
 al tema: en oscuro el fondo del contador cambia y el número no.
 
 No es un hueco de diseño — la pieza existe. Es un reemplazo en `src/`, territorio tuyo
-(`00-principios §B3`), así que lo reporto en vez de aplicarlo.
+(`00-principles §B3`), así que lo reporto en vez de aplicarlo.
 
 Van en la misma bolsa, con 0 referencias en `src/` y componente listo en Figma: `action-chip`,
 `tab-navigation`, `breadcrumb`/`breadcrumb-item`.

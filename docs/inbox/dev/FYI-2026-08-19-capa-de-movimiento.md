@@ -1,7 +1,7 @@
 # FYI-2026-08-19 — Existe capa de movimiento. Lo que necesita de `build.py`
 
 9 variables nuevas en Figma, ninguna consumida todavía. Razonamiento completo en
-`design-system/docs/15-movimiento.md`; aquí sólo lo que te toca.
+`design-system/docs/15-motion.md`; aquí sólo lo que te toca.
 
 ## Lo que verás en el próximo dump
 
@@ -45,5 +45,5 @@ entra en 140 y sale en 100. Dos sitios, por separado, misma decisión.
 - **`140ms`** del tooltip en `index.css:304` — cae entre `instant` y `fast` sin ganar nada.
   Debería ser `fast` (150).
 
-La migración de las 28 clases es tuya (`00-principios §B3`). No corre prisa y no hay que hacerla
+La migración de las 28 clases es tuya (`00-principles §B3`). No corre prisa y no hay que hacerla
 de golpe: lo que cambia hoy es que ya hay de dónde sacar el número.

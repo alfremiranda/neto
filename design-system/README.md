@@ -22,6 +22,7 @@ docs/                the rules — read these before designing or generating any
 
 | Doc | What it settles |
 |---|---|
+| [`docs/00-principles.md`](docs/00-principles.md) | **The constitution.** Layers, invariant rules, the definition of done, and the boundaries — read this one first |
 | [`docs/01-token-layers.md`](docs/01-token-layers.md) | Primitives → Semantic → Component, and which layer you are allowed to touch |
 | [`docs/02-composition.md`](docs/02-composition.md) | A component never redraws another component |
 | [`docs/03-typography.md`](docs/03-typography.md) | 26 text styles in 6 semantic groups, and why `Amount/*` exists |
@@ -30,6 +31,16 @@ docs/                the rules — read these before designing or generating any
 | [`docs/06-radius-map.md`](docs/06-radius-map.md) | Which radius token each component binds — input for the `--radius` migration |
 | [`docs/07-typography-rethink-sans.md`](docs/07-typography-rethink-sans.md) | **Open handoff to Dev** — the Rethink Sans migration spec: weight, tracking, and how to classify 352 declarations |
 | [`docs/08-component-gap.md`](docs/08-component-gap.md) | **Open handoff to Dev** — where the components themselves disagree: form, spacing, states |
+| [`docs/09-breadcrumb.md`](docs/09-breadcrumb.md) | The first component born in Figma before the code, with its 15 tokens and two non-obvious decisions |
+| [`docs/10-account-page.md`](docs/10-account-page.md) | `AccountChart` and `AccountSummaryCard`, and the router that does not exist yet |
+| [`docs/11-layouts.md`](docs/11-layouts.md) | The page template, the canvas grid, and the desktop onboarding shell |
+| [`docs/12-app-state.md`](docs/12-app-state.md) | **What the system is**, measured: the validator run, the three gaps, and why Storybook waits on the exporter |
+| [`docs/13-rename-map.md`](docs/13-rename-map.md) | How Figma names translate into published CSS keys — the exporter's authored input |
+| [`docs/14-component-inventory.md`](docs/14-component-inventory.md) | What is missing, measured in both directions, and what is deliberately not missing |
+| [`docs/15-motion.md`](docs/15-motion.md) | Five durations and four curves, named from the code's own counts |
+| [`docs/16-marks.md`](docs/16-marks.md) | Third-party marks and flags: the one colour rule that does not apply |
+| [`docs/17-elevation.md`](docs/17-elevation.md) | Four rungs named by role, and why in dark the surface leads instead of the shadow |
+| [`docs/18-consent.md`](docs/18-consent.md) | The consent gate: the legal constraints that shaped every sentence |
 
 ## The short version
 

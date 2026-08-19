@@ -9,7 +9,7 @@
  * bajo demanda y `setCurrentPageAsync` solo puede llamarse una vez por script).
  *
  * Contrato: no muta nada. Solo lee y devuelve un informe.
- * Ver `design-system/docs/00-principios.md` §A5 para qué previene cada chequeo.
+ * Ver `design-system/docs/00-principles.md` §A5 para qué previene cada chequeo.
  */
 
 // ── CONFIG ──────────────────────────────────────────────────────────────────
@@ -29,7 +29,7 @@ const CONFIG = {
   unbindable: [/^motion\//],
   // Subarboles cuyo color NO es nuestro: marcas de terceros. Un hexadecimal crudo ahi no es
   // deuda, es lo correcto — atarlo a un token implicaria que podemos cambiarlo, y no podemos.
-  // C1 los salta. Ver design-system/docs/16-marcas.md.
+  // C1 los salta. Ver design-system/docs/16-marks.md.
   foreignBrand: [/^brand-mark\//],
 };
 

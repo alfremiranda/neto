@@ -78,7 +78,7 @@ into `--kpi-income-default` — does not exist in this repo.**
 
 Without it, "regenerate" means hand-editing the generated input, which `_build/README.md`
 forbids ("Do not edit generated output... If a value is wrong, it is wrong in Figma") and which
-`00-principios.md §A1` forbids ("Nadie edita el paquete generado a mano. Si hay que tocarlo, se
+`00-principles.md §A1` forbids ("Nadie edita el paquete generado a mano. Si hay que tocarlo, se
 toca el generador"). Naming the 31 unpublished variables would be guessing at the exporter's
 convention, not reproducing it.
 
@@ -95,6 +95,6 @@ confident dark-mode "divergences" — every badge, both notifications, the switc
 button. All false.
 
 The second resolver matches modes by name and reports any hop it cannot match; it returned 0
-warnings. This is exactly the failure described in `00-principios.md §A6` — an instrument used
+warnings. This is exactly the failure described in `00-principles.md §A6` — an instrument used
 outside its range, with a plausible-looking result — and it is the reason the numbers above are
 stated as measurements with the method attached.

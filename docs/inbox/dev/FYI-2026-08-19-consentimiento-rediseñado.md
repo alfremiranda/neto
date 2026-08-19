@@ -2,7 +2,7 @@
 
 Alfredo pidió rediseñar la pantalla (`ConsentScreen.tsx`). Está en Figma en los cuatro marcos
 —móvil y escritorio, claro y oscuro— más los dos de «procesando». El razonamiento completo y las
-restricciones legales que condicionaron cada frase están en `design-system/docs/18-consentimiento.md`.
+restricciones legales que condicionaron cada frase están en `design-system/docs/18-consent.md`.
 
 ## 1. El texto, listo para pegar
 

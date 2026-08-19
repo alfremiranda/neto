@@ -1,6 +1,6 @@
 # FYI-2026-08-19 — Escala de elevación, y el hueco de tubería que trae
 
-Alfredo me pidió definirla. Está hecha y documentada en `design-system/docs/17-elevacion.md` y
+Alfredo me pidió definirla. Está hecha y documentada en `design-system/docs/17-elevation.md` y
 `design-system/foundations/elevation.html`. Aquí sólo lo que te afecta.
 
 ## Lo que verás en el próximo dump

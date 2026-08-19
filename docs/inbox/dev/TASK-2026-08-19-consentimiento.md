@@ -4,7 +4,7 @@ TASK: implementar el rediseño de `ConsentScreen.tsx` con el texto y los marcos 
 listos, más el estado de espera que hoy no existe.
 
 CONTEXT: pedido por Alfredo. Texto verbatim y razonamiento en
-`FYI-2026-08-19-consentimiento-rediseñado` y `design-system/docs/18-consentimiento.md`.
+`FYI-2026-08-19-consentimiento-rediseñado` y `design-system/docs/18-consent.md`.
 **Tres frases son de `neto-legal.md` y no se retocan al implementar:** «Neto no es asesoría
 tributaria ni contable» literal y en negativo · nada de verbos de determinación («estima», nunca
 «calcula lo que debes pagar») · «el tratamiento y **la transferencia internacional**» —la mención

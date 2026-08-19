@@ -32,7 +32,7 @@ start on the 24 components already extracted instead of waiting on badges.
 authorised, and sequencing is yours; both corrections belong in the same pass.
 
 Full measured state of the system, with the validator run and the reproduction steps, now lives in
-`design-system/docs/12-arquitectura-estado.md` — next to the tokens it describes, per `00 §A7`.
+`design-system/docs/12-app-state.md` — next to the tokens it describes, per `00 §A7`.
 Headline: the layer model is sound (`T5`, `T6`, `T7`, `T4` all at 0), and what is missing is
 machinery — no build, nothing runs the validator, and 93.5% of variables still carry no code
 syntax.

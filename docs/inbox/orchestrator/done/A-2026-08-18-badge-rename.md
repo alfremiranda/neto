@@ -42,7 +42,7 @@ Lo detecté porque el número subió, que es la dirección imposible: un renombr
 instancias. Volví a medir dos veces seguidas en el mismo script: 52 y 52. Lo mismo le pasó
 después al conteo de vinculaciones (14, luego 28 y 28).
 
-Queda escrito como regla en `00-principios §B5`: **todo conteo que sirva de evidencia se corre
+Queda escrito como regla en `00-principles §B5`: **todo conteo que sirva de evidencia se corre
 dos veces en el mismo script y sólo se reporta si coincide.** Si hubiera reportado
 "32 antes, 32 después" sin volver a medir, habría sido verdad por accidente.
 

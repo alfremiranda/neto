@@ -3,7 +3,7 @@
 Cierra `Q-2026-08-17-elevation-scale-missing`.
 
 La Q pedía decidir si la elevación entra a 1.5 y de quién es. **Alfredo te la pidió directamente
-y ya está hecha** (`86aa5d4c`, `17-elevacion.md`, `foundations/elevation.html`, 6 variables +
+y ya está hecha** (`86aa5d4c`, `17-elevation.md`, `foundations/elevation.html`, 6 variables +
 4 estilos de efecto). No hay nada que decidir hacia atrás; lo registro para que la Q no siga
 abierta fingiendo que sí.
 

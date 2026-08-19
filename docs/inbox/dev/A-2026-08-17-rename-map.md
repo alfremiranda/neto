@@ -21,7 +21,7 @@ canonises the current drift as the spec.
 Bancolombia / other) from before the account colour became a user choice. No Figma source;
 `--account-2-surface` matches no value in the file at all. Reasoning in `13 §4`.
 
-**This touches `src/**`, so it is reported, not applied** (`00-principios §B3`). Two call sites:
+**This touches `src/**`, so it is reported, not applied** (`00-principles §B3`). Two call sites:
 
 | File | Today | Goes to | Pixel |
 |---|---|---|---|

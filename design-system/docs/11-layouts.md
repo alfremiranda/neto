@@ -1,158 +1,156 @@
-# 11 — Layouts: la plantilla de página
+# 11 — Layouts: the page template
 
-Página nueva en Figma: **`Layouts`**, justo antes de `Page - Accounts`.
+New page in Figma: **`Layouts`**, right before `Page - Accounts`.
 
-Cuatro plantillas, tomadas del código y no al revés: escritorio base, escritorio con el
-sidebar colapsado, escritorio Mes, y móvil. Los bloques punteados son huecos de contenido —
-marcan dónde va una card, no qué card va.
+Four templates, taken from the code and not the other way round: desktop base, desktop with the
+sidebar collapsed, desktop Mes, and mobile. The dashed blocks are content slots — they mark where
+a card goes, not which card.
 
 ---
 
-## 1. Por qué apareció esto
+## 1. Why this appeared
 
-Alfredo notó que los fondos de `Page - Accounts` no eran los del dev. Tenía razón, y por dos
-motivos distintos.
+Alfredo noticed that the backgrounds in `Page - Accounts` were not the ones in dev. He was right,
+for two separate reasons.
 
-**El primero es mío.** Pinté los marcos con `V['surface/page'] || V['surface/base']`. Ninguno
-de los dos nombres existe: el token real es `surface/wrap/default`. `setBoundVariableForPaint`
-con una variable indefinida **no lanza error** — deja el `fill` crudo. Los cuatro marcos se
-quedaron en blanco puro sin ninguna variable enlazada, y nada me avisó.
+**The first is mine.** I painted the frames with `V['surface/page'] || V['surface/base']`. Neither
+name exists: the real token is `surface/wrap/default`. `setBoundVariableForPaint` with an
+undefined variable **does not throw** — it leaves the `fill` raw. All four frames stayed pure
+white with no variable bound, and nothing warned me.
 
-Es la cuarta vez que cometo el mismo error en este proyecto y ya tiene forma: **usé un
-instrumento fuera de su rango y no verifiqué el resultado.** Antes fue un patrón de grep, un
-resolvedor de alias ciego a los modos, una lectura de Figma que ya estaba vieja. Ahora un
-lookup por nombre inventado. La regla que me falta es siempre la misma: cuando construyo la
-clave de una búsqueda en vez de leerla, tengo que comprobar que encontró algo.
+It is the fourth time I have made the same mistake in this project and it has a shape now: **I
+used an instrument outside its range and did not verify the result.** Before it was a grep
+pattern, an alias resolver blind to modes, a Figma reading that was already stale. Now a lookup by
+an invented name. The rule I keep missing is always the same: when I construct a lookup key
+instead of reading it, I have to check that it found something.
 
-**El segundo es estructural.** Mi marco ponía el sidebar de alto completo con el topnav
-encima solo del contenido. El código hace lo contrario:
+**The second is structural.** My frame put the sidebar full height with the topnav sitting above
+the content only. The code does the opposite:
 
 ```jsx
-<Header />                              {/* ancho completo, arriba de todo */}
+<Header />                              {/* full width, above everything */}
 <div className="flex flex-row ...">
   <AppSidebar />
   <main className="bg-[var(--background)] overflow-y-auto">
 ```
 
-El topnav cruza toda la pantalla y el sidebar empieza **debajo**. Corregido en los dos marcos
-de escritorio.
+The topnav crosses the whole screen and the sidebar starts **below** it. Corrected in both desktop
+frames.
 
-## 2. Los fondos, ya ligados
+## 2. The backgrounds, now bound
 
-Todo estaba definido en los semánticos. No hizo falta añadir nada.
+Everything was already defined in the semantics. Nothing had to be added.
 
-| Región | Token | Claro | Oscuro | En el código |
+| Region | Token | Light | Dark | In code |
 |---|---|---|---|---|
-| main / página | `surface/wrap/default` | `#f8fafc` | `#020617` | `--background` |
+| main / page | `surface/wrap/default` | `#f8fafc` | `#020617` | `--background` |
 | card | `surface/wrap/card` | `#ffffff` | `#1e293b` | `--card` |
 | topnav | `nav/background` | `#ffffff` | — | `--card` |
 | bottom-nav | `nav/background` | `#ffffff` | — | `--card` |
 | sidebar | `sidebar/surface` | `#ffffff` | `#1e293b` | `--sidebar` |
 
-Muestreé el pixel del pantallazo de dev para no fiarme del ojo: el fondo del `main` da
-`#f7f9fb`, que es `#f8fafc` pasado por el reescalado del PNG. Coincide.
+I sampled the pixel from dev's screenshot rather than trusting my eye: the `main` background comes
+out `#f7f9fb`, which is `#f8fafc` after the PNG's rescaling. It matches.
 
-**Un token corregido.** `sidebar/surface` valía **blanco al 50%**, que sobre
-`surface/wrap/default` renderiza `#fbfcfe`. El código ships `--sidebar: #ffffff` sólido, y el
-modo oscuro del propio token ya era sólido. La asimetría delataba un descuido, no una
-decisión, así que lo pasé a blanco sólido. **Si el translúcido era intencional, esto hay que
-revertirlo** — es el único cambio de este lote que toca un componente ya publicado.
+**One token corrected.** `sidebar/surface` was **white at 50%**, which over `surface/wrap/default`
+renders `#fbfcfe`. The code ships `--sidebar: #ffffff` solid, and the token's own dark mode was
+already solid. The asymmetry gave away an oversight rather than a decision, so I moved it to solid
+white. **If the translucency was intentional, this has to be reverted** — it is the only change in
+this batch that touches an already-published component.
 
-**Un token que falta y no creé.** La banda sticky del MonthNav usa
-`color-mix(in oklab, var(--card) 55%, var(--background))`. Es una mezcla calculada en
-runtime, no un color. En Figma la representé como `surface/wrap/card` al 55% de opacidad
-sobre la página, que es literalmente lo mismo. No inventé un token nuevo porque un token
-plano mentiría: el valor depende del fondo que tenga debajo.
+**One token that is missing and I did not create.** The MonthNav's sticky band uses
+`color-mix(in oklab, var(--card) 55%, var(--background))`. That is a mix computed at runtime, not a
+colour. In Figma I represented it as `surface/wrap/card` at 55% opacity over the page, which is
+literally the same thing. I did not invent a new token because a flat token would lie: the value
+depends on whatever background is underneath.
 
-## 3. Las medidas, del código
+## 3. The measurements, from the code
 
-| | valor | de dónde |
+| | value | source |
 |---|---|---|
-| alto del topnav | 54 | `Header.tsx`, `height: calc(54px + safe-area)` |
-| sidebar expandido | 256 (`16rem`) | `sidebar.tsx`, `SIDEBAR_WIDTH` |
-| sidebar colapsado | 65 | `SIDEBAR_WIDTH_ICON` |
-| sidebar móvil (drawer) | 288 (`18rem`) | `SIDEBAR_WIDTH_MOBILE` |
-| contenedor centrado | 1024 (`max-w-5xl`) | `App.tsx` |
-| padding del contenedor | 16 / 20 / 24 | `p-4 sm:p-5 lg:p-6` |
-| alto del bottom-nav | 58 | componente Figma |
+| topnav height | 54 | `Header.tsx`, `height: calc(54px + safe-area)` |
+| sidebar expanded | 256 (`16rem`) | `sidebar.tsx`, `SIDEBAR_WIDTH` |
+| sidebar collapsed | 65 | `SIDEBAR_WIDTH_ICON` |
+| sidebar mobile (drawer) | 288 (`18rem`) | `SIDEBAR_WIDTH_MOBILE` |
+| centred container | 1024 (`max-w-5xl`) | `App.tsx` |
+| container padding | 16 / 20 / 24 | `p-4 sm:p-5 lg:p-6` |
+| bottom-nav height | 58 | Figma component |
 
-**Una deriva de 1px:** el componente `Sidebar` de Figma mide 255 y el código 256. No la
-toqué, pero queda anotada — es el tipo de cosa que nadie ve hasta que alguien alinea algo
-contra el borde.
+**A 1px drift:** Figma's `Sidebar` component measures 255 and the code 256. I did not touch it, but
+it is noted — it is the kind of thing nobody sees until someone aligns something against the edge.
 
-## 4. Mes es la única vista que rompe la caja
+## 4. Mes is the only view that breaks the box
 
-Las demás vistas —Cuentas, Ahorros, Config, Resumen— se montan sobre la plantilla base:
-contenedor centrado a 1024 con padding. `Mes` no:
+The other views — Cuentas, Ahorros, Config, Resumen — sit on the base template: a container centred
+at 1024 with padding. `Mes` does not:
 
-- lleva una **banda sticky** bajo el topnav con el `MonthNav` dentro, y esa banda es de ancho
-  completo aunque su contenido va centrado a 1024;
-- renderiza su **barra de tabs a ancho completo, fuera del contenedor centrado**.
+- it carries a **sticky band** under the topnav with `MonthNav` inside, and that band is full width
+  even though its content is centred at 1024;
+- it renders its **tab bar full width, outside the centred container**.
 
-Está como cuarta plantilla en la página precisamente porque es la excepción, y las
-excepciones son lo que se implementa mal cuando no están dibujadas.
+It is the fourth template on the page precisely because it is the exception, and exceptions are
+what gets implemented wrong when they are not drawn.
 
-## 5. Cómo se organiza el lienzo
+## 5. How the canvas is organised
 
-Las dos páginas de pantallas (`Layouts` y `Page - Accounts`) siguen ahora la misma retícula, y
-conviene que las siguientes también:
+The two screen pages (`Layouts` and `Page - Accounts`) now follow the same grid, and the next ones
+should too:
 
-- **Secciones de Figma, una por dispositivo** — `Escritorio · 1440`, `Móvil · 412`. La sección
-  es lo que hace que la página se lea de un vistazo cuando está alejada.
-- **Padding 64 dentro de la sección, 120 entre marcos, 160 entre secciones.**
-- **Todos los marcos de una fila comparten alto**, aunque a alguno le sobre espacio. Una fila
-  con bases desparejas se lee como error antes que como contenido.
-- **Nada de rótulos propios encima de los marcos.** Figma ya dibuja el nombre del marco ahí;
-  un texto mío en el mismo sitio son dos etiquetas peleando. El nombre del marco *es* el
-  rótulo, así que vale la pena que diga algo: `Desktop · 2 · Cuenta (detalle)`.
-- **Los paneles de spec van debajo de su marco**, a 24, alineados a su borde izquierdo.
+- **Figma sections, one per device** — `Desktop · 1440`, `Mobile · 412`. The section is what makes
+  a page readable at a glance when zoomed out.
+- **Padding 64 inside the section, 120 between frames, 160 between sections.**
+- **Every frame in a row shares a height**, even where one has space to spare. A row with uneven
+  baselines reads as an error before it reads as content.
+- **No labels of my own above the frames.** Figma already draws the frame name there; a text of
+  mine in the same place is two labels fighting. The frame name *is* the label, so it is worth
+  making it say something: `Desktop · 2 · Cuenta (detalle)`.
+- **Spec panels go below their frame**, at 24, aligned to its left edge.
 
-Dos errores que corregí al ordenar, por si vuelven: **ensanché los marcos de escritorio de
-1024 a 1440 y no los reespacié**, así que se solapaban 280px — el segundo tapaba al primero y
-parecían recortes blancos sueltos. Y **dentro de una `SECTION` las coordenadas de los hijos
-son relativas a la sección**, no absolutas como en la página: puse `x = 3352` esperando
-posición de página y los marcos móviles se fueron a `x = 6640`.
+Two mistakes I fixed while tidying, in case they come back: **I widened the desktop frames from
+1024 to 1440 and did not re-space them**, so they overlapped by 280px — the second covered the
+first and they looked like loose white cut-outs. And **inside a `SECTION` a child's coordinates are
+relative to the section**, not absolute as on the page: I set `x = 3352` expecting page position
+and the mobile frames landed at `x = 6640`.
 
-## 5b. El onboarding en escritorio: cáscara a sangre, no tarjeta flotante (2026-08-19)
+## 5b. Desktop onboarding: a full-bleed shell, not a floating card (2026-08-19)
 
-Alfredo trajo una referencia y tenía razón sobre lo que la hacía mejor. Lo que cambió no es el
-adorno, son tres decisiones de estructura.
+Alfredo brought a reference and was right about what made it better. What changed is not
+decoration, it is three structural decisions.
 
-**1. La cáscara va a sangre y de alto completo.** Antes había un `container · 1024` centrado
-flotando sobre una página vacía: el mismo error que arrastraba el móvil, un contenedor
-respirando en medio de la nada. Ahora son **dos columnas que llegan a los cuatro bordes**: riel
-fijo de 380 y panel que rellena. El corte entre las dos no es un borde de tarjeta, es el cambio
-de superficie — que es lo que hace que se lea como una aplicación y no como un formulario
-pegado encima.
+**1. The shell goes full bleed and full height.** There used to be a `container · 1024` centred and
+floating on an empty page: the same mistake mobile was carrying, a container breathing in the
+middle of nowhere. Now there are **two columns reaching all four edges**: a fixed 380 rail and a
+panel that fills. The cut between them is not a card border, it is the surface change — which is
+what makes it read as an application rather than a form stuck on top.
 
-El límite de 1200 que pidió Alfredo sigue vigente y ahora se aplica **al contenido, no a la
-cáscara**: riel 380 + padding 64 + columna 720 = **1164**. La cáscara puede ir a sangre porque
-lo que hay que acotar es la línea de lectura, no el fondo.
+The 1200 limit Alfredo asked for still holds and now applies **to the content, not the shell**:
+rail 380 + padding 64 + column 720 = **1164**. The shell can go full bleed because what has to be
+bounded is the reading line, not the background.
 
-**2. El título se muda al panel.** Estaba en el riel, junto al stepper. Con el título fuera, el
-riel queda **estable entre pasos** —logo, una línea de contexto, el stepper— y el panel carga
-todo lo que cambia: antetítulo `PASO n DE 3`, título, subtítulo, controles, pie. Quien avanza
-ve moverse una sola mitad de la pantalla.
+**2. The title moves to the panel.** It used to be in the rail, next to the stepper. With the title
+out, the rail stays **stable between steps** — logo, one line of context, the stepper — and the
+panel carries everything that changes: the `PASO n DE 3` eyebrow, title, subtitle, controls,
+footer. Whoever advances sees only half the screen move.
 
-**3. Toda la navegación en el pie del panel.** `Atrás` estaba abajo del riel y `Omitir` /
-`Continuar` dentro de la tarjeta: tres controles del mismo asunto en dos sitios. Ahora los tres
-están en la misma fila —`Atrás` a la izquierda, `Omitir` y `Continuar` a la derecha— anclada al
-fondo del panel.
+**3. All navigation in the panel's footer.** `Atrás` was at the bottom of the rail and
+`Omitir` / `Continuar` inside the card: three controls about the same thing in two places. Now all
+three are in one row — `Atrás` left, `Omitir` and `Continuar` right — anchored to the bottom of the
+panel.
 
-**Y una corrección de superficie que salió de medir, no de mirar.** El riel arrancó con
-`color/wrap/subtle`: correcto en claro (#f1f5f9 contra un panel blanco, recede) e **invertido en
-oscuro** (#334155 contra un panel #1e293b, o sea el riel más claro que el panel — avanza cuando
-debería recular). El token correcto es `color/wrap/container`, que recede en los dos modos por
-construcción: #f8fafc contra blanco, #0f172a contra #1e293b. La relación no se deja al ojo: se
-elige un token cuyos dos valores la garanticen.
+**And a surface correction that came from measuring, not looking.** The rail started on
+`color/wrap/subtle`: correct in light (#f1f5f9 against a white panel, it recedes) and **inverted in
+dark** (#334155 against a #1e293b panel — the rail lighter than the panel, advancing when it should
+recede). The right token is `color/wrap/container`, which recedes in both modes by construction:
+#f8fafc against white, #0f172a against #1e293b. The relationship is not left to the eye: you pick a
+token whose two values guarantee it.
 
-**Los marcos de escritorio pasan de 1440×1100 a 1440×900**, que es el tamaño de pantalla real.
-A 1100 el pie anclado dejaba un vacío de 200px que no existe en ningún monitor.
+**Desktop frames go from 1440×1100 to 1440×900**, which is a real screen size. At 1100 the anchored
+footer left a 200px void that exists on no monitor.
 
-Las puertas —Login y Consentimiento— **no llevan riel**: no son pasos del asistente, son
-umbrales, y una tarjeta centrada es lo correcto para ellas. Bienvenida y Listo tampoco.
+The gates — Login and Consentimiento — **carry no rail**: they are not wizard steps, they are
+thresholds, and a centred card is right for them. Bienvenida and Listo likewise.
 
-## 6. Lo que este documento no decide
+## 6. What this document does not decide
 
-Si el sidebar debería ser translúcido (§2), y si los 255 de Figma o los 256 del código son
-los buenos (§3). Las dos son de Alfredo.
+Whether the sidebar should be translucent (§2), and whether Figma's 255 or the code's 256 is the
+right one (§3). Both are Alfredo's.

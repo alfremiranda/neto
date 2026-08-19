@@ -1,207 +1,205 @@
-# 10 — AccountChart y AccountSummaryCard (página de cuenta)
+# 10 — AccountChart and AccountSummaryCard (the account page)
 
-Estado: **organizados en Figma. Sin ticket a Dev.** Hay tres decisiones abiertas (§5) y un
-bloqueador que no es de diseño (§4).
+Status: **organised in Figma. No ticket to Dev.** Three decisions are open (§5) and there is a
+blocker that is not a design one (§4).
 
-Figma: página `Components · Cards` (`302:10368`).
-Sets: `AccountChart` (`379:12672`), `AccountSummaryCard` (`379:12631`), ambos ya dentro de
-su bloque `doc:` correspondiente.
+Figma: page `Components · Cards` (`302:10368`).
+Sets: `AccountChart` (`379:12672`), `AccountSummaryCard` (`379:12631`), both already inside their
+matching `doc:` block.
 
 ---
 
-## 1. Qué son
+## 1. What they are
 
-Alfredo los dibujó para una idea concreta: **cada cuenta pasa a tener su propia página.**
-Arriba `AccountSummaryCard` —identidad, métricas, gráfico de 30 días—; abajo el contenedor
-de movimientos que ya existe hoy en `CuentasView`.
+Alfredo drew them for a specific idea: **each account gets its own page.** `AccountSummaryCard` on
+top — identity, metrics, 30-day chart — and below it the transactions container that already
+exists today in `CuentasView`.
 
-`AccountSummaryCard` **no reemplaza a `AccountCard`**. Aquella es la ficha compacta y
-seleccionable de la rejilla; ésta es la vista de detalle de una sola cuenta, y por eso
-incluye el gráfico. Las dos conviven.
+`AccountSummaryCard` **does not replace `AccountCard`**. That one is the compact, selectable tile
+in the grid; this is the detail view of a single account, which is why it includes the chart. The
+two coexist.
 
 | | `AccountCard` | `AccountSummaryCard` |
 |---|---|---|
-| dónde | rejilla de `CuentasView` | cabecera de la página de una cuenta |
-| tamaño | ~150–220px de ancho | 680px |
-| selección | sí, es un control | no, ya estás dentro |
-| gráfico | no | sí |
+| where | grid in `CuentasView` | header of an account page |
+| size | ~150–220px wide | 680px |
+| selection | yes, it is a control | no, you are already inside |
+| chart | no | yes |
 
-## 2. Qué encontré, y qué corregí
+## 2. What I found, and what I fixed
 
-Lo primero, lo bueno: **los dos venían bien construidos.** Todos los textos con text
-style, cero hex crudo, y `AccountSummaryCard` compone instancias reales de `Button`
-(Outline/SM), `Separator`, `Icon` y del propio `AccountChart` — no copias. Eso es lo caro
-de hacer bien y ya estaba hecho.
+First, the good part: **both were well built.** Every text on a text style, zero raw hex, and
+`AccountSummaryCard` composes real instances of `Button` (Outline/SM), `Separator`, `Icon` and of
+`AccountChart` itself — not copies. That is the expensive thing to get right and it was already
+right.
 
-Lo corregido:
+What I corrected:
 
-**Las series del gráfico tomaban prestados tokens ajenos.** El trazo principal usaba
-`badge/primary/foreground` —un token de Badge— y la leyenda usaba `interactive/primary`:
-dos fuentes distintas para el mismo color. La serie de deuda usaba `color/rose/600` crudo,
-saltándose la capa de componente. Ahora hay seis tokens `account-chart/series/*` propios.
-El color en pantalla no cambió; lo que cambió es que si Badge cambia de acento, el gráfico
-ya no se mueve con él.
+**The chart series borrowed other components' tokens.** The main stroke used
+`badge/primary/foreground` — a Badge token — and the legend used `interactive/primary`: two
+different sources for the same colour. The debt series used raw `color/rose/600`, skipping the
+component layer. There are now six `account-chart/series/*` tokens of its own. The colour on
+screen did not change; what changed is that if Badge shifts its accent, the chart no longer moves
+with it.
 
-**La banda de deuda se pintaba dos veces.** En `Series=Dual`, el vector de la *línea* de
-deuda llevaba además un degradado de relleno copiado del área. El grupo del saldo no lo
-lleva. Le quité el relleno: la banda ahora tiene la opacidad que se diseñó, no el doble.
+**The debt band was painted twice.** In `Series=Dual`, the vector of the debt *line* also carried a
+fill gradient copied from the area. The balance group does not. I removed the fill: the band now
+has the opacity it was designed with, not twice it.
 
-**Un degradado terminaba en el color equivocado.** La parada final del área de deuda
-apuntaba a `cyan/500/0` en vez de `rose/500/0`. Invisible —alfa 0— hasta que alguien suba
-esa opacidad.
+**A gradient ended in the wrong colour.** The final stop of the debt area pointed at `cyan/500/0`
+instead of `rose/500/0`. Invisible — alpha 0 — until somebody raises that opacity.
 
-**El eje X repetía una fecha.** Decía `1/7 · 25/7 · 10/7 · 15/7 · 20/7 · 25/7 · Hoy`. El
-segundo tick debía ser `5/7`.
+**The X axis repeated a date.** It read `1/7 · 25/7 · 10/7 · 15/7 · 20/7 · 25/7 · Hoy`. The second
+tick should have been `5/7`.
 
-**`Property 1 = Default | Variant2`.** Ahora `Series = Single | Dual`, que es lo que la
-propiedad significa: una serie o dos.
+**`Property 1 = Default | Variant2`.** Now `Series = Single | Dual`, which is what the property
+means: one series or two.
 
-**79 capas con nombre genérico** (`Frame 3`, `Group 1`, `Details`, `Vector`, `Container`).
-Renombradas a la anatomía real: `header / legend / plot / series-balance / series-debt /
-area / line / marker / x-axis / tick`, y en la tarjeta `top / account-info / title-row /
-identity / account-meta / metrics / metric / chart / divider`. Dos frames se llamaban
-`Deuda actual` aunque contenían "Intereses" y "Saldo actual" — nombres heredados de un
-copy-paste.
+**79 layers with generic names** (`Frame 3`, `Group 1`, `Details`, `Vector`, `Container`). Renamed
+to the real anatomy: `header / legend / plot / series-balance / series-debt / area / line / marker
+/ x-axis / tick`, and in the card `top / account-info / title-row / identity / account-meta /
+metrics / metric / chart / divider`. Two frames were called `Deuda actual` while containing
+"Intereses" and "Saldo actual" — names inherited from a copy-paste.
 
-**`title` → `Title`**, por consistencia con el resto de propiedades del archivo.
+**`title` → `Title`**, for consistency with the rest of the file's properties.
 
 ## 3. Tokens
 
-11 variables nuevas en **Components**, todas alias de **Primitives**, claro y oscuro.
+11 new variables in **Components**, all aliases of **Primitives**, light and dark.
 
-| Token | Claro | Oscuro |
+| Token | Light | Dark |
 |---|---|---|
 | `account-chart/series/balance/stroke` | `cyan/700` | `cyan/400` |
-| `account-chart/series/balance/fill-from` | `cyan/500/50` | idem |
-| `account-chart/series/balance/fill-to` | `cyan/500/0` | idem |
+| `account-chart/series/balance/fill-from` | `cyan/500/50` | same |
+| `account-chart/series/balance/fill-to` | `cyan/500/0` | same |
 | `account-chart/series/debt/stroke` | `rose/600` | `rose/400` |
-| `account-chart/series/debt/fill-from` | `rose/500/50` | idem |
-| `account-chart/series/debt/fill-to` | `rose/500/0` | idem |
+| `account-chart/series/debt/fill-from` | `rose/500/50` | same |
+| `account-chart/series/debt/fill-to` | `rose/500/0` | same |
 | `account-chart/axis/foreground` | `slate/500` | `slate/400` |
 | `account-chart/marker/line` | `slate/500` | `white/70` |
 | `account-summary-card/icon/foreground` | `purple/500` | `purple/400` |
 
-Los degradados usan el mismo alias en ambos modos a propósito: son tintes con alfa, se
-apoyan en la superficie que tengan debajo. La serie de deuda sí sube de `rose/600` a
-`rose/400` en oscuro — `rose/600` sobre fondo oscuro pierde el rojo y se lee marrón.
+The gradients use the same alias in both modes on purpose: they are alpha tints, they lean on
+whatever surface is underneath. The debt series does step from `rose/600` to `rose/400` in dark —
+`rose/600` on a dark background loses its red and reads brown.
 
-**El tooltip no lleva tokens propios.** Es una instancia del componente `Tooltip`
-compartido; creé `account-chart/tooltip/*` y los borré al darme cuenta. Un token que nadie
-enlaza es peor que ninguno.
+**The tooltip carries no tokens of its own.** It is an instance of the shared `Tooltip` component;
+I created `account-chart/tooltip/*` and deleted them once I realised. A token nobody binds is worse
+than none.
 
-**Dos de estos duplican la capa semántica.** `axis/foreground` es exactamente
-`foreground/subtle` y `marker/line` es exactamente `border/strong`. Los creé porque la
-regla es que un componente nuevo tenga tokens propios en Components enlazados a
-Primitives. Si prefieres que sigan a la capa semántica, se repuntan en un minuto — pero
-entonces la regla necesita una excepción escrita, no una decisión caso por caso.
+**Two of these duplicate the semantic layer.** `axis/foreground` is exactly `foreground/subtle` and
+`marker/line` is exactly `border/strong`. I created them because the rule is that a new component
+gets its own tokens in Components bound to Primitives. If you would rather they follow the semantic
+layer, they can be repointed in a minute — but then the rule needs a written exception, not a
+case-by-case decision.
 
-## 4. El bloqueador no es de diseño
+## 4. The blocker is not a design one
 
-Revisé el repo antes de escribir esto:
+I checked the repo before writing this:
 
-- **No hay router.** `react-router` no está en `package.json` y no hay `<Routes>` en
-  ninguna parte. Las vistas cambian por estado: `uiStore.view` con `ViewType`, y `App.tsx`
-  hace `{view === 'cuentas' && <CuentasView />}`. "Cada cuenta tiene su página" necesita o
-  una vista nueva con un id de cuenta seleccionada, o meter un router. **Es una decisión de
-  arquitectura, del orquestador y de Dev, no mía.**
-- **d3 ya está instalado**, y `src/components/annual/TrendChart.tsx` ya dibuja un área con
-  ejes y tooltip. `AccountChart` no necesita dependencia nueva: necesita reusar ese
-  patrón. Es lo primero que debería leer quien lo implemente.
-- **`AccountCardView.tsx` ya existe** y `CuentasView` ya renderiza tarjeta arriba +
-  movimientos abajo para la cuenta seleccionada. La página de cuenta no parte de cero:
-  parte de partir eso en dos.
-- **Esto es lo que vuelve necesario el breadcrumb** que quedó listo ayer (`docs/09`).
-  `Cuentas › CMR Falabella` es exactamente el caso de 2 niveles.
+- **There is no router.** `react-router` is not in `package.json` and there is no `<Routes>`
+  anywhere. Views change by state: `uiStore.view` with `ViewType`, and `App.tsx` does
+  `{view === 'cuentas' && <CuentasView />}`. "Each account has its page" needs either a new view
+  with a selected account id, or a router. **That is an architecture decision, for the orchestrator
+  and Dev, not mine.**
+- **d3 is already installed**, and `src/components/annual/TrendChart.tsx` already draws an area
+  with axes and a tooltip. `AccountChart` needs no new dependency: it needs to reuse that pattern.
+  It is the first thing whoever implements it should read.
+- **`AccountCardView.tsx` already exists** and `CuentasView` already renders card-on-top +
+  transactions-below for the selected account. The account page does not start from zero: it starts
+  from splitting that in two.
+- **This is what makes the breadcrumb necessary**, the one finished yesterday (`docs/09`).
+  `Cuentas › CMR Falabella` is exactly the 2-level case.
 
-## 5. Tres decisiones abiertas
+## 5. Three open decisions
 
-**a. El tooltip.** Figma lo dibuja como burbuja invertida (`surface/inverse`, fondo oscuro
-en modo claro). `TrendChart` en el código lo dibuja con `--popover`: superficie del mismo
-tono, borde, sombra, `rounded-xl`. Son dos lenguajes distintos para el mismo objeto. Hay
-que elegir uno antes de implementar, o la app tendrá dos tipos de tooltip.
+**a. The tooltip.** Figma draws it as an inverted bubble (`surface/inverse`, dark background in
+light mode). `TrendChart` in the code draws it with `--popover`: same-tone surface, border, shadow,
+`rounded-xl`. Two different languages for the same object. One has to be chosen before
+implementing, or the app will have two kinds of tooltip.
 
-**b. El color del ícono de cuenta.** Figma lo pinta morado (`purple/500`) en los cuatro
-tipos. `AccountCardView` lo pinta gris (`text-muted-foreground`). Dejé el token con el
-morado que dibujaste, pero uno de los dos está desactualizado.
+**b. The account icon's colour.** Figma paints it purple (`purple/500`) across all four types.
+`AccountCardView` paints it grey (`text-muted-foreground`). I left the token with the purple you
+drew, but one of the two is out of date.
 
-**c. `Bank Account` esconde "Intereses" pero muestra la tasa.** La variante oculta la
-métrica secundaria y aun así su línea de meta dice `3.5% a.a. · ≈ COP 0,00/mes`. `Savings`
-muestra las dos cosas. Puede ser intencional; no lo toqué.
+**c. `Bank Account` hides "Intereses" and still shows the rate.** The variant hides the secondary
+metric and its meta line still says `3.5% a.a. · ≈ COP 0,00/mes`. `Savings` shows both. It may be
+intentional; I did not touch it.
 
-## 6. Móvil — añadido después
+## 6. Mobile — added later
 
-`AccountChart` y `AccountSummaryCard` ganaron una segunda dimensión. **La propiedad se llama
-`Device`, no `Breakpoint`.** Empecé llamándola `Breakpoint` y la renombré al ver que todo el
-archivo ya usaba `Device`: `MonthNav`, `topnav`, `IncomeContainer`, `ExpenseContainer`,
-`transferContainer`, `income-itemrow`, `outcome-itemrow`, `savings-itemrow`,
-`transfer-itemrow`. Una convención que ya existe gana a una mejor inventada.
+`AccountChart` and `AccountSummaryCard` gained a second dimension. **The property is called
+`Device`, not `Breakpoint`.** I started by calling it `Breakpoint` and renamed it on seeing that
+the whole file already used `Device`: `MonthNav`, `topnav`, `IncomeContainer`, `ExpenseContainer`,
+`transferContainer`, `income-itemrow`, `outcome-itemrow`, `savings-itemrow`, `transfer-itemrow`. An
+existing convention beats a better invented one.
 
-| Set | Antes | Ahora |
+| Set | Before | Now |
 |---|---|---|
 | `AccountChart` | `Series` (2) | `Series` × `Device` (4) |
 | `AccountSummaryCard` | `Type` (4) | `Type` × `Device` (8) |
 
-**AccountChart · Device=Mobile — 348 × 180.** 348 = 380 de tarjeta menos 16 de padding a cada
-lado. Tres decisiones:
+**AccountChart · Device=Mobile — 348 × 180.** 348 = 380 of card minus 16 of padding on each side.
+Three decisions:
 
-- **El eje pasa de 7 marcas a 4** — `1 · 10 · 20 · Hoy`, cada diez días. Siete etiquetas de
-  11px en 348 píxeles son una empalizada; se leen como textura, no como fechas.
-- **El tooltip pierde el año.** `13 Jul 2026` → `13 Jul`. En una ventana de 30 días el año
-  siempre es el actual: es el token menos informativo de la cadena y el que más ancho cuesta.
-- **El tooltip se despinó de `SCALE`.** Venía con constraints `SCALE/SCALE` heredadas del
-  SVG; al reducir el ancho se habría estirado hasta deformarse. Ahora es `CENTER/MIN`.
+- **The axis goes from 7 ticks to 4** — `1 · 10 · 20 · Hoy`, every ten days. Seven 11px labels in
+  348 pixels are a picket fence; they read as texture, not as dates.
+- **The tooltip drops the year.** `13 Jul 2026` → `13 Jul`. In a 30-day window the year is always
+  the current one: it is the least informative token in the string and the one that costs the most
+  width.
+- **The tooltip was unpinned from `SCALE`.** It came with `SCALE/SCALE` constraints inherited from
+  the SVG; on narrowing it would have stretched out of shape. It is now `CENTER/MIN`.
 
-**AccountSummaryCard · Device=Mobile — 380 × 371.** 380 = 412 de pantalla menos 16 de margen.
-El padding baja de 20 a 16. Lo que en escritorio va en fila —identidad a la izquierda,
-métricas a la derecha— se apila: identidad, botón Editar, y debajo las métricas repartidas a
-los extremos con `SPACE_BETWEEN`. La métrica principal es `FILL` para que su texto quede
-pegado al borde derecho **también cuando la secundaria está oculta**; sin eso, `Bank Account`
-y `Cash` —las dos que esconden "Intereses"— dejaban el saldo caído a la izquierda.
+**AccountSummaryCard · Device=Mobile — 380 × 371.** 380 = 412 of screen minus 16 of margin. Padding
+drops from 20 to 16. What sits in a row on desktop — identity on the left, metrics on the right —
+stacks: identity, the Editar button, and below them the metrics pushed to the edges with
+`SPACE_BETWEEN`. The primary metric is `FILL` so its text stays flush right **even when the
+secondary is hidden**; without that, `Bank Account` and `Cash` — the two that hide "Intereses" —
+left the balance stranded on the left.
 
-El gráfico anidado cambia solo a `Device=Mobile`.
+The nested chart switches to `Device=Mobile` on its own.
 
-Dos cosas que me mordieron y quedan anotadas por si vuelven:
+Two things that bit me, noted in case they come back:
 
-- **Un `COMPONENT_SET` con auto-layout estira lo que le metes.** Al hacer `appendChild` de las
-  variantes móviles, el set (que estaba en `VERTICAL`) las redimensionó a su propio ancho:
-  las ocho quedaron a 1116px. Hay que poner el set en `layoutMode = 'NONE'` antes de añadir,
-  y volver a fijar el ancho de cada variante después.
-- **Cuidado con `clipsContent` al cambiar de eje.** Al pasar `top` de `HORIZONTAL` a
-  `VERTICAL` quedó con alto `FIXED` y recorte activo: la línea de meta y el botón Editar
-  desaparecieron sin error ninguno. `HUG` + `clipsContent = false` en toda la cadena.
+- **A `COMPONENT_SET` with auto-layout stretches whatever you put in it.** On `appendChild` of the
+  mobile variants, the set (which was `VERTICAL`) resized them to its own width: all eight ended up
+  at 1116px. The set has to be put in `layoutMode = 'NONE'` before adding, and each variant's width
+  reset afterwards.
+- **Watch `clipsContent` when changing axis.** Moving `top` from `HORIZONTAL` to `VERTICAL` left it
+  with a `FIXED` height and clipping on: the meta line and the Editar button disappeared with no
+  error at all. `HUG` + `clipsContent = false` all the way down the chain.
 
-## 7. La página de flujo
+## 7. The flow page
 
-Página nueva: **`Page - Accounts`**. Cuatro pantallas y dos flechas.
+New page: **`Page - Accounts`**. Four screens and two arrows.
 
-| | escritorio 1024 | móvil 412 |
+| | desktop 1024 | mobile 412 |
 |---|---|---|
-| 1 · índice | Sidebar + topnav + rejilla de `AccountCard` | topnav + carrusel horizontal + bottom-nav |
-| 2 · detalle | breadcrumb + `AccountSummaryCard` + movimientos | lo mismo, apilado |
+| 1 · index | Sidebar + topnav + grid of `AccountCard` | topnav + horizontal carousel + bottom-nav |
+| 2 · detail | breadcrumb + `AccountSummaryCard` + transactions | the same, stacked |
 
-Todo son instancias: `Sidebar`, `topnav`, `breadcrumb`, `AccountCard`, `AccountSummaryCard`,
-`AccountChart`, `IncomeContainer`, `bottom-nav`. Nada dibujado a mano salvo los títulos de
-página y los rótulos del flujo.
+Everything is instances: `Sidebar`, `topnav`, `breadcrumb`, `AccountCard`, `AccountSummaryCard`,
+`AccountChart`, `IncomeContainer`, `bottom-nav`. Nothing hand-drawn except the page titles and the
+flow labels.
 
-El carrusel móvil deja la tercera tarjeta asomando por el borde: es la misma decisión que ya
-está en el código (`overflow-x-auto` con tarjetas al 46% del ancho), y ese asomo *es* la
-señal de que hay más.
+The mobile carousel leaves the third card peeking past the edge: it is the same decision already in
+the code (`overflow-x-auto` with cards at 46% width), and that peek *is* the signal that there is
+more.
 
-## 8. Lo que la página dejó al descubierto
+## 8. What the page exposed
 
-**No existe un contenedor de movimientos.** En la maqueta usé `IncomeContainer` con el título
-sobrescrito a "Movimientos" y el pie a "Saldo actual". Funciona como simulación y no como
-entrega: el contenedor real de una cuenta mezcla ingresos, egresos y transferencias, y el
-`LedgerRow` de `CuentasView` sigue sin componente en Figma. Son dos huecos, no uno:
+**There is no transactions container.** In the mock-up I used `IncomeContainer` with its title
+overridden to "Movimientos" and its footer to "Saldo actual". It works as a simulation and not as a
+deliverable: an account's real container mixes income, expenses and transfers, and the `LedgerRow`
+in `CuentasView` still has no component in Figma. Those are two gaps, not one:
 
-1. `LedgerRow` — fila de movimiento con fecha, descripción, monto y saldo corrido.
-2. Un contenedor que la aloje. Puede ser generalizar `IncomeContainer` —ya tiene `SLOT` y
-   `Device`— en vez de crear un quinto contenedor casi idéntico.
+1. `LedgerRow` — a transaction row with date, description, amount and running balance.
+2. A container to house it. It could be generalising `IncomeContainer` — it already has `SLOT` and
+   `Device` — rather than creating a fifth nearly identical container.
 
-Hasta que existan, la página de cuenta no se puede implementar completa por mucho que la
-cabecera esté lista.
+Until they exist, the account page cannot be implemented in full no matter how ready the header is.
 
-## 9. Lo que este documento no decide
+## 9. What this document does not decide
 
-Dónde vive la ruta, cómo se navega hasta ella, y si `CuentasView` conserva la rejilla de
-tarjetas o se convierte en un índice. Todo eso es producto y arquitectura.
+Where the route lives, how it is navigated to, and whether `CuentasView` keeps the card grid or
+becomes an index. All of that is product and architecture.

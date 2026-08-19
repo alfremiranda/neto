@@ -15,7 +15,7 @@ included.
 
 **Worth a protocol line:** dissolving a component set is a documented, approved change that
 silently deletes its description. `C3` in the validator catches empty descriptions, so a run would
-have found it — nothing ran. That is `12-arquitectura-estado.md §3.2` costing something real for
+have found it — nothing ran. That is `12-app-state.md §3.2` costing something real for
 the first time.
 
 ## A5's remaining exit criterion is one I am not allowed to write

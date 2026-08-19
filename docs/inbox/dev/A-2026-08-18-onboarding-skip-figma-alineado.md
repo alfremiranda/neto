@@ -5,7 +5,7 @@ más un hallazgo que salió al dibujarlo.
 
 ## Alineado, en las cuatro secciones
 
-Los marcos dibujaban el comportamiento viejo y por `00-principios §A1` eso es un defecto con
+Los marcos dibujaban el comportamiento viejo y por `00-principles §A1` eso es un defecto con
 dirección conocida — el código cambió a propósito, así que se corrige Figma.
 
 **Sin preselección** en Moneda y Perfil, en los 8 marcos de aterrizaje (móvil y escritorio,

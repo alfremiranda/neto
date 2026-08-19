@@ -52,14 +52,14 @@ visual en claro.
 
 `Components · Feedback`, `Size=S|M`, pista al 25% y cabeza de un cuarto de vuelta, ambas atadas
 al mismo token para que herede el color del contexto como `Icon`. Documentado en la estructura
-estándar. **Auditoría C1–C4 sobre sus 25 nodos: cero violaciones** (`00-principios §A4`).
+estándar. **Auditoría C1–C4 sobre sus 25 nodos: cero violaciones** (`00-principles §A4`).
 
 Existía seis veces dibujado a mano en el código antes de existir en el sistema. `§B2` decía "no
 hay spinner"; la regla estaba **incompleta**, no incumplida — un skeleton no puede representar
 "tu clic se está atendiendo". `§B2` enmendado: contenido que llega → Skeleton; acción en curso
 → Spinner.
 
-## 5. Inventario de lo que falta — `design-system/docs/14-inventario-componentes.md`
+## 5. Inventario de lo que falta — `design-system/docs/14-component-inventory.md`
 
 71 componentes en Figma contra 56 `.tsx`. Lo medible:
 
@@ -76,7 +76,7 @@ hay spinner"; la regla estaba **incompleta**, no incumplida — un skeleton no p
 - **Lo que NO falta:** Checkbox. Cero `type="checkbox"` en `src/`; `ConsentScreen` usa dos
   botones, que además es lo correcto para un consentimiento de Ley 1581.
 
-## 6. El hallazgo de método — `00-principios §B5`
+## 6. El hallazgo de método — `00-principles §B5`
 
 Mi censo de instancias de `Badge` dio **32 antes** y **52 después** del renombre. No aparecieron
 20 instancias: **el conteo de antes estaba mal.** Figma carga páginas y subárboles de instancias
@@ -132,7 +132,7 @@ hace.
 
 Dos de los cuatro huecos del inventario, cerrados.
 
-### Capa de movimiento — `15-movimiento.md`
+### Capa de movimiento — `15-motion.md`
 
 5 duraciones y 4 curvas, en Primitives (crudas, ocultas) y Semantic (intención, con
 `codeSyntax`). Los nombres salieron de contar las 28 clases `duration-*` del código y agruparlas
@@ -146,7 +146,7 @@ Estos tokens **no se enlazan a nada en Figma** porque no hay propiedad de nodo a
 duración. Sus scopes van vacíos a propósito, y el validador lleva ahora `CONFIG.unbindable` para
 que `T1` no confunda "no hay a qué atarlo" con "se me olvidó".
 
-### Marcas de GitHub y Google — `16-marcas.md`
+### Marcas de GitHub y Google — `16-marks.md`
 
 Parecían el mismo problema. No lo eran, y la prueba es una sola pregunta: **¿el color es del
 ícono o del contexto?**
@@ -198,7 +198,7 @@ peldaño lleva **dos tokens**: sombra y superficie. En claro las cuatro superfic
 la sombra hace el trabajo; en oscuro la superficie sube por la escalera de slate y es ella la
 que se lee. Verificado por captura en los dos modos.
 
-Documentado en `design-system/docs/17-elevacion.md` y en la página de fundamentos
+Documentado en `design-system/docs/17-elevation.md` y en la página de fundamentos
 `design-system/foundations/elevation.html`, más una sección `Elevation` en la página
 `Foundations` de Figma, en claro y oscuro.
 
@@ -247,7 +247,7 @@ son pasos del asistente. Sección oscura regenerada desde la clara ya rediseñad
 Alfredo lo cazó: escritorio tenía los 7 marcos base y ninguno de los 8 casos límite que móvil sí
 tenía desde el principio. Ocho marcos por sección, en las dos secciones de escritorio.
 
-**Paridad verificada, medida dos veces (`00-principios §B5`): las cuatro secciones tienen ahora
+**Paridad verificada, medida dos veces (`00-principles §B5`): las cuatro secciones tienen ahora
 exactamente los mismos 15 marcos**, mismos nombres, sin faltantes ni sobrantes.
 
 | fila | marcos |

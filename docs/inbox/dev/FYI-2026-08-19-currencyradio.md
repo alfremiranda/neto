@@ -32,7 +32,7 @@ para quien acaba de entrar.
 Vive en **`brand-mark/flag`** (página `Brand`), con `Country = Colombia | USA`. Sus colores son
 de un Estado, no nuestros: van crudos y **exentos de `C1` por configuración**, igual que la marca
 de Google. En código eso significa **no** meterlos en `tokens.css` ni derivarlos de la paleta:
-son un SVG con sus hexadecimales y punto. Razonamiento en `design-system/docs/16-marcas.md`.
+son un SVG con sus hexadecimales y punto. Razonamiento en `design-system/docs/16-marks.md`.
 
 ## Dos cosas que corregí de paso
 
