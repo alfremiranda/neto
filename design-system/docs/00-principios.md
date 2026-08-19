@@ -130,7 +130,13 @@ los nombres que la app ya usaba.
 - **El punteado es el único del sistema.** Lo usa `Empty` y significa *contenedor real pero
   vacío*. Por eso `ErrorState` lleva borde sólido: un error no está vacío, y repetir la raya
   la vaciaría de significado.
-- **Un skeleton dice qué viene; un spinner dice que esperes.** Por eso no hay spinner.
+- **Un skeleton dice qué viene; un spinner dice que esperes.** Por eso no hay spinner
+  **para contenido**: donde hay una forma que anticipar, se dibuja la forma. Pero cuando alguien
+  pulsa un botón no hay forma que anticipar — sólo hay que confirmar que el clic se está
+  atendiendo, y una silueta no sabe decir eso. Para eso sí hay `Spinner` (`Components ·
+  Feedback`, creado 2026-08-18). La frontera es el sujeto: **contenido que llega → Skeleton;
+  acción en curso → Spinner.** El código ya tenía seis dibujados a mano antes de que existiera
+  el componente, que es la señal de que la regla estaba incompleta, no de que se incumpliera.
 - **Los grafismos decorativos van un escalón por debajo del texto al que acompañan**, en cada
   modo. El separador del breadcrumb, por ejemplo.
 - **El padding horizontal de un enlace no es decoración: es la caja del anillo de foco.**
@@ -147,6 +153,26 @@ los nombres que la app ya usaba.
   ya extraídos a código.
 - **Territorio en el repo**: `design-system/**` y `design.md` son de Diseño; `src/**` es de
   Dev. Un cambio de token que toque `src` se reporta como hallazgo, no se aplica.
+
+## B5. Medir dos veces en este archivo (2026-08-18)
+
+Un censo de nodos sobre **todo el documento** puede devolver de menos la primera vez que se
+corre en una sesión. Medido, no supuesto: instancias de `Badge` dieron **32** en la primera
+pasada y **52** en la siguiente, con 0 componentes principales rotos; y las vinculaciones a
+`action-chip/selected/*` dieron **14** y luego **28**. En ambos casos la segunda pasada y la
+tercera coincidieron.
+
+La causa es que Figma carga páginas y subárboles de instancias de forma perezosa: `loadAsync()`
+sobre la página no garantiza que lo anidado ya esté en memoria. El número bajo no viene con
+ningún error — viene con la misma pinta que el bueno.
+
+**Regla:** todo conteo que sirva de evidencia se corre **dos veces dentro del mismo script** y
+sólo se reporta si coincide. Un `antes` medido en frío y un `después` medido en caliente no son
+comparables, y restarlos inventa un cambio que nunca ocurrió.
+
+Corolario: un chequeo de tokens no sustituye a una captura. `action-chip` tenía `Disabled` y
+`Default` atados a los mismos seis tokens, y parecía un defecto — hasta que la captura mostró
+que se distinguen por opacidad de nodo. La lectura de tokens no la veía.
 
 ## B4. Deuda conocida al 2026-08-17
 

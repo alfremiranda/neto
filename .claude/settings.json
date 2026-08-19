@@ -20,10 +20,12 @@
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
       "Bash(./node_modules/.bin/tsc --noEmit)",
-      "Bash(node_modules/.bin/tsc --noEmit)"
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "Bash(cd /Users/alfremiranda/Projects/Neto/app *)"
     ],
     "additionalDirectories": [
-      "/Users/alfremiranda/Projects/finanzas-amd/_backup"
+      "/Users/alfremiranda/Projects/finanzas-amd/_backup",
+      "/Users/alfremiranda/Projects/Neto/app/src/lib"
     ]
   }
 }
