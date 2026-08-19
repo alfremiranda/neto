@@ -206,3 +206,36 @@ Documentado en `design-system/docs/17-elevacion.md` y en la página de fundament
 variables, y `figma-dump.js` sólo recorre variables — no puede verlos. Es la misma forma que el
 bloque `text` de los estilos de tipografía. La geometría completa quedó escrita en
 `rename-map.json` bajo `effect_styles` por si prefiere emitirla a mano.
+
+---
+
+## Addendum 4 (2026-08-19) — el onboarding de escritorio, rediseñado desde una referencia
+
+Alfredo trajo una referencia y tenía razón sobre lo que la hacía mejor. Lo adopté traducido a
+nuestro sistema, sin copiar nada de su superficie (ni el magenta, ni las etiquetas
+"(optional)", ni la rejilla de tarjetas).
+
+**Tres cambios de estructura, no de adorno:**
+
+1. **Cáscara a sangre.** Fuera el `container · 1024` centrado flotando sobre una página vacía —
+   el mismo error que arrastraba el móvil. Ahora dos columnas que llegan a los cuatro bordes:
+   riel fijo de 380 y panel que rellena. El corte es un cambio de superficie, no un borde de
+   tarjeta. El límite de 1200 sigue vigente y ahora aplica al **contenido**: 380 + 64 + 720 =
+   **1164**.
+2. **El título se muda al panel.** El riel queda estable entre pasos (logo, línea de contexto,
+   stepper) y el panel carga todo lo que cambia, con antetítulo `PASO n DE 3`. Quien avanza ve
+   moverse una sola mitad de la pantalla.
+3. **Toda la navegación en el pie del panel.** `Atrás` estaba en el riel y `Omitir`/`Continuar`
+   en la tarjeta: tres controles del mismo asunto en dos sitios. Ahora una sola fila.
+
+**Marcos de 1440×1100 a 1440×900**, que es una pantalla real; a 1100 el pie anclado dejaba 200px
+de vacío que no existe en ningún monitor.
+
+**La corrección que salió de medir y no de mirar.** El riel arrancó con `color/wrap/subtle`:
+bien en claro (#f1f5f9 contra blanco, recede) e **invertido en oscuro** (#334155 contra un panel
+#1e293b — el riel más claro que el panel). El token correcto es `color/wrap/container`, que
+recede en los dos modos por construcción: #f8fafc / #0f172a. La relación no se deja al ojo; se
+elige un token cuyos dos valores la garanticen.
+
+Las puertas (Login, Consentimiento) y los momentos (Bienvenida, Listo) **no llevan riel**: no
+son pasos del asistente. Sección oscura regenerada desde la clara ya rediseñada.
