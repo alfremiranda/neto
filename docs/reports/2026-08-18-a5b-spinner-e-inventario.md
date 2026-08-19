@@ -105,3 +105,23 @@ oscuro). Es lo siguiente.
 
 **Espera a Alfredo:** alcance de la escala de elevación · `Tone` o `Severity` en Badge ·
 familia propia de tokens para `action-chip` · si entran `C5` y `C6` al validador.
+
+---
+
+## Addendum — el onboarding en Figma, alineado con el arreglo de Dev
+
+Aplicado en el mismo día, después de recibir `A-2026-08-17-onboarding-skip`:
+
+- Preselección retirada de Moneda y Perfil en los **8 marcos de aterrizaje** (móvil y
+  escritorio, claro y oscuro).
+- "Omitir este paso" retirado de los **6 marcos que ya muestran una elección**.
+- El stepper de escritorio muestra `—` en el paso `Current` sin contestar, en vez de un valor
+  inventado.
+- El `icon-tile` de Perfil también cargaba el estado y quedó teñido bajo un radio ya vacío:
+  igualado nodo a nodo en las cuatro secciones. Lo vio la captura, no el log.
+
+**Hallazgo enviado a Dev:** en un paso sin contestar, `Continuar` y `Omitir este paso` producen
+ahora el mismo efecto — no escribir nada y avanzar — con dos pesos visuales muy distintos. Es el
+residuo de que "omitir" antes sí se diferenciaba porque descartaba una elección visible. Tres
+salidas propuestas; la decisión es de producto, así que los marcos dibujan hoy lo que el código
+hace.
