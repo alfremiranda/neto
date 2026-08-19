@@ -239,3 +239,54 @@ elige un token cuyos dos valores la garanticen.
 
 Las puertas (Login, Consentimiento) y los momentos (Bienvenida, Listo) **no llevan riel**: no
 son pasos del asistente. Sección oscura regenerada desde la clara ya rediseñada.
+
+---
+
+## Addendum 5 (2026-08-19) — los casos límite de escritorio
+
+Alfredo lo cazó: escritorio tenía los 7 marcos base y ninguno de los 8 casos límite que móvil sí
+tenía desde el principio. Ocho marcos por sección, en las dos secciones de escritorio.
+
+**Paridad verificada, medida dos veces (`00-principios §B5`): las cuatro secciones tienen ahora
+exactamente los mismos 15 marcos**, mismos nombres, sin faltantes ni sobrantes.
+
+| fila | marcos |
+|---|---|
+| `Cuentas · casos` | vacío · tarjeta de crédito · nombre largo |
+| `Moneda y Perfil · casos` | Moneda · USD principal · Perfil · Empleado · Perfil · Ambos |
+| `Puertas · estado ocupado` | Login · autenticando · Consentimiento · procesando |
+
+Mismos rótulos de fila y la misma retícula que móvil, para que las dos secciones se lean en
+paralelo sin traducir posiciones.
+
+### Cómo se construyeron, y por qué así
+
+**No re-derivé los estados: los copié de donde ya estaban resueltos.** El tratamiento de
+selección —relleno, borde, radio, y el `icon-tile` teñido de Perfil— se leyó nodo a nodo del
+marco móvil equivalente y se aplicó al clon de escritorio. Reconstruirlo a mano habría sido
+inventar otra vez una decisión ya tomada, y la primera divergencia no se habría notado.
+
+**El caso de tarjeta de crédito se trasplantó entero.** Su panel «Agregar cuenta» tiene cuatro
+campos que ningún otro caso tiene (cupo, deuda, corte, pago) más el segmento `Crédito` activo y
+otro *placeholder*. En vez de reconstruirlo, moví el panel del marco móvil al clon de escritorio
+y lo puse a `FILL`: a 720 los cuatro campos se acomodan solos en una rejilla 2×2 donde en móvil
+se apilan. Verificado por captura.
+
+**Los tres casos con elección hecha —Moneda · USD principal, Perfil · Empleado, Perfil ·
+Ambos— nacen sin «Omitir este paso»**, coherentes con el arreglo de Dev del mismo día. No hubo
+que acordarse: es la misma regla aplicada en el momento de crearlos.
+
+**Los valores del stepper cuentan la historia de cada caso**, que es para lo que sirve el riel de
+resumen: `Sólo efectivo` en el marco vacío, `USD · sin secundaria` en el de USD principal,
+`Empleado` y `Ambos` en los de perfil. Un stepper de números no habría podido decir nada de esto.
+
+**Las dos puertas ocupadas estrenan el `Spinner` en escritorio**, heredando el color de la
+etiqueta del botón pulsado —cabeza al 100%, pista al 25%— igual que en móvil. Es el tercer sitio
+donde el componente recién creado tenía trabajo esperándolo.
+
+### Una duda que dejo abierta en vez de resolverla sola
+
+En los casos de Cuentas **dejé «Omitir este paso»** aunque ya haya una cuenta agregada. El
+arreglo de Dev cubrió explícitamente Moneda y Perfil; en Cuentas «contestado» no está definido —
+Efectivo siempre está incluido, así que el paso nunca está del todo vacío. Aplicar la misma regla
+por analogía habría sido decidir por producto. Va en el mismo lote de preguntas que ya tiene Dev.
