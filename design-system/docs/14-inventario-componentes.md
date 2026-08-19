@@ -25,8 +25,8 @@ Esto es el hueco de verdad: cosas que la app dibuja hoy y el sistema no sabe que
 | 2 | **Gráficas anuales** | `TrendChart` 295 líneas · `EgresosCategoryChart` 286 · `AnnualTable` 167. Un `<svg>` construido a mano cada una, cero `recharts` en el proyecto. Figma sólo tiene `AccountChart` | ❌ falta |
 | 3 | **EgresosBreakdown** | 109 líneas, sin `<svg>` | ❌ falta |
 | 4 | **Barra de distribución** | `EgresosCard.tsx:67` — `flex h-2 rounded-full overflow-hidden gap-px`, segmentos con ancho por dato y color por `var(--…)` | ❌ falta |
-| 5 | **Marca Google** | `LoginScreen.tsx:17-20` — cuatro `fill="#4285F4\|#34A853\|#FBBC05\|#EA4335"` | ❌ falta, y **va en `Brand`, no en `Icons`** |
-| 6 | **Marca GitHub** | `LoginScreen.tsx:8-10` — un `path`, `fill="currentColor"` | ❌ falta, y **sí va en `Icons`**: es monocroma y hereda color |
+| 5 | **Marca Google** | `LoginScreen.tsx:17-20` — cuatro `fill="#4285F4\|#34A853\|#FBBC05\|#EA4335"` | ✅ **creada** en `Brand` como `brand-mark/google`, exenta de `C1`. Ver `16-marcas.md` |
+| 6 | **Marca GitHub** | `LoginScreen.tsx:8-10` — un `path`, `fill="currentColor"` | ✅ **creada** en la `Icon Library` como glifo `github`, tokenizada |
 | 7 | **Asa del drawer** | `EgresosCard.tsx:576` — `data-vaul-handle`, `h-1 w-10 rounded-full bg-[var(--border)]` | ❌ falta |
 
 **Sobre 5 y 6.** No es la misma decisión dos veces. Una marca monocroma que hereda
@@ -125,7 +125,7 @@ Se anota para que nadie lo vuelva a proponer sin medir.
 ## Orden sugerido
 
 1. ~~**C2 movimiento**~~ — ✅ hecho 2026-08-19, ver `15-movimiento.md`.
-2. **A5 + A6 marcas** — dos piezas, decisión ya tomada arriba, cierran la pantalla de entrada.
+2. ~~**A5 + A6 marcas**~~ — ✅ hecho 2026-08-19, ver `16-marcas.md`. La pantalla de entrada queda cerrada, incluido el estado "autenticando" con el `Spinner`.
 3. **C1 elevación** — espera alcance de Alfredo.
 4. **A2–A4 gráficas y barra** — el bloque más grande y el que más se beneficia de que 1 y 3 ya
    existan.

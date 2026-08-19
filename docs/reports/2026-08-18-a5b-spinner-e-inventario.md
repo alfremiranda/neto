@@ -125,3 +125,49 @@ ahora el mismo efecto — no escribir nada y avanzar — con dos pesos visuales 
 residuo de que "omitir" antes sí se diferenciaba porque descartaba una elección visible. Tres
 salidas propuestas; la decisión es de producto, así que los marcos dibujan hoy lo que el código
 hace.
+
+---
+
+## Addendum 2 (2026-08-19) — movimiento y marcas
+
+Dos de los cuatro huecos del inventario, cerrados.
+
+### Capa de movimiento — `15-movimiento.md`
+
+5 duraciones y 4 curvas, en Primitives (crudas, ocultas) y Semantic (intención, con
+`codeSyntax`). Los nombres salieron de contar las 28 clases `duration-*` del código y agruparlas
+por lo que animan; `150ms` es el default porque es lo que el código eligió 10 de 28 veces.
+
+Dos reglas que **el código ya seguía sin haberlas escrito**: lo que sale va un escalón más
+rápido que como entró (`RowActionsSheet` 300/200, tooltip 140/100, decidido por separado en dos
+sitios), y `linear` es requisito —no default— para rotación indeterminada.
+
+Estos tokens **no se enlazan a nada en Figma** porque no hay propiedad de nodo a la que atar una
+duración. Sus scopes van vacíos a propósito, y el validador lleva ahora `CONFIG.unbindable` para
+que `T1` no confunda "no hay a qué atarlo" con "se me olvidó".
+
+### Marcas de GitHub y Google — `16-marcas.md`
+
+Parecían el mismo problema. No lo eran, y la prueba es una sola pregunta: **¿el color es del
+ícono o del contexto?**
+
+- **GitHub** es monocroma y hereda `currentColor` → glifo normal en la `Icon Library`,
+  tokenizado. Verificado en el lienzo: dentro de un botón relleno sale blanca sola.
+- **Google** trae cuatro hexadecimales que no son nuestros → `brand-mark/google` en `Brand`,
+  con colores crudos **a propósito**, y exenta de `C1` por `CONFIG.foreignBrand`. Un token
+  implicaría permiso de cambio, y las guías de marca de Google no lo dan.
+
+La pantalla de entrada queda cerrada en los cuatro marcos, incluido `autenticando`: el botón
+pulsado cambia su marca por el `Spinner` —que hereda el color de la etiqueta, cabeza al 100% y
+pista al 25%— y el otro conserva la suya. Es el ternario de `LoginScreen.tsx:72,84`, dibujado.
+
+**Trampa de API, anotada:** al copiar un paint enlazado, la `opacity` se pierde en la primera
+escritura y hay que reasignarla en una segunda pasada. Misma familia que el color cacheado de
+`setBoundVariableForPaint`: el paint que devuelves no es el paint que queda.
+
+### Lo que queda del inventario
+
+- **C1 elevación** — sigue esperando alcance de Alfredo.
+- **A2–A4 gráficas y barra de distribución** — el bloque grande, ahora con movimiento
+  disponible.
+- **B `NotificationBadge`** — reemplazo en `src/`, ya reportado a Dev.

@@ -27,6 +27,10 @@ const CONFIG = {
   // Dev Mode diga el nombre de la variable CSS, no para pintar. Scope vacio ahi no es
   // "se me olvido", es la verdad. T1 existe para cazar lo primero, no lo segundo.
   unbindable: [/^motion\//],
+  // Subarboles cuyo color NO es nuestro: marcas de terceros. Un hexadecimal crudo ahi no es
+  // deuda, es lo correcto — atarlo a un token implicaria que podemos cambiarlo, y no podemos.
+  // C1 los salta. Ver design-system/docs/16-marcas.md.
+  foreignBrand: [/^brand-mark\//],
 };
 
 // ── auditoría de tokens ─────────────────────────────────────────────────────
@@ -122,15 +126,22 @@ async function auditPage(pageId) {
     if (!set.description || !set.description.trim()) add('C3_sin_descripcion', set.name);
   }
 
+  const esMarcaAjena = n => {
+    for (let a = n; a; a = a.parent)
+      if ((CONFIG.foreignBrand || []).some(re => re.test(a.name))) return true;
+    return false;
+  };
+
   for (const n of page.findAll(() => true)) {
     const path = n.name;
+    const ajeno = esMarcaAjena(n);
     if (CONFIG.genericNames.test(n.name)) add('C4_nombre_generico', path, n.type);
     if (n.type === 'TEXT') {
       if (n.textStyleId === figma.mixed) add('C2_texto_estilos_mezclados', path);
       else if (!n.textStyleId || !known.has(n.textStyleId)) add('C2_texto_sin_text_style', path);
     }
-    if (unbound(n.fills))   add('C1_fill_sin_variable', path, n.type);
-    if (unbound(n.strokes)) add('C1b_stroke_sin_variable', path, n.type);
+    if (!ajeno && unbound(n.fills))   add('C1_fill_sin_variable', path, n.type);
+    if (!ajeno && unbound(n.strokes)) add('C1b_stroke_sin_variable', path, n.type);
   }
 
   return { scope: 'page', page: page.name, violaciones: V };
