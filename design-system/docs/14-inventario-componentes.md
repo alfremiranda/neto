@@ -70,7 +70,7 @@ exactamente el defecto que el sistema debía impedir: no falta la pieza, falta q
 Estos no son componentes. Son capas que faltan, y por eso cada componente que las necesita se
 las inventa.
 
-### C1. Elevación — **0 estilos de efecto en Figma, 21 usos en el código**
+### C1. Elevación — **0 estilos de efecto en Figma, 21 usos en el código** · ✅ resuelto 2026-08-19
 
 | clase | veces |
 |---|---|
@@ -90,7 +90,10 @@ El histograma dice cuántos peldaños hacen falta de verdad: `lg` domina, `sm` l
 `xl` y `2xl` suman cinco usos entre las tres. Una escala de cuatro (`raised · overlay ·
 popover · modal`) cubre los 19 y deja los 2 anillos donde deben estar, que es en foco.
 
-**Espera decisión de Alfredo sobre alcance.** No la propongo como hecha.
+~~Espera decisión de Alfredo sobre alcance.~~ **Resuelto el 2026-08-19:** Alfredo delegó la
+decisión. Cuatro peldaños nombrados por papel (`raised · menu · floating · overlay`), dos capas
+de sombra cada uno y **una superficie por peldaño**, porque en oscuro la sombra no separa nada
+— medido. Ver `17-elevacion.md` y `foundations/elevation.html`.
 
 ### C2. Movimiento — **0 tokens, 28 duraciones escritas a mano** · ✅ resuelto 2026-08-19
 
@@ -126,7 +129,7 @@ Se anota para que nadie lo vuelva a proponer sin medir.
 
 1. ~~**C2 movimiento**~~ — ✅ hecho 2026-08-19, ver `15-movimiento.md`.
 2. ~~**A5 + A6 marcas**~~ — ✅ hecho 2026-08-19, ver `16-marcas.md`. La pantalla de entrada queda cerrada, incluido el estado "autenticando" con el `Spinner`.
-3. **C1 elevación** — espera alcance de Alfredo.
+3. ~~**C1 elevación**~~ — ✅ hecho 2026-08-19, ver `17-elevacion.md`.
 4. **A2–A4 gráficas y barra** — el bloque más grande y el que más se beneficia de que 1 y 3 ya
    existan.
 5. **B `NotificationBadge`** — no es diseño, es un reemplazo en `src/`: hallazgo para Dev.

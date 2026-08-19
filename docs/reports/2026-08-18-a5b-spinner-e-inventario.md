@@ -171,3 +171,38 @@ escritura y hay que reasignarla en una segunda pasada. Misma familia que el colo
 - **A2–A4 gráficas y barra de distribución** — el bloque grande, ahora con movimiento
   disponible.
 - **B `NotificationBadge`** — reemplazo en `src/`, ya reportado a Dev.
+
+---
+
+## Addendum 3 (2026-08-19) — escala de elevación
+
+Alfredo delegó la decisión: *«define tú la escala según best practices»*. Hecha, con dos
+referencias consultadas ([Atlassian](https://atlassian.design/foundations/elevation) y
+[designsystems.surf](https://designsystems.surf/articles/depth-with-purpose-how-elevation-adds-realism-and-hierarchy))
+y una medición propia que cambió el diseño.
+
+**Cuatro peldaños nombrados por papel:** `raised · menu · floating · overlay`. La guía dice 4–6
+capas; cuatro es además lo que sostiene la evidencia: agrupando las 21 sombras del código por lo
+que sostienen salen exactamente cuatro grupos. `shadow-lg` tenía **diez usos y hacía cuatro
+trabajos distintos** —tooltip, diálogo, FAB, panel de sheet y el pulgar de un switch—, que es el
+síntoma exacto de una escala nombrada por tamaño.
+
+**Dos capas por peldaño**, luz principal corta y luz ambiente larga, teñidas de `slate-900` y no
+de negro puro: toda la paleta es slate y un negro puro sobre `slate-50` se lee como suciedad.
+
+**Y el hallazgo que cambió el diseño.** Atlassian avisa de que las sombras se leen mal en
+oscuro; lo comprobé antes de creérmelo. Con la página en `slate-950`, los cuatro peldaños
+dibujados **sólo con sombra salen indistinguibles**. Subí la sombra a negro al 90% y 70% y
+**seguían indistinguibles** — negro sobre casi negro no es profundidad, es nada. Así que cada
+peldaño lleva **dos tokens**: sombra y superficie. En claro las cuatro superficies son blancas y
+la sombra hace el trabajo; en oscuro la superficie sube por la escalera de slate y es ella la
+que se lee. Verificado por captura en los dos modos.
+
+Documentado en `design-system/docs/17-elevacion.md` y en la página de fundamentos
+`design-system/foundations/elevation.html`, más una sección `Elevation` en la página
+`Foundations` de Figma, en claro y oscuro.
+
+**Hueco de tubería reportado a Dev:** los cuatro peldaños son **estilos de efecto**, no
+variables, y `figma-dump.js` sólo recorre variables — no puede verlos. Es la misma forma que el
+bloque `text` de los estilos de tipografía. La geometría completa quedó escrita en
+`rename-map.json` bajo `effect_styles` por si prefiere emitirla a mano.

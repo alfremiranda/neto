@@ -1,0 +1,128 @@
+<!-- @dsCard group="Foundations" name="Elevación" subtitle="Cuatro peldaños, nombrados por papel" -->
+<!DOCTYPE html><html lang="es" data-theme="light"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Neto · Elevación</title>
+<link href="https://fonts.googleapis.com/css2?family=Rethink+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font-family:'Rethink Sans',ui-sans-serif,system-ui,sans-serif;background:var(--surface-wrap-default);
+ color:var(--foreground-default);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.page{max-width:1000px;margin:0 auto;padding:40px 28px 64px}
+h1{margin:0 0 4px;font-weight:800;font-size:24px;line-height:32px;letter-spacing:.5px}
+.crumb{margin:0 0 32px;font-size:11px;line-height:17px;color:var(--foreground-subtle)}
+h2{font-weight:600;font-size:20px;line-height:28px;letter-spacing:.5px;margin:32px 0 12px}
+p.lead{font-size:14px;line-height:21px;max-width:640px;margin:0 0 20px;color:var(--foreground-default)}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:820px){.modes{grid-template-columns:1fr}}
+.lbl{display:block;font-weight:600;font-size:10px;line-height:15px;letter-spacing:.5px;text-transform:uppercase;
+ color:var(--foreground-subtle);margin-bottom:6px}
+.stage{background:var(--surface-wrap-default);border-radius:var(--radius-lg);padding:24px;
+ display:flex;flex-direction:column;gap:20px}
+
+/* La escala. Dos capas siempre: luz principal (corta) + luz ambiente (larga). */
+:root,[data-theme="light"]{--shadow-key:rgba(15,23,42,.20);--shadow-ambient:rgba(15,23,42,.10);
+ --surface-elevation-raised:#ffffff;--surface-elevation-menu:#ffffff;
+ --surface-elevation-floating:#ffffff;--surface-elevation-overlay:#ffffff}
+[data-theme="dark"],.dark{--shadow-key:rgba(0,0,0,.50);--shadow-ambient:rgba(0,0,0,.30);
+ --surface-elevation-raised:#0f172a;--surface-elevation-menu:#1e293b;
+ --surface-elevation-floating:#334155;--surface-elevation-overlay:#334155}
+
+.e-raised  {box-shadow:0 1px 2px 0 var(--shadow-key), 0 1px 3px 0 var(--shadow-ambient);background:var(--surface-elevation-raised)}
+.e-menu    {box-shadow:0 2px 4px -1px var(--shadow-key), 0 4px 8px -2px var(--shadow-ambient);background:var(--surface-elevation-menu)}
+.e-floating{box-shadow:0 4px 6px -2px var(--shadow-key), 0 10px 20px -4px var(--shadow-ambient);background:var(--surface-elevation-floating)}
+.e-overlay {box-shadow:0 8px 12px -4px var(--shadow-key), 0 24px 48px -12px var(--shadow-ambient);background:var(--surface-elevation-overlay)}
+
+.tile{height:64px;border-radius:var(--radius-lg)}
+.rung{display:flex;flex-direction:column;gap:6px}
+.rung b{font-weight:400;font-size:11px;line-height:16px;color:var(--foreground-default)}
+.rung em{font-style:normal;font-weight:600;font-size:10px;line-height:15px;letter-spacing:.5px;
+ text-transform:uppercase;color:var(--foreground-subtle)}
+table{border-collapse:collapse;width:100%;font-size:11px;line-height:17px;margin-top:8px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--border-default);vertical-align:top}
+th{font-weight:600;font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--foreground-subtle)}
+td code{font-size:10px;color:var(--foreground-subtle)}
+.warn{border-left:2px solid var(--border-default);padding:2px 0 2px 14px;margin:16px 0;
+ font-size:13px;line-height:20px;color:var(--foreground-default);max-width:640px}
+</style></head><body><main class="page">
+
+<h1>Foundations · Elevación</h1>
+<p class="crumb">Si no sabes qué peldaño usar, la pregunta no es cuánta sombra — es qué relación tiene la superficie con lo que hay debajo.</p>
+
+<p class="lead">Cuatro peldaños, nombrados por el papel que cumplen y no por su tamaño. Un nombre
+como <code>shadow-lg</code> obliga a comparar; un nombre como <code>overlay</code> se elige
+solo. Cada peldaño lleva dos capas de sombra, porque una sola parece un recorte pegado: una
+<strong>luz principal</strong> corta y direccional, que dice a qué altura está algo, y una
+<strong>luz ambiente</strong> larga y difusa, que lo apoya.</p>
+
+<div class="modes">
+  <div><span class="lbl">Light</span>
+    <div class="stage" data-theme="light">
+      <div class="rung"><em>elevation/raised</em><div class="tile e-raised"></div><b>Switch thumb · card hover · sidebar item</b></div>
+      <div class="rung"><em>elevation/menu</em><div class="tile e-menu"></div><b>Popover · Select · Tooltip · menú del Header</b></div>
+      <div class="rung"><em>elevation/floating</em><div class="tile e-floating"></div><b>FAB · barra pegajosa</b></div>
+      <div class="rung"><em>elevation/overlay</em><div class="tile e-overlay"></div><b>Sheet · Drawer · Dialog</b></div>
+    </div>
+  </div>
+  <div><span class="lbl">Dark</span>
+    <div class="stage" data-theme="dark">
+      <div class="rung"><em>elevation/raised</em><div class="tile e-raised"></div><b>Switch thumb · card hover · sidebar item</b></div>
+      <div class="rung"><em>elevation/menu</em><div class="tile e-menu"></div><b>Popover · Select · Tooltip · menú del Header</b></div>
+      <div class="rung"><em>elevation/floating</em><div class="tile e-floating"></div><b>FAB · barra pegajosa</b></div>
+      <div class="rung"><em>elevation/overlay</em><div class="tile e-overlay"></div><b>Sheet · Drawer · Dialog</b></div>
+    </div>
+  </div>
+</div>
+
+<h2>Cómo se elige</h2>
+<table>
+<tr><th>Peldaño</th><th>La pregunta que lo escoge</th><th>Geometría</th></tr>
+<tr><td><code>elevation/raised</code></td>
+    <td>¿Se levanta de la página <em>sin dejar de pertenecer a ella</em>? Si al quitarle la sombra sigue teniendo sentido dónde está, es éste.</td>
+    <td><code>0 1px 2px 0</code><br><code>0 1px 3px 0</code></td></tr>
+<tr><td><code>elevation/menu</code></td>
+    <td>¿Está <em>atado a lo que acabas de pulsar</em> y desaparece al mirar a otro lado?</td>
+    <td><code>0 2px 4px -1px</code><br><code>0 4px 8px -2px</code></td></tr>
+<tr><td><code>elevation/floating</code></td>
+    <td>¿Se queda encima <em>sin estar atado a nada</em> y sin tapar lo de abajo?</td>
+    <td><code>0 4px 6px -2px</code><br><code>0 10px 20px -4px</code></td></tr>
+<tr><td><code>elevation/overlay</code></td>
+    <td>¿<em>Toma el control</em>, con un velo detrás? Es el único que apaga lo de abajo — y por eso no puede haber dos a la vez.</td>
+    <td><code>0 8px 12px -4px</code><br><code>0 24px 48px -12px</code></td></tr>
+</table>
+
+<h2>En oscuro manda la superficie, no la sombra</h2>
+
+<p class="lead">Está medido en este propio archivo: con la página en <code>slate-950</code>, los
+cuatro peldaños dibujados sólo con sombra son <strong>indistinguibles</strong>. Se probó incluso
+con negro al 90% y al 70% — sigue sin separarlos. Negro sobre casi negro no es profundidad, es
+nada.</p>
+
+<p class="lead">Por eso cada peldaño lleva <strong>dos tokens</strong>: la sombra y la
+superficie. En claro las cuatro superficies son blancas y la sombra hace todo el trabajo. En
+oscuro la superficie sube por la escalera de slate y es ella la que se lee; la sombra se queda,
+pero como refuerzo.</p>
+
+<table>
+<tr><th>Peldaño</th><th>Superficie · claro</th><th>Superficie · oscuro</th></tr>
+<tr><td><code>raised</code></td><td>white</td><td>slate-900 <code>#0f172a</code></td></tr>
+<tr><td><code>menu</code></td><td>white</td><td>slate-800 <code>#1e293b</code></td></tr>
+<tr><td><code>floating</code></td><td>white</td><td>slate-700 <code>#334155</code></td></tr>
+<tr><td><code>overlay</code></td><td>white</td><td>slate-700 <code>#334155</code></td></tr>
+</table>
+
+<div class="warn"><strong>floating y overlay comparten superficie a propósito.</strong> Lo que
+separa a un modal de un FAB no es el color: es el velo que lleva detrás. Un quinto tono de slate
+no añadiría información, sólo ruido — y a esa altura el gris ya empieza a competir con el texto.</div>
+
+<h2>Lo que no es elevación</h2>
+
+<div class="warn">Un <code>box-shadow</code> de <code>0 0 0 1px</code> no es una sombra: es un
+borde escrito en el sitio equivocado. En <code>sidebar.tsx:475</code> hay dos, y siguen ahí a
+propósito — no son deuda de esta escala, son geometría de foco y su sitio es el anillo de foco,
+no un peldaño.</div>
+
+<div class="warn">La animación de datos tampoco. <code>EgresosBreakdown</code> anima el ancho de
+una barra: eso cuenta algo, no se levanta. Si la visualización necesita profundidad, será su
+propia escala.</div>
+
+</main></body></html>

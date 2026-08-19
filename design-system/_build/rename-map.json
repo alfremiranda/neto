@@ -14,6 +14,10 @@
     "rule": "first matching prefix wins; the remainder is slugged ('/' -> '-') and appended",
     "prefixes": [
       [
+        "color/shadow/",
+        "--shadow-"
+      ],
+      [
         "motion/",
         "--motion-"
       ],
@@ -110,7 +114,8 @@
     "value_conflicts": 0,
     "newly_published": 25,
     "notes": [
-      "motion/* added 2026-08-19. It is the only non-colour family covered here on purpose: 5 FLOAT durations (ms) and 4 STRING easing curves, all authored with codeSyntax already set, so the map and Dev Mode agree by construction. The prefix goes FIRST because it must not fall through to a colour rule."
+      "motion/* added 2026-08-19. It is the only non-colour family covered here on purpose: 5 FLOAT durations (ms) and 4 STRING easing curves, all authored with codeSyntax already set, so the map and Dev Mode agree by construction. The prefix goes FIRST because it must not fall through to a colour rule.",
+      "color/shadow/ added 2026-08-19 for the elevation scale. color/surface/elevation/* needs NO new rule: the existing color/surface/ -> --surface- prefix already yields --surface-elevation-raised and friends. Verified against the codeSyntax authored on each variable, not assumed."
     ]
   },
   "killed": {
@@ -158,5 +163,23 @@
     ],
     "types": "the five durations are FLOAT in milliseconds; the four curves are STRING and ship verbatim (a cubic-bezier(...) or 'linear'). build.py has to emit the durations with a 'ms' unit - a bare number is not a valid CSS duration.",
     "expect_in_next_dump": "9 ADDED. Nothing removed, nothing changed. No consumer in src/ yet: the 28 hand-written duration-* classes migrate afterwards, one by one, and that is a src/ change."
+  },
+  "effect_styles": {
+    "added": "2026-08-19",
+    "names": [
+      "elevation/raised",
+      "elevation/menu",
+      "elevation/floating",
+      "elevation/overlay"
+    ],
+    "problem": "These are EFFECT STYLES, not variables. figma-dump.js only walks variables, so the exporter cannot see them at all and build.py has no block to emit them. This is the same shape as the `text` block for text styles: a separate kind, a separate dump, a separate emitter.",
+    "shape": "Each style is two DROP_SHADOWs. Layer order is ambient then key. Colours are variable-bound (--shadow-key, --shadow-ambient) so they follow the mode; the geometry is fixed inside the style.",
+    "geometry": {
+      "elevation/raised": "0 1px 2px 0 key, 0 1px 3px 0 ambient",
+      "elevation/menu": "0 2px 4px -1px key, 0 4px 8px -2px ambient",
+      "elevation/floating": "0 4px 6px -2px key, 0 10px 20px -4px ambient",
+      "elevation/overlay": "0 8px 12px -4px key, 0 24px 48px -12px ambient"
+    },
+    "expect_in_next_dump": "6 ADDED variables (--shadow-key, --shadow-ambient, --surface-elevation-{raised,menu,floating,overlay}). The four effect styles will NOT appear until the exporter grows a block for them."
   }
 }
