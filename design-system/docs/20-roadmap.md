@@ -216,7 +216,19 @@ That removed every collision at the root instead of hiding it, which unblocked t
 The numeric one stays — it is legible and Alfredo is right about that — and the aliases either
 justify themselves in writing or go.
 
-**1.4 · Hide the primitives** (`T2`, 344). Last, because until the semantic layer is complete,
+**1.4 · Hide the primitives.** Done, 2026-08-20. `T2`: 334 exposed → **0**.
+
+Hiding was the easy half and not the point. `hiddenFromPublishing` only cleans a *consumer's*
+picker; it does nothing about the **203 nodes inside this file binding a raw value directly** and
+skipping the semantic layer. Those were repointed by property — `*Radius` → `radius/N`, `*Weight`
+→ `border-width/*`, square-and-small `width/height` → `icon-size/N`, everything else →
+`spacing/N`. 203 → **57**.
+
+Of the 57, 54 are one finding: the Plugin API **reads but cannot write** `minHeight` on a text node.
+Recorded rather than fought, same class as the `strokeTopWeight` trap. The last is real and small:
+`scale/6` is bound to a padding and **there is no `spacing/6` in Semantic**.
+
+**1.4 (original plan) · Hide the primitives** (`T2`, 344). Last, because until the semantic layer is complete,
 hiding them removes the escape hatch that is currently holding some screens up.
 
 **Why now and not later:** `design-system/tokens/` has not moved since 2026-08-02 and none of the

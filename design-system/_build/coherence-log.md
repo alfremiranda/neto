@@ -330,3 +330,38 @@ and not on screen, so it deliberately shares the page in Light and earns its own
 inventing its own: `default` (1) · `strong` (2) · `strongest` (4). That answers the real concern —
 room to grow — without minting a new adjective: `subtle` and `subtlest` are already defined below
 `default` if a hairline is ever needed.
+
+## Phase 1.4 · primitives hidden — 2026-08-20
+
+| | before | after |
+|---|---:|---:|
+| primitives exposed to consumers (`T2`) | 334 | **0** |
+| nodes binding a primitive directly | 203 | **57** |
+
+Exposed after: Semantic 156 · Typography 41 · Component 172 · **Primitives 0**.
+
+### Hiding is not the point — the direct bindings are
+
+`hiddenFromPublishing` removes primitives from a *consumer's* picker. It does nothing about the 203
+nodes inside this file binding a raw value directly and skipping the semantic layer. Those were
+repointed, choosing the family by the property each was bound to — the same rule that makes the
+property-first names work:
+
+    *Radius         -> radius/N
+    *Weight         -> border-width/{default,strong,strongest}
+    width/height    -> icon-size/N when square and <= 24, otherwise spacing/N
+    everything else -> spacing/N
+
+133 repointed at component level. `_docs-kit` and `Screens · Neto (WIP)` excluded via
+`CONFIG.outOfScopePages`.
+
+### The 57 that remain, and why each stays
+
+| what | count | why |
+|---|---:|---|
+| `scale/20` on `minHeight` of a `Name` TEXT node | 54 | **The Plugin API reads this binding but refuses to write it** — `setBoundVariable` returns *"invalid field for text node: 'minHeight'"*. It was made some other way and cannot be moved programmatically. |
+| `color/rose/400` on `textRangeFills` | 2 | a per-range fill, needs `setRangeFills`, and rose-400 has no semantic equivalent |
+| `scale/6` on `paddingTop` | 1 | **there is no `spacing/6` in Semantic** — either a missing rung or a node that should say 4 or 8 |
+
+The first row is the same class as the `strokeTopWeight` trap: an instrument asymmetry that would
+otherwise sit in the audit forever as an unexplained non-zero. Written down rather than fought.
