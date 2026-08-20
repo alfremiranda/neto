@@ -226,3 +226,60 @@ Open, recorded not acted on:
   distinction, not a badge. Candidates to promote to Semantic.
 - `action-chip` consumes `badge/*` and `notification/*` — a component reaching into another
   component's tokens. Already on the open list; needs its own family designed, not extracted.
+
+## Phase 1.3 · the numeric ladders — 2026-08-20
+
+| | before | after |
+|---|---:|---:|
+| Semantic numeric tokens | 58 | **33** |
+| Semantic numeric families | 8 | **5** |
+| bound nowhere | 21 | **5** (all `motion/duration/*`, reserved for Phase 3) |
+| Primitives numeric tokens | 43 | **30** |
+| Primitives numeric families | 4 | **2** |
+| **name collisions across collections, any type** | **25** | **0** |
+
+Semantic families, each with one job: `spacing` (13) · `radius` (7) · `motion/duration` (5) ·
+`icon-size` (4) · `border-width` (3). Primitives: `scale` (25) · `duration` (5).
+
+### What the four "parallel ladders" actually were
+
+The roadmap said `spacing/N`, `spacing/component/*`, `padding/*` and `size/N` carried the same
+values. Measuring found something worse:
+
+| family | finding |
+|---|---|
+| `spacing/component/{xs..xl}` | 4/8/12/16/20 — **all five bound nowhere**, exact duplicates of `spacing/{4,8,12,16,20}` |
+| `padding/{xs..xl}` | four bound nowhere. `padding/xs` had 85 bindings and **every one is `itemSpacing`** — a gap, not a padding. The family named the wrong property. |
+| `size/N` | not a dimension ladder. `size/{10,12,16,24}` were bound to `fontSize` — a **second copy of the type scale Typography already owns**. `size/{20,32}` were bound to width and height. `size/6` to an effect. One name, three jobs. |
+| `size/icon/*` | the only real dimension ladder → `icon-size/{12,16,20,24}` |
+| `border-width` | `default`, `hairline` and `thin` all equal **1px** |
+
+25 Semantic tokens deleted, 115 bindings repointed. The delete step aborted once because
+`badge/size` in Component aliased Semantic `size/20`; repointed before anything was removed.
+
+### Primitives collapse to one ladder — Alfredo's call, and the evidence backed it
+
+*"Podemos cambiar el nombre en primitives a `scale/*` así puede aplicar a varios como spacing/,
+size/, etc."*
+
+The measurement made the case better than the argument did. `Primitives/spacing/12` was already
+aliased by `Semantic::icon-size/12`, `Component::breadcrumb/separator/size` and
+`Component::button/size/*/height`. The name `spacing` had been lying at the primitive layer exactly
+the way `border/focus` lied at the semantic layer — and for the same reason: **a raw 4 is a raw 4,
+and whether it becomes a gap, a padding, a radius or an icon size is a Semantic decision.**
+
+Primitives held three tokens for zero (`spacing/0`, `radius/none`, `border-width/none`), three for
+two, three for four, and pairs for 6, 8, 10, 12, 14, 16 and 18. All of it collapsed into `scale/N`.
+`duration/*` stayed separate — time is not length.
+
+**All 25 name collisions are gone**, at the root rather than hidden. That also unblocked the one
+thing Phase 1.3 had to defer: `radius/{sm,md,lg,xl,2xl}` → **`radius/{4,6,8,12,16}`**, since
+`Primitives/radius/N` no longer exists to collide with. `radius/none` and `radius/full` keep their
+words — they are not rungs, they are the absence of one and a sentinel.
+
+### Still open
+
+**There is no blur or spread ladder.** Shadows bind `border-width/thick` for their effect geometry.
+
+**`border-width/{default,medium,thick}` did not go numeric.** Unlike a gap, a border width is nearly
+always "the standard one", so `default` carries intent a number would lose. Left as a question.

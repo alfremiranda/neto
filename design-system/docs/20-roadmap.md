@@ -192,7 +192,26 @@ the property prefix, generate `codeSyntax`, and **write the intent description**
 is at 35% for tokens against 95% for components; the moment to write *why a token exists* is
 while renaming it, not in a later pass that never comes.
 
-**1.3 · Consolidate the numeric ladders.** Four parallel scales carry the same values today:
+**1.3 · Consolidate the numeric ladders.** ✅ **done, 2026-08-20.** Semantic numeric 58 → **33**
+(five families), Primitives numeric 43 → **30** (two families), and **name collisions across
+collections 25 → 0**.
+
+The measurement changed the description. `spacing/component/*` was five tokens bound nowhere.
+`padding/xs` had 85 bindings and every one was `itemSpacing` — a gap, so the family named the wrong
+property. And `size/N` was not a dimension ladder: `size/{10,12,16,24}` were bound to `fontSize` and
+duplicated the type scale Typography already owns, `size/{20,32}` to width and height, `size/6` to
+an effect. One name, three jobs. `size/icon/*` was the only real dimension ladder → `icon-size/N`.
+
+Alfredo then took the root cause: **Primitives collapse to a single `scale/*` ladder.** The evidence
+was already there — `Primitives/spacing/12` was aliased by `icon-size/12`, by
+`breadcrumb/separator/size` and by `button/size/*/height`. A raw 4 is a raw 4; what it becomes is a
+Semantic decision. Three tokens for zero, three for two, three for four and pairs for 6–18 all
+collapsed. `duration/*` stayed separate because time is not length.
+
+That removed every collision at the root instead of hiding it, which unblocked the one deferral:
+`radius/{sm,md,lg,xl,2xl}` → **`radius/{4,6,8,12,16}`**.
+
+**1.3 (original plan) · Consolidate the numeric ladders.** Four parallel scales carry the same values today:
 `spacing/N`, `spacing/component/{xs..xl}`, `padding/{xs..xl}`, `size/N`. Four names for 16.
 The numeric one stays — it is legible and Alfredo is right about that — and the aliases either
 justify themselves in writing or go.
