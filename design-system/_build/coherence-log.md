@@ -526,8 +526,23 @@ The onboarding flow is clean: `Bancolombia Ahorros` → `Ahorros principal`, and
 case became `Ahorros Nómina Principal Empresa` — still long, because that frame exists to test
 overflow.
 
-**The other 390 are not placeholders, they are the library's sample content** — `Skandia Ahorro
-Futuro Patrimonio`, `CMR Falabella`, `Cuota Prestamo Vehicular BBVA`, `Toptal → Bancolombia`,
-`SURA EPS`. A wider call than the instruction covered: sample data naming real institutions is
-brand and legal exposure in a system that gets published, but generic names make the mocks less
-convincing. Recorded, not acted on.
+**The other 390 are correct and must not be "fixed".** I reported them as pending brand exposure;
+Alfredo corrected it the same day — *"por eso solo dije los placeholders, el resto que menciona es
+contenido contextual con propósitos de visualización de la data real."*
+
+That is a decision already taken, not a gap. `Skandia Ahorro Futuro Patrimonio`,
+`Cuota Prestamo Vehicular BBVA`, `Toptal → Bancolombia`, `SURA EPS` exist so the mocks show what
+this product's data actually looks like — a Colombian freelancer's real pension fund, real EPS,
+real client. Replace them with `Fondo A` and `Cliente 1` and the screens stop testing anything:
+name lengths collapse, the row overflow cases become unreachable, and nobody can tell whether the
+layout survives contact with reality.
+
+> **Placeholder copy is generic. Sample content is realistic. They are different jobs and the same
+> sweep will keep confusing them.**
+
+A placeholder is instruction — it appears in an empty field for every user, so a brand there reads
+as a recommendation. Sample content is illustration — it appears only in the file, and its whole
+value is being specific.
+
+Recorded here because the previous version of this entry framed the 390 as a defect, and a wrong
+finding in the log is worse than no finding: someone would have acted on it.

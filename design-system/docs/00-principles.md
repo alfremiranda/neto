@@ -106,6 +106,27 @@ name, one component for a token's consumers, one variant for a property. The cou
 same each time — before an irreversible step, run the check against every member, not the first
 one.
 
+### A3.8 Placeholder copy and sample content are different jobs
+
+Set by Alfredo, 2026-08-20, after a brand sweep treated both as one thing.
+
+> **Placeholder copy is generic. Sample content is realistic.**
+
+A **placeholder** is instruction. It sits in an empty field for every user, so a brand name there
+reads as a recommendation — `Ej: Cuenta de ahorros`, never `Ej: Visa Bancolombia`.
+
+**Sample content** is illustration. It never leaves the file, and its value is being specific:
+`Skandia Ahorro Futuro Patrimonio`, `Cuota Prestamo Vehicular BBVA`, `SURA EPS`, `Toptal`. These
+are a Colombian freelancer's real pension fund, real loan, real EPS, real client, and they are in
+the mocks on purpose — *"con propósitos de visualización de la data real"*. Replace them with
+`Fondo A` and `Cliente 1` and the screens stop testing anything: name lengths collapse, the
+overflow cases become unreachable, and nobody can tell whether a layout survives contact with
+reality.
+
+The failure mode this prevents is a well-meant sweep. A regex cannot tell the two apart — both are
+just text with a brand in it — so the distinction has to be made by asking **who sees it**: a
+placeholder is seen by every user, sample content is seen only by us.
+
 ## A4. The definition of done
 
 > **A component is not finished until the audit passes over it.**
