@@ -13,7 +13,20 @@
  */
 
 // ── CONFIG ──────────────────────────────────────────────────────────────────
+// Pages the design system does not own. An exclusion lives here, structurally,
+// and never as a silent skip: a 0 for a page nobody looked at is not a 0
+// (orchestrator, A-2026-08-20-numeros-de-layout point 2).
+//
+//   _docs-kit          — scaffolding for a documentation skill Alfredo is building.
+//                        Nothing on it is part of the system. Decided 2026-08-20.
+//   Screens · Neto (WIP) — in-flight product exploration, not library material.
+//
+// Foundations is NOT excluded. It is the system describing itself, and its
+// swatches are system material even when they are chrome.
+const OUT_OF_SCOPE = /^(_docs-kit|Screens · Neto \(WIP\))/;
+
 const CONFIG = {
+  outOfScopePages: OUT_OF_SCOPE,
   primitives: 'Primitives',        // nombre de la colección de valores crudos
   semantic:   ['Semantic'],        // colecciones que DEBEN aliasear
   component:  ['Component'],       // colecciones de tokens por componente

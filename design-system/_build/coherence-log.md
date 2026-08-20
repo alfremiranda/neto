@@ -283,3 +283,50 @@ words — they are not rungs, they are the absence of one and a sentinel.
 
 **`border-width/{default,medium,thick}` did not go numeric.** Unlike a gap, a border width is nearly
 always "the standard one", so `default` carries intent a number would lose. Left as a question.
+
+## Raw radius 10 — counted before asking, 2026-08-20
+
+The open question was whether `radius/10` is a missing rung. The orchestrator was right to refuse
+the question without a per-page split, and the split changed the answer.
+
+| where | raw radius-10 corners |
+|---|---:|
+| `Foundations` | 400 — **all of them documentation swatch chips** (`chip`, `default`) |
+| `Screens · Neto (WIP)` | 148 — out of scope |
+| `Screens & exploration` | 128 |
+| `Components · Navigation` | **48 — `bottom-nav-button`, a published component** |
+| `Blocks · Containers` | 32 |
+| `Page - Accounts` | 32 |
+| `Layouts` | 16 |
+| **total** | **804** |
+
+Note `_docs-kit` holds **zero** of them, so the exclusion Alfredo set does not move this count —
+it is a standing rule worth having, not a factor here.
+
+**Verdict: not a rung. Normalise.** 400 of the 804 are the doc-kit's own chips — evidence that
+someone typed 10, not that a design needed it. `radius/8` and `radius/12` already sit one step
+either side, and adding 10 would make the ladder 4·6·8·10·12·16. The 656 in scope get normalised
+to 8 or 12 as part of the hand-typed-numbers sweep, `bottom-nav-button` included.
+
+The whole raw-radius distribution, for that sweep: 2px×176 · 3px×72 · 4px×168 · **5px×242** ·
+6px×12 · 8px×416 · **10px×804** · 12px×628 · 16px×96 · 20px×400 · 24px×8 · 28px×4 · **999px×184** ·
+9999px×516. The 5px and the 999px are their own findings — 999 should be 9999, and 5 is on no scale
+at all.
+
+## bg/container → bg/chrome, and border-width joins the ladder
+
+`bg/container` looked like a duplicate: identical to `bg/canvas` in Light, identical to
+`bg/surface` in Dark. Measuring its 23 bindings showed it is not — **18 of them are the desktop
+`rail`**, a structural panel beside the content, and `bg/subtle` (icon tiles, badges, progress bars)
+does a different job entirely.
+
+So it survives, renamed for its relationship rather than its layout noun (Rule 10). On its Light
+value: the only room between `slate-50` and `slate-100` is **0.74 L\***, which is a value on paper
+and not on screen, so it deliberately shares the page in Light and earns its own rung in Dark
+(slate-900 against slate-950, ΔL* 6.1). What separates the rail from the content in Light is
+`border/default`, not a fill — the same resolution already used for `bg/sunken` in Dark.
+
+`border-width` keeps words rather than numbers, but joins Rule 4's closed ladder instead of
+inventing its own: `default` (1) · `strong` (2) · `strongest` (4). That answers the real concern —
+room to grow — without minting a new adjective: `subtle` and `subtlest` are already defined below
+`default` if a hairline is ever needed.
