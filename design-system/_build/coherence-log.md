@@ -447,3 +447,40 @@ function, not a location: the doc-kit's grid lives on `Foundations` as well as o
 What is left is genuinely off-scale and mostly not a decision: ~154 fractional values from scaled
 groups, `gap 1` and `gap 3` hairline gaps, `gap -1.5` for overlapping avatars, and a tail of
 one-off paddings on exploration screens.
+
+## The onboarding inputs after the Input rebuild — 2026-08-20
+
+Alfredo asked whether the onboarding inputs had been updated. They had — automatically, which is
+the point and also the problem.
+
+| | |
+|---|---:|
+| `Input` instances in `Flow - Onboarding` | **32** |
+| that inherited `Show Trailing Icon = true` from the new default | **32** |
+| that were **empty** while showing a clear (×) affordance | **32** |
+| that have a label | **0** |
+
+**Defect one, fixed.** The rebuilt `Input` defaults `Show Trailing Icon` to `true`, so every
+existing instance picked up a clear button — on a field with nothing to clear, where an × reads as
+"remove this field" rather than "empty it". Turned off on all 32. Confirmed by screenshot before
+and after.
+
+The rule underneath it: **the clear affordance belongs to `Filled=True`.** Figma cannot make a
+boolean depend on a variant, so the two have to be kept in agreement by hand — and the default
+being `true` means the disagreement is what you get for free.
+
+**Defect two, not fixed — it needs copy.** All 32 fields are labelled by their placeholder, and the
+four on the credit-card screen show what that costs:
+
+| placeholder today | what it actually is |
+|---|---|
+| `Ej: Cuenta de Ahorros` | a real placeholder — an example |
+| `Ej: Visa Bancolombia` | a real placeholder |
+| `Cupo total` | **a label wearing a placeholder's clothes** |
+| `Deuda actual` | same |
+| `Día de corte` | same |
+| `Día de pago` | same |
+
+Four numeric fields side by side whose only name disappears the moment you type in them. A user
+who fills `Cupo total` and `Deuda actual` is then looking at two numbers with nothing to say which
+is which. This is the case `Field` was built for, and it is live in the flow.
