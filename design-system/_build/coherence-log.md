@@ -80,3 +80,32 @@ This row should be zero and stays in the log for as long as it is not.
 
 Phase 1.2 takes this to 0 by splitting all five. The split is visually free: in every case the
 tokens that come out of it hold the value that went in.
+
+## Repo side
+
+The other half of `20-roadmap §0.4`. These four run in CI on every push that touches `src/**`
+or `design-system/**` (`.github/workflows/design-system.yml`), so unlike the rows above they
+cannot go stale between sessions — a regression fails a run rather than waiting for a measurement.
+
+Reproduce with `node design-system/_build/validate-repo.mjs`. It needs node and python3 and no
+npm dependencies, so it runs from a bare checkout.
+
+| date | `R1` raw hex in components | `R2` package reproducible | `R3` dangling `var()` | `R4` literal colours in `index.css` |
+|---|---|---|---|---|
+| 2026-08-20 | **0** / 92 files | ✅ yes | **0** / 83 refs | 49 |
+
+`R1` was 1 when the check was written: `EgresosCard`'s "Programado" badge hard-coded
+`#fdba74`, which is `--badge-warning-border`'s **light** value — so the border stayed light
+amber on dark, where the token says `#d97706`. Fixed with the token; verified in the browser
+that both themes now resolve correctly. That is the argument for the check in one line: the
+violation was not a style preference, it was a dark-mode bug nobody had seen.
+
+`R4` is a **ratchet, not a gate**. Those 49 are app-owned variables in `src/index.css` still
+carrying literal values that `tokens.css` now also holds. Migrating them is real work with real
+review, and a check that forbids them today would simply be switched off. So CI only refuses to
+let the number grow. It is the one row here that is expected to fall over time, and the only one
+whose target is not zero-by-tomorrow.
+
+Not measured here, and deliberately: **drift between Figma and the published package**. `R2`
+proves the package matches `tokens.json`; nothing repo-side can prove `tokens.json` matches
+Figma. That comparison needs the exporter to run, which is `Phase 2`.

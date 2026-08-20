@@ -1,0 +1,46 @@
+# Repo-side half of the design-system validator.
+#
+# Deliberately NOT part of deploy.yml. That workflow's gates (npm audit, tests) already
+# froze production for seven commits once, silently, on an advisory nobody introduced.
+# Design-system drift is a real defect but it is not a reason to stop shipping a bug fix
+# to the user's phone, so this reports on its own and never holds the deploy.
+#
+# It also does not pretend to run the Figma audit: the T*/C* checks need the Plugin API
+# and cannot run in CI at all (20-roadmap.md §0.4). Only R1-R4 live here.
+name: Design system
+
+on:
+  push:
+    branches: [main]
+    paths: ['src/**', 'design-system/**', '.github/workflows/design-system.yml']
+  pull_request:
+    paths: ['src/**', 'design-system/**', '.github/workflows/design-system.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: design-system-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      # build.py regenerates design-system/ so R2 can prove it is reproducible.
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Validate
+        run: node design-system/_build/validate-repo.mjs

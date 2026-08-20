@@ -24,6 +24,15 @@ de sync, los tests de `merge.test.ts` deben seguir verdes y se agregan casos, nu
 funciona online **y** offline. Cumple Tailwind v3. Código/commits/docs en inglés. Si tocó datos/esquema/prod,
 se confirmó antes y se probó en dev/local primero.
 
+**Validador del design system (CI):** `.github/workflows/design-system.yml` corre
+`design-system/_build/validate-repo.mjs` en cada push que toque `src/**` o `design-system/**`.
+Cuatro checks: sin hex crudo en componentes (las marcas de terceros están exentas *por regla*,
+no por lista — ver `16-marks.md`), `design-system/tokens/` reproducible desde `tokens.json`,
+cero `var()` colgante en `tokens.map.css`, y un trinquete sobre los colores literales de
+`index.css` (solo pueden bajar). **No bloquea el deploy a propósito**: la deriva del DS es un
+defecto real pero no es razón para congelar un fix en el teléfono del usuario. La mitad de Figma
+(`T*`/`C*`) necesita el Plugin API y **no puede** correr en CI — ver `20-roadmap.md §0.4`.
+
 **Sincronización de docs (hábitos permanentes — el trabajo es multi-agente; lo no committeado+pusheado NO EXISTE para los demás):**
 - Cambio **user-facing o de reglas de negocio** → actualizar [PRODUCT.md](./PRODUCT.md) en el mismo cambio.
 - Cambio de **plan / secuencia** → actualizar [NORTH_STAR.md](./NORTH_STAR.md).

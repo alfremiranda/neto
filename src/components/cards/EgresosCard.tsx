@@ -132,7 +132,7 @@ function EgresoRow({
   const usdLabel  = fmtUSDSecondary(usdAmount)
 
   const ScheduledBadge = () => (
-    <span className="inline-flex items-center gap-1 ts-label-badge text-[var(--color-tax-txt)] border border-[#fdba74] px-1.5 py-0.5 rounded-full">
+    <span className="inline-flex items-center gap-1 ts-label-badge text-[var(--color-tax-txt)] border border-[var(--badge-warning-border)] px-1.5 py-0.5 rounded-full">
       <Clock size={9} />
       Programado
     </span>
