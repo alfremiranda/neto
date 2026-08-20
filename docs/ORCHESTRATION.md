@@ -142,6 +142,28 @@ exist because you did). Its `NEEDS` section is the only thing that escalates to 
 4. **Push-state truth.** When the bridge is available, the sync verifies what is actually on
    `origin/main` vs local claims, and corrects whichever doc is lying.
 
+## Known trap — `.git/HEAD.lock` on the bridge (v3.5.1)
+
+**The bridge VM cannot unlink files, so git cannot clean up after itself.** A *successful* commit
+writes `.git/HEAD.lock`, updates the ref, and then fails to remove the lock — which makes the
+**next** commit die with *"Another git process seems to be running"*, pointing at a process that
+does not exist. Diagnosed 2026-08-20 after it had eaten eight commits and filled `_to_delete/` with
+corpses that everyone had read as crashes.
+
+It is not a crash artifact and it is not intermittent: **every commit made over the bridge leaves
+one.** Sessions committing natively on the Mac (Claude Code) never see it.
+
+The routine, for any session committing over the bridge:
+
+1. Before committing: `mv app/.git/HEAD.lock _to_delete/HEAD.lock.stale<N>` if one exists.
+   **`rm` fails on this VM by design** — moving is the only removal.
+2. Commit.
+3. **Move the new lock aside immediately**, so the next session is not blocked by yours.
+
+Two caveats. A lock only a few minutes old *may* be a live session in the shared tree — check
+`ps aux | grep "[g]it "` and wait rather than removing it. And the
+`unable to unlink ... tmp_obj_*` warnings on every commit have the same cause and are harmless.
+
 ## Handoff conventions
 
 - **Design references arrive as screenshots**, never as claude.ai/design URLs (they 403 for
