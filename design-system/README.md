@@ -41,6 +41,7 @@ docs/                the rules — read these before designing or generating any
 | [`docs/16-marks.md`](docs/16-marks.md) | Third-party marks and flags: the one colour rule that does not apply |
 | [`docs/17-elevation.md`](docs/17-elevation.md) | Four rungs named by role, and why in dark the surface leads instead of the shadow |
 | [`docs/18-consent.md`](docs/18-consent.md) | The consent gate: the legal constraints that shaped every sentence |
+| [`docs/19-choice-rows.md`](docs/19-choice-rows.md) | ChoiceRow and AccountRow, and the focus ring that tinted its own fill |
 
 ## The short version
 
