@@ -91,30 +91,66 @@ decisions and becomes **four rules**: `bg/*` → `FRAME_FILL, SHAPE_FILL`; `fg/*
 name, which is exactly what `§A3.1` asks for — not documenting the rule but making the mistake
 impossible. `codeSyntax` becomes derivable the same way.
 
-### What 1.1 already found (provisional — the census had not converged)
+### What 1.1 found — converged, 2026-08-20
 
-A first run of `_build/naming-analysis.js` returned roughly **90 clear · 16 ambiguous · 32
-unused** out of 138 semantic colours. The counts are not yet trustworthy — two passes disagreed,
-which by `§B4` means they do not get written down as fact. Three findings are structural, though,
-and hold regardless of the exact numbers:
+`_build/naming-analysis.js` now agrees with itself across two consecutive passes, so these are
+facts rather than provisional counts. The cold pass returned **4183** bindings; the converged
+answer is **10108** — 59% low, with no error raised. `§B4` earned its place again.
 
-- **`color/interactive/primary` is doing two jobs.** It is bound heavily as a fill *and* as a
-  stroke. That is not a naming problem, it is one token standing in for two, and the rename
-  should **split** it rather than pick a winner.
-- **`color/border/focus` is not a border.** Its only bindings are effect colours — it is the
-  focus ring, which we draw as two spread shadows. The name has been lying since it was created.
-- **About 32 semantic colours have no direct binding at all**, among them every
-  `color/categorical/*` and five of the six `account-accent/*`. Each is either deletable or
-  reserved-and-documented; a token nobody binds is worse than no token.
+| of 138 semantic colour tokens | |
+|---|---:|
+| bound on a product screen | **48** |
+| bound only in documentation swatches | **58** |
+| bound nowhere at all | **32** |
+| groups holding an identical value | **29** |
+
+**65% of the semantic colour collection does not appear on a single product screen.**
+
+Four findings are structural:
+
+- **`color/interactive/primary` is doing three jobs** — 234 fills, 185 strokes, 18 text. Not a
+  naming problem: one token standing in for three, and 437 bindings that cannot move
+  independently. It **splits**; it does not pick a winner.
+- **`color/border/focus` is not a border.** Zero strokes, twelve effect colours. It is the focus
+  ring shadow and always was. → `shadow/focus`.
+- **`/default` means the opposite thing in adjacent families.** `tax/default` and `net/default`
+  are solid backgrounds; `income/default` is a text colour. Same suffix, opposite property,
+  sibling families — the clearest single argument for property-first.
+- **The two tokens named `brand` are not the brand colour.** They hold sky blue (`#e0f2fe`,
+  `#0284c7`); Neto's brand is cyan (`#0e7490`, `#06b6d4`). Nothing binds them, so nothing ever
+  broke — the name was simply never true.
+
+The disposition of the 90 unbound tokens is a judgement, not a sweep: `color/categorical/*` and
+`color/sequential/*` are unbound because the charts they exist for are **Phase 4**, and
+`account-accent/*` because the mocks contain one account. Written up as Rule 8 in
+`21-token-naming.md`; recorded per token in `_build/naming-map.json`.
+
+**A correction to the instrument came out of this.** The first version bucketed a bound fill as
+foreground only when the node was `TEXT`. It therefore reported
+`color/interactive/primary-foreground` as 110 backgrounds and zero foregrounds — impossible for a
+token that only paints icons. An icon glyph is a `VECTOR`, and it is foreground. The script now
+keeps `text · glyph · shape · box` as separate buckets rather than pre-summing them, so its own
+evidence can be re-argued with. Same lesson as every other defect this month (`§A6`): the counting
+was fine, the instrument was being used outside its range.
 
 The point of deriving the property by counting rather than by choosing is exactly this: it turns
 a naming exercise into an audit, and it surfaces the tokens whose *name* was hiding a second job.
 
 ### The steps
 
-**1.1 · Author the map as a dry run.** `_build/naming-map.json` plus a readable diff: every
-current name, its proposed name, and — where two tokens collapse into one — which survives and
-why. **Nothing is applied.** This file is the thing to review, not the result.
+**1.1 · Author the map as a dry run.** ✅ **done, awaiting review.** `_build/naming-map.json`
+plus the readable diff in `_build/naming-proposal.md`: every current name, its proposed name, and
+— where two tokens collapse into one — which survives and why. The convention it implements is
+`docs/21-token-naming.md`. **Nothing has been applied.** These files are the thing to review, not
+the result. Net effect if approved: 138 tokens → **121**, five tokens doing two jobs → **zero**,
+four vocabularies for "background" → **one**, three families meaning "error" → **one**.
+
+Three questions are open and are blocking 1.2: the convention itself (especially Rule 2, identity
+colours exempt, and Rule 4, the closed ladder); whether `color/income/foreground` holding the
+brand cyan `#0e7490` is a decision or an accident; and the 19 deletions, which are the only part
+that is not reversible. Four of the merges are marked **PENDING** because Light-mode agreement is
+not sufficient — elevation is often carried by fill in Dark and by shadow in Light, so the Dark
+values get checked before those four are applied.
 
 **1.2 · Apply in Figma, in one pass that does four things at once**: rename, derive scopes from
 the property prefix, generate `codeSyntax`, and **write the intent description**. Intent coverage

@@ -53,3 +53,30 @@ sit at 1–2 instances, and those instances are their own documentation previews
 | 2026-08-20 | **never** — `tokens/` frozen at 2026-08-02 | unmeasurable: nothing to compare against |
 
 This row is the reason phase 2 exists. Until the exporter runs once, drift has no number.
+
+## Semantic colour, by whether anything binds it
+
+Produced by `_build/naming-analysis.js`. Only recorded when two consecutive passes agree; the
+`cold` column is the first pass, kept because it is the argument for `§B4`.
+
+| date | tokens | product | doc-only | never bound | duplicate values | bindings (cold → converged) |
+|---|---|---|---|---|---|---|
+| 2026-08-20 | 138 | 48 | 58 | 32 | 29 groups | 4,183 → **10,108** |
+
+**65% of the semantic colour collection does not appear on a product screen.** Ten separate
+tokens hold `#ffffff`; nine hold `#f1f5f9`; four hold `#0f172a`.
+
+The cold pass was 59% low and raised no error. Any future measurement that is reported after one
+pass should be assumed to be wrong by roughly this much.
+
+## Tokens doing more than one job
+
+A token bound to two different properties cannot change for one without changing the other.
+This row should be zero and stays in the log for as long as it is not.
+
+| date | multi-property tokens | worst offender |
+|---|---|---|
+| 2026-08-20 | 5 | `color/interactive/primary` — 234 fills · 185 strokes · 18 text |
+
+Phase 1.2 takes this to 0 by splitting all five. The split is visually free: in every case the
+tokens that come out of it hold the value that went in.
