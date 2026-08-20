@@ -484,3 +484,50 @@ four on the credit-card screen show what that costs:
 Four numeric fields side by side whose only name disappears the moment you type in them. A user
 who fills `Cupo total` and `Deuda actual` is then looking at two numbers with nothing to say which
 is which. This is the case `Field` was built for, and it is live in the flow.
+
+## Onboarding fields, and the brand names — 2026-08-20
+
+**32 bare `Input` instances → 32 `Field` instances**, each with a label that does not disappear
+when the user types. Zero failures, layout verified by screenshot.
+
+Copy generic per Alfredo — *"utiliza placeholders genéricos, no menciones marcas ni franquicias"*:
+
+| label | placeholder |
+|---|---|
+| Nombre de la cuenta | `Ej: Cuenta de ahorros` |
+| Nombre de la tarjeta | `Ej: Tarjeta principal` |
+| Cupo total | `$5.000.000` |
+| Deuda actual | `$1.200.000` |
+| Día de corte | `15` |
+| Día de pago | `5` |
+
+Note which way the four numeric ones went: `Cupo total` was never a placeholder, it was a label in
+a placeholder's slot. Moving it up and putting a real example below it is the whole difference —
+the field keeps its name **and** shows what shape of answer it wants.
+
+### The brand sweep, and a fifth instrument failure
+
+A first pass found 101 text nodes carrying a bank or franchise name. Converged: **402** — under by
+75%, the lazy-loading trap again. The first pattern also matched **In*sura*nce** and **me*nu***,
+because the short brand names were not anchored on both sides.
+
+| page | brand-bearing text nodes |
+|---|---:|
+| `Screens & exploration` | 138 |
+| `Blocks · Containers` | 88 |
+| `Components · Cards` | 72 |
+| `Components · Rows` | 41 |
+| `Screens · Neto (WIP)` | 21 |
+| `Page - Accounts` | 18 |
+| **`Flow - Onboarding`** | **12 → 0** |
+| `Foundations` | 8 |
+
+The onboarding flow is clean: `Bancolombia Ahorros` → `Ahorros principal`, and the long-name edge
+case became `Ahorros Nómina Principal Empresa` — still long, because that frame exists to test
+overflow.
+
+**The other 390 are not placeholders, they are the library's sample content** — `Skandia Ahorro
+Futuro Patrimonio`, `CMR Falabella`, `Cuota Prestamo Vehicular BBVA`, `Toptal → Bancolombia`,
+`SURA EPS`. A wider call than the instruction covered: sample data naming real institutions is
+brand and legal exposure in a system that gets published, but generic names make the mocks less
+convincing. Recorded, not acted on.
