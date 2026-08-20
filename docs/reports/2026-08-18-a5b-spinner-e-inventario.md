@@ -290,3 +290,32 @@ En los casos de Cuentas **dejé «Omitir este paso»** aunque ya haya una cuenta
 arreglo de Dev cubrió explícitamente Moneda y Perfil; en Cuentas «contestado» no está definido —
 Efectivo siempre está incluido, así que el paso nunca está del todo vacío. Aplicar la misma regla
 por analogía habría sido decidir por producto. Va en el mismo lote de preguntas que ya tiene Dev.
+
+---
+
+## Addendum 6 (2026-08-20) — los números de layout a mano
+
+Alfredo vio valores crudos de spacing y gap en la página del onboarding. Los había: **343 gaps y
+106 anchos de borde** sin variable.
+
+**Los 449 tenían token semántico exacto**, así que el arreglo fue enlazar y no redondear: cero
+cambio de píxel. La página queda en **0 · 0 · 0 · 0**, medido dos veces.
+
+**Lo de fondo es que no había chequeo.** `§A3.6` dice desde siempre que toda propiedad visual va
+enlazada —relleno, borde, padding, radio, gap— y el validador sólo miraba relleno y borde. La
+regla existía sin instrumento, que es la forma más silenciosa de no tener una regla. Añadido
+**`C8`**, con las exclusiones que corresponden: `SECTION` y `COMPONENT_SET` (cromo de Figma) y
+todo lo que cuelga de una instancia (geometría del componente, no de la pantalla).
+
+**Y otra vez el mismo modo de fallo de `§A6`.** Enlacé 106 grosores y la auditoría siguió
+diciendo 106. Figma guarda el grosor de borde **por lado** (`strokeTopWeight`…), no en
+`strokeWeight`: el enlace había funcionado y yo comprobaba una clave que me había inventado. Lo
+cacé porque el número no se movió. Un `C8` publicado con esa clave habría reportado 927 falsos
+positivos para siempre.
+
+**El resto del archivo tiene 3.328 más**, y la partición es lo que importa: **2.624 con token
+exacto** (barrido mecánico, sin cambio visual) y **704 fuera de escala**, que son decisiones. De
+esos 704, ~156 son **grosores fraccionarios** (1.083…, 0.916…, 1.25) que nadie eligió — residuo
+de SVG importados y reescalados — y **157 son `radius 10`, un peldaño que no existe en la
+escala**. Propuesto al orquestador en `FYI-2026-08-20-numeros-de-layout-a-mano.md`; no barro el
+resto sin decisión, y dejo fuera `Screens · Neto (WIP)` porque es exploración y no sistema.

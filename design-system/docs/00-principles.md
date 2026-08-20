@@ -87,6 +87,7 @@ through there.
 | `C2` text without a text style | typography escaping the scale |
 | `C3` component without a description | knowledge living only in someone's head |
 | `C4` generic layer name | structure that is illegible to whoever arrives next |
+| `C8` layout number without a variable | a gap, padding, radius or border width typed by hand, drifting off the scale one screen at a time |
 
 ## A6. The failure mode to watch for
 

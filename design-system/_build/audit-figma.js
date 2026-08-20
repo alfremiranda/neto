@@ -31,6 +31,13 @@ const CONFIG = {
   // deuda, es lo correcto — atarlo a un token implicaria que podemos cambiarlo, y no podemos.
   // C1 los salta. Ver design-system/docs/16-marks.md.
   foreignBrand: [/^brand-mark\//],
+  // C8 — propiedades numericas de layout. Figma guarda el grosor de borde POR LADO,
+  // no en `strokeWeight`: comprobar la clave equivocada da 100% de falsos positivos.
+  numeric: {
+    pad: ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'],
+    rad: ['topLeftRadius', 'topRightRadius', 'bottomLeftRadius', 'bottomRightRadius'],
+    sw:  ['strokeTopWeight', 'strokeRightWeight', 'strokeBottomWeight', 'strokeLeftWeight'],
+  },
 };
 
 // ── auditoría de tokens ─────────────────────────────────────────────────────
@@ -126,6 +133,11 @@ async function auditPage(pageId) {
     if (!set.description || !set.description.trim()) add('C3_sin_descripcion', set.name);
   }
 
+  const dentroDeInstancia = n => {
+    for (let a = n.parent; a; a = a.parent) if (a.type === 'INSTANCE') return true;
+    return false;
+  };
+
   const esMarcaAjena = n => {
     for (let a = n; a; a = a.parent)
       if ((CONFIG.foreignBrand || []).some(re => re.test(a.name))) return true;
@@ -145,6 +157,23 @@ async function auditPage(pageId) {
     }
     if (!ajeno && !esSet && unbound(n.fills))   add('C1_fill_sin_variable', path, n.type);
     if (!ajeno && !esSet && unbound(n.strokes)) add('C1b_stroke_sin_variable', path, n.type);
+
+    // C8 — un numero de layout escrito a mano. Las instancias quedan fuera: su geometria
+    // la decide el componente, no la pantalla que lo usa.
+    if (!esSet && n.type !== 'SECTION' && n.type !== 'INSTANCE' && !dentroDeInstancia(n)) {
+      const bv = n.boundVariables || {};
+      const N = CONFIG.numeric;
+      if (n.layoutMode && n.layoutMode !== 'NONE') {
+        if (n.itemSpacing > 0 && !bv.itemSpacing) add('C8_gap_sin_variable', path, n.itemSpacing);
+        if (n.counterAxisSpacing > 0 && !bv.counterAxisSpacing) add('C8_gap_sin_variable', path, n.counterAxisSpacing);
+        for (const k of N.pad) if (n[k] > 0 && !bv[k]) add('C8_padding_sin_variable', path, k + '=' + n[k]);
+      }
+      if ('cornerRadius' in n && n.cornerRadius !== figma.mixed && n.cornerRadius > 0
+          && !N.rad.every(k => bv[k])) add('C8_radius_sin_variable', path, n.cornerRadius);
+      if ('strokeWeight' in n && n.strokeWeight !== figma.mixed && n.strokeWeight > 0
+          && n.strokes && n.strokes.length && !bv.strokeWeight && !N.sw.every(k => bv[k]))
+        add('C8_stroke_width_sin_variable', path, n.strokeWeight);
+    }
   }
 
   return { scope: 'page', page: page.name, violaciones: V };
