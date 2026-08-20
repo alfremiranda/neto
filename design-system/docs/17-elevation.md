@@ -190,17 +190,17 @@ off slate's hue and reads as a different grey.
 | `bg/surface` | slate-850 | 12.2 | +4.2 |
 | `bg/subtle` | slate-800 | 16.4 | +4.2 |
 | `bg/raised` | slate-750 | 21.8 | +5.4 |
-| `bg/menu` | slate-700 | 27.1 | +5.3 |
-| `bg/popover` | slate-700 | 27.1 | **0** |
+| `bg/anchored` | slate-700 | 27.1 | +5.3 |
 | `bg/floating` | slate-650 | 31.5 | +4.4 |
 | `bg/overlay` | slate-600 | 35.7 | +4.2 |
 
 Monotonic, eight distinct levels for nine tokens, every step between 4.2 and 6.1 L*.
 
-`bg/menu` and `bg/popover` share a rung **on purpose**: §2 of this document treats them as the same
-question — *is it tied to what you pressed, gone when you look away?* A popover and a menu answer it
-the same way, so they get the same height. That is the one share, and it is a decision rather than
-a leftover.
+**Correction, same day.** The two tokens sharing that rung were `bg/menu` and `bg/popover`, and
+Alfredo pointed out that both are component names — inconsistent with having just renamed
+`wrap/card` to `bg/surface` for exactly that reason. They collapsed into **`bg/anchored`**, named
+for §2's question rather than for the widgets that answer it. The ladder now has **nine tokens at
+eight levels with no share**, because there are only eight tokens. See `21-token-naming.md` Rule 10.
 
 ### A principle that fell out of this
 

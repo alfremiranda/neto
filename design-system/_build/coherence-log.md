@@ -187,3 +187,19 @@ same question. A decision, not a leftover.
 
 `T9` re-run after the change: **20**, unchanged. No regression, and the two false positives from a
 documentation swatch named `default` are gone now that the exclusion covers it.
+
+## Rule 10 · tokens named after components — 2026-08-20
+
+| date | semantic colour tokens | named after a component |
+|---|---:|---:|
+| 2026-08-20 | 121 | **0** |
+
+`bg/menu` + `bg/popover` → `bg/anchored`. The dark elevation ladder now has **eight tokens at eight
+distinct levels and no share**.
+
+The mechanical check was tried and rejected: matching token name segments against the 182 component
+names in the file found `bg/popover`, missed `bg/menu` (nothing in the file is called "menu"), and
+falsely flagged `fg/info` and `brand/logo-*`. The dependency direction is what matters — the Badge's
+`info` variant is named after the token, not the other way round — and a script cannot see
+direction. Rule 10 is therefore a review question, not an automated check. Recorded so nobody
+rebuilds the script.

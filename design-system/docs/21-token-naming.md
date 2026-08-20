@@ -153,6 +153,45 @@ an alpha ladder when a design needs one, at the same six rungs.
 Pure black and white alphas stay in Primitives. A scrim has exactly one job, so it gets a name
 that says the job - `bg/scrim` - not a rung.
 
+## Rule 10 · A token is named for the question it answers, not for the thing that uses it
+
+Alfredo, reviewing the elevation ladder: *"canvas, container, menu, popover parecen nombres de
+componentes."* He was right, and it was an inconsistency in my own work — I had renamed
+`wrap/card` to `bg/surface` arguing that *"card is a component, surface is the role"*, and in the
+same pass left `bg/menu` and `bg/popover` standing.
+
+The test is a question, not a word list:
+
+> **Could this name be a component?** If it is a UI object — card, menu, popover, sheet, tooltip,
+> drawer — the token has borrowed its name from something that merely *sits on* it. Replace it with
+> the relationship or the position the token actually expresses.
+
+`surface` · `raised` · `anchored` · `floating` · `overlay` · `sunken` · `canvas` · `scrim` are
+positions and relationships. `card` · `menu` · `popover` are objects. The first set survives a
+component being renamed tomorrow; the second does not.
+
+### The mechanical version of this test does not work, and that is worth knowing
+
+I tried it first: match every token name segment against every component name in the file. 182
+component names, 122 tokens. It found `bg/popover` — and **missed `bg/menu` entirely**, because no
+component in the file happens to be called "menu". It also flagged three names that are fine:
+
+| flagged | why it is fine |
+|---|---|
+| `fg/info`, `bg/info-subtle` | `info` is a **tone**. The Badge has an `info` variant *because* the token exists — the dependency runs the other way. |
+| `brand/logo-mark`, `brand/logo-bg` | brand identity, Rule 2 territory. |
+
+So the real question is **which came first**. If the component was named after the token, the token
+is fine. If the token was named after the component, it is borrowed. A script cannot see direction;
+a person can, in about two seconds.
+
+### Applied
+
+`bg/menu` and `bg/popover` collapse into **`bg/anchored`** — the rung whose question is *"is it tied
+to what you pressed, gone when you look away?"* A menu and a popover answer that question
+identically, so they were never two rungs. Visually free: they already held the same value in both
+modes. The elevation ladder now has **no shared rungs at all**.
+
 ---
 
 ## What this replaces
