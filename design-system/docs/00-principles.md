@@ -78,14 +78,33 @@ Applied by measuring, not by reading names: for every boolean, find the node its
 controls, ask whether that node is an `Icon` instance, and ask whether it sits before or after the
 text in its parent's order. 22 properties renamed, 31 booleans now consistent.
 
-**One distinction the rule does not make, and that measurement forced:** two booleans hide an icon
-and were left alone. `AccountCard :: Show Favorite` and `outcome-itemrow :: Monthly` name a
-*meaning*, not a *slot* — the glyph is fixed and the boolean says what it signifies. A Button's
-leading icon can be anything; a favourite star is always a star. Renaming those to
-`Show Trailing Icon` would satisfy the rule and delete the information. So:
+**A distinction the rule did not make at first, ratified by Alfredo the same day** — *"si hay
+propósito en el icono y no es genérico ahí aplica la regla que probaste"*:
 
 > **A generic icon slot takes the positional name. An icon that always means one thing keeps the
 > name of the thing.**
+
+`AccountCard :: Show Favorite` and `outcome-itemrow :: Monthly` both hide an icon and both stay.
+Their boolean names a *meaning*, not a *slot* — the glyph is fixed and the property says what it
+signifies. A Button's leading icon can be anything; a favourite star is always a star. Renaming
+those would satisfy the rule and delete the information.
+
+### The near-miss that came with it
+
+The same sweep reported `SavingsCard :: Show Maturity` as a boolean controlling **no node at all**,
+and 36 instances were carrying it. A switch with no wire is worse than a missing one, so it was
+about to be deleted — and a last check before the delete found it controls **three** nodes, on the
+`Type=CDT` variant. My scan had sampled **only the first variant** of each set and generalised.
+
+A CDT has a maturity date and a plain savings account does not. The design was right; the
+instrument was wrong, and it was wrong in the way that deletes working design rather than the way
+that merely miscounts.
+
+This is the fourth instrument failure recorded this month and they all have one shape: **sampling
+one member and speaking for the set.** `TEXT` for foreground, one string match for a component
+name, one component for a token's consumers, one variant for a property. The countermeasure is the
+same each time — before an irreversible step, run the check against every member, not the first
+one.
 
 ## A4. The definition of done
 
