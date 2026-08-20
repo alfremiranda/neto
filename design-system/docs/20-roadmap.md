@@ -91,6 +91,25 @@ decisions and becomes **four rules**: `bg/*` → `FRAME_FILL, SHAPE_FILL`; `fg/*
 name, which is exactly what `§A3.1` asks for — not documenting the rule but making the mistake
 impossible. `codeSyntax` becomes derivable the same way.
 
+### What 1.1 already found (provisional — the census had not converged)
+
+A first run of `_build/naming-analysis.js` returned roughly **90 clear · 16 ambiguous · 32
+unused** out of 138 semantic colours. The counts are not yet trustworthy — two passes disagreed,
+which by `§B4` means they do not get written down as fact. Three findings are structural, though,
+and hold regardless of the exact numbers:
+
+- **`color/interactive/primary` is doing two jobs.** It is bound heavily as a fill *and* as a
+  stroke. That is not a naming problem, it is one token standing in for two, and the rename
+  should **split** it rather than pick a winner.
+- **`color/border/focus` is not a border.** Its only bindings are effect colours — it is the
+  focus ring, which we draw as two spread shadows. The name has been lying since it was created.
+- **About 32 semantic colours have no direct binding at all**, among them every
+  `color/categorical/*` and five of the six `account-accent/*`. Each is either deletable or
+  reserved-and-documented; a token nobody binds is worse than no token.
+
+The point of deriving the property by counting rather than by choosing is exactly this: it turns
+a naming exercise into an audit, and it surfaces the tokens whose *name* was hiding a second job.
+
 ### The steps
 
 **1.1 · Author the map as a dry run.** `_build/naming-map.json` plus a readable diff: every
