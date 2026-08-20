@@ -1,7 +1,7 @@
 {
   "version": "1.2-approved-pending-application",
   "date": "2026-08-20",
-  "status": "CONVENTION APPROVED by Alfredo 2026-08-20. Still nothing applied to Figma.",
+  "status": "CONVENTION APPROVED. income = blue, net = brand cyan. Still nothing applied to Figma.",
   "convention": "../docs/21-token-naming.md",
   "scope": "Semantic collection, COLOR only (138 variables). Primitives, Component and Typography are out of scope for 1.1.",
   "measurement": {
@@ -620,57 +620,120 @@
     "deletions": "approved — the 19 listed under `delete` go."
   },
   "incomeReassignment": {
-    "why": "color/income/default was cyan-600 (#0891b2), color/income/foreground was cyan-700 (#0e7490) and color/income/surface was cyan-50 (#ecfeff). All three sit on the brand scale. Neto's brand is cyan-500/700. Confirmed by Alfredo as an accident.",
-    "newFamily": "green (hue 142°, 47° away from the brand cyan at 189°). It was the only unclaimed green family — emerald, teal and lime are already spoken for.",
+    "why": "color/income/default was cyan-600 (#0891b2), income/foreground was cyan-700 (#0e7490) and income/surface was cyan-50 (#ecfeff). All three sat on the brand scale.",
+    "history": "A first proposal put income on green. Alfredo rejected it: he wants a blue, distinct from the brand cyan.",
+    "newFamily": "blue (#3b82f6 family, hue 221°) — 32° from the brand cyan at 189°. The only unclaimed rungs are 700 and 900; blue-600 belongs to category/bank.",
     "moves": [
       {
         "token": "fg/income",
         "from": "#0891b2 cyan-600",
-        "to": "#15803d green-700",
-        "contrastOnWhite": 5.02,
-        "contrastOnBgSubtle": 4.58,
-        "note": "AA for body text on both surfaces. This is the dominant income use — the number in a row."
+        "to": "#1d4ed8 blue-700",
+        "contrastOnWhite": 6.7,
+        "note": "the dominant income use — the figure in a row. Comfortably AA, close to AAA."
       },
       {
         "token": "fg/income-strong",
         "from": "#0e7490 cyan-700",
-        "to": "#166534 green-800",
-        "contrastOnWhite": 7.13,
-        "note": "AAA on white"
+        "to": "#1e3a8a blue-900",
+        "contrastOnWhite": 10.36
       },
       {
         "token": "bg/income",
         "from": "#0891b2 cyan-600",
-        "to": "#16a34a green-600",
-        "contrastOnWhite": 3.3,
-        "WARN": "white text on this solid is 3.30:1 — large text only. If a solid income chip needs body-size text, the fill has to drop to green-700."
+        "to": "#2563eb blue-600",
+        "whiteTextOnIt": 5.17,
+        "note": "white body text on the solid passes AA at 5.17. The green proposal only reached 3.30 and needed a large-text caveat — that caveat is gone."
       },
       {
         "token": "bg/income-subtle",
         "from": "#ecfeff cyan-50",
-        "to": "#f0fdf4 green-50"
+        "to": "#eff6ff blue-50"
       }
-    ]
+    ],
+    "sideEffect": "the provision question disappears. Against blue at 221°, provision (emerald, 161°) sits 60° away instead of the 19° it had against green. Provision stays emerald and needs no move."
   },
   "adjacencyFindingsRaisedByThisChange": [
     {
-      "finding": "income (green-600, hue 142°) now sits 19° from provision (emerald-600, hue 161°).",
-      "whyItMatters": "The monthly summary tells one story — ingresos → gastos → provisión → neto — so these four almost certainly appear on the same screen. 19° of hue separation between two positive-money figures is thin.",
-      "proposal": "move provision to teal-700 (#0f766e, hue 175°, contrast 5.47 on white). That gives income↔provision 33° instead of 19°, and teal-700 is unclaimed — only teal-600 is, by category/home.",
-      "cost": "20 product bindings",
-      "status": "PROPOSED — not in the rename above. Needs your call."
+      "severity": "RESOLVED",
+      "finding": "net is sky-600 (#0284c7, hue 200°). Income at blue-600 is 221°. That is 20.8° between the two figures that sit next to each other in every monthly summary.",
+      "compounding": "net is also only 11.7° from the brand cyan (189°) — the same defect Alfredo called on income. Sky is squeezed between the brand on one side and any blue we give income on the other. There is no rung of sky that fixes both.",
+      "conclusion": "net has to move off sky. This is not optional once income is blue.",
+      "optionA_recommended": {
+        "proposal": "net becomes neutral — fg/net = fg/default (slate-900), no hue of its own.",
+        "argument": "net is the RESULT, not a component. Income, expense, tax and provision are the ingredients and each earns a hue; the total should read as the total. It also costs nothing — the value already exists — and it takes a hue out of an already crowded palette.",
+        "bonus": "when net is negative it takes fg/expense (red). The sign carries the meaning instead of the hue, which is more honest than colouring a number blue whether it is good news or bad."
+      },
+      "optionB": {
+        "proposal": "net = violet-700 (#6d28d9, hue 263°, contrast 7.10)",
+        "argument": "keeps net as a distinct hue. 42° from income, 74° from the brand. Violet is entirely unclaimed.",
+        "cost": "one more hue to hold in your head, on the number that matters most."
+      },
+      "cost": "10 product bindings either way",
+      "resolution": "net takes the brand cyan. See netDecision. Options A (neutral) and B (violet) are withdrawn."
     },
     {
-      "finding": "net is sky-600 (#0284c7, hue 200°) and the brand is cyan-500 (#06b6d4, hue 189°). 11° apart.",
-      "whyItMatters": "This is the same defect you just called on income, one family over. A different Tailwind scale is not the same as a different colour — sky-600 next to the brand cyan reads as brand.",
-      "proposal": "no recommendation yet. net is the headline number of the whole app, so its hue is a product decision rather than a cleanup. Flagging it while we are in here.",
-      "cost": "10 product bindings",
-      "status": "RAISED — decide separately."
+      "severity": "tolerable — flagged, not fixed",
+      "finding": "bg/income (blue-600) is the same value as category/bank (blue-600).",
+      "whyItIsProbablyFine": "they occupy different visual roles — a category is a small glyph in a tinted chip, income is a figure or a bar. fg/income sits a rung darker at blue-700, so the two rarely render at the same value.",
+      "ifItBothersYou": "move category/bank to violet-600. Categories are arbitrary identity hues; the domain palette is not."
+    },
+    {
+      "severity": "resolves itself",
+      "finding": "category/work is also sky-600 — the identical value to net today.",
+      "note": "whichever way net moves, this duplicate stops being one."
     }
   ],
   "newLadderCounts": {
     "note": "Rule 4 defines six rungs and Rule 9 six alpha rungs, but neither pre-generates anything (Rule 4, 'a vocabulary, not an inventory').",
     "semanticColourAfter": 121,
     "mintedByThisRound": "0 — the four alpha tokens above already existed under misleading names."
+  },
+  "netDecision": {
+    "proposedBy": "Alfredo, 2026-08-20: 'depronto Net puede ser el mismo color de brand Neto, ya que la app se llama Neto y este valor al fin es neto'",
+    "verdict": "ACCEPTED — and it is stronger than either option I offered.",
+    "theObjectionIHad": "a hue cannot mean both 'this is tappable' and 'this is a number'. If cyan is the primary button AND the net figure, colour stops being a reliable affordance signal.",
+    "whyTheObjectionDied": {
+      "measurement": "converged, three passes at 18/18/18",
+      "finding": "color/interactive/primary has exactly 18 TEXT bindings and every one of them is an onboarding eyebrow: 'PASO 1 DE 3' (4), 'PASO 2 DE 3' (8), 'PASO 3 DE 3' (6). Not one link, not one text button.",
+      "conclusion": "cyan text does not currently mean 'tappable' in this file. Nothing has to be given up for it to mean 'net'."
+    },
+    "whereBgNetActuallyLives": {
+      "measurement": "color/net/default paints the DistribucionCard bar segment (125x16), the chart-legend dot (6x6), the KPI card swatch and two container bars.",
+      "conclusion": "bg/net is chart geometry, not a button-shaped surface. A cyan segment sitting next to income-blue, expense-red and tax-amber in the distribution bar does not read as a control — it reads as the total, which is exactly the intent."
+    },
+    "implementation": [
+      {
+        "token": "fg/net",
+        "aliases": "fg/brand (cyan-700 #0e7490, 5.36 on white)",
+        "why": "Rule 7 — different job, different token, same value through an alias. Reusing fg/brand directly would weld 24 bindings together and make decoupling later a re-bind instead of a value change."
+      },
+      {
+        "token": "bg/net",
+        "aliases": "bg/brand"
+      },
+      {
+        "token": "bg/net-subtle",
+        "aliases": "bg/brand-alpha-10"
+      }
+    ],
+    "conditions": [
+      {
+        "condition": "the 18 eyebrow labels move off cyan to fg/subtle",
+        "why": "once cyan means net, a cyan 'PASO 2 DE 3' is a false signal. This is the whole cost of the decision: eighteen bindings on three strings."
+      },
+      {
+        "condition": "fg/brand stops existing as a general-purpose token",
+        "why": "after the eyebrows move, its only remaining job IS the net figure. Two names for one job is Rule 7 backwards. There is no fg/brand; there is fg/net."
+      },
+      {
+        "condition": "a negative net takes fg/expense",
+        "why": "this is what turns the idea from colour reuse into a real semantic. The sign carries the meaning, not the hue — and brand cyan then means 'estás en positivo', which is a good thing for a brand colour to mean in a planner."
+      }
+    ],
+    "sideEffects": [
+      "sky-600 is freed. category/work stops being a duplicate of net.",
+      "the 11.7° net-to-brand collision does not get fixed, it gets dissolved: net is not NEAR the brand, it IS the brand. Nothing left to confuse.",
+      "income-blue (221°) sits 32° from the brand cyan (189°) and 60° from provision emerald. The whole domain palette separates cleanly for the first time."
+    ]
   }
 }

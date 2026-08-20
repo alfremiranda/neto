@@ -263,3 +263,76 @@ decisión de producto y no una limpieza. Lo dejo señalado mientras estamos dent
 Con la convención aprobada, la fase 1.2 puede correr en cuanto decidas lo de `provision`. Aplica
 las cuatro cosas en una sola pasada: renombrar, derivar los scopes del prefijo de propiedad,
 generar `codeSyntax` y escribir la descripción de intención de cada token.
+
+---
+
+# Ronda 3 — income en azul, y net como la marca
+
+## Income: green fuera, blue dentro
+
+| token | ahora | contraste |
+|---|---|---:|
+| `fg/income` | `#1d4ed8` blue-700 | **6.70** sobre blanco |
+| `fg/income-strong` | `#1e3a8a` blue-900 | **10.36** |
+| `bg/income` | `#2563eb` blue-600 | **5.17** para texto blanco encima |
+| `bg/income-subtle` | `#eff6ff` blue-50 | — |
+
+Blue mejora lo que green no podía: el aviso que te di ayer — "texto blanco sobre `bg/income` solo
+sirve en tamaño grande" — **desaparece**. Blue-600 pasa AA con texto de cuerpo.
+
+Y de paso **se cae la pregunta de `provision`**: contra el azul (221°), emerald está a 60°, no a
+los 19° que tenía contra el verde. Provision se queda donde está. Una decisión menos.
+
+## Net como color de marca — tenía una objeción y la medición la mató
+
+Mi objeción era esta: un matiz no puede significar a la vez *"esto se toca"* y *"esto es una
+cifra"*. Si el cyan es el botón primario **y** el neto, el color deja de ser una señal fiable de
+que algo es interactivo.
+
+Fui a medir. `color/interactive/primary` tiene exactamente **18 bindings de texto**, convergido a
+tres pasadas (18/18/18), y **los 18 son el mismo eyebrow de onboarding**:
+
+| texto | bindings |
+|---|---:|
+| `PASO 1 DE 3` | 4 |
+| `PASO 2 DE 3` | 8 |
+| `PASO 3 DE 3` | 6 |
+
+Ni un enlace. Ni un botón de texto. **El cyan en texto hoy no significa "tocable" en este
+archivo**, así que no hay que renunciar a nada para que signifique "neto".
+
+Fui también a ver dónde vive `bg/net`, que era el otro riesgo — un relleno cyan podía leerse como
+botón. Son la **barra de `DistribucionCard`** (125×16), el **punto de la leyenda** (6×6), el swatch
+del KPI y dos barras de contenedor. Es geometría de gráfico, no superficie de control. Un segmento
+cyan junto al azul de income, el rojo de expense y el ámbar de tax no se lee como algo que se
+pulsa: se lee como el total. Que es justo lo que quieres decir.
+
+**Así que sí, y creo que es mejor que las dos opciones que te propuse.** Ninguna de ellas explicaba
+por qué el número se llama como la app.
+
+### Cómo lo implemento
+
+`fg/net` **aliasa** a `fg/brand`, no lo reutiliza. Regla 7: trabajo distinto, token distinto,
+mismo valor por alias. Si algún día quieres separarlos, cambias un valor en vez de volver a
+enlazar 24 nodos.
+
+### Tres condiciones
+
+1. **Los 18 eyebrows salen del cyan**, a `fg/subtle`. Una vez que cyan significa neto, un
+   `PASO 2 DE 3` en cyan es una señal falsa. Ese es el costo entero de la decisión: 18 bindings
+   sobre tres cadenas de texto.
+2. **`fg/brand` deja de existir como token de uso general.** Cuando los eyebrows se muevan, su
+   único trabajo restante *es* la cifra de neto. Dos nombres para un trabajo es la Regla 7 al
+   revés. No hay `fg/brand`: hay `fg/net`.
+3. **Un neto negativo toma `fg/expense`.** Esto es lo que convierte la idea en una semántica de
+   verdad y no en reutilización de color: el signo carga el significado, no el matiz. Y entonces
+   el cyan de marca pasa a querer decir *"estás en positivo"*, que no es mala cosa para el color
+   de marca de un planeador.
+
+### Lo que se arregla solo
+
+- **Se libera sky-600.** `category/work` deja de ser un duplicado de net.
+- Los 11.7° entre net y la marca no se corrigen: **se disuelven**. Net ya no está *cerca* de la
+  marca, *es* la marca. No queda nada que confundir.
+- Con income en 221°, la paleta de dominio se separa limpiamente por primera vez: expense 0°,
+  tax 43°, provision 161°, net/marca 189°, income 221°.
