@@ -546,3 +546,31 @@ value is being specific.
 
 Recorded here because the previous version of this entry framed the 390 as a defect, and a wrong
 finding in the log is worse than no finding: someone would have acted on it.
+
+## Input, after Alfredo removed the trailing icon from `Filled=False` — 2026-08-20
+
+He fixed it at the component level, which is the right layer: **the `trailing-icon` node no longer
+exists on any of the 15 `Filled=False` variants**, and exists on all 15 `Filled=True`. So the clear
+affordance can no longer be inherited by an empty field at all — my earlier fix had only turned it
+off on 32 instances, one at a time, which would have drifted back the moment someone made a new one.
+
+The rule is now structural instead of remembered: **a field can only offer to clear itself if it
+has something to clear.**
+
+### One variant had lost its wiring
+
+Walking all 30 to confirm the change turned up an unrelated defect:
+
+| variant | leading-icon | value | trailing-icon |
+|---|---|---|---|
+| `Filled=True, State=Focused, Size=MD` | **unwired** | **unwired** | **unwired** |
+| every other variant | bound | bound | bound |
+
+On that one variant `value`, `Show Leading Icon` and `Show Trailing Icon` did nothing — an instance
+set to it would lose its text and both toggles, silently. Rewired from its healthy sibling
+`Filled=True, State=Focused, Size=SM`. All 30 verified clean afterwards.
+
+Same shape as the `Show Maturity` near-miss two entries up: **one member of a set differing from its
+siblings, invisible unless you walk every member.** That is now three findings from the same habit,
+and it is worth stating as a check rather than a habit — a variant whose children are wired
+differently from its siblings is a defect, and it is mechanical to detect.
