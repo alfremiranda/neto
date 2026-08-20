@@ -90,3 +90,48 @@ It was not there when it was built — it sat loose at the bottom of the page, a
 things that "done" means.
 
 Header after: **15 components · 112 variants**, recomputed from the page rather than incremented.
+
+---
+
+## DatePicker and MoneyInput retired — 2026-08-20
+
+Alfredo, after updating `Input` himself: *"no solo Money Input, también debería ser Date picker."*
+
+**The measurement made it free.** Every instance of both components — 6 `DatePicker`, 10
+`MoneyInput` — was its own dark-mode documentation preview. Neither appeared on a single product
+screen. Retiring them changed nothing a user can see.
+
+What they actually were:
+
+| | structure | what it really is |
+|---|---|---|
+| `DatePicker` | `icon(calendar)` + `TEXT` | an Input with a calendar glyph, **and no label at all** |
+| `MoneyInput` | `label TEXT` + `field INSTANCE(Input)` | already a Field — a label wrapping an Input — welded to money, with the label modelled as a *variant* |
+
+So `MoneyInput` was the prototype of `Field` without knowing it, and `DatePicker` was the case that
+proved the point: a date field with no name on it.
+
+Both are now compositions, shown in `doc: Field` under the variants:
+
+    date field   = Field + Input, leading glyph `calendar`
+    money field  = Field + Input, leading glyph `banknote`
+
+`Components · Forms`: **15 components · 112 variants → 13 · 102**, recomputed from the page.
+
+`Calendar` and `Calendar Day` stay. A date field opens a calendar; only the *trigger* was ever
+duplicated.
+
+## Alfredo's Input update, audited
+
+He rebuilt `Input` before this: a trailing icon that can carry a clear affordance, a `Hover` state,
+a `Filled` axis, and rebound variables. 2 × 5 × 3 = **30 variants**.
+
+Audited per `§A4` because the rule applies to every component, not only to the ones I build:
+**zero unbound colours, zero raw layout numbers, across all 30 variants.**
+
+One thing found and fixed: the set carried `leadingIcon` and `trailingicon` — same component, two
+capitalisation conventions. Renamed to `trailingIcon`.
+
+**Still open, and it is a system-level question rather than a typo:** `Button` exposes
+`Show leading Icon`, `Input` exposes `leadingIcon`, `ChoiceRow` exposes `Show media`. Three
+conventions for "is this optional part visible". Worth one decision, applied everywhere.
