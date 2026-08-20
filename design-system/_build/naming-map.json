@@ -1,10 +1,9 @@
 {
-  "version": "1.1-dryrun",
+  "version": "1.2-approved-pending-application",
   "date": "2026-08-20",
-  "status": "PROPOSAL — nothing has been applied to Figma",
+  "status": "CONVENTION APPROVED by Alfredo 2026-08-20. Still nothing applied to Figma.",
   "convention": "../docs/21-token-naming.md",
   "scope": "Semantic collection, COLOR only (138 variables). Primitives, Component and Typography are out of scope for 1.1.",
-
   "measurement": {
     "instrument": "_build/naming-analysis.js",
     "converged": true,
@@ -18,82 +17,299 @@
     "duplicateValueGroups": 29,
     "headline": "90 of 138 semantic colour tokens (65%) do not appear on a single product screen."
   },
-
   "rename": [
-    { "from": "color/wrap/default",        "to": "bg/canvas",        "prod": 89,   "note": "the page itself" },
-    { "from": "color/wrap/subtle",         "to": "bg/subtle",        "prod": 111 },
-    { "from": "color/wrap/card",           "to": "bg/surface",       "prod": 189,  "note": "'card' is a component; 'surface' is the role" },
-    { "from": "color/surface/inverse",     "to": "bg/inverse",       "prod": 4 },
-    { "from": "color/surface/popover",     "to": "bg/popover",       "prod": 0 },
-    { "from": "color/surface/elevation/floating", "to": "bg/floating", "prod": 0 },
-    { "from": "color/surface/elevation/menu",     "to": "bg/menu",     "prod": 0 },
-    { "from": "color/surface/elevation/overlay",  "to": "bg/overlay",  "prod": 0 },
-
-    { "from": "color/foreground/default",   "to": "fg/default",      "prod": 641 },
-    { "from": "color/foreground/subtle",    "to": "fg/subtle",       "prod": 1639, "warn": "28 bindings are STROKES. They repoint to the new border/subtle." },
-    { "from": "color/foreground/on-inverse","to": "fg/on-inverse",   "prod": 0 },
-
-    { "from": "color/border/default",       "to": "border/default",  "prod": 503,  "warn": "88 bindings are FILLS on 1px shapes. Audit item, not a rename." },
-    { "from": "color/border/strong",        "to": "border/strong",   "prod": 0 },
-    { "from": "color/border/overlay-primary","to": "border/brand",   "prod": 32,   "note": "#06b6d480 — the translucent brand edge" },
-
-    { "from": "color/shadow/key",           "to": "shadow/key",      "prod": 0 },
-    { "from": "color/shadow/ambient",       "to": "shadow/ambient",  "prod": 0 },
-    { "from": "color/border/focus",         "to": "shadow/focus",    "prod": 0,
-      "HEADLINE": "0 stroke bindings, 12 effect bindings. This token has never once been a border. The name has been lying since it was created." },
-
-    { "from": "color/interactive/primary-foreground",     "to": "fg/on-brand",     "prod": 70 },
-    { "from": "color/overlay/brand",                      "to": "bg/brand-subtle", "prod": 28, "note": "#06b6d41a — 10%" },
-    { "from": "color/interactive/primary-overlay-subtle", "to": "bg/brand-muted",  "prod": 32,
-      "note": "#06b6d433 — 20%. It is currently called 'subtle' while being the STRONGER of the two brand tints. The ladder is corrected here." },
-    { "from": "color/interactive/secondary-foreground",   "to": "fg/on-subtle",    "prod": 46 },
-
-    { "from": "color/status/hover",    "to": "bg/hover",    "prod": 0 },
-    { "from": "color/status/active",   "to": "bg/active",   "prod": 0 },
-    { "from": "color/status/selected", "to": "bg/selected", "prod": 0 },
-    { "from": "color/status/disabled", "to": "bg/disabled", "prod": 0 },
-
-    { "from": "color/feedback/success",  "to": "bg/success-subtle" },
-    { "from": "color/feedback/warning",  "to": "bg/warning-subtle" },
-    { "from": "color/feedback/info",     "to": "bg/info-subtle" },
-    { "from": "color/feedback/neutral",  "to": "bg/neutral-subtle" },
-    { "from": "color/feedback/danger",   "to": "bg/danger-subtle" },
-    { "from": "color/feedback/success-emphasis", "to": "fg/success" },
-    { "from": "color/feedback/warning-emphasis", "to": "fg/warning" },
-    { "from": "color/feedback/info-emphasis",    "to": "fg/info" },
-    { "from": "color/feedback/neutral-emphasis", "to": "fg/neutral" },
-    { "from": "color/feedback/danger-emphasis",  "to": "fg/danger", "prod": 2 },
-
-    { "from": "color/income/surface",    "to": "bg/income-subtle",    "prod": 8 },
-    { "from": "color/expense/surface",   "to": "bg/expense-subtle" },
-    { "from": "color/expense/foreground","to": "fg/expense-strong" },
-    { "from": "color/net/default",       "to": "bg/net",              "prod": 10 },
-    { "from": "color/net/foreground",    "to": "fg/net",              "prod": 5 },
-    { "from": "color/net/surface",       "to": "bg/net-subtle" },
-    { "from": "color/tax/default",       "to": "bg/tax",              "prod": 10 },
-    { "from": "color/tax/foreground",    "to": "fg/tax",              "prod": 10 },
-    { "from": "color/tax/surface",       "to": "bg/tax-subtle" },
-    { "from": "color/provision/foreground", "to": "fg/provision-strong", "prod": 9 },
-    { "from": "color/provision/surface",    "to": "bg/provision-subtle" },
-    { "from": "color/danger/foreground",    "to": "fg/danger-strong" },
-
-    { "from": "color/account/foreground", "to": "fg/account",     "prod": 100 },
-    { "from": "color/account/surface",    "to": "bg/account",     "prod": 93 },
-    { "from": "color/account/border",     "to": "border/account", "prod": 92 },
-    { "from": "color/live/default",       "to": "bg/live",        "prod": 9 },
-    { "from": "color/live/ring",          "to": "bg/live-ring",   "prod": 9 },
-    { "from": "color/logo/bg",            "to": "brand/logo-bg",  "prod": 30 },
-    { "from": "color/logo/primary",       "to": "brand/logo-mark","prod": 30 }
+    {
+      "from": "color/wrap/default",
+      "to": "bg/canvas",
+      "prod": 89,
+      "note": "the page itself"
+    },
+    {
+      "from": "color/wrap/subtle",
+      "to": "bg/subtle",
+      "prod": 111
+    },
+    {
+      "from": "color/wrap/card",
+      "to": "bg/surface",
+      "prod": 189,
+      "note": "'card' is a component; 'surface' is the role"
+    },
+    {
+      "from": "color/surface/inverse",
+      "to": "bg/inverse",
+      "prod": 4
+    },
+    {
+      "from": "color/surface/popover",
+      "to": "bg/popover",
+      "prod": 0
+    },
+    {
+      "from": "color/surface/elevation/floating",
+      "to": "bg/floating",
+      "prod": 0
+    },
+    {
+      "from": "color/surface/elevation/menu",
+      "to": "bg/menu",
+      "prod": 0
+    },
+    {
+      "from": "color/surface/elevation/overlay",
+      "to": "bg/overlay",
+      "prod": 0
+    },
+    {
+      "from": "color/foreground/default",
+      "to": "fg/default",
+      "prod": 641
+    },
+    {
+      "from": "color/foreground/subtle",
+      "to": "fg/subtle",
+      "prod": 1639,
+      "warn": "28 bindings are STROKES. They repoint to the new border/subtle."
+    },
+    {
+      "from": "color/foreground/on-inverse",
+      "to": "fg/on-inverse",
+      "prod": 0
+    },
+    {
+      "from": "color/border/default",
+      "to": "border/default",
+      "prod": 503,
+      "warn": "88 bindings are FILLS on 1px shapes. Audit item, not a rename."
+    },
+    {
+      "from": "color/border/strong",
+      "to": "border/strong",
+      "prod": 0
+    },
+    {
+      "from": "color/border/overlay-primary",
+      "to": "border/brand-alpha-50",
+      "prod": 32,
+      "note": "#06b6d480 — the translucent brand edge",
+      "supersedes": "border/brand",
+      "rule9": "#06b6d480 = cyan-500 at 50%. Was proposed as border/brand."
+    },
+    {
+      "from": "color/shadow/key",
+      "to": "shadow/key",
+      "prod": 0
+    },
+    {
+      "from": "color/shadow/ambient",
+      "to": "shadow/ambient",
+      "prod": 0
+    },
+    {
+      "from": "color/border/focus",
+      "to": "shadow/focus",
+      "prod": 0,
+      "HEADLINE": "0 stroke bindings, 12 effect bindings. This token has never once been a border. The name has been lying since it was created."
+    },
+    {
+      "from": "color/interactive/primary-foreground",
+      "to": "fg/on-brand",
+      "prod": 70
+    },
+    {
+      "from": "color/overlay/brand",
+      "to": "bg/brand-alpha-10",
+      "prod": 28,
+      "note": "#06b6d41a — 10%",
+      "supersedes": "bg/brand-subtle",
+      "rule9": "#06b6d41a = cyan-500 at 10%. Was proposed as bg/brand-subtle; Rule 9 says an alpha value is named by its number, not by an adjective."
+    },
+    {
+      "from": "color/interactive/primary-overlay-subtle",
+      "to": "bg/brand-alpha-20",
+      "prod": 32,
+      "note": "#06b6d433 — 20%. It is currently called 'subtle' while being the STRONGER of the two brand tints. The ladder is corrected here.",
+      "supersedes": "bg/brand-muted",
+      "rule9": "#06b6d433 = cyan-500 at 20%. Was proposed as bg/brand-muted."
+    },
+    {
+      "from": "color/interactive/secondary-foreground",
+      "to": "fg/on-subtle",
+      "prod": 46
+    },
+    {
+      "from": "color/status/hover",
+      "to": "bg/hover",
+      "prod": 0
+    },
+    {
+      "from": "color/status/active",
+      "to": "bg/active",
+      "prod": 0
+    },
+    {
+      "from": "color/status/selected",
+      "to": "bg/selected",
+      "prod": 0
+    },
+    {
+      "from": "color/status/disabled",
+      "to": "bg/disabled",
+      "prod": 0
+    },
+    {
+      "from": "color/feedback/success",
+      "to": "bg/success-subtle"
+    },
+    {
+      "from": "color/feedback/warning",
+      "to": "bg/warning-subtle"
+    },
+    {
+      "from": "color/feedback/info",
+      "to": "bg/info-subtle"
+    },
+    {
+      "from": "color/feedback/neutral",
+      "to": "bg/neutral-subtle"
+    },
+    {
+      "from": "color/feedback/danger",
+      "to": "bg/danger-subtle"
+    },
+    {
+      "from": "color/feedback/success-emphasis",
+      "to": "fg/success"
+    },
+    {
+      "from": "color/feedback/warning-emphasis",
+      "to": "fg/warning"
+    },
+    {
+      "from": "color/feedback/info-emphasis",
+      "to": "fg/info"
+    },
+    {
+      "from": "color/feedback/neutral-emphasis",
+      "to": "fg/neutral"
+    },
+    {
+      "from": "color/feedback/danger-emphasis",
+      "to": "fg/danger",
+      "prod": 2
+    },
+    {
+      "from": "color/income/surface",
+      "to": "bg/income-subtle",
+      "prod": 8
+    },
+    {
+      "from": "color/expense/surface",
+      "to": "bg/expense-subtle"
+    },
+    {
+      "from": "color/expense/foreground",
+      "to": "fg/expense-strong"
+    },
+    {
+      "from": "color/net/default",
+      "to": "bg/net",
+      "prod": 10
+    },
+    {
+      "from": "color/net/foreground",
+      "to": "fg/net",
+      "prod": 5
+    },
+    {
+      "from": "color/net/surface",
+      "to": "bg/net-subtle"
+    },
+    {
+      "from": "color/tax/default",
+      "to": "bg/tax",
+      "prod": 10
+    },
+    {
+      "from": "color/tax/foreground",
+      "to": "fg/tax",
+      "prod": 10
+    },
+    {
+      "from": "color/tax/surface",
+      "to": "bg/tax-subtle"
+    },
+    {
+      "from": "color/provision/foreground",
+      "to": "fg/provision-strong",
+      "prod": 9
+    },
+    {
+      "from": "color/provision/surface",
+      "to": "bg/provision-subtle"
+    },
+    {
+      "from": "color/danger/foreground",
+      "to": "fg/danger-strong"
+    },
+    {
+      "from": "color/account/foreground",
+      "to": "fg/account",
+      "prod": 100
+    },
+    {
+      "from": "color/account/surface",
+      "to": "bg/account",
+      "prod": 93
+    },
+    {
+      "from": "color/account/border",
+      "to": "border/neutral-alpha-10",
+      "prod": 92,
+      "supersedes": "border/account",
+      "rule9": "#64748b1a = slate-500 at 10%. 92 product bindings — the single most-used alpha value in the file, and nothing in its old name said so."
+    },
+    {
+      "from": "color/live/default",
+      "to": "bg/live",
+      "prod": 9
+    },
+    {
+      "from": "color/live/ring",
+      "to": "bg/live-ring",
+      "prod": 9
+    },
+    {
+      "from": "color/logo/bg",
+      "to": "brand/logo-bg",
+      "prod": 30
+    },
+    {
+      "from": "color/logo/primary",
+      "to": "brand/logo-mark",
+      "prod": 30
+    }
   ],
-
   "split": [
     {
       "from": "color/interactive/primary",
       "why": "One token painting three properties: 234 fills, 185 strokes, 18 text. This is the single largest architectural defect in the collection — every one of those 437 bindings is currently unable to move independently.",
       "into": [
-        { "to": "bg/brand",           "property": "fill",   "bindings": 234 },
-        { "to": "border/brand-strong","property": "stroke", "bindings": 185 },
-        { "to": "fg/brand",           "property": "text",   "bindings": 18 }
+        {
+          "to": "bg/brand",
+          "property": "fill",
+          "bindings": 234
+        },
+        {
+          "to": "border/brand-strong",
+          "property": "stroke",
+          "bindings": 185
+        },
+        {
+          "to": "fg/brand",
+          "property": "text",
+          "bindings": 18
+        }
       ],
       "sameValueToday": "#0e7490 — the split costs nothing visually and buys the ability to darken a border without darkening the button."
     },
@@ -101,97 +317,360 @@
       "from": "color/foreground/placeholder",
       "why": "The Component collection already aliases this token as 'disabled'. Placeholder text and disabled text are two contracts sharing one value by accident.",
       "into": [
-        { "to": "fg/placeholder", "bindings": 55 },
-        { "to": "fg/disabled",    "bindings": 41 }
+        {
+          "to": "fg/placeholder",
+          "bindings": 55
+        },
+        {
+          "to": "fg/disabled",
+          "bindings": 41
+        }
       ],
       "sameValueToday": "#94a3b8"
     },
     {
       "from": "color/expense/default",
       "why": "5 text bindings, 14 fill bindings.",
-      "into": [ { "to": "fg/expense", "bindings": 5 }, { "to": "bg/expense", "bindings": 14 } ],
+      "into": [
+        {
+          "to": "fg/expense",
+          "bindings": 5
+        },
+        {
+          "to": "bg/expense",
+          "bindings": 14
+        }
+      ],
       "sameValueToday": "#ef4444"
     },
     {
       "from": "color/provision/default",
       "why": "14 text bindings, 14 fill bindings — a dead-even tie.",
-      "into": [ { "to": "fg/provision", "bindings": 14 }, { "to": "bg/provision", "bindings": 14 } ],
+      "into": [
+        {
+          "to": "fg/provision",
+          "bindings": 14
+        },
+        {
+          "to": "bg/provision",
+          "bindings": 14
+        }
+      ],
       "sameValueToday": "#059669"
     },
     {
       "from": "color/income/default",
       "why": "Used as text, unlike its siblings.",
-      "into": [ { "to": "fg/income", "bindings": 4 }, { "to": "bg/income", "bindings": 2 } ],
+      "into": [
+        {
+          "to": "fg/income",
+          "bindings": 4
+        },
+        {
+          "to": "bg/income",
+          "bindings": 2
+        }
+      ],
       "sameValueToday": "#0891b2",
       "FAMILY_DEFECT": "In the tax and net families, '/default' is the SOLID BACKGROUND. In the income family, '/default' is the TEXT COLOUR. Same suffix, opposite property, adjacent tokens. This is the clearest single argument for property-first naming."
     }
   ],
-
   "merge": [
-    { "from": ["color/wrap/container"], "to": "bg/canvas", "value": "#f8fafc", "prod": 21, "why": "identical value, identical job" },
-    { "from": ["color/foreground/on-card", "color/foreground/on-popover"], "to": "fg/default", "value": "#0f172a", "prod": 141,
+    {
+      "from": [
+        "color/wrap/container"
+      ],
+      "to": "bg/canvas",
+      "value": "#f8fafc",
+      "prod": 21,
+      "why": "identical value, identical job"
+    },
+    {
+      "from": [
+        "color/foreground/on-card",
+        "color/foreground/on-popover"
+      ],
+      "to": "fg/default",
+      "value": "#0f172a",
+      "prod": 141,
       "why": "on-card and on-popover both resolve to exactly what fg/default already is",
-      "PENDING": "confirm the Dark mode values match before merging — light mode agreement is not enough" },
-    { "from": ["color/surface/raised", "color/surface/elevation/raised"], "to": "bg/raised", "value": "#ffffff", "prod": 16,
-      "why": "two tokens, one rung", "PENDING": "confirm Dark values" },
-    { "from": ["color/surface/sunken", "color/interactive/secondary"], "to": "bg/subtle", "value": "#f1f5f9",
-      "PENDING": "confirm Dark values" },
-    { "from": ["color/danger/default"], "to": "fg/danger", "value": "#dc2626", "why": "identical to feedback/danger-emphasis" },
-    { "from": ["color/danger/surface"], "to": "bg/danger-subtle", "value": "#fef2f2" },
-    { "from": ["color/income/foreground"], "to": "fg/income-strong", "value": "#0e7490",
-      "warn": "this value is ALSO color/interactive/primary. Income green-lighting the brand cyan is probably an accident — confirm with Alfredo." }
+      "PENDING": "confirm the Dark mode values match before merging — light mode agreement is not enough"
+    },
+    {
+      "from": [
+        "color/surface/raised",
+        "color/surface/elevation/raised"
+      ],
+      "to": "bg/raised",
+      "value": "#ffffff",
+      "prod": 16,
+      "why": "two tokens, one rung",
+      "PENDING": "confirm Dark values"
+    },
+    {
+      "from": [
+        "color/surface/sunken",
+        "color/interactive/secondary"
+      ],
+      "to": "bg/subtle",
+      "value": "#f1f5f9",
+      "PENDING": "confirm Dark values"
+    },
+    {
+      "from": [
+        "color/danger/default"
+      ],
+      "to": "fg/danger",
+      "value": "#dc2626",
+      "why": "identical to feedback/danger-emphasis"
+    },
+    {
+      "from": [
+        "color/danger/surface"
+      ],
+      "to": "bg/danger-subtle",
+      "value": "#fef2f2"
+    },
+    {
+      "from": [
+        "color/income/foreground"
+      ],
+      "to": "fg/income-strong",
+      "value": "#0e7490",
+      "warn": "this value is ALSO color/interactive/primary. Income green-lighting the brand cyan is probably an accident — confirm with Alfredo."
+    }
   ],
-
   "delete": [
-    { "token": "color/brand/default",  "value": "#e0f2fe",
-      "HEADLINE": "The two tokens literally named 'brand' hold SKY BLUE (#e0f2fe / #0284c7). Neto's brand is cyan (#0e7490 / #06b6d4). Nothing binds them. They are a leftover from a palette that is no longer the brand." },
-    { "token": "color/brand/emphasis", "value": "#0284c7", "see": "color/brand/default" },
-    { "token": "color/destructive/default",    "value": "#dc2626", "why": "duplicate of feedback/danger-emphasis" },
-    { "token": "color/destructive/foreground", "value": "#ffffff", "why": "duplicate of interactive/primary-foreground" },
-    { "token": "color/interactive/accent",            "value": "#f1f5f9", "why": "duplicate of wrap/subtle, never bound in product" },
-    { "token": "color/interactive/accent-foreground", "value": "#1e293b", "why": "duplicate of interactive/secondary-foreground" },
-    { "token": "color/border/input",           "value": "#e2e8f0", "why": "duplicate of border/default, never bound anywhere" },
-    { "token": "color/foreground/danger-inverse", "why": "never bound anywhere" },
-    { "token": "color/surface/overlay", "why": "never bound; bg/overlay covers it" },
-    { "token": "color/surface/scrim",   "why": "never bound; duplicate of overlay/scrim" },
-    { "token": "color/overlay/danger",  "why": "never bound" },
-    { "token": "color/overlay/info",    "why": "never bound" },
-    { "token": "color/overlay/success", "why": "never bound" },
-    { "token": "color/overlay/warning", "why": "never bound" },
-    { "token": "color/overlay/frosted", "why": "never bound; no frosted surface exists in the product" },
-    { "token": "color/overlay/skeleton","why": "never bound; the Skeleton component paints with border/default" },
-    { "token": "color/overlay/focus",   "why": "never bound; shadow/focus is the real focus token" },
-    { "token": "color/overlay/disabled","why": "never bound; bg/disabled covers it" },
-    { "token": "color/overlay/scrim-heavy", "why": "never bound; one scrim is enough until a second is needed" }
+    {
+      "token": "color/brand/default",
+      "value": "#e0f2fe",
+      "HEADLINE": "The two tokens literally named 'brand' hold SKY BLUE (#e0f2fe / #0284c7). Neto's brand is cyan (#0e7490 / #06b6d4). Nothing binds them. They are a leftover from a palette that is no longer the brand."
+    },
+    {
+      "token": "color/brand/emphasis",
+      "value": "#0284c7",
+      "see": "color/brand/default"
+    },
+    {
+      "token": "color/destructive/default",
+      "value": "#dc2626",
+      "why": "duplicate of feedback/danger-emphasis"
+    },
+    {
+      "token": "color/destructive/foreground",
+      "value": "#ffffff",
+      "why": "duplicate of interactive/primary-foreground"
+    },
+    {
+      "token": "color/interactive/accent",
+      "value": "#f1f5f9",
+      "why": "duplicate of wrap/subtle, never bound in product"
+    },
+    {
+      "token": "color/interactive/accent-foreground",
+      "value": "#1e293b",
+      "why": "duplicate of interactive/secondary-foreground"
+    },
+    {
+      "token": "color/border/input",
+      "value": "#e2e8f0",
+      "why": "duplicate of border/default, never bound anywhere"
+    },
+    {
+      "token": "color/foreground/danger-inverse",
+      "why": "never bound anywhere"
+    },
+    {
+      "token": "color/surface/overlay",
+      "why": "never bound; bg/overlay covers it"
+    },
+    {
+      "token": "color/surface/scrim",
+      "why": "never bound; duplicate of overlay/scrim"
+    },
+    {
+      "token": "color/overlay/danger",
+      "why": "never bound"
+    },
+    {
+      "token": "color/overlay/info",
+      "why": "never bound"
+    },
+    {
+      "token": "color/overlay/success",
+      "why": "never bound"
+    },
+    {
+      "token": "color/overlay/warning",
+      "why": "never bound"
+    },
+    {
+      "token": "color/overlay/frosted",
+      "why": "never bound; no frosted surface exists in the product"
+    },
+    {
+      "token": "color/overlay/skeleton",
+      "why": "never bound; the Skeleton component paints with border/default"
+    },
+    {
+      "token": "color/overlay/focus",
+      "why": "never bound; shadow/focus is the real focus token"
+    },
+    {
+      "token": "color/overlay/disabled",
+      "why": "never bound; bg/disabled covers it"
+    },
+    {
+      "token": "color/overlay/scrim-heavy",
+      "why": "never bound; one scrim is enough until a second is needed"
+    },
+    {
+      "token": "color/overlay/selected",
+      "value": "#0000001a",
+      "why": "identical to color/overlay/hover; bg/selected covers the opaque case"
+    }
   ],
-
   "reserve": [
-    { "tokens": ["color/categorical/1..5"], "to": "chart/categorical/1..5",
-      "why": "never bound — but Phase 4 builds three annual charts and a distribution bar, which is exactly what these are for. Deleting them would mean re-minting them in six weeks. Keep, rename, and document the intended use." },
-    { "tokens": ["color/sequential/1..5"],  "to": "chart/sequential/1..5", "see": "categorical" },
-    { "tokens": ["account-accent/*"],       "to": "account/{amber,emerald,lime,pink,purple,sky}",
-      "why": "5 of 6 never bound because only one account exists in the mocks. This is the palette a user picks from — absence of use is not absence of purpose." },
-    { "tokens": ["color/overlay/hover", "color/overlay/pressed", "color/overlay/selected"],
-      "to": "bg/overlay-{hover,pressed,selected}",
-      "why": "never bound, but the translucent state layer is the correct model for interaction states on coloured surfaces. Phase 3 needs them. Keep 3, delete the other 9." },
-    { "tokens": ["color/overlay/scrim"], "to": "bg/scrim", "why": "the modal scrim; Overlays are Phase 4" }
+    {
+      "tokens": [
+        "color/categorical/1..5"
+      ],
+      "to": "chart/categorical/1..5",
+      "why": "never bound — but Phase 4 builds three annual charts and a distribution bar, which is exactly what these are for. Deleting them would mean re-minting them in six weeks. Keep, rename, and document the intended use."
+    },
+    {
+      "tokens": [
+        "color/sequential/1..5"
+      ],
+      "to": "chart/sequential/1..5",
+      "see": "categorical"
+    },
+    {
+      "tokens": [
+        "account-accent/*"
+      ],
+      "to": "account/{amber,emerald,lime,pink,purple,sky}",
+      "why": "5 of 6 never bound because only one account exists in the mocks. This is the palette a user picks from — absence of use is not absence of purpose."
+    },
+    {
+      "tokens": [
+        "color/overlay/hover",
+        "color/overlay/pressed"
+      ],
+      "to": "bg/neutral-alpha-10, bg/neutral-alpha-20",
+      "why": "the translucent state layer is the correct model for interaction states on coloured surfaces (Rule 9: a hover on a category chip must be alpha or it erases the category). Phase 3 needs them. color/overlay/selected is dropped from this list — it holds the identical value to hover, so it was reserving a duplicate. Reserved goes from 3 tokens to 2."
+    },
+    {
+      "tokens": [
+        "color/overlay/scrim"
+      ],
+      "to": "bg/scrim",
+      "why": "the modal scrim; Overlays are Phase 4"
+    }
   ],
-
   "identityFamilies": {
     "rule": "Exempt from property-first — see docs/21-token-naming.md Rule 2. Their intent is WHICH THING, not WHICH PROPERTY.",
     "rename": [
-      { "from": "color/category/{name}/default", "to": "category/{name}/accent",
+      {
+        "from": "color/category/{name}/default",
+        "to": "category/{name}/accent",
         "why": "'default' says nothing. Measured: these paint the icon glyph (2–50 bindings) and the solid dot. 'accent' names the job.",
-        "names": ["bank","connectivity","family","food","health","home","insurance","other","recreation","savings","shopping","tax","transit","travel","work"] },
-      { "from": "color/category/{name}/surface", "to": "category/{name}/surface", "why": "already correct; only the prefix drops" }
+        "names": [
+          "bank",
+          "connectivity",
+          "family",
+          "food",
+          "health",
+          "home",
+          "insurance",
+          "other",
+          "recreation",
+          "savings",
+          "shopping",
+          "tax",
+          "transit",
+          "travel",
+          "work"
+        ]
+      },
+      {
+        "from": "color/category/{name}/surface",
+        "to": "category/{name}/surface",
+        "why": "already correct; only the prefix drops"
+      }
     ]
   },
-
   "new": [
-    { "token": "border/subtle", "why": "28 stroke bindings currently sit on fg/subtle. They need somewhere legitimate to go.", "value": "= fg/subtle today" },
-    { "token": "fg/on-solid",   "why": "white text on any solid semantic fill. Currently every family re-derives it or borrows destructive/foreground.", "value": "#ffffff" }
+    {
+      "token": "border/subtle",
+      "why": "28 stroke bindings currently sit on fg/subtle. They need somewhere legitimate to go.",
+      "value": "= fg/subtle today"
+    },
+    {
+      "token": "fg/on-solid",
+      "why": "white text on any solid semantic fill. Currently every family re-derives it or borrows destructive/foreground.",
+      "value": "#ffffff"
+    }
   ],
-
   "notApplied": true,
-  "nextStep": "Alfredo reviews naming-proposal.md. Phase 1.2 applies only what he approves — it is the one step in the roadmap that cannot be undone cheaply."
+  "nextStep": "Phase 1.2 applies this in one pass: rename, derive scopes from the property prefix, generate codeSyntax, write intent descriptions. Blocked only on the provision/teal call.",
+  "approvals": {
+    "convention": "approved, with two amendments: the prominence ladder goes from 4 rungs to 6, and brand + neutral gain an explicit alpha ladder (docs/21-token-naming.md Rules 4 and 9).",
+    "incomeSharingBrandCyan": "confirmed an accident. Alfredo: 'no puede tener el mismo color o escala de color de la marca, reemplazarlos.' All three income tokens move off cyan.",
+    "deletions": "approved — the 19 listed under `delete` go."
+  },
+  "incomeReassignment": {
+    "why": "color/income/default was cyan-600 (#0891b2), color/income/foreground was cyan-700 (#0e7490) and color/income/surface was cyan-50 (#ecfeff). All three sit on the brand scale. Neto's brand is cyan-500/700. Confirmed by Alfredo as an accident.",
+    "newFamily": "green (hue 142°, 47° away from the brand cyan at 189°). It was the only unclaimed green family — emerald, teal and lime are already spoken for.",
+    "moves": [
+      {
+        "token": "fg/income",
+        "from": "#0891b2 cyan-600",
+        "to": "#15803d green-700",
+        "contrastOnWhite": 5.02,
+        "contrastOnBgSubtle": 4.58,
+        "note": "AA for body text on both surfaces. This is the dominant income use — the number in a row."
+      },
+      {
+        "token": "fg/income-strong",
+        "from": "#0e7490 cyan-700",
+        "to": "#166534 green-800",
+        "contrastOnWhite": 7.13,
+        "note": "AAA on white"
+      },
+      {
+        "token": "bg/income",
+        "from": "#0891b2 cyan-600",
+        "to": "#16a34a green-600",
+        "contrastOnWhite": 3.3,
+        "WARN": "white text on this solid is 3.30:1 — large text only. If a solid income chip needs body-size text, the fill has to drop to green-700."
+      },
+      {
+        "token": "bg/income-subtle",
+        "from": "#ecfeff cyan-50",
+        "to": "#f0fdf4 green-50"
+      }
+    ]
+  },
+  "adjacencyFindingsRaisedByThisChange": [
+    {
+      "finding": "income (green-600, hue 142°) now sits 19° from provision (emerald-600, hue 161°).",
+      "whyItMatters": "The monthly summary tells one story — ingresos → gastos → provisión → neto — so these four almost certainly appear on the same screen. 19° of hue separation between two positive-money figures is thin.",
+      "proposal": "move provision to teal-700 (#0f766e, hue 175°, contrast 5.47 on white). That gives income↔provision 33° instead of 19°, and teal-700 is unclaimed — only teal-600 is, by category/home.",
+      "cost": "20 product bindings",
+      "status": "PROPOSED — not in the rename above. Needs your call."
+    },
+    {
+      "finding": "net is sky-600 (#0284c7, hue 200°) and the brand is cyan-500 (#06b6d4, hue 189°). 11° apart.",
+      "whyItMatters": "This is the same defect you just called on income, one family over. A different Tailwind scale is not the same as a different colour — sky-600 next to the brand cyan reads as brand.",
+      "proposal": "no recommendation yet. net is the headline number of the whole app, so its hue is a product decision rather than a cleanup. Flagging it while we are in here.",
+      "cost": "10 product bindings",
+      "status": "RAISED — decide separately."
+    }
+  ],
+  "newLadderCounts": {
+    "note": "Rule 4 defines six rungs and Rule 9 six alpha rungs, but neither pre-generates anything (Rule 4, 'a vocabulary, not an inventory').",
+    "semanticColourAfter": 121,
+    "mintedByThisRound": "0 — the four alpha tokens above already existed under misleading names."
+  }
 }

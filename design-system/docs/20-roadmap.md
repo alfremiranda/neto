@@ -152,6 +152,23 @@ that is not reversible. Four of the merges are marked **PENDING** because Light-
 not sufficient — elevation is often carried by fill in Dark and by shadow in Light, so the Dark
 values get checked before those four are applied.
 
+**Review, 2026-08-20 — convention approved with two amendments.** The prominence ladder goes from
+four rungs to **six** (`subtlest < subtle < muted < default < strong < strongest`, default
+unsuffixed), and `brand` + `neutral` gain an explicit **alpha ladder** at the rungs Primitives
+already carries (`10 · 20 · 30 · 50 · 70 · 90`). Both are written up as Rules 4 and 9 in
+`21-token-naming.md`. The alpha rule corrected four entries in my own map: `overlay/brand`,
+`primary-overlay-subtle`, `border/overlay-primary` and `account/border` are alpha values that had
+been given adjective names — the last of those carries 92 product bindings.
+
+`income` was confirmed as an accident and moves off the brand cyan entirely: all three of its
+tokens were on that scale. It goes to **green** (47° of hue away), with `fg/income` at green-700
+for AA on both white and `bg/subtle`.
+
+Two adjacency findings came out of that move and are recorded in `naming-map.json`: `provision`
+now sits 19° from `income` (proposed fix: teal-700, 33°), and **`net` is 11° from the brand
+cyan** — the same defect one family over, left open because `net` is the headline number and its
+hue is a product decision.
+
 **1.2 · Apply in Figma, in one pass that does four things at once**: rename, derive scopes from
 the property prefix, generate `codeSyntax`, and **write the intent description**. Intent coverage
 is at 35% for tokens against 95% for components; the moment to write *why a token exists* is

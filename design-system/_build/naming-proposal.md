@@ -154,3 +154,112 @@ glyph and the identity dot — "default" was saying nothing.
 Phase 1.2 does four things in one pass — rename, derive scopes from the property prefix,
 generate `codeSyntax`, and write an intent description on every token — so it is worth
 getting this file right before it runs.
+
+---
+
+# Ronda 2 — tras tu revisión del 2026-08-20
+
+## Lo que aprobaste, aplicado al mapa
+
+**Las 19 eliminaciones** quedan confirmadas (ahora 20 — ver abajo).
+
+**`income` sale del cyan.** Confirmaste que compartir la escala de marca fue un accidente. No era
+un token: eran los tres. `income/default` era cyan-600, `income/foreground` cyan-700 y
+`income/surface` cyan-50 — la familia entera vivía sobre la marca.
+
+Se muda a **green**, la única familia verde sin dueño (emerald es `provision`, teal es
+`category/home`, lime es `category/insurance`). Está a 47° de matiz del cyan de marca.
+
+| token | antes | ahora | contraste sobre blanco |
+|---|---|---|---:|
+| `fg/income` | `#0891b2` cyan-600 | `#15803d` green-700 | **5.02** ✅ AA |
+| `fg/income-strong` | `#0e7490` cyan-700 | `#166534` green-800 | **7.13** ✅ AAA |
+| `bg/income` | `#0891b2` cyan-600 | `#16a34a` green-600 | 3.30 ⚠️ |
+| `bg/income-subtle` | `#ecfeff` cyan-50 | `#f0fdf4` green-50 | — |
+
+⚠️ Texto blanco sobre `bg/income` da 3.30:1 — solo sirve en tamaño grande. Si un chip sólido de
+ingresos necesita texto de cuerpo, el fondo tiene que bajar a green-700.
+
+## Los dos cambios que pediste a la convención
+
+**Regla 4 pasa de 4 peldaños a 6**, con el peldaño por defecto **sin sufijo** — así el token que
+más se usa es el de nombre más corto (`bg/brand`, no `bg/brand-default`):
+
+| | sufijo | primitiva típica | para qué |
+|---:|---|---|---|
+| 1 | `-subtlest` | `50` | lavado a nivel de página |
+| 2 | `-subtle` | `100` | tinte de hover, fila seleccionada |
+| 3 | `-muted` | `200` | relleno de chip y badge, divisor |
+| 4 | *(ninguno)* | `500`-`600` | el sólido, la identidad del rol |
+| 5 | `-strong` | `700` | texto sobre superficie clara |
+| 6 | `-strongest` | `800`-`900` | contraste máximo |
+
+Con una salvedad que añadí y que creo que importa más que los peldaños: **la escalera es un
+vocabulario, no un inventario.** 6 peldaños × 6 roles × 4 propiedades serían 144 tokens que nadie
+pidió, y acabamos de medir qué pasa cuando un token existe antes que su uso — 90 de 138 no los usa
+nadie. Un peldaño nace cuando un diseño lo necesita; la regla solo obliga a que se llame por su
+peldaño y no por un adjetivo nuevo.
+
+**Regla 9, la escalera alpha.** Aquí hay una buena noticia que no esperaba: **las primitivas ya
+tienen escalera de opacidad para cada tono** — `10 · 20 · 30 · 50 · 70 · 90` — desde hace tiempo.
+Nunca se les hizo token semántico. Así que no invento peldaños, uso los que ya existen.
+
+Y resulta que **cuatro tokens que ya usas son valores alpha con nombre de adjetivo**, lo cual
+corrige un error de mi propia propuesta de ayer:
+
+| token | valor | yo proponía | ahora |
+|---|---|---|---|
+| `color/overlay/brand` | cyan-500 @ 10% | `bg/brand-subtle` | **`bg/brand-alpha-10`** |
+| `color/interactive/primary-overlay-subtle` | cyan-500 @ 20% | `bg/brand-muted` | **`bg/brand-alpha-20`** |
+| `color/border/overlay-primary` | cyan-500 @ 50% | `border/brand` | **`border/brand-alpha-50`** |
+| `color/account/border` | slate-500 @ 10% | `border/account` | **`border/neutral-alpha-10`** |
+
+Ese último tiene **92 bindings de producto** — es el valor alpha más usado del archivo y nada en
+su nombre lo decía.
+
+El criterio de cuándo usar opaco y cuándo alpha quedó escrito en la Regla 9, porque es la parte
+que se olvida: **opaco cuando sabes qué hay debajo y el texto necesita contraste garantizado;
+alpha cuando lo de debajo es desconocido o es una capa que tiene que apilarse.** El caso que lo
+decide: un hover sobre un chip de categoría **tiene** que ser alpha — un tinte opaco borraría la
+categoría, que es lo único que ese chip existe para decir.
+
+Alpha va, como pediste, para **brand** y **neutral** (slate), utilizables como `bg`, `border` y
+overlay. Negro y blanco se quedan como primitivas: un scrim tiene un solo trabajo, así que se
+llama `bg/scrim` y no lleva peldaño.
+
+## Un token menos que reservar
+
+`color/overlay/selected` tiene exactamente el mismo valor que `color/overlay/hover`. Estaba
+reservando un duplicado, así que pasa a la lista de borrado — de 19 eliminaciones a **20**, y de
+3 overlays reservados a **2**.
+
+---
+
+## Dos cosas que este cambio destapó y que necesitan tu decisión
+
+### 1 · `provision` queda a 19° de `income`
+
+Al mover income a verde, queda a 19° de matiz de `provision` (emerald-600). Y el resumen mensual
+cuenta una sola historia — **ingresos → gastos → provisión → neto** — así que los cuatro
+aparecen juntos casi seguro. 19° entre dos cifras positivas es poco.
+
+**Propongo mover `provision` a teal-700** (`#0f766e`, contraste 5.47 sobre blanco). Eso da 33° de
+separación en vez de 19°, y teal-700 está libre — lo ocupado es teal-600, por `category/home`.
+Cuesta 20 bindings.
+
+### 2 · `net` está a 11° de la marca
+
+`net` es sky-600 (`#0284c7`, matiz 200°) y la marca es cyan-500 (`#06b6d4`, matiz 189°).
+
+Es exactamente el mismo defecto que acabas de señalar en income, una familia más allá: **una
+escala distinta de Tailwind no es un color distinto.** Sky-600 al lado del cyan de marca se lee
+como marca.
+
+No traigo recomendación aquí. `net` es la cifra principal de toda la app, así que su matiz es una
+decisión de producto y no una limpieza. Lo dejo señalado mientras estamos dentro.
+
+---
+
+Con la convención aprobada, la fase 1.2 puede correr en cuanto decidas lo de `provision`. Aplica
+las cuatro cosas en una sola pasada: renombrar, derivar los scopes del prefijo de propiedad,
+generar `codeSyntax` y escribir la descripción de intención de cada token.

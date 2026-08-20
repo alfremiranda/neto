@@ -51,18 +51,36 @@ decision rather than a drift.
 `fg/on-brand` means **legible on `bg/brand`**. It never means "a lighter brand".
 If a surface has no `on-` partner, text on it is unverified.
 
-## Rule 4 · The prominence ladder is closed
+## Rule 4 · The prominence ladder is closed — six rungs
 
 ```
-subtle  <  muted  <  default  <  strong
+subtlest  <  subtle  <  muted  <  default  <  strong  <  strongest
 ```
 
-Four rungs, in that order, no synonyms. `emphasis`, `accent`, `primary`, `secondary`,
-`hover-2` and friends are not admissible without amending this file. Today the collection
-uses `emphasis`, `strong`, `subtle`, `accent`, `primary`, `secondary`, `default` and
-`overlay-subtle` interchangeably — and `color/interactive/primary-overlay-subtle` (20%
-opacity) is *stronger* than `color/overlay/brand` (10%), which means the word "subtle"
-currently carries no information at all.
+The default rung is **unsuffixed**, so the token you reach for most has the shortest name:
+`bg/brand`, never `bg/brand-default`.
+
+| rung | suffix | primitive it usually maps to | what it is for |
+|---:|---|---|---|
+| 1 | `-subtlest` | `50` | page-level wash |
+| 2 | `-subtle` | `100` | hover tint, selected row |
+| 3 | `-muted` | `200` | chip and badge fill, divider |
+| 4 | *(none)* | `500`-`600` | the solid, the identity of the role |
+| 5 | `-strong` | `700` | text on a light surface, emphasis |
+| 6 | `-strongest` | `800`-`900` | maximum contrast |
+
+That order is the definition, not a suggestion. `subtle` is weaker than `muted`, and if that ever
+reads backwards to someone, this table is the answer rather than their intuition.
+
+`emphasis`, `accent`, `primary`, `secondary`, `soft`, `bold` and `hover-2` are **not admissible**.
+Today the collection uses seven of those interchangeably, and
+`color/interactive/primary-overlay-subtle` (20% opacity) is *stronger* than `color/overlay/brand`
+(10%) - which means the word "subtle" currently carries no information at all.
+
+**The ladder is a vocabulary, not an inventory.** Six rungs x six roles x four properties would be
+144 tokens nobody asked for, and we have just finished proving what happens when tokens exist
+before a use does: 90 of 138 are bound nowhere. A rung comes into existence when a design needs
+it. The rule is only that when it does, it is called by its rung and not by a new adjective.
 
 ## Rule 5 · State is a suffix
 
@@ -98,6 +116,42 @@ split with the same value; what they gain is the ability to diverge.
 
 So the disposition of an unused token is a judgement, and the judgement gets written down
 in `naming-map.json` under `delete` or `reserve`. Never a bulk sweep.
+
+## Rule 9 · Alpha is a second ladder, orthogonal to the first
+
+Some roles have to exist as translucency as well as as colour. The rungs are the ones the
+Primitives collection already carries for every hue - **`10 · 20 · 30 · 50 · 70 · 90`** - because
+inventing a parallel set would guarantee the two drift apart.
+
+```
+bg/brand-alpha-10        border/brand-alpha-50        bg/neutral-alpha-20
+```
+
+Alpha tokens carry the number in the name **on purpose**. It is the same reason semantic spacing
+works and semantic colour did not: the value *is* the information, and an adjective would make two
+people guess differently about which of two translucencies is the stronger one.
+
+### When opaque, when alpha
+
+They are not interchangeable, and this is the test:
+
+| reach for opaque (`-subtle`) | reach for alpha (`-alpha-20`) |
+|---|---|
+| what is underneath is known | what is underneath is unknown, or is an image |
+| text sits on it and contrast must be guaranteed | it is a layer that has to stack with others |
+| the surface **is** the thing | the tint is a **state** on the thing |
+
+A hover on a white card can be either. A hover on a coloured category chip **must** be alpha - an
+opaque tint would erase the category, which is the one thing that chip exists to say.
+
+### Which roles get one
+
+**`brand`** and **`neutral`** (slate), at all six rungs, usable as `bg`, `border` and overlay.
+They are the two roles that have to sit on top of surfaces we do not control. Any other role gets
+an alpha ladder when a design needs one, at the same six rungs.
+
+Pure black and white alphas stay in Primitives. A scrim has exactly one job, so it gets a name
+that says the job - `bg/scrim` - not a rung.
 
 ---
 
