@@ -77,3 +77,16 @@ re-seed in August: the binding was right and the pixels were wrong, and only a s
   used without a name.
 - `ChoiceRow` and `AccountRow` keep their own `Label` property. Their label is the **content** of
   the row, not the name of a field — a different contract that happens to share a word.
+
+## Where it lives
+
+`Components · Forms` → `Documentation — Forms` → **`doc: Field`**, placed first among the field
+docs because it is the wrapper the others sit inside. The component set itself is in
+`doc: Field / previews / mode: Light / preview`, which is where every other set on that page
+already lives.
+
+It was not there when it was built — it sat loose at the bottom of the page, and Alfredo caught it.
+`00-principles §A4` now says a component nobody can find is not finished either, with the four
+things that "done" means.
+
+Header after: **15 components · 112 variants**, recomputed from the page rather than incremented.

@@ -68,6 +68,28 @@ nobody knows why.
 Without that line, the rules in A3 are advice. With it, they are a threshold. It applies equally
 to a new component, an added token and a palette update.
 
+**And a component nobody can find is not finished either.** Amended 2026-08-20, after `Field` was
+built correctly and then left sitting loose at the bottom of its page. Alfredo: *"cuando crees un
+componente nuevo crea también la documentación y ubícalo en la página y frame container
+correspondiente, sino queda suelto, difícil de encontrar."*
+
+So done means all four, in the same session that creates it:
+
+1. **The audit passes over it** — `C1`–`C4` on its own nodes.
+2. **It lives inside its page's documentation container**, never as a loose child of the page. The
+   component set itself goes in `doc: X / previews / mode: Light / preview`, which is where every
+   other set already is. A page whose top level has anything other than its container has an
+   orphan.
+3. **It has a `doc: X` frame** in the established structure — title, `spec` (properties and the
+   reason it exists), then `previews` with `mode: Light` and `mode: Dark`. Clone an existing one
+   rather than rebuilding it; that is how the text styles stay identical.
+4. **The header count is recomputed from the page**, never incremented. It has been wrong before:
+   `Components · Forms` claimed 10 components and 79 variants when the measured truth was 12 and 93,
+   and it was wrong *before* the component that triggered the check was added.
+
+The cost of skipping this is not tidiness. A component that exists but cannot be found gets built a
+second time by the next person, and then there are two.
+
 ## A5. What each check prevents
 
 The validator is not a list of good manners: every check exists because a real defect came
