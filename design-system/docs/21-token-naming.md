@@ -192,6 +192,53 @@ to what you pressed, gone when you look away?"* A menu and a popover answer that
 identically, so they were never two rungs. Visually free: they already held the same value in both
 modes. The elevation ladder now has **no shared rungs at all**.
 
+## Rule 11 · Which collection a colour belongs to is a question about consumers
+
+Alfredo, following Rule 10: *"si badge color está aplicado a un componente específico, no debería
+estar en semánticos sino en components collection. Puede que haya varios casos así."*
+
+The principle is right and it is sharper than Rule 10, because it is about **who uses a token**
+rather than what it is called:
+
+> **A Semantic colour must be usable by more than one component.** A colour only one component can
+> ever use is that component's decision, not a system decision, and it belongs in Component.
+
+Badge itself already passes — `badge/*` has always lived in Component. But the question was worth
+asking of everything, so it was measured in both directions.
+
+### The mechanical version over-fires, for a reason worth naming
+
+Counting Semantic tokens bound inside exactly one component returns **23 of 119**. Only **two** are
+real:
+
+| verdict | tokens | why |
+|---|---:|---|
+| **move to Component** | 2 | `brand/logo-mark`, `brand/logo-bg` — 32 bindings each, all inside `Logo`. No second component could adopt them. |
+| **keep** | 12 | `fg/income`, `fg/expense`, `fg/net`, `fg/provision-strong`, `fg/success`, `fg/danger`, `bg/raised`, `bg/hover`, `bg/disabled`, `bg/danger-subtle`, `bg/neutral-subtle`, `fg/danger-strong` — domain and system concepts used by one component **because the product is half-built**, not because they belong to it. |
+| **keep** | 9 | `category/*/surface` — identity family, Rule 2. |
+
+That is Rule 8 doing its job again: *absence of use is not absence of purpose.* The measurement
+finds candidates; it does not decide. The deciding question is **could a second component adopt
+this tomorrow without straining?** For `fg/income` the answer is obviously yes. For `logo/mark` it
+is obviously no.
+
+### The reverse direction is where the real finding is
+
+Component tokens used by three or more components — after discounting nested icons, which inherit
+their parent's foreground and inflate the count:
+
+- **`currency/cop/*` and `currency/usd/*`** are used by `AccountRow`, `CurrencyBadge`, `AccountCard`
+  and `SavingsCard` — four unrelated components. COP versus USD is a **domain** distinction in an
+  app for Colombians invoicing in dollars, not a property of any one badge. These want promoting to
+  Semantic as an identity family.
+- **`action-chip` borrows `badge/*` and `notification/*`.** It appears as a consumer of
+  `badge/neutral/*`, `badge/accent/*`, `notification/primary/*` and `notification/secondary/*`. A
+  component reaching into another component's tokens is the same defect as this rule, one level
+  down — and it was already on the open list before this analysis.
+
+Both are recorded rather than acted on: moving a token between collections rewrites its alias chain,
+and `action-chip` needs its own family designed rather than extracted mechanically.
+
 ---
 
 ## What this replaces

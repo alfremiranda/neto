@@ -203,3 +203,26 @@ falsely flagged `fg/info` and `brand/logo-*`. The dependency direction is what m
 `info` variant is named after the token, not the other way round — and a script cannot see
 direction. Rule 10 is therefore a review question, not an automated check. Recorded so nobody
 rebuilds the script.
+
+## Rule 11 · are colours in the right collection? — 2026-08-20
+
+| direction | measured | real | acted on |
+|---|---:|---:|---:|
+| Semantic tokens used by exactly one component | 23 of 119 | **2** | 2 moved |
+| Component tokens used by 3+ unrelated components | 38 raw | **2 families** | 0 — recorded |
+
+`brand/logo-mark` and `brand/logo-bg` → `logo/mark`, `logo/bg` in Component. Semantic colour:
+121 → **119**. Component colour: 102 → **104**.
+
+The raw counts are both misleading and it is the same failure twice. On the Semantic side the
+mechanical rule flags 23 and 21 of them are domain or system concepts that only one component uses
+*because the product is half-built* — Rule 8. On the Component side the count is inflated by nested
+icons, which inherit their parent's foreground and register as separate consumers: that is why
+`button/ghost/foreground` appears to be used by 22 components including `moon` and `trash-2`.
+
+Open, recorded not acted on:
+
+- `currency/cop/*` and `currency/usd/*` are used by four unrelated components and describe a domain
+  distinction, not a badge. Candidates to promote to Semantic.
+- `action-chip` consumes `badge/*` and `notification/*` — a component reaching into another
+  component's tokens. Already on the open list; needs its own family designed, not extracted.
