@@ -411,3 +411,39 @@ system does not have a word for.
 (176), `radius/20` (304).** Each needs the same treatment `radius 10` got — count first, then ask.
 `radius/2` is the sharpest: 1.3 deleted it for being unbound, and 176 hand-typed 2s were the reason
 it looked unbound.
+
+### The rung review — five values, one at a time, 2026-08-20
+
+Alfredo reviewed each residual value against its evidence rather than its count. Two of the five
+answers came out the opposite of what the raw number suggested, and one of my measurements was
+wrong in a way that mattered.
+
+| value | count | decision | what it turned out to be |
+|---|---:|---|---|
+| `radius/2` | 80 | **restored** | Phase 1.3 deleted it as unused. It was not unused — 32 of the 80 are `CurrencyRadio`, and everyone was typing the 2 instead of binding it. A token can look dead because nobody uses it, or because everybody wrote its value by hand. Only the sweep tells the two apart. |
+| `spacing/6` | 274 | **minted** | Four unrelated components — `KPI-Card`, `AccountCard`, `chart-legend`, `SavingsCard` — had each chosen 6 by hand. The 4→8 jump was the widest at the bottom of the ladder. 248 bound. |
+| `radius/20` | 120 | **not a rung** | And **my evidence was wrong**. I attributed it to `SavingsCard` (72) and `AccountSummaryCard` (32) because my ownership walk climbed to the *outermost* component. They were `Favorite` instances nested inside those cards. `Favorite` is 24×24 with a 20px corner — a circle wearing a number. All 120 resolved by binding 8 masters to `radius/full`. |
+| `radius/10` | 448 | **minted**, Alfredo's call | I recommended against and gave the reason: 448 corners is 112 nodes and **three** design decisions, 100 of them clones of one documentation chip. He minted it anyway, which is his to do — recorded in the variable's own description so the next person sees both the count and the decision count. |
+| `radius 5` | 222 | **not ours** | Every one is on a `COMPONENT_SET` frame — the dashed wrapper Figma draws around a variant set. 55 sets × 4 corners. Never a design value. |
+
+### Two exceptions now structural, not remembered
+
+`CONFIG.figmaChrome` — a `COMPONENT_SET` frame's corner belongs to Figma.
+
+`CONFIG.docChrome` — a frame whose job is to *document* the system is not the system. The rule is a
+function, not a location: the doc-kit's grid lives on `Foundations` as well as on `_docs-kit`, and
+~350 of the residue were its `section:` / `grid` / `chip` frames. Without this the audit carries
+350 permanent false positives.
+
+### Where the sweep finished
+
+| | |
+|---|---:|
+| layout numbers bound | **198,175** |
+| coverage | **99.2%** |
+| instance overrides left alone | 889 |
+| real residue after both exceptions | **~257** |
+
+What is left is genuinely off-scale and mostly not a decision: ~154 fractional values from scaled
+groups, `gap 1` and `gap 3` hairline gaps, `gap -1.5` for overlapping avatars, and a tail of
+one-off paddings on exploration screens.

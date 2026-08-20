@@ -25,8 +25,21 @@
 // swatches are system material even when they are chrome.
 const OUT_OF_SCOPE = /^(_docs-kit|Screens · Neto \(WIP\))/;
 
+// Frames whose job is to DOCUMENT the system rather than to be it. The rule is a
+// function, not a location: the doc-kit's grid lives on Foundations too, and a
+// frame that describes a token is not a design decision about spacing.
+// Decided 2026-08-20 after the layout sweep left ~350 of these as permanent
+// false positives.
+const DOC_CHROME = /^(section:|grid$|chip$|default$|doc:|_docs)/;
+
+// Figma draws its own dashed frame around a variant set and gives it a 5px
+// corner. 55 of them, 222 corners, none of them ours.
+const FIGMA_CHROME = new Set(['COMPONENT_SET']);
+
 const CONFIG = {
   outOfScopePages: OUT_OF_SCOPE,
+  docChrome: DOC_CHROME,
+  figmaChrome: FIGMA_CHROME,
   primitives: 'Primitives',        // nombre de la colección de valores crudos
   semantic:   ['Semantic'],        // colecciones que DEBEN aliasear
   component:  ['Component'],       // colecciones de tokens por componente
