@@ -169,7 +169,25 @@ now sits 19° from `income` (proposed fix: teal-700, 33°), and **`net` is 11° 
 cyan** — the same defect one family over, left open because `net` is the headline number and its
 hue is a product decision.
 
-**1.2 · Apply in Figma, in one pass that does four things at once**: rename, derive scopes from
+**1.2 · Apply in Figma.** ✅ **done, 2026-08-20.** 138 semantic colour tokens → **121**. Every one
+renamed, scoped from its property prefix, given `codeSyntax` and given an intent description —
+intent coverage went from 90 missing to **zero**. The migration map for Dev is
+`_build/token-migration.json`.
+
+Two guards earned their keep. The **Dark-mode check rejected three of the four PENDING merges**:
+`surface/raised`, `elevation/raised` and `wrap/card` are all `#ffffff` in Light but slate-700,
+slate-900 and slate-800 in Dark — merging them would have flattened the entire dark elevation
+ladder. `wrap/container` and `surface/sunken` diverge in Dark too. Only the merges that matched in
+*both* modes were applied. And the delete step **aborted twice** rather than proceeding: once
+because four Component tokens still aliased tokens on the delete list, and once because 14
+documentation swatches were still bound to them.
+
+Applied in five passes, ordered by reversibility: mint and split → repoint bindings → rename,
+scope, codeSyntax, describe → repoint the Component aliases → delete. Verified by re-deriving every
+token's property from its bindings and comparing it against the name: **zero names lie**, and zero
+tokens remain on `ALL_SCOPES`.
+
+**1.2 (original plan) · Apply in Figma, in one pass that does four things at once**: rename, derive scopes from
 the property prefix, generate `codeSyntax`, and **write the intent description**. Intent coverage
 is at 35% for tokens against 95% for components; the moment to write *why a token exists* is
 while renaming it, not in a later pass that never comes.

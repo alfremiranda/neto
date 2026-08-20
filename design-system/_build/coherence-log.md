@@ -109,3 +109,35 @@ whose target is not zero-by-tomorrow.
 Not measured here, and deliberately: **drift between Figma and the published package**. `R2`
 proves the package matches `tokens.json`; nothing repo-side can prove `tokens.json` matches
 Figma. That comparison needs the exporter to run, which is `Phase 2`.
+
+## After phase 1.2 — the rename applied, 2026-08-20
+
+| | before | after |
+|---|---:|---:|
+| semantic colour tokens | 138 | **121** |
+| names that lie about their property | 6 measured | **0** |
+| tokens doing more than one job | 5 | **0** (excluding identity families, exempt by Rule 2) |
+| tokens on `ALL_SCOPES` | 292 | **0** |
+| tokens without `codeSyntax` | — | **0** |
+| tokens without an intent description | 90 of 138 | **0** |
+| vocabularies for "background" | 4 | 1 |
+| families meaning "error" | 3 | 1 |
+| total bindings | 10,108 | 10,048 |
+
+The 60 bindings that disappeared are the 14 documentation swatches removed for tokens that no
+longer exist, and their labels. Nothing on a product screen lost a binding.
+
+`namesThatLieAboutTheirProperty` is the row that matters, and it is the one that could not be
+computed before this phase: it compares what a token is *called* against what it is *bound to*.
+It is zero, and from now on it is a regression test rather than an audit.
+
+## Leaks that survive — now visible because the name declares the property
+
+| token | defect | count |
+|---|---|---:|
+| `border/default` | bound as a **fill** on 1px shapes | 88 |
+| `bg/inverse` | bound as an **icon glyph** fill | 34 |
+| `fg/default` | bound as a **fill** | 18 |
+
+These are node-level defects, not naming ones. They existed before and were undetectable; the
+property-first name is what makes them a finding instead of a guess.
