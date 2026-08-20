@@ -141,3 +141,33 @@ It is zero, and from now on it is a regression test rather than an audit.
 
 These are node-level defects, not naming ones. They existed before and were undetectable; the
 property-first name is what makes them a finding instead of a guess.
+
+## T9 · does a token's name match the property it is bound to?
+
+The check phase 1.2 made possible. Before property-first naming there was nothing to compare a
+binding against; now the name is a claim and every binding either honours it or does not.
+Lives in `_build/audit-figma.js` as `auditProperty()`.
+
+| date | tokens with a claim | violations | note |
+|---|---:|---:|---|
+| 2026-08-20 | 74 | **20** | converged over three passes |
+
+| what | count | what it is |
+|---|---:|---|
+| `bg/canvas` on `Spinner` head and track | 8 | using the page colour to mean "white". A real defect — the spinner sits on a brand button and wants `fg/on-brand`. |
+| `border/default` as a shadow colour | 12 | the focus-ring offset on `ChoiceRow`, `AccountRow`, `CurrencyRadio`. A legitimate technique with no token that says so — see the proposal for `shadow/ring-offset`. |
+
+Two further hits were the instrument, not the file, and the config was widened rather than the file
+changed: a swatch frame named `default` inside `Danger / delete` is documentation, and its job is to
+paint a token as a fill whatever property that token is for.
+
+## Property leaks closed, 2026-08-20
+
+| token | was | now |
+|---|---|---|
+| `border/default` bound as a fill | 88 | **0** — hairlines moved to the new `bg/divider`, drawer handles to `bg/neutral-alpha-20` |
+| `bg/inverse` bound as a glyph | 34 | **0** — 8 sign-in buttons moved off `fg/default`; the other 26 were Tooltip arrows, which are a surface continuation and never were a defect |
+| `fg/default` bound as a fill | 18 | **0** — the residual 8 were Spinner ellipses, which are indicators, not backgrounds |
+
+Two of the three "leaks" were partly the instrument. That is now encoded in `T9`'s exceptions
+instead of living in someone's memory.

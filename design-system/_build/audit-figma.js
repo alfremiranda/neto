@@ -179,7 +179,92 @@ async function auditPage(pageId) {
   return { scope: 'page', page: page.name, violaciones: V };
 }
 
+// ── T9 · does a token's name match the property it is bound to? ─────────────
+// This is the check that phase 1.2 made possible. Before property-first naming
+// there was nothing to compare a binding against; now the name is a claim and
+// every binding either honours it or does not.
+//
+// Two exceptions are real, and both were found by getting them wrong first:
+//
+//   1. A bare ELLIPSE / VECTOR / POLYGON painted with a `fg/*` token is an
+//      INDICATOR, not a background. The Spinner's track and head are ellipses;
+//      calling them a leak would be the instrument's error, not the file's.
+//   2. A POLYGON continuing a surface — the Tooltip arrow — is painted with the
+//      surface's own `bg/*` token on purpose. It is not a glyph.
+//
+// Documentation swatches are excluded wholesale: a swatch's job is to paint a
+// token as a fill regardless of what property that token is for.
+const T9 = {
+  docPages: /^Foundations/,
+  // a swatch's job is to paint a token as a fill whatever property that token is for.
+  // 'chip' was not enough: some swatch frames are named after their state ('default').
+  swatchAncestors: /^(section:|grid$|Danger \/ delete$)/,
+  swatchNames: /^(chip|default)$/,
+  surfaceContinuation: /^arrow$/,
+  indicatorTypes: new Set(['ELLIPSE', 'VECTOR', 'BOOLEAN_OPERATION', 'STAR', 'POLYGON', 'LINE']),
+  containerTypes: new Set(['FRAME', 'COMPONENT', 'COMPONENT_SET', 'INSTANCE', 'GROUP', 'SECTION']),
+};
+
+async function auditProperty() {
+  const vars = await figma.variables.getLocalVariablesAsync();
+  const claim = {};
+  for (const v of vars) {
+    const m = /^(bg|fg|border|shadow)\//.exec(v.name);
+    if (m) claim[v.id] = { prop: m[1], name: v.name };
+  }
+  const V = [];
+  const add = (rule, tok, where, why) => V.push({ rule, token: tok, node: where, why });
+
+  async function sweep() {
+    const seen = [];
+    for (const page of figma.root.children) {
+      await page.loadAsync();
+      const isDoc = T9.docPages.test(page.name);
+      for (const n of page.findAll(() => true)) {
+        if (isDoc && T9.swatchNames.test(n.name)) continue;
+        const f = n.fills;
+        if (f && f !== figma.mixed && f.length) for (const p of f) {
+          const b = p.boundVariables && p.boundVariables.color;
+          const c = b && claim[b.id];
+          if (!c) continue;
+          if (c.prop === 'bg') {
+            // a bg token on a glyph is wrong, unless it continues a surface
+            if (T9.indicatorTypes.has(n.type) && !T9.surfaceContinuation.test(n.name))
+              seen.push(['T9_bg_token_on_glyph', c.name, page.name + '/' + n.name]);
+          } else if (c.prop === 'fg') {
+            // a fg token on a CONTAINER is wrong; on a bare shape it is an indicator
+            if (T9.containerTypes.has(n.type))
+              seen.push(['T9_fg_token_as_background', c.name, page.name + '/' + n.name]);
+          } else {
+            seen.push(['T9_' + c.prop + '_token_used_as_fill', c.name, page.name + '/' + n.name]);
+          }
+        }
+        const st = n.strokes;
+        if (st && st !== figma.mixed && st.length) for (const p of st) {
+          const b = p.boundVariables && p.boundVariables.color;
+          const c = b && claim[b.id];
+          if (c && c.prop !== 'border') seen.push(['T9_' + c.prop + '_token_used_as_stroke', c.name, page.name + '/' + n.name]);
+        }
+        const ef = n.effects;
+        if (ef && ef !== figma.mixed && ef.length) for (const e of ef) {
+          const b = e.boundVariables && e.boundVariables.color;
+          const c = b && claim[b.id];
+          if (c && c.prop !== 'shadow') seen.push(['T9_' + c.prop + '_token_used_as_shadow', c.name, page.name + '/' + n.name]);
+        }
+      }
+    }
+    return seen;
+  }
+
+  // §B4: a cold pass under-reports by roughly 60% and raises no error
+  const a = await sweep(), b = await sweep();
+  if (JSON.stringify(a) !== JSON.stringify(b)) return { scope: 'property', converged: false, note: 'run again in the same session' };
+  b.forEach(([rule, tok, where]) => add(rule, tok, where));
+  return { scope: 'property', converged: true, tokensWithAClaim: Object.keys(claim).length, violaciones: V };
+}
+
 // ── entrada ─────────────────────────────────────────────────────────────────
 // Sin argumento audita tokens; con un id de página audita esa página.
 // return await auditTokens();
 // return await auditPage('PAGE_ID');
+// return await auditProperty();

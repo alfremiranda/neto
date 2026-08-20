@@ -101,3 +101,52 @@ them from, and that the next surface to lift does not have to choose between `md
 
 There is also a pipeline gap: the four rungs are **effect styles**, not variables. The exporter
 does not see them yet — reported in `docs/inbox/dev/FYI-2026-08-19-elevacion.md`.
+
+
+---
+
+## Correction, 2026-08-20 — the ladder never accounted for the card
+
+Alfredo caught this reviewing phase 1.2: `wrap/card` did not match the plan.
+
+The table in §5 assigns the four rungs against **the page** (`slate-950`) and stops there. But a
+card is not the page — it is already a lift off it, and `wrap/card` (now `bg/surface`) had been
+given `slate-800` independently of this document. The result was measurable and absurd:
+
+| token | Dark before | luminance |
+|---|---|---:|
+| `bg/surface` | slate-800 | 0.022 |
+| `bg/raised` | slate-900 | **0.009** |
+
+**`bg/raised` sat below the surface it exists to lift from.** In Light this was invisible, because
+in Light all six surface tokens are `#ffffff` and the shadow does all the work — which is exactly
+why the Dark check in phase 1.2 refused to merge them and is the reason the defect surfaced at all.
+
+The fix keeps everything this document decided — four rungs, named by role, surface leads in dark —
+and shifts them one to make room for the card as the first lift:
+
+| token | Dark before | Dark after |
+|---|---|---|
+| `bg/surface` | slate-800 | **slate-900** — a card, the first lift off the page |
+| `bg/subtle` | slate-700 | **slate-800** — a tint on a card, not an elevation rung |
+| `bg/raised` | slate-900 | **slate-800** — lifted off a card |
+| `bg/menu` | slate-800 | **slate-700** |
+| `bg/popover` | slate-800 | **slate-700** |
+| `bg/floating` | slate-700 | **slate-600** |
+| `bg/overlay` | slate-700 | **slate-600** |
+
+Luminance now rises monotonically from `bg/canvas` to `bg/overlay`, and that is now a check rather
+than a claim.
+
+### `bg/sunken` in dark is deliberately equal to the page
+
+There is no rung below `slate-950`. Rather than invent a fake one — black at `#000000` is a
+luminance difference of 0.002 and reads as nothing — a sunken well in dark is drawn with
+`border/subtle` as an inset edge and its fill matches the page on purpose. That is written into the
+token's own description so the next person does not "fix" it.
+
+### `bg/container` is now suspect
+
+It is identical to `bg/canvas` in Light (both slate-50) and identical to `bg/surface` in Dark (both
+slate-900). It has 21 product bindings and no value of its own in either mode. It is a merge
+candidate, recorded here rather than acted on.
