@@ -61,6 +61,32 @@ nobody knows why.
 8. **Every component carries a description, and the description says why**, not what. The shape
    is already visible on the canvas; the reason is not.
 
+### A3.7 Naming an optional part
+
+Set by Alfredo, 2026-08-20, after the file was found carrying three conventions for the same idea —
+`Button` said `Show leading Icon`, `Input` said `leadingIcon`, `ChoiceRow` said `Show media`.
+
+> **An optional ICON before the text is `Show Leading Icon`. After the text, `Show Trailing Icon`.
+> That naming applies to icons only — anything else must be called something else.**
+
+The second sentence is what makes the rule usable. A boolean that hides a tile, a badge, a divider
+or a line of text is not an icon slot and takes its own noun: `Show Media`, `Show Badge`,
+`Show Divider`, `Show Description`. `Show` plus the noun, in Title Case, so the list reads as one
+list.
+
+Applied by measuring, not by reading names: for every boolean, find the node its `visible` property
+controls, ask whether that node is an `Icon` instance, and ask whether it sits before or after the
+text in its parent's order. 22 properties renamed, 31 booleans now consistent.
+
+**One distinction the rule does not make, and that measurement forced:** two booleans hide an icon
+and were left alone. `AccountCard :: Show Favorite` and `outcome-itemrow :: Monthly` name a
+*meaning*, not a *slot* — the glyph is fixed and the boolean says what it signifies. A Button's
+leading icon can be anything; a favourite star is always a star. Renaming those to
+`Show Trailing Icon` would satisfy the rule and delete the information. So:
+
+> **A generic icon slot takes the positional name. An icon that always means one thing keeps the
+> name of the thing.**
+
 ## A4. The definition of done
 
 > **A component is not finished until the audit passes over it.**
