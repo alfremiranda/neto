@@ -171,3 +171,19 @@ paint a token as a fill whatever property that token is for.
 
 Two of the three "leaks" were partly the instrument. That is now encoded in `T9`'s exceptions
 instead of living in someone's memory.
+
+## Dark elevation, after the intermediate rungs — 2026-08-20
+
+| date | distinct levels / tokens | monotonic | min step | max step |
+|---|---|---|---:|---:|
+| 2026-08-20 (before) | 5 / 9 | **no** — `bg/raised` sat below `bg/surface` | — | — |
+| 2026-08-20 (after) | **8 / 9** | yes | 4.2 L* | 6.1 L* |
+
+Three primitives added — `slate/650`, `slate/750`, `slate/850` — interpolated in CIELAB, not sRGB.
+Primitives: 355 → **358**.
+
+The single remaining share is `bg/menu` = `bg/popover`, which `17-elevation.md §2` treats as the
+same question. A decision, not a leftover.
+
+`T9` re-run after the change: **20**, unchanged. No regression, and the two false positives from a
+documentation swatch named `default` are gone now that the exclusion covers it.

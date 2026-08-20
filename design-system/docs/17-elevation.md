@@ -150,3 +150,68 @@ token's own description so the next person does not "fix" it.
 It is identical to `bg/canvas` in Light (both slate-50) and identical to `bg/surface` in Dark (both
 slate-900). It has 21 product bindings and no value of its own in either mode. It is a merge
 candidate, recorded here rather than acted on.
+
+
+---
+
+## Correction 2, 2026-08-20 — five values were carrying nine tokens
+
+Alfredo: *"si crees que es más útil añadir nuevas escalas al color para hacer más evidente la
+luminancia, hazlo, de primitive a semantic."*
+
+Measured before deciding. The perceptual steps in the shifted ladder were fine — ΔL* of 6 to 11,
+all clearly visible. The problem was not the size of the steps, it was that there were only
+**five distinct values for nine tokens**, so every rung collided with its neighbour:
+
+    bg/container = bg/surface     bg/subtle = bg/raised
+    bg/menu = bg/popover          bg/floating = bg/overlay
+
+A ladder where half the rungs are the same height is not a ladder.
+
+### Three intermediate primitives
+
+Tailwind's slate stops at 100-unit steps. The gaps that matter for dark elevation — 900→800,
+800→700, 700→600 — are ΔL* 8.4, 10.7 and 8.6, each wide enough to hold a rung. Three were added,
+**interpolated in CIELAB** between their neighbours rather than in sRGB: a naive midpoint drifts
+off slate's hue and reads as a different grey.
+
+| primitive | hex | L* | between |
+|---|---|---:|---|
+| `color/slate/850` | `#162032` | 12.2 | 900 (8.0) and 800 (16.4) |
+| `color/slate/750` | `#283548` | 21.8 | 800 (16.4) and 700 (27.1) |
+| `color/slate/650` | `#3d4b5f` | 31.5 | 700 (27.1) and 600 (35.7) |
+
+### The ladder, measured after applying
+
+| token | primitive | L* | step |
+|---|---|---:|---:|
+| `bg/canvas` | slate-950 | 1.9 | |
+| `bg/container` | slate-900 | 8.0 | +6.1 |
+| `bg/surface` | slate-850 | 12.2 | +4.2 |
+| `bg/subtle` | slate-800 | 16.4 | +4.2 |
+| `bg/raised` | slate-750 | 21.8 | +5.4 |
+| `bg/menu` | slate-700 | 27.1 | +5.3 |
+| `bg/popover` | slate-700 | 27.1 | **0** |
+| `bg/floating` | slate-650 | 31.5 | +4.4 |
+| `bg/overlay` | slate-600 | 35.7 | +4.2 |
+
+Monotonic, eight distinct levels for nine tokens, every step between 4.2 and 6.1 L*.
+
+`bg/menu` and `bg/popover` share a rung **on purpose**: §2 of this document treats them as the same
+question — *is it tied to what you pressed, gone when you look away?* A popover and a menu answer it
+the same way, so they get the same height. That is the one share, and it is a decision rather than
+a leftover.
+
+### A principle that fell out of this
+
+`bg/subtle` recedes by **darkening** in Light (slate-100 under a white card) and by **lightening**
+in Dark (slate-800 over a slate-850 card), because in Dark there is nowhere darker to go without
+hitting the page. The direction inverts; the invariant is that a tint moves **away from its
+surface**. That is written into the token's own description, because it looks like a bug until you
+know it is the rule.
+
+### Light is deliberately left with two levels
+
+`bg/canvas` at slate-50 and everything else at white. §5 already decided this — in Light the shadow
+does the work — and the scrim carries modals. Adding a Light ladder would mean cards that are not
+white, which is a look decision and not a legibility one.
