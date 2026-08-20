@@ -365,3 +365,49 @@ property-first names work:
 
 The first row is the same class as the `strokeTopWeight` trap: an instrument asymmetry that would
 otherwise sit in the audit forever as an unexplained non-zero. Written down rather than fought.
+
+## The hand-typed layout numbers, swept — 2026-08-20
+
+Approved in `A-2026-08-20-numeros-de-layout` and run in the order the orchestrator asked:
+`Foundations` → `Components · *` / `Blocks` / `Brand` / `Icons` / `Layouts` → screens.
+`_docs-kit` and `Screens · Neto (WIP)` excluded structurally via `CONFIG.outOfScopePages`.
+
+| | |
+|---|---:|
+| bindings written | **19,560** |
+| failures | **0** |
+| layout numbers now bound | **196,952** |
+| still unbound | **3,453** |
+| **coverage** | **98.3%** |
+
+Per group: Foundations 4,874 · Navigation/Overlays/Feedback 2,774 · Icons&Avatar/Blocks/Brand/
+Icons/Layouts 3,811 · Flow-Onboarding + Page-Accounts 6,631 · Screens & exploration 1,466 · Forms
+(pill fix) 4. Actions, Badges, Rows and Cards were already fully bound.
+
+Nothing moved: the values written are the values that were already there. Verified by screenshot on
+the desktop consent frame.
+
+### The 3,453 that remain, and they are not a backlog
+
+**859 are instance overrides** — a node inside an instance whose value differs from its component.
+Binding those would mint an override rather than remove one. Left alone deliberately.
+
+**2,594 are values with no rung.** This is the real output of the sweep: the list of numbers the
+system does not have a word for.
+
+| value | count | reading |
+|---|---:|---|
+| `radius 10` | 656 | already decided: **not a rung**, normalise to 8 or 12 |
+| `gap 6` | 467 | **there is no `spacing/6`** — the same gap that surfaced in 1.4 |
+| `radius 20` | 304 | no rung |
+| `radius 5` | 222 | on no scale, before or after |
+| `radius 2` | 176 | the rung was deleted in 1.3 as dead; it is not dead |
+| `radius 999` | 128 | instance-level overrides of the pill sentinel. The four **components** were normalised to `radius/full`; these 128 are overrides that survived it |
+| `pad 7` · `pad 3` · `pad 18` · `pad 14` | 264 | off-scale paddings |
+| fractional (`1.8`, `7.8`, `2.88`, `12.48`) | ~120 | scaled-group artefacts, not decisions |
+| `gap -1.5` | 34 | negative gap — overlapping avatars. Legitimate, no rung wanted |
+
+**The three that are arguably missing rungs, in order of evidence: `spacing/6` (467), `radius/2`
+(176), `radius/20` (304).** Each needs the same treatment `radius 10` got — count first, then ask.
+`radius/2` is the sharpest: 1.3 deleted it for being unbound, and 176 hand-typed 2s were the reason
+it looked unbound.
