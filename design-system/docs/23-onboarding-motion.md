@@ -106,3 +106,24 @@ broken rather than calm.
 
 The `Spinner` is deliberately kept: it is the only signal that an operation is still running, and
 its absence would leave a user staring at a dead button.
+
+---
+
+## Where this belongs, eventually
+
+This document is prose because there is nowhere to run it. Alfredo, reading it: *"para esto es que
+necesitamos el storybook para ver las interacciones y comportamientos del componente."*
+
+He is right, and every rule above is an interaction test waiting for somewhere to live:
+
+| rule here | the test it becomes |
+|---|---|
+| the button must not change width when it goes busy | assert the button's width before and after the busy swap |
+| nothing resizes on selection | assert row height is unchanged across `Selected=False → True` |
+| the incoming step starts 40ms after the outgoing | assert the overlap, not just the durations |
+| `prefers-reduced-motion` keeps opacity and the Spinner | run the suite twice, once with the media query forced |
+
+D1 (Storybook) has been unblocked from Design since `A-2026-08-17-storybook-blocker` — it waits on
+Dev's exporter, and the measurement in `Q-2026-08-20-storybook-sigue-sin-referencia` is why that
+still holds. Until then this document is the contract, and it is written to be checkable by hand:
+every assertion above is something a person can verify in a browser in under a minute.
