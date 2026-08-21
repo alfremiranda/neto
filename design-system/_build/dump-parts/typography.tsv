@@ -1,0 +1,41 @@
+font-family	STRING	Rethink Sans
+size/9	FLOAT	9
+size/10	FLOAT	10
+size/11	FLOAT	11
+size/12	FLOAT	12
+size/13	FLOAT	13
+size/14	FLOAT	14
+size/16	FLOAT	16
+size/17	FLOAT	17
+size/18	FLOAT	18
+size/20	FLOAT	20
+leading/10	FLOAT	10
+size/22	FLOAT	22
+leading/11	FLOAT	11
+leading/12	FLOAT	12
+size/24	FLOAT	24
+leading/14	FLOAT	14
+leading/15	FLOAT	15
+leading/16	FLOAT	16
+leading/17	FLOAT	17
+leading/18	FLOAT	18
+leading/20	FLOAT	20
+tracking/tighter	FLOAT	-1
+tracking/tight	FLOAT	-0.5
+tracking/snug	FLOAT	-0.25
+tracking/normal	FLOAT	0
+tracking/wide	FLOAT	0.5
+tracking/wider	FLOAT	1
+weight/Regular	STRING	Regular
+weight/Medium	STRING	Medium
+weight/Semi Bold	STRING	SemiBold
+weight/Bold	STRING	Bold
+weight/Extra Bold	STRING	ExtraBold
+leading/21	FLOAT	21
+leading/24	FLOAT	24
+leading/26	FLOAT	26
+leading/28	FLOAT	28
+leading/32	FLOAT	32
+leading/36	FLOAT	36
+size/28	FLOAT	28
+size/32	FLOAT	32
