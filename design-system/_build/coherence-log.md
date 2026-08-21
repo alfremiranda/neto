@@ -674,3 +674,43 @@ The honest caveat: `get_screenshot` shows only the resting state, so the only wa
 `export_video` plus frame sampling, which renders server-side and is slow. That makes motion the one
 part of the system where checking costs real time — but it is checkable, which is the difference
 between a specification and a wish.
+
+## 2026-08-21 · The exporter, measured end to end for the first time
+
+The loop had never closed. Stage 1 ran on 08-17 and produced a file that read as finished.
+
+    dump               17 Aug          21 Aug
+    ---------------------------------------------
+    rows                  220             731
+    collections             2 (colours)     4
+    text styles             0              26
+
+The 08-17 dump was truncated, not partial-by-design: `use_figma` caps its response at 20 kB and
+**stops without erroring**. A short dump and a complete one are the same shape, so nothing
+downstream could tell them apart. Stage 1 now runs in eight slices and `assemble-dump.py` asserts
+162 / 41 / 177 / 351 before writing — the only place a lost slice fails loudly.
+
+Then the measurement that matters, `apply-rename-map.mjs --check`:
+
+    semantic mapped    17 Aug: 128 of 128       21 Aug:   9 of 162
+    UNMAPPED           17 Aug:   0              21 Aug: 153
+    component mapped   17 Aug:  92              21 Aug: 177 of 177
+
+Component is whole. Semantic collapsed, and not because anything broke: `rename-map.json` was
+authored on 08-19 against `color/surface/*`, `color/foreground/*`, `color/income/*` — the namespace
+phase 1.2 retired two days later. **`motion/` is the only prefix that survived, and it survived
+because it was added after the rename.** A map is a bridge, and 1.2 moved the far bank.
+
+The published package still speaks the old language — `--surface-wrap-*`, `--surface-popover`,
+`--surface-container`, `--foreground-*`, `--kpi-*`, `--data-*`. Those are the component nouns
+Alfredo struck out of the semantic layer. The system currently has two vocabularies and the only
+thing reconciling them is the file that just proved it goes stale in silence.
+
+**20 CHANGED values.** Two were decided on 08-17 and behaved: the favourite star does not appear at
+all (Figma and the repo now agree on `#b45309`), and `--sidebar-surface` goes
+`rgba(255,255,255,0.5)` → `#ffffff`. The other 18 are the Light surface ladder and the contrast
+work reaching the package for the first time. Not absorbed — listed, and left for the decision.
+
+One provenance note, small and the same shape as everything else this month: the 08-17 dump carried
+`"file": "Neto"`. `figma.root.name` returns `"Document"`. It was hand-typed into a field that reads
+as measured.
