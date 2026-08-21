@@ -697,34 +697,34 @@
           "rgba(6,182,212,0.2)"
         ],
         [
-          "account/purple",
-          "#a855f7",
-          "#e9d5ff"
+          "account/purple/accent",
+          "#9333ea",
+          "#d8b4fe"
         ],
         [
-          "account/sky",
+          "account/sky/accent",
           "#0284c7",
           "#7dd3fc"
         ],
         [
-          "account/emerald",
+          "account/emerald/accent",
           "#059669",
-          "#a7f3d0"
+          "#6ee7b7"
         ],
         [
-          "account/lime",
+          "account/lime/accent",
           "#4d7c0f",
-          "#a3e635"
+          "#bef264"
         ],
         [
-          "account/amber",
-          "#b45309",
+          "account/amber/accent",
+          "#d97706",
           "#fcd34d"
         ],
         [
-          "account/pink",
-          "#ec4899",
-          "#f472b6"
+          "account/pink/accent",
+          "#db2777",
+          "#f9a8d4"
         ],
         [
           "motion/duration/instant",
@@ -845,6 +845,96 @@
           "radius/full",
           9999,
           9999
+        ],
+        [
+          "account/blue/accent",
+          "#2563eb",
+          "#93c5fd"
+        ],
+        [
+          "account/green/accent",
+          "#16a34a",
+          "#86efac"
+        ],
+        [
+          "account/indigo/accent",
+          "#4f46e5",
+          "#a5b4fc"
+        ],
+        [
+          "account/orange/accent",
+          "#ea580c",
+          "#fdba74"
+        ],
+        [
+          "account/rose/accent",
+          "#e11d48",
+          "#fda4af"
+        ],
+        [
+          "account/teal/accent",
+          "#0d9488",
+          "#5eead4"
+        ],
+        [
+          "account/purple/surface",
+          "#faf5ff",
+          "#3b0764"
+        ],
+        [
+          "account/sky/surface",
+          "#f0f9ff",
+          "#082f49"
+        ],
+        [
+          "account/emerald/surface",
+          "#ecfdf5",
+          "#022c22"
+        ],
+        [
+          "account/lime/surface",
+          "#f7fee7",
+          "#1a2e05"
+        ],
+        [
+          "account/amber/surface",
+          "#fffbeb",
+          "#451a03"
+        ],
+        [
+          "account/pink/surface",
+          "#fdf2f8",
+          "#500724"
+        ],
+        [
+          "account/blue/surface",
+          "#eff6ff",
+          "#172554"
+        ],
+        [
+          "account/green/surface",
+          "#f0fdf4",
+          "#052e16"
+        ],
+        [
+          "account/indigo/surface",
+          "#eef2ff",
+          "#1e1b4b"
+        ],
+        [
+          "account/orange/surface",
+          "#fff7ed",
+          "#431407"
+        ],
+        [
+          "account/rose/surface",
+          "#fff1f2",
+          "#4c0519"
+        ],
+        [
+          "account/teal/surface",
+          "#f0fdfa",
+          "#042f2e"
         ]
       ]
     },
@@ -3458,20 +3548,20 @@
     },
     {
       "collection": "Semantic",
-      "name": "account/purple",
+      "name": "account/purple/accent",
       "type": "COLOR",
       "values": {
-        "Light": "#a855f7",
-        "Dark": "#e9d5ff"
+        "Light": "#9333ea",
+        "Dark": "#d8b4fe"
       },
       "aliases": {
-        "Light": "color/purple/500",
-        "Dark": "color/purple/200"
+        "Light": "color/purple/600",
+        "Dark": "color/purple/300"
       }
     },
     {
       "collection": "Semantic",
-      "name": "account/sky",
+      "name": "account/sky/accent",
       "type": "COLOR",
       "values": {
         "Light": "#0284c7",
@@ -3484,54 +3574,54 @@
     },
     {
       "collection": "Semantic",
-      "name": "account/emerald",
+      "name": "account/emerald/accent",
       "type": "COLOR",
       "values": {
         "Light": "#059669",
-        "Dark": "#a7f3d0"
+        "Dark": "#6ee7b7"
       },
       "aliases": {
         "Light": "color/emerald/600",
-        "Dark": "color/emerald/200"
+        "Dark": "color/emerald/300"
       }
     },
     {
       "collection": "Semantic",
-      "name": "account/lime",
+      "name": "account/lime/accent",
       "type": "COLOR",
       "values": {
         "Light": "#4d7c0f",
-        "Dark": "#a3e635"
+        "Dark": "#bef264"
       },
       "aliases": {
         "Light": "color/lime/700",
-        "Dark": "color/lime/400"
+        "Dark": "color/lime/300"
       }
     },
     {
       "collection": "Semantic",
-      "name": "account/amber",
+      "name": "account/amber/accent",
       "type": "COLOR",
       "values": {
-        "Light": "#b45309",
+        "Light": "#d97706",
         "Dark": "#fcd34d"
       },
       "aliases": {
-        "Light": "color/amber/700",
+        "Light": "color/amber/600",
         "Dark": "color/amber/300"
       }
     },
     {
       "collection": "Semantic",
-      "name": "account/pink",
+      "name": "account/pink/accent",
       "type": "COLOR",
       "values": {
-        "Light": "#ec4899",
-        "Dark": "#f472b6"
+        "Light": "#db2777",
+        "Dark": "#f9a8d4"
       },
       "aliases": {
-        "Light": "color/pink/500",
-        "Dark": "color/pink/400"
+        "Light": "color/pink/600",
+        "Dark": "color/pink/300"
       }
     },
     {
@@ -3844,6 +3934,240 @@
       "aliases": {
         "Light": "scale/full",
         "Dark": "scale/full"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "account/blue/accent",
+      "type": "COLOR",
+      "values": {
+        "Light": "#2563eb",
+        "Dark": "#93c5fd"
+      },
+      "aliases": {
+        "Light": "color/blue/600",
+        "Dark": "color/blue/300"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "account/green/accent",
+      "type": "COLOR",
+      "values": {
+        "Light": "#16a34a",
+        "Dark": "#86efac"
+      },
+      "aliases": {
+        "Light": "color/green/600",
+        "Dark": "color/green/300"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "account/indigo/accent",
+      "type": "COLOR",
+      "values": {
+        "Light": "#4f46e5",
+        "Dark": "#a5b4fc"
+      },
+      "aliases": {
+        "Light": "color/indigo/600",
+        "Dark": "color/indigo/300"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "account/orange/accent",
+      "type": "COLOR",
+      "values": {
+        "Light": "#ea580c",
+        "Dark": "#fdba74"
+      },
+      "aliases": {
+        "Light": "color/orange/600",
+        "Dark": "color/orange/300"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "account/rose/accent",
+      "type": "COLOR",
+      "values": {
+        "Light": "#e11d48",
+        "Dark": "#fda4af"
+      },
+      "aliases": {
+        "Light": "color/rose/600",
+        "Dark": "color/rose/300"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "account/teal/accent",
+      "type": "COLOR",
+      "values": {
+        "Light": "#0d9488",
+        "Dark": "#5eead4"
+      },
+      "aliases": {
+        "Light": "color/teal/600",
+        "Dark": "color/teal/300"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "account/purple/surface",
+      "type": "COLOR",
+      "values": {
+        "Light": "#faf5ff",
+        "Dark": "#3b0764"
+      },
+      "aliases": {
+        "Light": "color/purple/50",
+        "Dark": "color/purple/950"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "account/sky/surface",
+      "type": "COLOR",
+      "values": {
+        "Light": "#f0f9ff",
+        "Dark": "#082f49"
+      },
+      "aliases": {
+        "Light": "color/sky/50",
+        "Dark": "color/sky/950"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "account/emerald/surface",
+      "type": "COLOR",
+      "values": {
+        "Light": "#ecfdf5",
+        "Dark": "#022c22"
+      },
+      "aliases": {
+        "Light": "color/emerald/50",
+        "Dark": "color/emerald/950"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "account/lime/surface",
+      "type": "COLOR",
+      "values": {
+        "Light": "#f7fee7",
+        "Dark": "#1a2e05"
+      },
+      "aliases": {
+        "Light": "color/lime/50",
+        "Dark": "color/lime/950"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "account/amber/surface",
+      "type": "COLOR",
+      "values": {
+        "Light": "#fffbeb",
+        "Dark": "#451a03"
+      },
+      "aliases": {
+        "Light": "color/amber/50",
+        "Dark": "color/amber/950"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "account/pink/surface",
+      "type": "COLOR",
+      "values": {
+        "Light": "#fdf2f8",
+        "Dark": "#500724"
+      },
+      "aliases": {
+        "Light": "color/pink/50",
+        "Dark": "color/pink/950"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "account/blue/surface",
+      "type": "COLOR",
+      "values": {
+        "Light": "#eff6ff",
+        "Dark": "#172554"
+      },
+      "aliases": {
+        "Light": "color/blue/50",
+        "Dark": "color/blue/950"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "account/green/surface",
+      "type": "COLOR",
+      "values": {
+        "Light": "#f0fdf4",
+        "Dark": "#052e16"
+      },
+      "aliases": {
+        "Light": "color/green/50",
+        "Dark": "color/green/950"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "account/indigo/surface",
+      "type": "COLOR",
+      "values": {
+        "Light": "#eef2ff",
+        "Dark": "#1e1b4b"
+      },
+      "aliases": {
+        "Light": "color/indigo/50",
+        "Dark": "color/indigo/950"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "account/orange/surface",
+      "type": "COLOR",
+      "values": {
+        "Light": "#fff7ed",
+        "Dark": "#431407"
+      },
+      "aliases": {
+        "Light": "color/orange/50",
+        "Dark": "color/orange/950"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "account/rose/surface",
+      "type": "COLOR",
+      "values": {
+        "Light": "#fff1f2",
+        "Dark": "#4c0519"
+      },
+      "aliases": {
+        "Light": "color/rose/50",
+        "Dark": "color/rose/950"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "account/teal/surface",
+      "type": "COLOR",
+      "values": {
+        "Light": "#f0fdfa",
+        "Dark": "#042f2e"
+      },
+      "aliases": {
+        "Light": "color/teal/50",
+        "Dark": "color/teal/950"
       }
     },
     {

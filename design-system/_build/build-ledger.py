@@ -137,6 +137,9 @@ for n in broken:
     if n.startswith('--account-'):
         ledger['pending'][n] = dict(entry_base, via='needs-decision',
             recommend='tombstone',
+            decidedBy='Alfredo 2026-08-21 — account colour becomes a user choice (see docs/25-account-color.md)',
+            blockedOn='build.py lines 109-112 still map --color-account-<name>-{bg,txt} onto these. '
+                      'They can only be tombstoned once that bridge points at account/<hue>/* instead.',
             why='These name Alfredo\'s actual accounts (build.py lines 109-112: arq · toptal · bancol · '
                 'other), not design-system roles. Figma now publishes a palette (account/purple|sky|'
                 'emerald|lime|amber|pink) plus bg/account + fg/account for the neutral default, because '

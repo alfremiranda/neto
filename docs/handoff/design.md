@@ -2,7 +2,7 @@
 
 Última actualización: **2026-08-21**. Trabajo en vuelo al cierre de sesión.
 
-**`unpushed: 01023151`, `eedb39a8`, y el commit que trae este handoff** — Diseño no puede pushear. `credential-osxkeychain` es un binario de
+**`unpushed: 01023151`, `eedb39a8`, `0fd773be`, y el commit que trae este handoff** — Diseño no puede pushear. `credential-osxkeychain` es un binario de
 macOS que no existe en la VM de Linux donde corro; `git fetch` funciona (lectura anónima),
 `git push` no puede autenticar. Dev barre. Los cuatro commits que este archivo declaraba sin
 pushear el 20 (`6afa685e`, `6cff971a`, `b19faabe`, `308f798c`) **ya están en `origin/main`**;
@@ -97,7 +97,7 @@ Diseño y está escrito:
 | qué | de quién | dónde |
 |---|---|---|
 | ~~espacio de nombres del CSS publicado~~ | **decidido por Alfredo 08-21: sigue a Figma** | `24-token-sync.md` |
-| los 8 `--account-{1..4}-*` — lápida o alias | **Alfredo** | `token-ledger.json §pending`, 10 usos en `build.py` |
+| ~~los 8 `--account-{1..4}-*`~~ | **decidido 08-21: mueren.** El color pasa a ser elección del usuario | `docs/25-account-color.md` · siguen en `pending` hasta que Dev repunte `build.py` 109-112 |
 | la fila `destructive` del mapa de migración: ¿la aplicó Dev? | Dev | `Q-2026-08-21-la-fila-destructive` |
 | `Frame 1` en `Components · Forms` (30 instancias de `Input` suyas) | Alfredo | pendiente desde el 20 |
 | etapa 2 + `build.py` con los 20 CHANGED | Dev | reporte 08-21 `§NEEDS 2` |

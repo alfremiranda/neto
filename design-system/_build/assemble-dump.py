@@ -26,11 +26,16 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 PARTS = os.path.join(HERE, 'dump-parts')
 
 # collection -> (chunk files in order, expected total)
-LAYOUT = {
-    'Semantic':   (['semantic-1.tsv', 'semantic-2.tsv'], 162),
-    'Typography': (['typography.tsv'], 41),
-    'Component':  (['component-1.tsv', 'component-2.tsv'], 177),
-    'Primitives': (['primitives-1.tsv', 'primitives-2.tsv'], 351),
+# Chunk files per collection. The EXPECTED COUNTS are not here: they live in
+# meta.json, written by the same stage-1 run that produced the chunks. Hardcoding
+# them here means every token minted in Figma makes this file wrong, and a count
+# assertion that has to be edited by hand is one that gets edited to match instead
+# of being believed.
+CHUNKS = {
+    'Semantic':   ['semantic-1.tsv', 'semantic-2.tsv'],
+    'Typography': ['typography.tsv'],
+    'Component':  ['component-1.tsv', 'component-2.tsv'],
+    'Primitives': ['primitives-1.tsv', 'primitives-2.tsv'],
 }
 
 meta = json.load(open(os.path.join(PARTS, 'meta.json')))
@@ -47,7 +52,8 @@ def coerce(vtype, raw):
 
 variables = []
 for collection in [c['name'] for c in meta['collections']]:
-    files, expected = LAYOUT[collection]
+    files = CHUNKS[collection]
+    expected = meta.get('counts', {}).get(collection)
     modes = modes_by_collection[collection]
     rows = []
     for fname in files:
@@ -56,6 +62,9 @@ for collection in [c['name'] for c in meta['collections']]:
                 line = line.rstrip('\n')
                 if line:
                     rows.append(line.split('\t'))
+    if expected is None:
+        sys.exit(f'FAIL {collection}: meta.json has no expected count. Stage 1 must record it — '
+                 f'without it a truncated chunk is indistinguishable from a complete one.')
     if len(rows) != expected:
         sys.exit(f'FAIL {collection}: {len(rows)} rows, expected {expected} — a chunk is missing or truncated')
 
