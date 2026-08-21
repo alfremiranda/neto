@@ -574,3 +574,52 @@ Same shape as the `Show Maturity` near-miss two entries up: **one member of a se
 siblings, invisible unless you walk every member.** That is now three findings from the same habit,
 and it is worth stating as a check rather than a habit — a variant whose children are wired
 differently from its siblings is a defect, and it is mechanical to detect.
+
+## The media icons — 2026-08-20
+
+Alfredo: *"algunos colores de los iconos de media no están renderizando bien en instancias de este
+componente, pasa en varias pantallas."*
+
+Not a render bug. A contrast failure, and the cause is one layer deeper than the component.
+
+### Measured
+
+`ChoiceRow`'s media tile is `bg/subtle` when unselected and **`bg/brand` solid** when selected. The
+glyph inside is whatever the consumer swapped in, and **every glyph component's `Vector` is bound to
+`fg/subtle`** — the `Icon` wrapper has no colour property at all, only `Glyph` and `size`.
+
+So a selected row puts a slate glyph on a solid brand tile:
+
+| | glyph on the solid tile | glyph on a 20% brand tint |
+|---|---:|---:|
+| Light | **1.93:1** | 8.26:1 |
+| Dark | **1.64:1** | 7.69:1 |
+
+1.6 and 1.9 against a 3:1 floor for a graphic. That is why it looked like a rendering fault — the
+icon was there, it just could not be seen.
+
+### Fixed by changing the tile, not the glyph
+
+The selected tile is now `bg/brand-alpha-20`. The glyph stays `fg/subtle` and reads at 7.7–8.3:1 in
+both modes. Selection is still unmistakable: the row keeps its brand border and its filled radio.
+
+**The reason it was fixed on the tile is not preference — the glyph could not be reached.** The
+`Vector` lives inside a nested, swappable instance, and the Plugin API will not expose it for
+override: `findAll` returns nothing, and walking `.children` explicitly stops at the glyph instance.
+Even if it could be set, an override on a swappable glyph would be lost the moment a consumer
+changed the icon.
+
+### The finding is the Icon component
+
+> **`Icon` cannot be recoloured by its context.** Its properties are `Glyph` and `size`. Every
+> glyph's `Vector` is hard-bound to `fg/subtle`.
+
+That means an icon is slate wherever it sits, and the only defence is never to put one on a surface
+that slate cannot survive. The sweep found no other case today — the four `ChoiceRow` variants were
+the only place an icon sat on a solid brand or inverse fill — but the gap is structural and the next
+solid-filled component with an icon will hit it again.
+
+A `Tone` axis on `Icon` is the obvious fix and it does not work in Figma for the same reason the
+override does not: the colour lives inside the swappable child, where the wrapper cannot reach it.
+The workable options are to bind glyph `Vector`s to a Component-collection token per usage, or to
+keep the rule that icons only ever sit on surfaces `fg/subtle` survives. Recorded for a decision.
