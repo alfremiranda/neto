@@ -215,3 +215,63 @@ know it is the rule.
 `bg/canvas` at slate-50 and everything else at white. §5 already decided this — in Light the shadow
 does the work — and the scrim carries modals. Adding a Light ladder would mean cards that are not
 white, which is a look decision and not a legibility one.
+
+---
+
+## Correction 3, 2026-08-20 — Light gets a real ladder, and hits a ceiling
+
+Alfredo, looking at the four elevation rungs all resolving to `color/white` in Light while each has
+its own slate in Dark: *"lo ideal sería crear variaciones en la escala de color no solo en dark
+sino también en light, si no, no sería consecuente."*
+
+The principle is right. The measurement says how far it can go.
+
+### Runway is the constraint, not rungs
+
+| mode | page | ceiling | runway |
+|---|---|---|---:|
+| Dark | `slate-950` (L\* 1.85) | `slate-600` (L\* 35.71) | **33.9 L\*** |
+| Light | `slate-50` (L\* 98.18) | **white (L\* 100)** | **1.8 L\*** |
+
+White is a hard ceiling — not a choice. That is why the four Light rungs had collapsed into one
+value: there was nowhere to go.
+
+**So the page came down.** With `bg/canvas` at `slate-100` the runway becomes **3.65 L\***:
+
+| token | Light before | Light after | L\* |
+|---|---|---|---:|
+| `bg/sunken` | slate-100 | **slate-200** | 91.76 |
+| `bg/canvas` | slate-50 | **slate-100** | 96.35 |
+| `bg/chrome` | slate-50 | slate-100 | 96.35 |
+| `bg/subtle` | slate-100 | slate-100 | 96.35 |
+| `bg/surface` | white | **slate-50** | 98.18 |
+| `bg/raised` · `anchored` · `floating` · `overlay` | white | white | 100 |
+
+Light went from **2 distinguishable surface levels to 4**, monotonic, and cards are now off-white
+so that a lifted surface has somewhere to go.
+
+### New slate rungs would not have helped, and the arithmetic is why
+
+Alfredo, mid-flight: *"crea nuevos peldaños en slate si es necesario."* Checked before minting:
+
+    3.65 L* of runway, split N ways above the canvas
+       1 level  -> 3.65 L* per step   OK
+       2 levels -> 1.83 L* per step   below threshold
+       4 levels -> 0.91 L* per step   below threshold
+
+A `slate-25` between `slate-50` and white lands at L\* 99.09 — 0.91 from each neighbour. On a large
+flat area that is invisible. **The limit is not the supply of rungs, it is the total runway**, and
+minting more names would only divide the same 3.65 L\* more finely while pretending to be a ladder.
+
+Getting four perceptible Light rungs needs the page at `slate-200` — 8.24 L\* of runway, 2.06 per
+step, right at threshold — and that makes the page a clearly grey surface. Offered and declined:
+Neto stops reading as a light-background app.
+
+### So the consistency is in the rule, not in the values
+
+> **The surface moves away from the page as elevation rises, as far as the mode allows.**
+
+Dark has 34 L\* of room and spends it on eight distinct rungs. Light has 3.65 and spends it on
+three. The four top rungs sharing white in Light is now a **stated consequence of the ceiling**,
+not an oversight — and the shadow scale is what separates them, which is what §5 decided and
+measured in the first place.
