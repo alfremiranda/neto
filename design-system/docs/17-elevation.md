@@ -267,6 +267,41 @@ Getting four perceptible Light rungs needs the page at `slate-200` — 8.24 L\* 
 step, right at threshold — and that makes the page a clearly grey surface. Offered and declined:
 Neto stops reading as a light-background app.
 
+### Applied anyway, and the better argument for it
+
+Alfredo, a third time, with the variables panel open: *"estos siguen igual."* He was right — I had
+left the four sharing `color/white`.
+
+Three rungs minted between `slate-50` and white, interpolated in CIELAB: `slate-40` (L\* 98.59),
+`slate-30` (99.26), `slate-20` (99.58). The Light ladder now holds **seven distinct values for seven
+tokens**, monotonic:
+
+| token | Light | L\* | step |
+|---|---|---:|---:|
+| `bg/sunken` | slate-200 | 91.76 | |
+| `bg/canvas` | slate-100 | 96.35 | +4.59 |
+| `bg/surface` | slate-50 | 98.18 | +1.83 |
+| `bg/raised` | **slate-40** | 98.59 | +0.41 |
+| `bg/anchored` | **slate-30** | 99.26 | +0.67 |
+| `bg/floating` | **slate-20** | 99.58 | +0.32 |
+| `bg/overlay` | white | 100 | +0.42 |
+
+**The perceptual caveat stands and is worth keeping in writing:** steps of 0.3–0.7 L\* are below the
+~2 L\* threshold on a large flat area. In Light the *shadow* is still what separates one surface
+from another; these values do not.
+
+**But I had the argument wrong, and the correction is the interesting part.** I was defending the
+shared white on perceptual grounds — if you cannot see the difference, why encode it. That is the
+same reasoning that would have kept `color/interactive/primary` as one token because its fill and
+its stroke happened to hold the same colour. Rule 7 already answers it:
+
+> **A token that shares its value with another cannot change without dragging the other along.**
+
+Four tokens on `color/white` meant the day someone wanted a warmer modal, or a menu that lifts a
+little further, they would have to notice the collision first and split it under time pressure.
+Seven distinct values cost nothing today and remove that trap. Perceptibility is a reason to set a
+value carefully; it is not a reason to withhold one.
+
 ### So the consistency is in the rule, not in the values
 
 > **The surface moves away from the page as elevation rises, as far as the mode allows.**
