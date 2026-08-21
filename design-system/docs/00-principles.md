@@ -285,3 +285,28 @@ First validator run over 720 variables:
 
 The 8 broken aliases were the serious find: they had been resolving in silence for weeks while
 `tokens.map.css` exposed `--color-currency-*` to the app.
+
+## B6. The session opens against Figma, not against memory (2026-08-21)
+
+Alfredo, on the day the published CSS was found four days out of date with Figma: *"debe haber un
+sistema para auditar y actualizar los tokens ya que en Figma se crean, se mueven, se cambian o se
+eliminan dependiendo del diseño."*
+
+So a design session starts with three commands, before anything is touched:
+
+    1. stage 1 in Figma  ->  _build/dump-parts/*.tsv
+    2. python3 design-system/_build/assemble-dump.py
+    3. node   design-system/_build/token-drift.mjs
+
+Exit 1 is a stop: something the app consumes has disappeared from Figma with no alias and no
+tombstone. Exit 2 is a queue. Exit 0 means the package and Figma agree, and it means that **only
+as far as the dump is fresh** — which is why the auditor prints the dump's age and why step 1 is
+not optional. Four days of silence happened with every script running green.
+
+The rule this enforces is `§A1`'s missing half. `§A1` says that when code and Figma differ there
+is a defect with a known direction. Until 2026-08-21 nothing could tell you they differed.
+
+**And the rename half:** when a token is renamed in Figma, the ledger entry is appended in the
+same session, by the session that renamed it. Never reconstructed afterwards. Rebuilding the
+first 132 entries cost a day and needed three separate derivations, and the one obvious shortcut —
+matching by value — was wrong 88 times out of 132. See `24-token-sync.md §3`.

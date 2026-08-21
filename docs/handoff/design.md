@@ -2,7 +2,7 @@
 
 Última actualización: **2026-08-21**. Trabajo en vuelo al cierre de sesión.
 
-**`unpushed: 01023151` + el commit de `docs:` que trae este handoff** — Diseño no puede pushear. `credential-osxkeychain` es un binario de
+**`unpushed: 01023151`, `eedb39a8`, y el commit que trae este handoff** — Diseño no puede pushear. `credential-osxkeychain` es un binario de
 macOS que no existe en la VM de Linux donde corro; `git fetch` funciona (lectura anónima),
 `git push` no puede autenticar. Dev barre. Los cuatro commits que este archivo declaraba sin
 pushear el 20 (`6afa685e`, `6cff971a`, `b19faabe`, `308f798c`) **ya están en `origin/main`**;
@@ -24,9 +24,17 @@ verificado con `git fetch`, no supuesto.
 | 4 · componentes que faltan | ⬜ tres gráficos anuales, barra de distribución, `LedgerRow`, asa de drawer. `chart/*` reservado |
 | 5 · mantenerlo vivo | ⬜ `C5`, `C6`, `C7` |
 
-## Lo único que bloquea la fase 2
+## Fase 2: resuelto el 21-ago. Cómo quedó
 
-**No es el volcado. Es que `rename-map.json` apunta a nombres que la fase 1.2 retiró.**
+**El bloqueo no era el volcado: `rename-map.json` apuntaba a nombres que la 1.2 retiró.**
+Alfredo decidió que el CSS publicado sigue a Figma, así que la tabla de prefijos ya no existe.
+**El nombre publicado es ahora función pura del nombre de Figma** (`--` + nombre, `/`→`-`) y
+`token-ledger.json` guarda sólo lo que una función no puede saber. Contrato completo en
+`design-system/docs/24-token-sync.md`; el auditor es `node design-system/_build/token-drift.mjs`
+y **corre al abrir cada sesión, antes de tocar nada** (`00-principles §B6`).
+
+Lo que queda medido, no estimado: **1 consumidor en `src/`** y **53 en `build.py`**. 120 alias,
+75 de ellos ya retirables. Historia de por qué pasó:
 
 El mapa se escribió el 19-ago contra `color/surface/*`, `color/foreground/*`, `color/income/*`.
 La 1.2 renombró Semantic a property-first (`bg/*`, `fg/*`, `chart/*`). Resultado medido hoy con
@@ -88,7 +96,9 @@ Diseño y está escrito:
 
 | qué | de quién | dónde |
 |---|---|---|
-| espacio de nombres del CSS publicado — (a) o (b) | **Alfredo + Dev** | reporte 08-21 `§NEEDS 1` |
+| ~~espacio de nombres del CSS publicado~~ | **decidido por Alfredo 08-21: sigue a Figma** | `24-token-sync.md` |
+| los 8 `--account-{1..4}-*` — lápida o alias | **Alfredo** | `token-ledger.json §pending`, 10 usos en `build.py` |
+| la fila `destructive` del mapa de migración: ¿la aplicó Dev? | Dev | `Q-2026-08-21-la-fila-destructive` |
 | `Frame 1` en `Components · Forms` (30 instancias de `Input` suyas) | Alfredo | pendiente desde el 20 |
 | etapa 2 + `build.py` con los 20 CHANGED | Dev | reporte 08-21 `§NEEDS 2` |
 | escala de blur/spread (dueño: Diseño, va a fase 3) | cola propia | `A-2026-08-20-fav-star §4` |

@@ -239,19 +239,33 @@ is a breaking change for `src/**`.
 
 ## Phase 2 — Close the pipeline
 
-The system declares `design-system/` a generated artefact and nothing can generate it. Until
-that is false, `§A1` is policy rather than mechanism: *"when code and Figma differ there is a
-defect with a known direction"* is true, and nobody can apply the correction.
+The system declares `design-system/` a generated artefact and nothing could generate it. Until
+that was false, `§A1` was policy rather than mechanism: *"when code and Figma differ there is a
+defect with a known direction"* is true, and nobody could apply the correction.
 
-**2.1** Re-run `figma-dump.js` → `apply-rename-map.mjs` → `build.py` with the post-Phase-1 names.
-**2.2** Hand Dev the migration: the eight dead `--account-*` keys, `--badge-primary-*` →
-`--action-chip-selected-*`, and the newly published families (motion, shadow, elevation surfaces).
-**2.3** Effect styles are not variables and the dump cannot see them. Either teach it to read
-styles or emit the four elevation rungs by hand from the geometry already recorded in
-`rename-map.json`.
+**2.1 ✅ 2026-08-21.** Stage 1 run and committed — `figma-dump.json`, 731 variables, four
+collections, 26 text styles. It had never been run whole: the file committed on 08-17 was a
+truncated 220-row pass, because the 20 kB `use_figma` cap **cuts without erroring**. Now chunked,
+with `assemble-dump.py` asserting per-collection counts.
 
-After this, the coherence log gains its most useful row: **drift between Figma and the package**,
-which is currently unmeasurable because there is nothing to compare against.
+**2.2 ✅ 2026-08-21 — and the blocker was not the one this line assumed.** Re-running the pipeline
+found that `rename-map.json` pointed at the namespace phase 1.2 retired: 9 of 162 semantic tokens
+mapped, 153 unmapped. Alfredo decided the published CSS follows Figma, so the translating table is
+gone — **the published name is now a pure function of the Figma name**, and `token-ledger.json`
+holds only what a function cannot know. See `24-token-sync.md`.
+
+**2.3 ⬜ Effect styles** are not variables and the dump still cannot see them. Either teach it to
+read styles or emit the four elevation rungs by hand from the geometry already in `rename-map.json`.
+
+**2.4 ⬜ The migration itself, and it is small.** Measured, not estimated: **1 consumer in `src/`**
+(`index.css:256`, `--radius-lg`) and **53 in `build.py`**'s hand-written shadcn bridge. The other
+61 broken names are consumed by nothing. 120 aliases carry the rest, 75 of which are already
+retirable. Still open: the eight `--account-{1..4}-*` keys, which this roadmap has called dead
+since it was written and which the ledger holds as `pending` because retiring them changes which
+account gets which colour, and that is Alfredo's call, not a rename.
+
+The coherence log has gained the row it never had: **drift between Figma and the package**, and it
+is now a command with an exit code rather than a claim.
 
 ---
 
