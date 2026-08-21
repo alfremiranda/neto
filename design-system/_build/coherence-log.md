@@ -623,3 +623,54 @@ A `Tone` axis on `Icon` is the obvious fix and it does not work in Figma for the
 override does not: the colour lives inside the swappable child, where the wrapper cannot reach it.
 The workable options are to bind glyph `Vector`s to a Component-collection token per usage, or to
 keep the rule that icons only ever sit on surfaces `fg/subtle` survives. Recorded for a decision.
+
+## Onboarding, audited before handoff — 2026-08-20
+
+Alfredo: *"creo que onboarding está listo para dev."* Verified rather than accepted, per `§A4`.
+
+| check | result |
+|---|---|
+| `T9` — token used against the property its name claims | **0 violations** |
+| unbound strokes | **4** |
+| unbound effects | **0** |
+| unbound fills | 544 — **all accounted for** |
+| raw layout numbers | 120 — **all fractional** |
+
+**The 544 unbound fills are not a finding.** 400 are the stars of the US flag inside `CurrencyRadio`,
+plus its stripes and canton, plus the Colombian flag and Google's four brand colours in the sign-in
+button. Every one is a `brand-mark/*`, which `CONFIG.foreignBrand` already exempts — a national flag
+and another company's logo must not be tokenised. The remainder is three `SECTION` backgrounds,
+which are canvas chrome and not product.
+
+**The 120 raw numbers are all fractional** — `1.8`, `7.8`, `2.88`, `12.48` — the scaled-group
+artefacts identified in the hand-typed-numbers sweep. Not decisions anyone made.
+
+So the flow is clean and the claim holds. It is now measured instead of asserted.
+
+## Motion is available in Figma, and the premise was out of date
+
+Alfredo: *"lo único que hace falta son las animaciones y transiciones que en Figma no las podemos
+determinar."*
+
+Checked, because this decides whether the handoff is a spec or a prose description:
+
+    figma.motion.figmaAnimationStyles()  ->  6 first-party styles
+       position · scale · rotation · size · opacity · path
+
+    every onboarding frame already carries a timeline, 2s by default
+       Mobile · 0a · Login          745:25047
+       Mobile · 0b · Consentimiento 745:25059
+       Desktop · 2 · Moneda         549:868      ... and the rest
+
+**We can determine them in Figma.** The API is enabled on this account, the timelines exist, and the
+motion tokens were minted on 2026-08-19 and are still bound to nothing:
+
+    motion/duration/instant  100ms      motion/easing/enter  cubic-bezier(0.16, 1, 0.3, 1)
+    motion/duration/fast     150ms      motion/easing/exit   cubic-bezier(0.4, 0, 1, 1)
+    motion/duration/moderate 200ms      motion/easing/move   cubic-bezier(0.4, 0, 0.2, 1)
+    motion/duration/slow     300ms      motion/easing/spin   linear
+
+The honest caveat: `get_screenshot` shows only the resting state, so the only way to verify motion is
+`export_video` plus frame sampling, which renders server-side and is slow. That makes motion the one
+part of the system where checking costs real time — but it is checkable, which is the difference
+between a specification and a wish.
