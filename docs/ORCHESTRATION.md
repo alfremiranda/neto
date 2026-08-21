@@ -8,7 +8,8 @@
 > delivery self-checks — adopted from Design's automation proposal
 > (`claude/neto-propuesta-automatizacion.md`). v3.4.1 (2026-08-17): no route → no
 > production, not just no delivery. v3.5 (2026-08-17): roles outlive sessions; a handoff
-> doc is mandatory at close when work is in flight — proposed by Design, adopted after a
+> doc is mandatory at close when work is in flight. v3.6 (2026-08-21): before an irreversible
+> step, verify against every member of the set, never the first — proposed by Design, adopted after a
 > Design session died mid-queue and only its handoff saved the continuity.
 
 ## The system
@@ -163,6 +164,27 @@ The routine, for any session committing over the bridge:
 Two caveats. A lock only a few minutes old *may* be a live session in the shared tree — check
 `ps aux | grep "[g]it "` and wait rather than removing it. And the
 `unable to unlink ... tmp_obj_*` warnings on every commit have the same cause and are harmless.
+
+## Before an irreversible step, check every member (v3.6)
+
+Four instrument failures this month share one shape: **a scan sampled one member and spoke for the
+whole set.** `TEXT` for foreground · one string match for a component name · one component for a
+token's consumers · one variant for a property. The fourth nearly deleted working design —
+`SavingsCard`'s `Show Maturity` read as a boolean wired to nothing across 36 instances, and a last
+check before the delete found it drives three nodes on the `Type=CDT` variant. A CDT has a maturity
+date; a plain savings account does not. The design was right and the instrument was wrong — in the
+way that destroys rather than the way that merely miscounts.
+
+**The rule:** before any irreversible step — a delete, a merge, a rename applied in bulk — re-run the
+check against **every** member of the set, not the first. State in the report that you did.
+
+Two corollaries already earned the hard way:
+
+- **A token can look dead because nobody uses it, or because everybody wrote its value by hand.**
+  Only a sweep tells those apart. `radius/2` was deleted as unused and restored when the sweep found
+  32 of its hand-typed values in one component.
+- **A token check does not replace a screenshot.** `ChoiceRow`'s focus ring measured correct and
+  rendered solid cyan: `showShadowBehindNode` defaults to `true`.
 
 ## Handoff conventions
 
