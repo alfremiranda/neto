@@ -8,10 +8,18 @@
  */
 import type { Account } from '@/types'
 
-/** Order is part of the contract: `derivedColor` indexes into it. Never reorder. */
+/**
+ * Hue order — warm, green, cyan, blue, violet, pink — and it is **one** order, used both
+ * for the picker's two rows and as the index `derivedColor` hashes into.
+ *
+ * It is data, not presentation. Reordering repaints every account that never chose a
+ * colour, so from 2026-08-22 this is a migration rather than a design tweak
+ * (25-account-color.md §4). The one reorder that has happened was authorised: Alfredo
+ * chose chromatic order over keeping existing accounts on their current hue.
+ */
 export const ACCOUNT_COLORS = [
-  'purple', 'sky', 'emerald', 'lime', 'amber', 'pink',
-  'blue', 'green', 'indigo', 'orange', 'rose', 'teal',
+  'orange', 'amber', 'lime', 'green', 'emerald', 'teal',
+  'sky', 'blue', 'indigo', 'purple', 'pink', 'rose',
 ] as const
 
 export type AccountColor = (typeof ACCOUNT_COLORS)[number]

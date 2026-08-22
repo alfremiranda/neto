@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Trash2, Landmark, Wallet, CreditCard, PiggyBank } from 'lucide-react'
 import { SheetBase } from '@/components/ui/SheetBase'
 import { AccountColorPicker } from '@/components/ui/AccountColorPicker'
+import { Field } from '@/components/ui/Field'
 import { SegmentedControl } from '@/components/ui/SegmentedControl'
 import { accountColor, type AccountColor } from '@/lib/accountColor'
 import { MoneyInput } from '@/components/ui/MoneyInput'
@@ -250,17 +251,16 @@ export function AccountEditSheet() {
           />
         </div>
 
-        <AccountColorPicker
-          account={{ id: editingAccountId || draftId, type }}
-          value={color}
-          onChange={c => { setColor(c); setColorTouched(true) }}
-          disabled={isLocked}
-          // Every other account's colour, chosen or derived — the marker has to
-          // reflect what the user sees on screen, not only what was written down.
-          inUse={new Set(getAccounts()
-            .filter(a => a.id !== editingAccountId)
-            .map(a => accountColor(a)))}
-        />
+        {/* The picker carries no label of its own, so Field supplies it. */}
+        <Field label="Color">
+          {() => (
+            <AccountColorPicker
+              value={color}
+              onChange={c => { setColor(c); setColorTouched(true) }}
+              disabled={isLocked}
+            />
+          )}
+        </Field>
 
         <div className="grid grid-cols-2 gap-3">
           <div>

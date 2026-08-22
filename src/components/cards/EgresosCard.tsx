@@ -14,7 +14,7 @@ import { EGRESO_CATEGORIAS } from '@/data/defaults'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Button } from '@/components/ui/button'
 import { IconButton } from '@/components/ui/icon-button'
-import { Badge } from '@/components/ui/Badge'
+import { AccountBadge } from '@/components/ui/AccountBadge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { DatePicker } from '@/components/ui/DatePicker'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
@@ -119,6 +119,9 @@ function EgresoRow({
   const amtCOP    = egreso.currency === 'USD' ? egreso.amount * trm : egreso.amount
   const dateStr   = egreso.date ? fmtDate(egreso.date) : ''
   const acctLabel = egreso.account ? accountLabel(egreso.account, accounts) : null
+  // The record, not just the id: AccountBadge resolves the colour from it, and an
+  // account that was never given one derives its hue from the id.
+  const acct = egreso.account ? (accounts.find(a => a.id === egreso.account) ?? { id: egreso.account }) : null
   // Dim the amount + icon only while the date is still in the future; once it arrives, treat as effective
   const isScheduled   = !!egreso.date && egreso.date > localToday()
 
@@ -134,7 +137,7 @@ function EgresoRow({
 
   const MetaRow = () => (
     <div className="flex items-center gap-1 mt-1 flex-wrap">
-      {acctLabel && <Badge>{acctLabel}</Badge>}
+      {acctLabel && acct && <AccountBadge account={acct} label={acctLabel} />}
       {isScheduled && <ScheduledBadge />}
       {dateStr && <span className="ts-detail-large text-muted-foreground">·</span>}
       {dateStr && <span className="ts-amount-small text-muted-foreground">{dateStr}</span>}

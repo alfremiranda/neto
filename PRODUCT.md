@@ -147,17 +147,17 @@ raya, no un visto: pasar no es lo mismo que responder. Aparece **«Atrás»**, q
 de ejemplo dentro del campo desaparece apenas escribes —justo cuando más falta hace— y además no
 tiene contraste suficiente para leerse. El ejemplo se queda, pero como ejemplo.
 
-**Las etiquetas de cuenta son neutras.** Antes cada cuenta tenía su propio color en la etiqueta,
-elegido adivinando por el nombre ("si dice arq, píntala de cian"). Eso tenía tus cuentas escritas
-dentro del sistema de diseño. El color de una cuenta ahora es un dato tuyo y vive en su avatar; la
-etiqueta solo dice el nombre. Las de moneda (USD/COP) sí conservan color propio, porque ahí el
-color significa algo.
+**La etiqueta de cuenta lleva un punto de su color.** El chip es neutro y el punto es lo único
+coloreado: así doce colores son seguros, porque cada uno vive en una marca pequeña que nunca
+comparte superficie con una cifra, y el nombre de la cuenta siempre va al lado. Antes el color se
+adivinaba por el nombre ("si dice arq, píntala de cian"), lo que tenía tus cuentas escritas dentro
+del sistema de diseño. Las de moneda (USD/COP) conservan color propio, porque ahí significa algo.
 
 ### 4.10bis Color de cuenta
 Cada cuenta tiene un color de identidad que pinta **su avatar y nada más** (el círculo con el
 ícono del tipo de cuenta). Doce colores. Se elige al crear o editar la cuenta.
 
-El selector marca con un punto los colores que ya usa otra cuenta — un aviso, no un bloqueo: repetir es tu decisión.
+El selector no dice el nombre del color ni marca los ya usados: elegir color es una preferencia, no una tarea con respuesta correcta, y repetir es normal. El visto indica cuál está elegido.
 
 Las cuentas que ya existían reciben uno automáticamente, derivado de su identificador: no hay
 que configurar nada y **una cuenta nunca cambia de color por su cuenta**. Con doce colores y

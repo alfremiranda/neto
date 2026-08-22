@@ -1,90 +1,70 @@
 import { Check } from 'lucide-react'
-import { AccountAvatar } from '@/components/ui/AccountAvatar'
 import { ACCOUNT_COLORS, ACCOUNT_COLOR_LABEL, accountColorVars, type AccountColor } from '@/lib/accountColor'
 import { cn } from '@/lib/utils'
-import type { Account } from '@/types'
 
 /**
- * The twelve-colour grid plus a live preview
- * (design-system/docs/25-account-color.md §5).
+ * The twelve account colours (`Components · Forms` → `AccountColorPicker`).
  *
- * The preview is the real avatar, not a swatch of the tint. Design tried the
- * tinted disc first and the render killed it: any tint pale enough to sit behind
- * a glyph measures 1.0–1.2:1 against the app canvas, so it is simply not there.
- * The chips therefore show the *accent*, and the pairing is shown by the avatar.
+ * **No caption and no colour name on screen.** Choosing an account colour is a preference,
+ * not a task with a right answer, so nothing is lost when two hues are hard to tell apart —
+ * and the selection is carried by a check mark rather than by colour, which satisfies
+ * WCAG 1.4.1 without words. The names survive as each swatch's accessible name, because a
+ * screen-reader user still has to hear something other than "button".
  *
- * The chosen colour is named in words. That is not a courtesy — twelve hues out
- * of the fourteen left over force 11° neighbours (orange/amber, emerald/teal,
- * pink/rose) that are not reliably distinguishable at this size, and WCAG 1.4.1
- * forbids colour as the sole carrier of information.
+ * **No "in use" marker.** Colours repeat across accounts by design; an unexplained dot on a
+ * choice with no wrong answer reads as a restriction. (Approved and then reverted the same
+ * day — the revert is the current rule.)
+ *
+ * **Two explicit rows, not a wrapping grid.** Wrap packs as many as fit and turns into
+ * eight per row at this width; six per row is a decision, so it is written as one.
+ *
+ * Carries no label of its own — wrap it in `Field`.
  */
-export function AccountColorPicker({ account, value, onChange, disabled, inUse }: {
-  account: Pick<Account, 'id' | 'type'>
+const ROWS = [ACCOUNT_COLORS.slice(0, 6), ACCOUNT_COLORS.slice(6)] as const
+
+export function AccountColorPicker({ value, onChange, disabled }: {
   value: AccountColor
   onChange: (c: AccountColor) => void
   disabled?: boolean
-  /** Colours other accounts already carry. Marked, never blocked. */
-  inUse?: ReadonlySet<AccountColor>
 }) {
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center gap-2">
-        <span id="acc-color-label" className="field-label ts-label-base">Color</span>
-        <span className="ts-body-small text-muted-foreground">
-          ·&nbsp;{ACCOUNT_COLOR_LABEL[value]}{inUse?.has(value) ? ' · en uso por otra cuenta' : ''}
-        </span>
-      </div>
-
-      <div className="flex items-center gap-3">
-        <AccountAvatar account={{ ...account, color: value }} size="lg" />
-
-        {/* A fixed six-column grid, not wrapping: 12 chips wrapping against a flexible
-            width break 9+3 at this size, and the row length would change with the
-            drawer. Two rows of six is the same shape at every width. */}
-        <div role="group" aria-labelledby="acc-color-label" className="grid grid-cols-6 gap-1.5">
-          {ACCOUNT_COLORS.map(c => {
-            // Marked, not blocked: repeating a colour is the user's right, and the
-            // picker's job is to inform the choice rather than police it
-            // (25-account-color.md §4, approved 2026-08-22). With twelve colours and
-            // a handful of accounts a collision is likely, not a mistake.
-            // Two facts, one slot. The dot cannot share the swatch with the check, so
-            // the selected chip loses the dot — but it keeps the fact in its name.
-            // Editing an account whose colour two others also carry is exactly when
-            // "en uso" is worth knowing.
-            const shared = !!inUse?.has(c)
-            const taken = shared && c !== value
-            return (
+    <div role="radiogroup" aria-label="Color de la cuenta" className="flex flex-col gap-1">
+      {ROWS.map((row, i) => (
+        <div key={i} className="flex justify-between">
+          {row.map(c => (
             <button
               key={c}
               type="button"
+              role="radio"
+              aria-checked={c === value}
+              aria-label={ACCOUNT_COLOR_LABEL[c]}
               disabled={disabled}
               onClick={() => onChange(c)}
-              // The name carries the identity; aria-pressed carries the state. "En uso"
-              // rides in the name because a dot is invisible to a screen reader.
-              aria-label={shared ? `${ACCOUNT_COLOR_LABEL[c]} — en uso` : ACCOUNT_COLOR_LABEL[c]}
-              aria-pressed={c === value}
               style={accountColorVars(c)}
+              // 44px of hit area around a 36px disc: the target is the minimum touch
+              // size, the disc is what you see.
               className={cn(
-                'w-7 h-7 rounded-full flex items-center justify-center transition-colors duration-fast ease-move',
-                'bg-[var(--account-accent)] cursor-pointer border-2',
+                'w-11 h-11 flex items-center justify-center rounded-full shrink-0',
+                'cursor-pointer disabled:cursor-not-allowed disabled:opacity-50',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]',
-                'disabled:cursor-not-allowed disabled:opacity-50',
-                // Selection is a ring drawn outside the chip, never a size change:
-                // a grid where the chosen chip grows shifts every other chip and
-                // the eye follows the movement instead of the choice.
-                c === value
-                  ? 'border-[var(--foreground)]'
-                  : 'border-transparent hover:border-[var(--border)]',
               )}
             >
-              {c === value
-                ? <Check size={13} strokeWidth={3} className="text-[var(--account-surface)]" />
-                : taken && <span className="w-1.5 h-1.5 rounded-full bg-[var(--account-surface)]" />}
+              <span
+                aria-hidden="true"
+                className={cn(
+                  'w-9 h-9 rounded-full flex items-center justify-center bg-[var(--account-accent)]',
+                  'border-2 transition-colors duration-fast ease-move',
+                  c === value ? 'border-[var(--foreground)]' : 'border-transparent',
+                )}
+              >
+                {c === value && (
+                  <Check size={16} strokeWidth={3} className="text-[var(--account-surface)]" />
+                )}
+              </span>
             </button>
-            )
-          })}
+          ))}
         </div>
-      </div>
+      ))}
     </div>
   )
 }

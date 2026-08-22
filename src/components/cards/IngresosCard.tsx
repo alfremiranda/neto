@@ -8,23 +8,24 @@ import { useMonthData } from '@/hooks/useMonthData'
 import { useUIStore } from '@/store/uiStore'
 import { calcTotales } from '@/lib/calc'
 import { COP, USD, fmtDate } from '@/lib/format'
-import { Badge } from '@/components/ui/Badge'
+import { AccountBadge } from '@/components/ui/AccountBadge'
 import { MetricCard } from '@/components/ui/MetricCard'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Button } from '@/components/ui/button'
 import { IconButton } from '@/components/ui/icon-button'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
-import type { Income } from '@/types'
+import type { Income, Account } from '@/types'
 
 // ─── Income row ───────────────────────────────────────────────────────────────
 
 function IncomeRow({
-  inc, trm,
+  inc, trm, accounts,
   onEdit,
   isPending, onDeleteDesktop,
 }: {
   inc: Income
   trm: number
+  accounts: Account[]
   onEdit: () => void
   isPending: boolean
   onDeleteDesktop: () => void
@@ -35,7 +36,10 @@ function IncomeRow({
 
   const meta = (
     <div className="flex items-center gap-1 flex-wrap">
-      <Badge>{inc.account}</Badge>
+      <AccountBadge
+        account={accounts.find(a => a.id === inc.account) ?? { id: inc.account }}
+        label={inc.account}
+      />
       {inc.applyProvisions === false && (
         <>
           <span className="ts-detail-large text-muted-foreground">·</span>
@@ -132,7 +136,10 @@ export function IngresosCard() {
 }
 
 function IngresosCardContent() {
-  const { removeIncome } = useFinanceStore()
+  const { removeIncome, getAccounts } = useFinanceStore()
+  // Needed so an account that was given a colour explicitly shows that colour, rather
+  // than the one derived from its id.
+  const accounts = getAccounts()
   const { openSheet, setPendingDelete, showToast, setEditingIncome } = useUIStore()
   const [confirmId, setConfirmId] = useState<number | null>(null)
 
@@ -183,6 +190,7 @@ function IngresosCardContent() {
                 key={inc.id}
                 inc={inc}
                 trm={month.trm}
+                accounts={accounts}
                 onEdit={() => handleEdit(inc.id)}
                 isPending={confirmId === inc.id}
                 onDeleteDesktop={() => handleDeleteDesktop(inc.id)}
