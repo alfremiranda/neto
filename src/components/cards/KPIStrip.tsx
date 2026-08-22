@@ -230,7 +230,10 @@ export function KPIStrip({ onNavigate }: { onNavigate?: (tab: string) => void } 
       label="Neto libre"
       value={COP(Math.max(res.netoLibre, 0))}
       sub={pct(Math.max(res.netoLibre, 0))}
-      accent={res.netoLibre > 0 ? 'text-[var(--color-net-txt)]' : 'text-[var(--color-danger-txt)]'}
+      // A negative net takes the expense colour, not danger: the sign carries the
+      // meaning, and danger is for something going wrong rather than for a number
+      // that came out below zero (token-migration.json, behaviourChanges).
+      accent={res.netoLibre > 0 ? 'text-[var(--color-net-txt)]' : 'text-[var(--color-expense-txt)]'}
       detail={netoDetail.length > 0 ? netoDetail : undefined}
     />,
   ].filter(Boolean)

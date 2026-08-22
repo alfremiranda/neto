@@ -131,6 +131,10 @@ export function AnnualTable({ year }: AnnualTableProps) {
   if (showOblig) restKpis.push({ key: 'oblig', label: 'Obligaciones tributarias', value: <span className="ts-amount-base" style={{ color: `var(${obligColor})` }}>{COP(totOblig)}</span>, sub: `${pct(totOblig, totBruto)} del bruto` })
   if (showProv)  restKpis.push({ key: 'prov',  label: 'Provisiones',              value: <span className="ts-amount-base" style={{ color: `var(${provColor})` }}>{COP(totProv)}</span>,  sub: `${pct(totProv, totBruto)} del bruto` })
   restKpis.push({ key: 'gast', label: 'Gastos',            value: <span className="ts-amount-base text-[var(--color-expense)]">{COP(totGast)}</span>, sub: `${pct(totGast, totBruto)} del bruto` })
+  // No sign check here, unlike the monthly KPI: totNeto clamps every month at zero
+  // (see its reduce above), so the accumulated figure cannot come out negative. A
+  // conditional would be dead code. Whether that clamp should exist is a product
+  // question — it hides a negative month inside a positive year.
   restKpis.push({ key: 'neto', label: 'Neto libre acum.',  value: <span className="ts-amount-base text-[var(--color-net-txt)]">{COP(totNeto)}</span>, sub: `${pct(totNeto, totBruto)} del bruto` })
 
   return (
