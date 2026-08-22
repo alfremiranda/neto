@@ -6,30 +6,30 @@ import { cn } from '@/lib/utils'
  * Figma's recipe is a solid head over a 20% track, at 16px (S) or 24px (M). That
  * part is reproduced exactly.
  *
- * Where this departs: Figma models the colour as a `Color = Light | Dark` variant
- * bound to `spinner/{track,head}/on-{light,dark}`. In code the default is
- * `currentColor`, because `TASK-2026-08-19-consentimiento` asks for the spinner
- * inside a pressed button to inherit its label's colour — and inheriting cannot
- * disagree with the label, while a two-option variant can: an outline danger
- * button has a red label and neither named tone is red.
+ * The colour departs from the variant model, and Design ratified the departure
+ * (A-2026-08-22): `inherit` uses `currentColor`, because a two-option variant *can*
+ * disagree with the label and inheriting cannot — an outline danger button has a red
+ * label and neither named tone is red.
  *
- * The named tones stay available for a spinner that sits on its own, with no
- * label to take a colour from. Reported in Q-2026-08-22.
+ * The named tones stay for a spinner with no label to take a colour from.
  */
 const SIZE = { sm: 'w-4 h-4 border-2', md: 'w-6 h-6 border-[3px]' } as const
 
 export function Spinner({ size = 'sm', tone = 'inherit', className, label }: {
   size?: keyof typeof SIZE
   /** `inherit` takes the colour of the surrounding text. */
-  tone?: 'inherit' | 'on-light' | 'on-dark'
+  tone?: 'inherit' | 'default' | 'on-solid'
   className?: string
   /** Announce it. Omit inside a button that already says what it is doing. */
   label?: string
 }) {
   const tones = {
     inherit: 'border-current/20 border-t-current',
-    'on-light': 'border-[var(--spinner-track-on-light)] border-t-[var(--spinner-head-on-light)]',
-    'on-dark': 'border-[var(--spinner-track-on-dark)] border-t-[var(--spinner-head-on-dark)]',
+    // Renamed by Design after I flagged that on-light/on-dark inverted between modes:
+    // they described the button, not the surface. `on-solid` is inside a brand button,
+    // `default` is a spinner standing on its own.
+    default: 'border-[var(--spinner-track-default)] border-t-[var(--spinner-head-default)]',
+    'on-solid': 'border-[var(--spinner-track-on-solid)] border-t-[var(--spinner-head-on-solid)]',
   }
   return (
     <span

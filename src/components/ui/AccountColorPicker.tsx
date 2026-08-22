@@ -18,17 +18,21 @@ import type { Account } from '@/types'
  * pink/rose) that are not reliably distinguishable at this size, and WCAG 1.4.1
  * forbids colour as the sole carrier of information.
  */
-export function AccountColorPicker({ account, value, onChange, disabled }: {
+export function AccountColorPicker({ account, value, onChange, disabled, inUse }: {
   account: Pick<Account, 'id' | 'type'>
   value: AccountColor
   onChange: (c: AccountColor) => void
   disabled?: boolean
+  /** Colours other accounts already carry. Marked, never blocked. */
+  inUse?: ReadonlySet<AccountColor>
 }) {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2">
         <span id="acc-color-label" className="field-label ts-label-base">Color</span>
-        <span className="ts-body-small text-muted-foreground">·&nbsp;{ACCOUNT_COLOR_LABEL[value]}</span>
+        <span className="ts-body-small text-muted-foreground">
+          ·&nbsp;{ACCOUNT_COLOR_LABEL[value]}{inUse?.has(value) ? ' · en uso por otra cuenta' : ''}
+        </span>
       </div>
 
       <div className="flex items-center gap-3">
@@ -38,14 +42,26 @@ export function AccountColorPicker({ account, value, onChange, disabled }: {
             width break 9+3 at this size, and the row length would change with the
             drawer. Two rows of six is the same shape at every width. */}
         <div role="group" aria-labelledby="acc-color-label" className="grid grid-cols-6 gap-1.5">
-          {ACCOUNT_COLORS.map(c => (
+          {ACCOUNT_COLORS.map(c => {
+            // Marked, not blocked: repeating a colour is the user's right, and the
+            // picker's job is to inform the choice rather than police it
+            // (25-account-color.md §4, approved 2026-08-22). With twelve colours and
+            // a handful of accounts a collision is likely, not a mistake.
+            // Two facts, one slot. The dot cannot share the swatch with the check, so
+            // the selected chip loses the dot — but it keeps the fact in its name.
+            // Editing an account whose colour two others also carry is exactly when
+            // "en uso" is worth knowing.
+            const shared = !!inUse?.has(c)
+            const taken = shared && c !== value
+            return (
             <button
               key={c}
               type="button"
               disabled={disabled}
               onClick={() => onChange(c)}
-              // The name carries the identity; aria-pressed carries the state.
-              aria-label={ACCOUNT_COLOR_LABEL[c]}
+              // The name carries the identity; aria-pressed carries the state. "En uso"
+              // rides in the name because a dot is invisible to a screen reader.
+              aria-label={shared ? `${ACCOUNT_COLOR_LABEL[c]} — en uso` : ACCOUNT_COLOR_LABEL[c]}
               aria-pressed={c === value}
               style={accountColorVars(c)}
               className={cn(
@@ -61,11 +77,12 @@ export function AccountColorPicker({ account, value, onChange, disabled }: {
                   : 'border-transparent hover:border-[var(--border)]',
               )}
             >
-              {c === value && (
-                <Check size={13} strokeWidth={3} className="text-[var(--account-surface)]" />
-              )}
+              {c === value
+                ? <Check size={13} strokeWidth={3} className="text-[var(--account-surface)]" />
+                : taken && <span className="w-1.5 h-1.5 rounded-full bg-[var(--account-surface)]" />}
             </button>
-          ))}
+            )
+          })}
         </div>
       </div>
     </div>

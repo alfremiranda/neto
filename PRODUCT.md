@@ -137,6 +137,8 @@ tiene contraste suficiente para leerse. El ejemplo se queda, pero como ejemplo.
 Cada cuenta tiene un color de identidad que pinta **su avatar y nada más** (el círculo con el
 ícono del tipo de cuenta). Doce colores. Se elige al crear o editar la cuenta.
 
+El selector marca con un punto los colores que ya usa otra cuenta — un aviso, no un bloqueo: repetir es tu decisión.
+
 Las cuentas que ya existían reciben uno automáticamente, derivado de su identificador: no hay
 que configurar nada y **una cuenta nunca cambia de color por su cuenta**. Con doce colores y
 pocas cuentas, dos pueden coincidir; por eso el color nunca identifica una cuenta solo — el

@@ -28,8 +28,14 @@ export function SegmentedControl<T extends string>({ options, value, onChange, a
     <div
       role="radiogroup"
       aria-label={ariaLabel}
+      // A grid, not a flex row: the page says "segments FILL the track, so every
+      // option is the same width and the control reads as one object rather than
+      // as buttons in a row". Flex only shares out *leftover* space, so a track
+      // that hugs its content leaves each segment at its own text width — measured
+      // 53 and 51 on the currency picker. Equal columns are equal by definition.
+      style={{ gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` }}
       className={cn(
-        'inline-flex items-center gap-0.5 p-1 rounded-full',
+        'grid items-center gap-0.5 p-1 rounded-full',
         'bg-[var(--bg-chrome)] border border-[var(--border-subtle)]',
         className,
       )}
@@ -44,7 +50,7 @@ export function SegmentedControl<T extends string>({ options, value, onChange, a
             aria-checked={selected}
             onClick={() => onChange(o.value)}
             className={cn(
-              'flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-full ts-control-sm',
+              'flex items-center justify-center gap-2 px-3 py-2.5 rounded-full ts-control-sm',
               'cursor-pointer transition-colors whitespace-nowrap',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]',
               // The border is always drawn, transparent when unselected: without it

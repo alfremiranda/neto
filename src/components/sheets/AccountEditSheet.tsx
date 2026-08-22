@@ -255,6 +255,11 @@ export function AccountEditSheet() {
           value={color}
           onChange={c => { setColor(c); setColorTouched(true) }}
           disabled={isLocked}
+          // Every other account's colour, chosen or derived — the marker has to
+          // reflect what the user sees on screen, not only what was written down.
+          inUse={new Set(getAccounts()
+            .filter(a => a.id !== editingAccountId)
+            .map(a => accountColor(a)))}
         />
 
         <div className="grid grid-cols-2 gap-3">

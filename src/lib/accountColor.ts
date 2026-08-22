@@ -22,12 +22,14 @@ export type AccountColor = (typeof ACCOUNT_COLORS)[number]
  * twelve hues out of the fourteen left over force 11° neighbours (orange/amber,
  * emerald/teal, pink/rose), which are not reliably distinguishable at 32px.
  *
- * The spec did not name them in any language; the app is es-CO, so these are Dev's
- * choice and are flagged to Design in Q-2026-08-22-nombres-de-color.
+ * Ratified by Design 2026-08-22 (A-2026-08-22-fucsia-y-los-tres-naranjas). `pink` is
+ * Fucsia, not Rosado: "Rosado"/"Rosa" for the two hues 14 degrees apart was the pair
+ * that naming was supposed to rescue and did not. This list is contract now — it also
+ * lives in 25-account-color.md and in the component's description.
  */
 export const ACCOUNT_COLOR_LABEL: Record<AccountColor, string> = {
   purple: 'Morado', sky: 'Celeste', emerald: 'Esmeralda', lime: 'Lima',
-  amber: 'Ámbar', pink: 'Rosado', blue: 'Azul', green: 'Verde',
+  amber: 'Ámbar', pink: 'Fucsia', blue: 'Azul', green: 'Verde',
   indigo: 'Índigo', orange: 'Naranja', rose: 'Rosa', teal: 'Turquesa',
 }
 
