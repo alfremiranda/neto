@@ -718,7 +718,7 @@
         ],
         [
           "account/amber/accent",
-          "#d97706",
+          "#b45309",
           "#fcd34d"
         ],
         [
@@ -853,7 +853,7 @@
         ],
         [
           "account/green/accent",
-          "#16a34a",
+          "#15803d",
           "#86efac"
         ],
         [
@@ -3603,11 +3603,11 @@
       "name": "account/amber/accent",
       "type": "COLOR",
       "values": {
-        "Light": "#d97706",
+        "Light": "#b45309",
         "Dark": "#fcd34d"
       },
       "aliases": {
-        "Light": "color/amber/600",
+        "Light": "color/amber/700",
         "Dark": "color/amber/300"
       }
     },
@@ -3954,11 +3954,11 @@
       "name": "account/green/accent",
       "type": "COLOR",
       "values": {
-        "Light": "#16a34a",
+        "Light": "#15803d",
         "Dark": "#86efac"
       },
       "aliases": {
-        "Light": "color/green/600",
+        "Light": "color/green/700",
         "Dark": "color/green/300"
       }
     },

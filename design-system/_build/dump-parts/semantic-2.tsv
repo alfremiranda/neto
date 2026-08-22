@@ -53,7 +53,7 @@ account/purple/accent	COLOR	#9333ea	#d8b4fe	color/purple/600	color/purple/300
 account/sky/accent	COLOR	#0284c7	#7dd3fc	color/sky/600	color/sky/300
 account/emerald/accent	COLOR	#059669	#6ee7b7	color/emerald/600	color/emerald/300
 account/lime/accent	COLOR	#4d7c0f	#bef264	color/lime/700	color/lime/300
-account/amber/accent	COLOR	#d97706	#fcd34d	color/amber/600	color/amber/300
+account/amber/accent	COLOR	#b45309	#fcd34d	color/amber/700	color/amber/300
 account/pink/accent	COLOR	#db2777	#f9a8d4	color/pink/600	color/pink/300
 motion/duration/instant	FLOAT	100	100	duration/100	duration/100
 motion/duration/fast	FLOAT	150	150	duration/150	duration/150
@@ -80,7 +80,7 @@ fg/disabled	COLOR	#94a3b8	#64748b	fg/placeholder	fg/placeholder
 bg/divider	COLOR	#e2e8f0	rgba(255,255,255,0.2)	border/default	border/default
 radius/full	FLOAT	9999	9999	scale/full	scale/full
 account/blue/accent	COLOR	#2563eb	#93c5fd	color/blue/600	color/blue/300
-account/green/accent	COLOR	#16a34a	#86efac	color/green/600	color/green/300
+account/green/accent	COLOR	#15803d	#86efac	color/green/700	color/green/300
 account/indigo/accent	COLOR	#4f46e5	#a5b4fc	color/indigo/600	color/indigo/300
 account/orange/accent	COLOR	#ea580c	#fdba74	color/orange/600	color/orange/300
 account/rose/accent	COLOR	#e11d48	#fda4af	color/rose/600	color/rose/300

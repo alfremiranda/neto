@@ -28,7 +28,9 @@
   "--input-size-sm-height": "Field/Input rework — control heights moved onto the 8-point scale, 28 -> 32 (f904c8cd)",
   "--input-size-md-height": "Field/Input rework — 36 -> 40 (f904c8cd)",
   "--input-size-lg-height": "Field/Input rework — 44 -> 48 (f904c8cd)",
-  "--input-size-lg-padding-x": "Field/Input rework — 16 -> 14, to keep the lg control on the scale (f904c8cd)"
+  "--input-size-lg-padding-x": "Field/Input rework — 16 -> 14, to keep the lg control on the scale (f904c8cd)",
+  "--account-amber-accent": "Light 600 -> 700, 2026-08-22. The dot inside AccountBadge sits on bg/account (slate-100), not on its own tint: 600 measured 2.91:1 there, below the 3:1 a graphic object needs. 700 gives 4.58:1.",
+  "--account-green-accent": "Light 600 -> 700, 2026-08-22. Same background as amber; 600 measured 3.01:1, a pass by 0.01 that any future tweak to bg/account would break. 700 gives 4.58:1."
  },
  "aliases": {
   "--badge-primary-background": {
