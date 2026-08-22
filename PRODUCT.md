@@ -129,6 +129,10 @@ deducciones activas), ajustable después en Configuración. Y en cuanto eliges a
 "Omitir este paso" desaparece — con una elección real en pantalla, omitir solo podría
 significar descartarla en silencio.
 
+**Campos con nombre.** Cada campo del onboarding muestra su nombre encima, no dentro. Un texto
+de ejemplo dentro del campo desaparece apenas escribes —justo cuando más falta hace— y además no
+tiene contraste suficiente para leerse. El ejemplo se queda, pero como ejemplo.
+
 ### 4.10bis Color de cuenta
 Cada cuenta tiene un color de identidad que pinta **su avatar y nada más** (el círculo con el
 ícono del tipo de cuenta). Doce colores. Se elige al crear o editar la cuenta.

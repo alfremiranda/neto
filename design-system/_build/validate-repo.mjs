@@ -43,15 +43,49 @@ const fail = (check, msg) => failures.push(`${check}  ${msg}`)
 const HEX = /#[0-9a-fA-F]{3,8}\b/
 function scanHex(file, src) {
   const hits = []
+  let inBlockComment = false
   src.split('\n').forEach((line, i) => {
-    if (!HEX.test(line)) return
-    const inMark = /(fill|stroke)=["']#[0-9a-fA-F]{3,8}["']/.test(line)
-    if (inMark) return
-    for (const m of line.matchAll(/#[0-9a-fA-F]{3,8}\b/g)) {
+    // A hex quoted in prose is documentation, not a colour decision. Field.tsx cites
+    // #94a3b8 to explain why a placeholder cannot be a label; flagging that would
+    // train people to stop explaining themselves, which is the opposite of the point.
+    // Comment state has to be tracked across lines — a /** */ header is the common case.
+    const codeOnly = stripComments(line, inBlockComment)
+    inBlockComment = codeOnly.stillOpen
+    const code = codeOnly.text
+    if (!HEX.test(code)) return
+    // Brand marks: a hex is exempt when it is a fill=/stroke= attribute inside SVG.
+    // Structural, not an allowlist — 16-marks.md asked for the exemption to live here.
+    if (/(fill|stroke)=["']#[0-9a-fA-F]{3,8}["']/.test(code)) return
+    for (const m of code.matchAll(/#[0-9a-fA-F]{3,8}\b/g)) {
       hits.push({ line: i + 1, hex: m[0], text: line.trim().slice(0, 90) })
     }
   })
   return hits.map(h => `${relative(ROOT, file)}:${h.line}  ${h.hex}  ${h.text}`)
+}
+
+/** Blank out comment spans so the scan sees code only. Quote-aware, so a `//` inside
+    a string literal does not swallow the rest of the line. */
+function stripComments(line, startsInBlock) {
+  let out = '', i = 0, inBlock = startsInBlock, quote = null
+  while (i < line.length) {
+    const two = line.slice(i, i + 2)
+    if (inBlock) {
+      if (two === '*/') { inBlock = false; i += 2 } else { i++ }
+      continue
+    }
+    if (quote) {
+      out += line[i]
+      if (line[i] === quote && line[i - 1] !== '\\') quote = null
+      i++
+      continue
+    }
+    if (line[i] === '"' || line[i] === "'" || line[i] === '`') { quote = line[i]; out += line[i]; i++; continue }
+    if (two === '//') break
+    if (two === '/*') { inBlock = true; i += 2; continue }
+    out += line[i]
+    i++
+  }
+  return { text: out, stillOpen: inBlock }
 }
 
 const componentFiles = walk(join(ROOT, 'src')).filter(f => /\.(tsx|ts)$/.test(f))

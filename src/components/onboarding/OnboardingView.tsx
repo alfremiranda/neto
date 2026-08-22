@@ -1,12 +1,15 @@
-import { IconButton } from '@/components/ui/icon-button'
 import { useState } from 'react'
-import { Check, ChevronRight, Landmark, Wallet, CreditCard, Plus, X, Briefcase, UserRound, Layers } from 'lucide-react'
+import { Check, ChevronRight, Landmark, Wallet, CreditCard, Plus, Briefcase, UserRound, Layers } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { TRANSFER_ACCOUNTS } from '@/data/defaults'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useUIStore } from '@/store/uiStore'
 import { Button } from '@/components/ui/button'
+import { CurrencyRadio } from '@/components/ui/CurrencyRadio'
+import { ChoiceRow } from '@/components/ui/ChoiceRow'
+import { AccountRow } from '@/components/ui/AccountRow'
+import { Field } from '@/components/ui/Field'
 import type { Account } from '@/types'
 
 type Currency = 'COP' | 'USD'
@@ -100,50 +103,39 @@ function AccountsStep({ added, onAdd, onRemove }: {
 
       {/* Efectivo — always included */}
       {LOCKED_ACCOUNTS.map(a => (
-        <div key={a.id} className="flex items-center gap-3 px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--card)]">
-          <div className="w-5 h-5 rounded-full bg-[var(--primary)] border-2 border-[var(--primary)] flex items-center justify-center shrink-0">
-            <Check size={10} className="text-[var(--primary-foreground)]" strokeWidth={3} />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="ts-body-base-emphasis">{a.label}</p>
-            <p className="ts-body-small text-muted-foreground">Siempre incluida</p>
-          </div>
-          <span className="ts-label-badge px-1.5 py-0.5 rounded-lg bg-muted text-muted-foreground shrink-0">
-            {a.currency}
-          </span>
-        </div>
+        <AccountRow
+          key={a.id}
+          type="fixed"
+          label={a.label}
+          description="Siempre incluida"
+          badge={
+            <span className="ts-label-badge px-1.5 py-0.5 rounded-lg bg-muted text-muted-foreground shrink-0">
+              {a.currency}
+            </span>
+          }
+        />
       ))}
 
       {/* User-added accounts */}
       {added.map((a, i) => (
-        <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl border border-[var(--primary)] bg-[var(--primary)]/5">
-          <div className="w-5 h-5 rounded-full bg-[var(--primary)] border-2 border-[var(--primary)] flex items-center justify-center shrink-0">
-            <Check size={10} className="text-[var(--primary-foreground)]" strokeWidth={3} />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="ts-body-base-emphasis truncate">{a.label}</p>
-            <p className="ts-body-small text-muted-foreground">
-              {ACC_TYPE_LABEL[a.type]}
-              {a.type === 'credit' && a.creditLimit ? ` · cupo ${a.creditLimit.toLocaleString('es-CO')}` : ''}
-            </p>
-          </div>
-          <span className={cn(
-            'ts-label-badge px-1.5 py-0.5 rounded-lg shrink-0',
-            a.currency === 'USD'
-              ? 'bg-[var(--color-income)]/15 text-[var(--color-income-txt)]'
-              : 'bg-muted text-muted-foreground',
-          )}>
-            {a.currency}
-          </span>
-          <IconButton
-            variant="ghost"
-            size="md"
-            onClick={() => onRemove(i)}
-            aria-label="Eliminar cuenta"
-          >
-            <X size={14} />
-          </IconButton>
-        </div>
+        <AccountRow
+          key={i}
+          type="user"
+          label={a.label}
+          description={ACC_TYPE_LABEL[a.type]
+            + (a.type === 'credit' && a.creditLimit ? ` · cupo ${a.creditLimit.toLocaleString('es-CO')}` : '')}
+          badge={
+            <span className={cn(
+              'ts-label-badge px-1.5 py-0.5 rounded-lg shrink-0',
+              a.currency === 'USD'
+                ? 'bg-[var(--color-income)]/15 text-[var(--color-income-txt)]'
+                : 'bg-muted text-muted-foreground',
+            )}>
+              {a.currency}
+            </span>
+          }
+          onRemove={() => onRemove(i)}
+        />
       ))}
 
       {/* Add form */}
@@ -170,17 +162,22 @@ function AccountsStep({ added, onAdd, onRemove }: {
           ))}
         </div>
 
-        {/* Name + currency */}
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={label}
-            onChange={e => setLabel(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && !isCredit && handleAdd()}
-            aria-label="Nombre de la cuenta"
-            placeholder={isCredit ? 'Ej: Visa Bancolombia' : type === 'cash' ? 'Ej: Billetera, Menudo…' : 'Ej: Bancolombia Ahorros'}
-            className="field-input flex-1 min-w-0"
-          />
+        {/* Name + currency. items-end so the toggle lines up with the input rather
+            than stretching alongside the label above it. */}
+        <div className="flex items-end gap-2">
+          <Field label="Nombre" className="flex-1 min-w-0">
+            {id => (
+              <input
+                id={id}
+                type="text"
+                value={label}
+                onChange={e => setLabel(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && !isCredit && handleAdd()}
+                placeholder={isCredit ? 'Ej: Visa Bancolombia' : type === 'cash' ? 'Ej: Billetera, Menudo…' : 'Ej: Bancolombia Ahorros'}
+                className="field-input w-full"
+              />
+            )}
+          </Field>
           <div className="flex rounded-xl border border-[var(--border)] p-0.5 gap-0.5 shrink-0">
             {(['COP', 'USD'] as const).map(c => (
               <button
@@ -205,44 +202,60 @@ function AccountsStep({ added, onAdd, onRemove }: {
         {isCredit && (
           <div className="flex flex-col gap-2">
             <div className="flex gap-2">
-              <input
-                type="text"
-                inputMode="numeric"
-                value={cupo}
-                onChange={e => onMoneyChange(setCupo)(e.target.value)}
-                aria-label="Cupo total"
-                placeholder="Cupo total"
-                className="field-input flex-1 min-w-0"
-              />
-              <input
-                type="text"
-                inputMode="numeric"
-                value={deuda}
-                onChange={e => onMoneyChange(setDeuda)(e.target.value)}
-                aria-label="Deuda actual"
-                placeholder="Deuda actual"
-                className="field-input flex-1 min-w-0"
-              />
+              <Field label="Cupo total" className="flex-1 min-w-0">
+                {id => (
+                  <input
+                    id={id}
+                    type="text"
+                    inputMode="numeric"
+                    value={cupo}
+                    onChange={e => onMoneyChange(setCupo)(e.target.value)}
+                    placeholder="2.000.000"
+                    className="field-input w-full"
+                  />
+                )}
+              </Field>
+              <Field label="Deuda actual" className="flex-1 min-w-0">
+                {id => (
+                  <input
+                    id={id}
+                    type="text"
+                    inputMode="numeric"
+                    value={deuda}
+                    onChange={e => onMoneyChange(setDeuda)(e.target.value)}
+                    placeholder="0"
+                    className="field-input w-full"
+                  />
+                )}
+              </Field>
             </div>
             <div className="flex gap-2">
-              <input
-                type="text"
-                inputMode="numeric"
-                value={cutoff}
-                onChange={e => setCutoff(e.target.value.replace(/[^\d]/g, '').slice(0, 2))}
-                aria-label="Día de corte"
-                placeholder="Día de corte"
-                className="field-input flex-1 min-w-0"
-              />
-              <input
-                type="text"
-                inputMode="numeric"
-                value={due}
-                onChange={e => setDue(e.target.value.replace(/[^\d]/g, '').slice(0, 2))}
-                aria-label="Día de pago"
-                placeholder="Día de pago"
-                className="field-input flex-1 min-w-0"
-              />
+              <Field label="Día de corte" className="flex-1 min-w-0">
+                {id => (
+                  <input
+                    id={id}
+                    type="text"
+                    inputMode="numeric"
+                    value={cutoff}
+                    onChange={e => setCutoff(e.target.value.replace(/[^\d]/g, '').slice(0, 2))}
+                    placeholder="19"
+                    className="field-input w-full"
+                  />
+                )}
+              </Field>
+              <Field label="Día de pago" className="flex-1 min-w-0">
+                {id => (
+                  <input
+                    id={id}
+                    type="text"
+                    inputMode="numeric"
+                    value={due}
+                    onChange={e => setDue(e.target.value.replace(/[^\d]/g, '').slice(0, 2))}
+                    placeholder="5"
+                    className="field-input w-full"
+                  />
+                )}
+              </Field>
             </div>
           </div>
         )}
@@ -299,41 +312,17 @@ function ProfileStep({ profile, onSelect }: {
         </p>
       </div>
 
-      <div className="flex flex-col gap-2">
-        {PROFILE_OPTIONS.map(opt => {
-          const selected = profile === opt.value
-          const Icon = opt.icon
-          return (
-            <button
-              key={opt.value}
-              type="button"
-              onClick={() => onSelect(opt.value)}
-              className={cn(
-                'flex items-start gap-3 px-4 py-3.5 rounded-xl border-2 text-left transition-all duration-150',
-                selected
-                  ? 'border-[var(--primary)] bg-[var(--primary)]/8'
-                  : 'border-[var(--border)] bg-[var(--card)]',
-              )}
-            >
-              <span className={cn(
-                'w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors',
-                selected ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'bg-muted text-muted-foreground',
-              )}>
-                <Icon size={17} />
-              </span>
-              <div className="flex-1 min-w-0">
-                <p className="ts-body-base-emphasis">{opt.label}</p>
-                <p className="text-[12px] text-muted-foreground leading-snug mt-0.5">{opt.desc}</p>
-              </div>
-              <div className={cn(
-                'w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 transition-colors',
-                selected ? 'border-[var(--primary)] bg-[var(--primary)]' : 'border-[var(--border)]',
-              )}>
-                {selected && <Check size={10} strokeWidth={3} className="text-[var(--primary-foreground)]" />}
-              </div>
-            </button>
-          )
-        })}
+      <div role="radiogroup" aria-label="Cómo trabajas" className="flex flex-col gap-2">
+        {PROFILE_OPTIONS.map(opt => (
+          <ChoiceRow
+            key={opt.value}
+            label={opt.label}
+            description={opt.desc}
+            media={<opt.icon size={17} />}
+            selected={profile === opt.value}
+            onSelect={() => onSelect(opt.value)}
+          />
+        ))}
       </div>
 
       {profile === 'ambos' && (
@@ -384,39 +373,17 @@ function CurrencyStep({
       {/* Primary */}
       <div className="space-y-2">
         <p className="ts-label-micro text-muted-foreground uppercase px-1">Moneda principal</p>
-        <div className="flex gap-3">
-          {(['COP', 'USD'] as Currency[]).map(c => {
-            const meta = CURRENCY_META[c]
-            const selected = primary === c
-            return (
-              <button
-                key={c}
-                type="button"
-                onClick={() => {
-                  onPrimary(c)
-                  if (secondary === c) onSecondary(null)
-                }}
-                className={cn(
-                  'flex-1 flex flex-col items-center gap-2 py-5 px-3 rounded-xl border-2 transition-all duration-150',
-                  selected
-                    ? 'border-[var(--primary)] bg-[var(--primary)]/8'
-                    : 'border-[var(--border)] bg-[var(--card)]',
-                )}
-              >
-                <span className="text-3xl leading-none select-none">{meta.flag}</span>
-                <div className="text-center">
-                  <p className="ts-body-base-emphasis">{meta.name}</p>
-                  <p className="text-[11px] text-muted-foreground">{meta.desc}</p>
-                </div>
-                <div className={cn(
-                  'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors',
-                  selected ? 'border-[var(--primary)] bg-[var(--primary)]' : 'border-[var(--border)]',
-                )}>
-                  {selected && <Check size={10} strokeWidth={3} className="text-[var(--primary-foreground)]" />}
-                </div>
-              </button>
-            )
-          })}
+        <div role="radiogroup" aria-label="Moneda principal" className="flex gap-3">
+          {(['COP', 'USD'] as Currency[]).map(c => (
+            <CurrencyRadio
+              key={c}
+              code={CURRENCY_META[c].name}
+              description={CURRENCY_META[c].desc}
+              flag={CURRENCY_META[c].flag}
+              selected={primary === c}
+              onSelect={() => { onPrimary(c); if (secondary === c) onSecondary(null) }}
+            />
+          ))}
         </div>
       </div>
 
@@ -424,38 +391,19 @@ function CurrencyStep({
       <div className="space-y-2">
         <p className="ts-label-micro text-muted-foreground uppercase px-1">Moneda secundaria</p>
         <p className="text-[12px] text-muted-foreground px-1">Equivalencia visible junto a los valores</p>
-        <div className="flex flex-col gap-2">
-          {secondaryOptions.map(opt => {
-            const selected = secondary === opt.value
-            return (
-              <button
-                key={String(opt.value)}
-                type="button"
-                onClick={() => onSecondary(opt.value)}
-                className={cn(
-                  'flex items-center gap-3 px-4 py-3 rounded-xl border-2 text-left transition-all duration-150',
-                  selected
-                    ? 'border-[var(--primary)] bg-[var(--primary)]/8'
-                    : 'border-[var(--border)] bg-[var(--card)]',
-                )}
-              >
-                {opt.flag
-                  ? <span className="text-xl leading-none select-none">{opt.flag}</span>
-                  : <span className="w-7 h-7 flex items-center justify-center rounded-full bg-muted text-muted-foreground ts-detail-emphasis shrink-0">–</span>
-                }
-                <div className="flex-1 min-w-0">
-                  <p className="ts-body-base-emphasis">{opt.value ? <><strong>{opt.label}</strong> · {opt.sub}</> : opt.label}</p>
-                  {!opt.value && <p className="text-[11px] text-muted-foreground">{opt.sub}</p>}
-                </div>
-                <div className={cn(
-                  'w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors',
-                  selected ? 'border-[var(--primary)] bg-[var(--primary)]' : 'border-[var(--border)]',
-                )}>
-                  {selected && <Check size={10} strokeWidth={3} className="text-[var(--primary-foreground)]" />}
-                </div>
-              </button>
-            )
-          })}
+        <div role="radiogroup" aria-label="Moneda secundaria" className="flex flex-col gap-2">
+          {secondaryOptions.map(opt => (
+            // No media: 19-choice-rows.md lists this frame as text + trailing radio.
+            // The leading tile belongs to the Perfil rows. The old hand-built version
+            // carried a flag here; dropping it is the spec's call, not an oversight.
+            <ChoiceRow
+              key={String(opt.value)}
+              label={opt.label}
+              description={opt.sub}
+              selected={secondary === opt.value}
+              onSelect={() => onSecondary(opt.value)}
+            />
+          ))}
         </div>
       </div>
     </div>
