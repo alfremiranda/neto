@@ -351,9 +351,9 @@
   "n": "AccountColorPicker",
   "v": 1,
   "p": [],
-  "w": 300,
-  "h": 120,
-  "d": "The twelve account colours as a wrapping grid, plus the name of the one chosen.\n\nThe name is not decoration. Twelve of fourteen usable hue families leaves 11 degrees of separation at the tightest, and colour alone is never an accessible identifier (WCAG 1.4.1).\n\nThe names are part of the contract, not the mock: Morado · Celeste · Esmeralda · Lima · Ámbar · Fucsia · Azul · Verde · Índigo · Naranja · Rosa · Turquesa. pink is Fucsia and not “Rosado”, because rose is Rosa and the two sit 14 degrees apart — two names differing by one suffix rescue nothing.\n\nCarries no label of its own. Wrap it in Field, like every other input in Neto."
+  "w": 372,
+  "h": 100,
+  "d": "The twelve account colours, two rows of six, spread across the full width of whatever holds them.\n\nNo caption and no colour name on screen. Choosing an account colour is a preference, not a task with a right answer, so nothing is lost when two hues are hard to tell apart — and the selection is carried by a check mark, not by colour, so 1.4.1 is satisfied without words. The names survive as each swatch’s accessible name.\n\nNo “in use” marker. Colours repeat across accounts by design; an unexplained dot on a choice with no wrong answer reads as a restriction.\n\nTwo explicit rows, not a wrapping grid: wrap packs as many as fit and becomes eight per row at this width. Six per row is a decision.\n\nCarries no label of its own. Wrap it in Field."
  },
  {
   "g": "Forms",
@@ -363,9 +363,9 @@
    "Color=purple|sky|emerald|lime|amber|pink|blue|green|indigo|orange|rose|teal",
    "State=Default|Hover|Selected"
   ],
-  "w": 704,
-  "h": 200,
-  "d": "One colour a user can pick for an account. The chip is the accent at full strength; the tint the avatar uses is a separate token and is not shown here, because it is invisible against a light canvas.\n\nGeometry: 40px hit area, 32px disc, radius/full. The 4px inset is the gap the selection ring needs so a ring drawn in the same accent still reads as a ring.\n\nSelected draws a 2px ring in the account’s own accent. Not the brand colour: the ring has to survive eleven other hues beside it. Hover is a neutral 1px border/strong ring — a hover ring in the accent is one step from reading as selected.\n\nTwelve hues is Alfredo’s call, measured: only 14 hue families are free once cyan and red are spent, so twelve forces a minimum separation of 11 degrees. That is why AccountColorPicker names the chosen colour in words."
+  "w": 764,
+  "h": 224,
+  "d": "One colour a user can pick for an account. The chip is the accent at full strength; the tint the avatar uses is a separate token and is not shown here, because it is invisible against a light canvas.\n\nGeometry: 44px hit target, 36px disc, radius/full. 44 rather than the 40 it started at — these sit close together and the minimum is a floor, not a target. The 4px inset is the gap the selection ring needs so a ring in the same accent still reads as a ring.\n\nSelected draws a 2px ring in the account’s own accent. Not the brand colour: the ring has to survive eleven other hues beside it. Hover is a neutral 1px border/strong ring — a hover ring in the accent is one step from reading as selected.\n\nEvery swatch needs an accessible name (Morado · Celeste · Esmeralda · Lima · Ámbar · Fucsia · Azul · Verde · Índigo · Naranja · Rosa · Turquesa). The name is not shown; a screen-reader user still has to hear one."
  },
  {
   "g": "Forms",
@@ -447,7 +447,7 @@
   ],
   "w": 1000,
   "h": 146,
-  "d": "A form field: the label, the control, and the message. Built 2026-08-20 because the system had four form components and four different answers about labels — Input, Select and DatePicker had none at all and were letting the placeholder do the job, at 2.56:1 contrast and gone as soon as the user types.\n\nThe control is an INSTANCE SWAP: swap in Input, Select or anything else — including an Input configured as a date or money field, which is what replaced DatePicker and MoneyInput. The field’s own visual state (focus, disabled) belongs to the control; this wrapper only knows whether the message is a hint or an error."
+  "d": "A form field: the label, the control, and the message. Built 2026-08-20 because the system had four form components and four different answers about labels — Input, Select and DatePicker had none at all and were letting the placeholder do the job, at 2.56:1 contrast and gone as soon as the user types.\n\nThe control is an INSTANCE SWAP: swap in Input, Select or anything else — including an Input configured as a date or money field, which is what replaced DatePicker and MoneyInput. The field’s own visual state (focus, disabled) belongs to the control; this wrapper only knows whether the message is a hint or an error.\n\nThe control slot HUGS. It was FIXED at 40px — the height of an Input — which silently clipped anything taller the moment one was swapped in: AccountColorPicker lost its second row and the drawer looked like it had six colours. An instance-swap slot cannot carry the height of its default occupant."
  },
  {
   "g": "Forms",

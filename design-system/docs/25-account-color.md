@@ -53,9 +53,18 @@ Rungs are 600 for the accent and 300 in Dark, except lime at 700 — chosen per 
 uniformly. Every glyph is verified ≥3:1 against its own tint in both modes (WCAG **1.4.11**: a
 filled glyph is a graphic object). Light floor 3.07:1 (amber), Dark floor 8.02:1 (indigo).
 
-### The names, ratified 2026-08-22
+### The names live in the accessible name, not on screen (2026-08-22)
 
-The spec required the colour to be named in words but named none. These are the names, and they
+**The picker shows no colour name.** Alfredo: *"el usuario no tiene que ver el nombre del color…
+no afecta la selección ni la intención."* He is right and my earlier argument was wrong in a way
+worth writing down: I defended the caption with WCAG 1.4.1, but 1.4.1 forbids colour being the
+**sole carrier of information** — and choosing an account colour is a *preference*, not a task
+with a right answer. Nothing is lost when two hues are hard to tell apart. The selection state is
+carried by a check mark, which is not colour at all.
+
+**The names still exist, as the accessible name of each swatch.** A screen-reader user pressing
+a circle has to hear something, and "button" is not something. Visible caption removed, `aria-label`
+required. These are the names, and they
 are part of the contract — Figma and the app must not disagree:
 
 | token | nombre | | token | nombre |
@@ -96,9 +105,24 @@ over 1200 ids, against an ideal of 100 — it is what §4 costs: stability was c
 distinction, and avoiding collisions would mean adding an account could change another account's
 colour, which §4 forbids.
 
-**Approved 2026-08-22: the picker marks colours already in use.** A small dot on the swatch, not
-a block — repeating is the user's right, and the picker's job is to inform the choice, not to
-police it. It does not change the derivation.
+**Reversed 2026-08-22, same day: no "in use" marker.** I approved a dot in the morning; Alfredo
+struck it. *"Lo más importante es que los colores se pueden repetir en diferentes cuentas."* An
+unexplained mark on a choice that has no wrong answer reads as a restriction, and a labelled one
+("en uso por otra cuenta") reads as a warning against something explicitly allowed. Two accounts
+in the same colour is a normal outcome of a rule we chose on purpose, not a collision to flag.
+
+### Layout and hit target (2026-08-22)
+
+**44px hit target**, disc 36. Above the touch minimum (WCAG 2.5.5, Apple HIG) rather than at it,
+because the swatches sit close together.
+
+**Two explicit rows of six, spread across the full width of the container.** Not a wrapping grid:
+wrap packs as many as fit and then spaces them, so at 372px it silently becomes eight per row and
+changes again on a wider drawer. Six per row is a decision, not an outcome of arithmetic.
+
+**`Field`'s control slot now HUGS.** It was fixed at 40px — the height of an Input — and clipped
+the picker's second row the moment it was swapped in. The drawer looked like it had six colours.
+An instance-swap slot cannot carry the height of its default occupant.
 
 ## 5. What Design built (2026-08-21)
 
