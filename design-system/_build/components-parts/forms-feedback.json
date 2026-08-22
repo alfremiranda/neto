@@ -177,12 +177,12 @@
   "n": "AccountColorSwatch",
   "v": 36,
   "p": [
-   "Color=purple|sky|emerald|lime|amber|pink|blue|green|indigo|orange|rose|teal",
+   "Color=orange|amber|lime|green|emerald|teal|sky|blue|indigo|purple|pink|rose",
    "State=Default|Hover|Selected"
   ],
   "w": 764,
   "h": 224,
-  "d": "One colour a user can pick for an account. The chip is the accent at full strength; the tint the avatar uses is a separate token and is not shown here, because it is invisible against a light canvas.\n\nGeometry: 44px hit target, 36px disc, radius/full. 44 rather than the 40 it started at — these sit close together and the minimum is a floor, not a target. The 4px inset is the gap the selection ring needs so a ring in the same accent still reads as a ring.\n\nSelected draws a 2px ring in the account’s own accent. Not the brand colour: the ring has to survive eleven other hues beside it. Hover is a neutral 1px border/strong ring — a hover ring in the accent is one step from reading as selected.\n\nEvery swatch needs an accessible name (Morado · Celeste · Esmeralda · Lima · Ámbar · Fucsia · Azul · Verde · Índigo · Naranja · Rosa · Turquesa). The name is not shown; a screen-reader user still has to hear one."
+  "d": "One colour a user can pick for an account. The chip is the accent at full strength; the tint the avatar uses is a separate token and is not shown here, because it is invisible against a light canvas.\n\nGeometry: 44px hit target, 36px disc, radius/full. 44 rather than the 40 it started at — these sit close together and the minimum is a floor, not a target. The 4px inset is the gap the selection ring needs so a ring in the same accent still reads as a ring.\n\nSelected draws a 2px ring in the account’s own accent. Not the brand colour: the ring has to survive eleven other hues beside it. Hover is a neutral 1px border/strong ring — a hover ring in the accent is one step from reading as selected.\n\nEvery swatch needs an accessible name (Morado · Celeste · Esmeralda · Lima · Ámbar · Fucsia · Azul · Verde · Índigo · Naranja · Rosa · Turquesa). The name is not shown; a screen-reader user still has to hear one.\n\nOrdered by HUE ANGLE, measured from each accent’s Light value: orange 21° · amber 32 · lime 86 · green 142 · emerald 161 · teal 175 · sky 200 · blue 221 · indigo 243 · purple 271 · pink 333 · rose 347.\n\nThe order is not decoration. The neighbours are the pairs that measure closest — orange/amber at 11°, emerald/teal at 14 — and sitting them side by side is what lets someone SEE they are two colours, instead of meeting the second one six positions later and reading it as the first again."
  },
  {
   "g": "Forms",
@@ -191,7 +191,7 @@
   "p": [],
   "w": 372,
   "h": 100,
-  "d": "The twelve account colours, two rows of six, spread across the full width of whatever holds them.\n\nNo caption and no colour name on screen. Choosing an account colour is a preference, not a task with a right answer, so nothing is lost when two hues are hard to tell apart — and the selection is carried by a check mark, not by colour, so 1.4.1 is satisfied without words. The names survive as each swatch’s accessible name.\n\nNo “in use” marker. Colours repeat across accounts by design; an unexplained dot on a choice with no wrong answer reads as a restriction.\n\nTwo explicit rows, not a wrapping grid: wrap packs as many as fit and becomes eight per row at this width. Six per row is a decision.\n\nCarries no label of its own. Wrap it in Field."
+  "d": "The twelve account colours, two rows of six, spread across the full width of whatever holds them.\n\nNo caption and no colour name on screen. Choosing an account colour is a preference, not a task with a right answer, so nothing is lost when two hues are hard to tell apart — and the selection is carried by a check mark, not by colour, so 1.4.1 is satisfied without words. The names survive as each swatch’s accessible name.\n\nNo “in use” marker. Colours repeat across accounts by design; an unexplained dot on a choice with no wrong answer reads as a restriction.\n\nOrdered by hue — warm, green, cyan, blue, violet, pink — so the two closest pairs sit adjacent and read as two colours rather than as one met twice.\n\nTwo explicit rows, not a wrapping grid: wrap packs as many as fit and becomes eight per row at this width. Six per row is a decision.\n\nCarries no label of its own. Wrap it in Field."
  },
  {
   "g": "Feedback",

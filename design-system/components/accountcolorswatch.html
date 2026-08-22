@@ -34,14 +34,18 @@ h1{margin:0 0 4px;font-weight:800;font-size:24px;line-height:32px;letter-spacing
   <h1>AccountColorSwatch</h1>
   <p class="crumb">Forms — Neto design system</p>
   <div class="spec">
-    <div class="axes"><div class="axis"><span class="k">Color</span><span class="v">purple · sky · emerald · lime · amber · pink · blue · green · indigo · orange · rose · teal</span></div><div class="axis"><span class="k">State</span><span class="v">Default · Hover · Selected</span></div><div class="count">36 variantes · 764 × 224</div></div>
+    <div class="axes"><div class="axis"><span class="k">Color</span><span class="v">orange · amber · lime · green · emerald · teal · sky · blue · indigo · purple · pink · rose</span></div><div class="axis"><span class="k">State</span><span class="v">Default · Hover · Selected</span></div><div class="count">36 variantes · 764 × 224</div></div>
     <div class="desc">One colour a user can pick for an account. The chip is the accent at full strength; the tint the avatar uses is a separate token and is not shown here, because it is invisible against a light canvas.
 
 Geometry: 44px hit target, 36px disc, radius/full. 44 rather than the 40 it started at — these sit close together and the minimum is a floor, not a target. The 4px inset is the gap the selection ring needs so a ring in the same accent still reads as a ring.
 
 Selected draws a 2px ring in the account’s own accent. Not the brand colour: the ring has to survive eleven other hues beside it. Hover is a neutral 1px border/strong ring — a hover ring in the accent is one step from reading as selected.
 
-Every swatch needs an accessible name (Morado · Celeste · Esmeralda · Lima · Ámbar · Fucsia · Azul · Verde · Índigo · Naranja · Rosa · Turquesa). The name is not shown; a screen-reader user still has to hear one.</div>
+Every swatch needs an accessible name (Morado · Celeste · Esmeralda · Lima · Ámbar · Fucsia · Azul · Verde · Índigo · Naranja · Rosa · Turquesa). The name is not shown; a screen-reader user still has to hear one.
+
+Ordered by HUE ANGLE, measured from each accent’s Light value: orange 21° · amber 32 · lime 86 · green 142 · emerald 161 · teal 175 · sky 200 · blue 221 · indigo 243 · purple 271 · pink 333 · rose 347.
+
+The order is not decoration. The neighbours are the pairs that measure closest — orange/amber at 11°, emerald/teal at 14 — and sitting them side by side is what lets someone SEE they are two colours, instead of meeting the second one six positions later and reading it as the first again.</div>
   </div>
   <div class="modes">
     <div><span class="lbl">Light</span><div data-theme="light" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición de 764×224px — la fuente visual es Figma.</div></div></div></div>

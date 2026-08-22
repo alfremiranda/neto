@@ -116,6 +116,14 @@ in the same colour is a normal outcome of a rule we chose on purpose, not a coll
 **44px hit target**, disc 36. Above the touch minimum (WCAG 2.5.5, Apple HIG) rather than at it,
 because the swatches sit close together.
 
+**Ordered by hue angle**, measured rather than arranged: orange 21° · amber 32 · lime 86 · green 142 ·
+emerald 161 · teal 175 · sky 200 · blue 221 · indigo 243 · purple 271 · pink 333 · rose 347. Read across,
+it is a ramp that lands almost back where it started.
+
+Alfredo asked for this because it looks better, and it also does something measurable: the palette's
+two tightest pairs — orange/amber at 11° and emerald/teal at 14 — end up **adjacent**. Side by side
+they read as two colours. Six positions apart, the second one reads as the first again.
+
 **Two explicit rows of six, spread across the full width of the container.** Not a wrapping grid:
 wrap packs as many as fit and then spaces them, so at 372px it silently becomes eight per row and
 changes again on a wider drawer. Six per row is a decision, not an outcome of arithmetic.
