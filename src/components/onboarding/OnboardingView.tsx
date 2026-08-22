@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Check, ChevronRight, Landmark, Wallet, CreditCard, Plus, Briefcase, UserRound, Layers } from 'lucide-react'
+import { Check, ChevronRight, ChevronLeft, Landmark, Wallet, CreditCard, Plus, Briefcase, UserRound, Layers } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { TRANSFER_ACCOUNTS } from '@/data/defaults'
 import { useFinanceStore } from '@/store/financeStore'
@@ -95,13 +95,6 @@ function AccountsStep({ added, onAdd, onRemove }: {
 
   return (
     <div className="flex flex-col gap-5">
-      <div>
-        <h2 className="ts-heading-section">Tus cuentas</h2>
-        <p className="ts-body-base text-muted-foreground mt-1">
-          Agrega las cuentas que usas. Puedes editar detalles y agregar más en <strong>Cuentas</strong>.
-        </p>
-      </div>
-
       {/* Efectivo — always included */}
       {LOCKED_ACCOUNTS.map(a => (
         <AccountRow
@@ -288,13 +281,6 @@ function ProfileStep({ profile, onSelect }: {
 }) {
   return (
     <div className="flex flex-col gap-5">
-      <div>
-        <h2 className="ts-heading-section">¿Cómo trabajas?</h2>
-        <p className="ts-body-base text-muted-foreground mt-1">
-          Esto define si Neto calcula tus aportes y provisiones.
-        </p>
-      </div>
-
       <div role="radiogroup" aria-label="Cómo trabajas" className="flex flex-col gap-2">
         {PROFILE_OPTIONS.map(opt => (
           <ChoiceRow
@@ -346,13 +332,6 @@ function CurrencyStep({
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h2 className="ts-heading-section">Tu moneda principal</h2>
-        <p className="ts-body-base text-muted-foreground mt-1">
-          Elige cómo quieres ver los valores en Neto.
-        </p>
-      </div>
-
       {/* Primary */}
       <div className="space-y-2">
         <p className="ts-label-micro text-muted-foreground uppercase px-1">Moneda principal</p>
@@ -433,6 +412,16 @@ function DoneStep() {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 // Steps: 0=welcome  1=currency  2=accounts  3=profile  4=done
+//
+// Title and description live here rather than inside each step because the desktop
+// shell puts them in the panel header: the rail has to stay still while you advance,
+// so only half the screen moves. Mobile renders the same two strings inline.
+const STEP_META: Record<number, { title: string; desc: React.ReactNode }> = {
+  1: { title: 'Tu moneda principal', desc: 'Elige cómo quieres ver los valores en Neto.' },
+  2: { title: 'Tus cuentas', desc: <>Agrega las cuentas que usas. Puedes editar detalles y agregar más en <strong>Cuentas</strong>.</> },
+  3: { title: '¿Cómo trabajas?', desc: 'Esto define si Neto calcula tus aportes y provisiones.' },
+}
+
 const TOTAL_STEPS = 5
 const CONTENT_STEPS = [1, 2, 3]   // steps with scrollable content + progress bar
 const PROGRESS_STEPS = [1, 2, 3]  // steps counted in the progress bar
@@ -504,71 +493,178 @@ export function OnboardingView() {
   const isContentStep = CONTENT_STEPS.includes(step)
   // Which progress dot is active (1-based within content steps)
   const progressIndex = PROGRESS_STEPS.indexOf(step) + 1
+  const meta = STEP_META[step]
+
+  // What the rail reports for each step. Values, not tick marks: "Solo efectivo" or
+  // "USD · sin secundaria" tells you what you chose, which is what a summary rail is
+  // for and what a numbered stepper could never say. An em dash means unanswered —
+  // and unanswered is a real state here, since skipping means "decido después".
+  const summary: Array<{ n: number; label: string; value: string }> = [
+    {
+      n: 1, label: 'Moneda',
+      value: primary === null && secondary === undefined
+        ? '—'
+        : `${primary ?? 'COP'}${secondary === null ? ' · sin secundaria' : ` · ${secondary ?? (primary === 'USD' ? 'COP' : 'USD')}`}`,
+    },
+    {
+      n: 2, label: 'Cuentas',
+      value: added.length === 0 ? 'Solo efectivo' : `${added.length + LOCKED_ACCOUNTS.length} cuentas`,
+    },
+    {
+      n: 3, label: 'Perfil',
+      value: profile === null ? '—' : PROFILE_OPTIONS.find(o => o.value === profile)!.label,
+    },
+  ]
+
+  const cta = step === 0 ? 'Comenzar' : step === TOTAL_STEPS - 1 ? 'Ir a Neto' : 'Continuar'
+  const canSkip = isContentStep && step !== TOTAL_STEPS - 1 && !answered
+  const canGoBack = step > 0 && step !== TOTAL_STEPS - 1
+
+  const stepBody = (
+    <>
+      {step === 0 && <WelcomeStep />}
+      {step === 1 && (
+        <CurrencyStep primary={primary} secondary={secondary} onPrimary={setPrimary} onSecondary={setSecondary} />
+      )}
+      {step === 2 && <AccountsStep added={added} onAdd={handleAdd} onRemove={handleRemove} />}
+      {step === 3 && <ProfileStep profile={profile} onSelect={setProfile} />}
+      {step === 4 && <DoneStep />}
+    </>
+  )
 
   return (
-    <div
-      className="h-full flex flex-col bg-[var(--background)] overflow-hidden"
-      style={{
-        paddingTop:    'max(16px, env(safe-area-inset-top))',
-        paddingBottom: 'max(24px, env(safe-area-inset-bottom))',
-      }}
-    >
-      {/* Progress bar */}
-      {isContentStep && (
-        <div className="flex gap-2 px-6 pb-2">
-          {PROGRESS_STEPS.map((_, i) => (
-            <div
-              key={i}
-              className={cn(
-                'h-1 flex-1 rounded-full transition-colors duration-300',
-                progressIndex > i ? 'bg-[var(--primary)]' : 'bg-[var(--muted)]',
-              )}
-            />
-          ))}
-        </div>
-      )}
+    // Full-bleed two columns from lg. The cut between rail and panel is a surface
+    // change, not a card border: bg/chrome against bg/surface. The rail was first
+    // drawn on wrap/subtle, which recedes in light and INVERTS in dark.
+    <div className="h-full flex flex-col lg:flex-row bg-[var(--bg-surface)] overflow-hidden">
 
-      {/* Content */}
-      <div className={cn(
-        'flex-1 px-6',
-        isContentStep ? 'overflow-y-auto py-5' : 'flex flex-col justify-center',
-      )}>
-        <div className="max-w-sm mx-auto w-full">
-          {step === 0 && <WelcomeStep />}
-          {step === 1 && (
-            <CurrencyStep
-              primary={primary}
-              secondary={secondary}
-              onPrimary={setPrimary}
-              onSecondary={setSecondary}
-            />
-          )}
-          {step === 2 && <AccountsStep added={added} onAdd={handleAdd} onRemove={handleRemove} />}
-          {step === 3 && <ProfileStep profile={profile} onSelect={setProfile} />}
-          {step === 4 && <DoneStep />}
+      {/* ── Rail · desktop only ── */}
+      <aside className="hidden lg:flex w-[380px] shrink-0 flex-col bg-[var(--bg-chrome)] px-10 py-12">
+        <div className="flex flex-col gap-8">
+          <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg">
+            <img src="/icon.svg" alt="Neto" className="w-full h-full" />
+          </div>
+          <p className="ts-body-small text-muted-foreground">
+            Completa estos pasos para dejar Neto listo.
+          </p>
+          <ol className="flex flex-col gap-4">
+            {summary.map(({ n, label, value }) => {
+              const active = step === n
+              // Passed is not the same as answered. Skipping is a real outcome here
+              // ("decido después"), so a step you walked past without choosing keeps
+              // its number and its em dash — a tick would claim something happened.
+              const done = step > n && value !== '—'
+              return (
+                <li key={n} className="flex items-start gap-3" aria-current={active ? 'step' : undefined}>
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      'w-6 h-6 rounded-full shrink-0 flex items-center justify-center ts-label-badge border',
+                      done
+                        ? 'bg-[var(--primary)] border-[var(--primary)] text-[var(--primary-foreground)]'
+                        : active
+                          ? 'border-[var(--primary)] text-[var(--primary)]'
+                          : 'border-[var(--border)] text-muted-foreground',
+                    )}
+                  >
+                    {done ? <Check size={12} strokeWidth={3} /> : n}
+                  </span>
+                  <span className="min-w-0">
+                    <span className={cn('block ts-body-small-emphasis', !active && !done && 'text-muted-foreground')}>
+                      {label}
+                    </span>
+                    <span className="block ts-body-small text-muted-foreground truncate">{value}</span>
+                  </span>
+                </li>
+              )
+            })}
+          </ol>
         </div>
-      </div>
+      </aside>
 
-      {/* CTA */}
-      <div className="shrink-0 px-6 max-w-sm mx-auto w-full space-y-1">
-        <Button size="xl" className="w-full" onClick={handleNext}>
-          {step === 0
-            ? 'Comenzar'
-            : step === TOTAL_STEPS - 1
-              ? 'Ir a Neto'
-              : 'Continuar'}
-          {step < TOTAL_STEPS - 1 && <ChevronRight size={18} />}
-        </Button>
-        {isContentStep && step !== TOTAL_STEPS - 1 && !answered && (
-          <Button
-            type="button"
-            variant="link"
-            onClick={() => setStep(s => s + 1)}
-            className="w-full text-muted-foreground hover:text-foreground no-underline"
-          >
-            Omitir este paso
-          </Button>
+      {/* ── Panel ── */}
+      <div
+        className="flex-1 min-w-0 flex flex-col overflow-hidden lg:p-16"
+        style={{
+          paddingTop:    'max(16px, env(safe-area-inset-top))',
+          paddingBottom: 'max(24px, env(safe-area-inset-bottom))',
+        }}
+      >
+        {/* Progress bar — mobile only; on desktop the rail says the same thing better */}
+        {isContentStep && (
+          <div className="lg:hidden flex gap-2 px-6 pb-2">
+            {PROGRESS_STEPS.map((_, i) => (
+              <div
+                key={i}
+                className={cn(
+                  'h-1 flex-1 rounded-full transition-colors duration-300',
+                  progressIndex > i ? 'bg-[var(--primary)]' : 'bg-[var(--muted)]',
+                )}
+              />
+            ))}
+          </div>
         )}
+
+        <div className={cn(
+          'flex-1 px-6 lg:px-0 min-h-0',
+          isContentStep ? 'overflow-y-auto py-5 lg:py-0' : 'flex flex-col justify-center',
+        )}>
+          <div className="max-w-sm lg:max-w-[720px] mx-auto lg:mx-0 w-full flex flex-col gap-6 lg:gap-8">
+            {meta && (
+              <div className="flex flex-col gap-2">
+                {/* The eyebrow is fg/subtle, not brand: it is a position indicator,
+                    not something to look at first. */}
+                <p className="ts-label-micro uppercase text-muted-foreground">
+                  Paso {progressIndex} de {PROGRESS_STEPS.length}
+                </p>
+                <h2 className="ts-heading-section">{meta.title}</h2>
+                <p className="ts-body-base text-muted-foreground">{meta.desc}</p>
+              </div>
+            )}
+            {stepBody}
+          </div>
+        </div>
+
+        {/* ── Footer ── mobile stacks; desktop puts everything in one row, Atrás left. */}
+        <div className="shrink-0 px-6 lg:px-0 pt-4 max-w-sm lg:max-w-[720px] mx-auto lg:mx-0 w-full">
+          <div className="hidden lg:flex items-center justify-between gap-3">
+            <div>
+              {canGoBack && (
+                <Button type="button" variant="ghost" onClick={() => setStep(s => s - 1)}>
+                  <ChevronLeft size={16} />Atrás
+                </Button>
+              )}
+            </div>
+            <div className="flex items-center gap-3">
+              {canSkip && (
+                <Button type="button" variant="ghost" onClick={() => setStep(s => s + 1)} className="text-muted-foreground hover:text-foreground">
+                  Omitir este paso
+                </Button>
+              )}
+              <Button onClick={handleNext}>
+                {cta}
+                {step < TOTAL_STEPS - 1 && <ChevronRight size={18} />}
+              </Button>
+            </div>
+          </div>
+
+          <div className="lg:hidden space-y-1">
+            <Button size="xl" className="w-full" onClick={handleNext}>
+              {cta}
+              {step < TOTAL_STEPS - 1 && <ChevronRight size={18} />}
+            </Button>
+            {canSkip && (
+              <Button
+                type="button"
+                variant="link"
+                onClick={() => setStep(s => s + 1)}
+                className="w-full text-muted-foreground hover:text-foreground no-underline"
+              >
+                Omitir este paso
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )

@@ -129,6 +129,11 @@ deducciones activas), ajustable después en Configuración. Y en cuanto eliges a
 "Omitir este paso" desaparece — con una elección real en pantalla, omitir solo podría
 significar descartarla en silencio.
 
+**En escritorio, dos columnas.** Un riel fijo a la izquierda con los tres pasos y **lo que
+elegiste en cada uno** —«USD · COP», «Solo efectivo»—, y el contenido a la derecha. El riel no se
+mueve al avanzar: sólo cambia la mitad derecha. Un paso que omitiste conserva su número y una
+raya, no un visto: pasar no es lo mismo que responder. Aparece **«Atrás»**, que antes no existía.
+
 **Campos con nombre.** Cada campo del onboarding muestra su nombre encima, no dentro. Un texto
 de ejemplo dentro del campo desaparece apenas escribes —justo cuando más falta hace— y además no
 tiene contraste suficiente para leerse. El ejemplo se queda, pero como ejemplo.
