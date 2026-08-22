@@ -84,6 +84,29 @@ apart in speech, which is the entire job of the caption.
 
 ## 4. Existing accounts: derive, do not migrate
 
+> **Amended 2026-08-22.** The palette is now in chromatic order and that order is the DATA order —
+> `hash(id) % 12` indexes into it. Alfredo authorised the one-time repaint this causes: *"no importa
+> que cambien de color ahora. Prioriza el orden cromático en la selección del color."* The stability
+> rule below is unchanged and starts from this order.
+>
+> **The order is now load-bearing.** Reordering the palette again repaints every account that has
+> not chosen explicitly. From here that is a data migration, not a design tweak.
+>
+> **The repaint does not remove the repeats — it moves them.** Assuming the shipped `PALETTE` was in
+> the order this document listed (Dev to confirm; the ids are not in Design's hands), Alfredo's
+> seven go from three oranges to three purples:
+>
+> | | antes | después | | | antes | después |
+> |---|---|---|---|---|---|---|
+> | ARQ | orange | **purple** | | NU | amber | emerald |
+> | Toptal | sky | amber | | Efectivo | rose | pink |
+> | Bancolombia | indigo | indigo | | CMR | orange | **purple** |
+> | Nequi | orange | **purple** | | | | |
+>
+> Three of seven still share a colour, because the repeat comes from 7 accounts over 12 colours,
+> not from the ordering. Nothing here is a way out of that — §4 chose stability over distinction and
+> this is still what that costs.
+
     color = PALETTE[ hash(account.id) % 12 ]
 
 Alfredo asked for random. Derived-from-id is what random should mean here, and it is strictly
