@@ -238,6 +238,22 @@ devices; analytics dashboards exist; referral flow works.
 
 ---
 
+## 4bis. Product decisions parked for review
+
+Raised by Dev on 2026-08-22 while closing the token migration. Both are older than that
+migration, both are Alfredo's call, and neither was changed.
+
+- **A negative "Neto libre" displays as `$0`.** The value is wrapped in `Math.max(neto, 0)`
+  (`KPIStrip.tsx`), so the figure reads zero while the colour reads red. The person sees
+  "$0" instead of how far below they are. The token migration's own argument is that *the
+  sign carries the meaning* — hiding the amount contradicts it. Decide whether to show the
+  real negative figure.
+- **The same clamp hides a negative month inside a positive year.** `AnnualTable.tsx` sums
+  `Math.max(r.netoLibre, 0)` per month, so a bad month cannot pull the annual total down and
+  simply disappears from it. Same origin, same question.
+
+Both are one-line changes; what they need is a decision about what the number should say.
+
 ## 5. Out of scope / explicitly deferred
 
 - Rewriting the domain/business logic — it does not change.

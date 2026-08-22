@@ -116,6 +116,7 @@ MAP = [
         ("--color-tax", "--kpi-tax-default"), ("--color-tax-bg", "--kpi-tax-surface"), ("--color-tax-txt", "--kpi-tax-foreground"),
         ("--color-net", "--kpi-net-default"), ("--color-net-bg", "--kpi-net-surface"), ("--color-net-txt", "--kpi-net-foreground"),
         ("--color-danger", "--status-danger-default"), ("--color-danger-bg", "--status-danger-surface"),
+        ("--color-danger-txt", "--status-danger-foreground"),
     ]),
     ("Favourite star", [
         # A favourite is not a tax. These shared kpi/tax/foreground by accident in light
@@ -128,6 +129,34 @@ MAP = [
         # the same values as account/1 and account/3. Same accident as the favourite star.
         ("--color-currency-usd-bg", "--currency-usd-surface"), ("--color-currency-usd-txt", "--currency-usd-foreground"),
         ("--color-currency-cop-bg", "--currency-cop-surface"), ("--color-currency-cop-txt", "--currency-cop-foreground"),
+    ]),
+    ("Sidebar", [
+        # Four more sidebar names — accent, accent-foreground, border, ring — are NOT
+        # bridged: the app and the system already spell them identically, so a line here
+        # would read `--sidebar-ring: var(--sidebar-ring)`. Deleting their declarations
+        # from index.css is enough; the generated token then stands on its own.
+        ("--sidebar", "--nav-background"),
+        ("--sidebar-foreground", "--sidebar-item-foreground"),
+        ("--sidebar-primary", "--sidebar-item-background-selected"),
+        ("--sidebar-primary-foreground", "--sidebar-item-foreground-selected"),
+    ]),
+    ("Buttons", [
+        ("--btn-filled-bg", "--button-filled-background-default"),
+        ("--btn-filled-bg-hover", "--button-filled-background-hover"),
+        ("--btn-filled-fg", "--button-filled-foreground"),
+        ("--btn-outline-fg", "--button-outline-foreground"),
+        ("--btn-outline-border", "--button-outline-border"),
+        ("--btn-ghost-fg", "--button-ghost-foreground"),
+        ("--btn-danger-filled-bg", "--button-danger-filled-background"),
+        ("--btn-danger-filled-bg-hover", "--button-danger-filled-background-hover"),
+        ("--btn-danger-filled-fg", "--button-danger-filled-foreground"),
+        ("--btn-danger-fg", "--button-danger-foreground"),
+        ("--btn-danger-border", "--button-danger-border"),
+    ]),
+    ("Charts", [
+        ("--chart-1", "--chart-categorical-1"), ("--chart-2", "--chart-categorical-2"),
+        ("--chart-3", "--chart-categorical-3"), ("--chart-4", "--chart-categorical-4"),
+        ("--chart-5", "--chart-categorical-5"),
     ]),
     ("Accounts", [
         # The old --account-{1..4}-* hard-coded four of Alfredo's own accounts into the

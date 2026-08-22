@@ -30,78 +30,29 @@
     --radius-full: 9999px; /* buttons, badges, avatar, toast, nav */
 
     /* Sidebar (nav/background = white, selected = cyan) */
-    --sidebar:                    #ffffff;
-    --sidebar-foreground:         #0f172a;   /* sidebar/item/foreground          */
-    --sidebar-primary:            #0891b2;   /* sidebar/item/background-selected */
-    --sidebar-primary-foreground: #ffffff;   /* sidebar/item/foreground-selected */
-    --sidebar-accent:             #f1f5f9;
-    --sidebar-accent-foreground:  #0f172a;
-    --sidebar-border:             #e2e8f0;   /* sidebar/border                   */
-    --sidebar-ring:               #0891b2;
 
     /* Chart colors — match KPI palette */
-    --chart-1: #fbbf24;   /* tax / amber    */
-    --chart-2: #059669;   /* provision / emerald */
-    --chart-3: #ef4444;   /* expense / red  */
-    --chart-4: #0284c7;   /* net / sky      */
-    --chart-5: #0891b2;   /* income / cyan  */
 
     /* Danger (delete, alerts) */
-    --color-danger-txt: #b91c1c;   /* red-700 — status/danger/foreground */
 
     /* ── Button component tokens — light (Figma 30:530) ─────────────────────── */
-    --btn-filled-bg:              #0891b2;               /* button/filled/background/default      */
-    --btn-filled-bg-hover:        #0e7490;               /* button/filled/background/hover        */
-    --btn-filled-fg:              #ffffff;               /* button/filled/foreground              */
-    --btn-danger-filled-bg:       #dc2626;               /* button/danger/filled/background       */
-    --btn-danger-filled-bg-hover: #b91c1c;               /* button/danger/filled/background-hover */
-    --btn-danger-filled-fg:       #ffffff;               /* button/danger/filled/foreground       */
-    --btn-outline-fg:             #1e293b;               /* button/outline/foreground             */
-    --btn-outline-border:         #e2e8f0;               /* button/outline/border                 */
     --btn-outline-bg-hover:       rgba(100,116,139,0.10); /* button/outline/background-hover      */
-    --btn-danger-fg:              #b91c1c;               /* button/danger/foreground              */
-    --btn-danger-border:          #dc2626;               /* button/danger/border                  */
     --btn-danger-bg-hover:        rgba(239,68,68,0.10);  /* button/danger/background-hover        */
-    --btn-ghost-fg:               #64748b;               /* button/ghost/foreground               */
     --btn-ghost-bg-hover:         rgba(100,116,139,0.10); /* button/ghost/background-hover        */
   }
 
   .dark {
 
     /* Sidebar (dark nav) */
-    --sidebar:                    #0f172a;   /* nav/background dark  slate-900 */
-    --sidebar-foreground:         #f8fafc;   /* slate-50 — sidebar/item/foreground */
-    --sidebar-primary:            #06b6d4;
-    --sidebar-primary-foreground: #083344;
-    --sidebar-accent:             #334155;
-    --sidebar-accent-foreground:  #f1f5f9;
     --sidebar-border:             rgba(255,255,255,0.141);
-    --sidebar-ring:               #06b6d4;
 
     /* Chart colors dark */
-    --chart-1: #fcd34d;   /* tax / amber-300    */
-    --chart-2: #34d399;   /* provision / emerald-400 */
-    --chart-3: #f87171;   /* expense / red-400  */
-    --chart-4: #7dd3fc;   /* net / sky-300      */
-    --chart-5: #22d3ee;   /* income / cyan-400  */
 
     /* Danger */
-    --color-danger-txt: #fca5a5;
 
     /* ── Button component tokens — dark (Figma 91:1925) ─────────────────────── */
-    --btn-filled-bg:              #22d3ee;               /* button/filled/background/default      */
-    --btn-filled-bg-hover:        #67e8f9;               /* button/filled/background/hover        */
-    --btn-filled-fg:              #083344;               /* button/filled/foreground              */
-    --btn-danger-filled-bg:       #f87171;               /* button/danger/filled/background       */
-    --btn-danger-filled-bg-hover: #fca5a5;               /* button/danger/filled/background-hover */
-    --btn-danger-filled-fg:       #450a0a;               /* button/danger/filled/foreground       */
-    --btn-outline-fg:             #f1f5f9;               /* button/outline/foreground             */
-    --btn-outline-border:         #475569;               /* button/outline/border                 */
     --btn-outline-bg-hover:       rgba(100,116,139,0.30); /* button/outline/background-hover      */
-    --btn-danger-fg:              #fca5a5;               /* button/danger/foreground              */
-    --btn-danger-border:          #991b1b;               /* button/danger/border                  */
     --btn-danger-bg-hover:        rgba(239,68,68,0.30);  /* button/danger/background-hover        */
-    --btn-ghost-fg:               #94a3b8;               /* button/ghost/foreground               */
     --btn-ghost-bg-hover:         rgba(100,116,139,0.30); /* button/ghost/background-hover        */
   }
 

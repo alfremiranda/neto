@@ -46,6 +46,7 @@
   --color-net-txt: var(--kpi-net-foreground);
   --color-danger: var(--status-danger-default);
   --color-danger-bg: var(--status-danger-surface);
+  --color-danger-txt: var(--status-danger-foreground);
 
   /* Favourite star — was borrowing --color-tax-txt, which is the same value by accident.
      A favourite is not a tax: if the tax amber ever moves, the star must not follow. */
@@ -59,6 +60,32 @@
   --color-currency-usd-txt: var(--currency-usd-foreground);
   --color-currency-cop-bg: var(--currency-cop-surface);
   --color-currency-cop-txt: var(--currency-cop-foreground);
+
+  /* Sidebar */
+  --sidebar: var(--nav-background);
+  --sidebar-foreground: var(--sidebar-item-foreground);
+  --sidebar-primary: var(--sidebar-item-background-selected);
+  --sidebar-primary-foreground: var(--sidebar-item-foreground-selected);
+
+  /* Buttons */
+  --btn-filled-bg: var(--button-filled-background-default);
+  --btn-filled-bg-hover: var(--button-filled-background-hover);
+  --btn-filled-fg: var(--button-filled-foreground);
+  --btn-outline-fg: var(--button-outline-foreground);
+  --btn-outline-border: var(--button-outline-border);
+  --btn-ghost-fg: var(--button-ghost-foreground);
+  --btn-danger-filled-bg: var(--button-danger-filled-background);
+  --btn-danger-filled-bg-hover: var(--button-danger-filled-background-hover);
+  --btn-danger-filled-fg: var(--button-danger-filled-foreground);
+  --btn-danger-fg: var(--button-danger-foreground);
+  --btn-danger-border: var(--button-danger-border);
+
+  /* Charts */
+  --chart-1: var(--chart-categorical-1);
+  --chart-2: var(--chart-categorical-2);
+  --chart-3: var(--chart-categorical-3);
+  --chart-4: var(--chart-categorical-4);
+  --chart-5: var(--chart-categorical-5);
 
   /* Accounts */
   --color-account-arq-bg: var(--bg-account);
