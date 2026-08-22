@@ -10,6 +10,7 @@ import { CurrencyRadio } from '@/components/ui/CurrencyRadio'
 import { ChoiceRow } from '@/components/ui/ChoiceRow'
 import { AccountRow } from '@/components/ui/AccountRow'
 import { Field } from '@/components/ui/Field'
+import { SegmentedControl } from '@/components/ui/SegmentedControl'
 import type { Account } from '@/types'
 
 type Currency = 'COP' | 'USD'
@@ -143,24 +144,17 @@ function AccountsStep({ added, onAdd, onRemove }: {
         <p className="ts-body-base-emphasis">Agregar cuenta</p>
 
         {/* Type */}
-        <div className="flex rounded-xl border border-[var(--border)] p-0.5 gap-0.5">
-          {([['account', 'Cuenta', Landmark], ['cash', 'Efectivo', Wallet], ['credit', 'Crédito', CreditCard]] as const).map(([t, tLabel, Icon]) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setType(t)}
-              className={cn(
-                'flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg ts-control-sm transition-colors border-0',
-                type === t
-                  ? 'bg-[var(--primary)] text-[var(--primary-foreground)]'
-                  : 'bg-transparent text-muted-foreground hover:text-foreground',
-              )}
-            >
-              <Icon size={12} />
-              {tLabel}
-            </button>
-          ))}
-        </div>
+        <SegmentedControl
+          ariaLabel="Tipo de cuenta"
+          className="w-full"
+          value={type}
+          onChange={setType}
+          options={[
+            { value: 'account', label: 'Cuenta',   icon: <Landmark size={12} /> },
+            { value: 'cash',    label: 'Efectivo', icon: <Wallet size={12} /> },
+            { value: 'credit',  label: 'Crédito',  icon: <CreditCard size={12} /> },
+          ] as const}
+        />
 
         {/* Name + currency. items-end so the toggle lines up with the input rather
             than stretching alongside the label above it. */}
@@ -178,24 +172,13 @@ function AccountsStep({ added, onAdd, onRemove }: {
               />
             )}
           </Field>
-          <div className="flex rounded-xl border border-[var(--border)] p-0.5 gap-0.5 shrink-0">
-            {(['COP', 'USD'] as const).map(c => (
-              <button
-                key={c}
-                type="button"
-                onClick={() => setCurrency(c)}
-                aria-pressed={currency === c}
-                className={cn(
-                  'px-2.5 py-1 rounded-lg ts-control-sm transition-colors border-0',
-                  currency === c
-                    ? 'bg-[var(--primary)] text-[var(--primary-foreground)]'
-                    : 'bg-transparent text-muted-foreground hover:text-foreground',
-                )}
-              >
-                {c}
-              </button>
-            ))}
-          </div>
+          <SegmentedControl
+            ariaLabel="Moneda de la cuenta"
+            className="shrink-0"
+            value={currency}
+            onChange={setCurrency}
+            options={[{ value: 'COP', label: 'COP' }, { value: 'USD', label: 'USD' }] as const}
+          />
         </div>
 
         {/* Credit-card fields */}

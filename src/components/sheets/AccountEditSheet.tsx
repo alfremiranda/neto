@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Trash2, Landmark, Wallet, CreditCard, PiggyBank } from 'lucide-react'
 import { SheetBase } from '@/components/ui/SheetBase'
 import { AccountColorPicker } from '@/components/ui/AccountColorPicker'
+import { SegmentedControl } from '@/components/ui/SegmentedControl'
 import { accountColor, type AccountColor } from '@/lib/accountColor'
 import { MoneyInput } from '@/components/ui/MoneyInput'
 import { useMoneyInput } from '@/hooks/useMoneyInput'
@@ -11,7 +12,6 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { DatePicker } from '@/components/ui/DatePicker'
 import { Switch } from '@/components/ui/switch'
-import { cn } from '@/lib/utils'
 import type { Account } from '@/types'
 
 type AccountType = 'account' | 'cash' | 'credit' | 'savings'
@@ -296,26 +296,18 @@ export function AccountEditSheet() {
         {/* ── Savings/investment fields ── */}
         {isSavings && (
           <>
-            <div>
+            <div className="flex flex-col gap-1.5">
+              {/* A mutually-exclusive choice, so radiogroup/aria-checked rather than
+                  the group/aria-pressed it used to carry: "pressed" describes a set of
+                  independent toggles, and these three are one answer. */}
               <span id="acc-savings-kind-label" className="field-label ts-label-base">Tipo de ahorro</span>
-              <div role="group" aria-labelledby="acc-savings-kind-label" className="grid grid-cols-3 rounded-xl border border-[var(--border)] p-0.5 gap-0.5">
-                {SAVINGS_KINDS.map(({ value, label: kLabel }) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setSavingsKind(value)}
-                    aria-pressed={savingsKind === value}
-                    className={cn(
-                      'py-1.5 rounded-lg ts-control-sm transition-colors border-0',
-                      savingsKind === value
-                        ? 'bg-[var(--primary)] text-[var(--primary-foreground)]'
-                        : 'bg-transparent text-muted-foreground hover:text-foreground hover:bg-[var(--accent)]',
-                    )}
-                  >
-                    {kLabel}
-                  </button>
-                ))}
-              </div>
+              <SegmentedControl
+                ariaLabel="Tipo de ahorro"
+                className="w-full"
+                value={savingsKind}
+                onChange={setSavingsKind}
+                options={SAVINGS_KINDS.map(({ value, label }) => ({ value, label }))}
+              />
             </div>
             {savingsKind === 'cdt' && (
               <div>
