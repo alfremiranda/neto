@@ -183,7 +183,21 @@ export function KPIStrip({ onNavigate }: { onNavigate?: (tab: string) => void } 
     { label: '− Gastos',              value: COP(gast) },
     { label: '', value: '', separator: true },
     { label: 'Neto libre',            value: COP(Math.max(res.netoLibre, 0)) },
+    ...(res.netoLibre < 0
+      ? [{ label: 'Salió de otro saldo', value: COP(-res.netoLibre) }]
+      : []),
   ] : []
+
+  // "Neto libre" answers how much of THIS month's income is still free, so when the month
+  // overspends the honest answer to that question really is zero — none of what came in is
+  // left. What you spent beyond it came from somewhere else (a previous balance, savings,
+  // a card), which is a different fact and gets its own line.
+  //
+  // Showing a big negative instead would claim something untrue: that you are in the red
+  // overall, when it may only have been an expensive month lived off what was already
+  // there. It also cannot sit in the distribution bar, which splits the gross into four
+  // parts that add up to it.
+  const overspend = res.netoLibre < 0 ? -res.netoLibre : 0
 
   const kpis = [
     <KPICard
@@ -229,7 +243,7 @@ export function KPIStrip({ onNavigate }: { onNavigate?: (tab: string) => void } 
       key="neto"
       label="Neto libre"
       value={COP(Math.max(res.netoLibre, 0))}
-      sub={pct(Math.max(res.netoLibre, 0))}
+      sub={overspend > 0 ? `Gastaste ${COP(overspend)} más de lo que entró` : pct(Math.max(res.netoLibre, 0))}
       // A negative net takes the expense colour, not danger: the sign carries the
       // meaning, and danger is for something going wrong rather than for a number
       // that came out below zero (token-migration.json, behaviourChanges).

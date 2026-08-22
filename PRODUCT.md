@@ -164,6 +164,13 @@ que configurar nada y **una cuenta nunca cambia de color por su cuenta**. Con do
 pocas cuentas, dos pueden coincidir; por eso el color nunca identifica una cuenta solo — el
 nombre siempre va al lado, y el selector dice el nombre del color elegido.
 
+**Si gastas más de lo que entró en el mes**, el neto libre muestra `$0` y debajo dice cuánto te
+pasaste. Cero es la respuesta correcta a *"cuánto de lo que entró este mes queda libre"* — lo que
+gastaste de más salió de otro saldo, y eso se dice aparte en vez de mezclarse en la misma cifra.
+
+En el resumen **anual** sí se ve el número real: un mes negativo resta del total del año en lugar
+de desaparecer, porque un acumulado anual es un balance, no lo que queda de un mes.
+
 ### 4.11 Privacidad y consentimiento (Ley 1581)
 - **Pantalla de consentimiento rediseñada** (2026-08-22): tres bloques con título propio —
   *qué es Neto*, *dónde termina Neto y empieza tu contador*, *qué pasa con tus datos*— en ese

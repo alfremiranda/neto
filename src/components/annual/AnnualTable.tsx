@@ -103,7 +103,10 @@ export function AnnualTable({ year }: AnnualTableProps) {
   const totOblig = totSS + totRet
   const totProv  = filled.reduce((a, r) => a + (r.provTotal ?? r.prim ?? 0), 0)
   const totGast  = filled.reduce((a, r) => a + (r.gast ?? 0), 0)
-  const totNeto  = filled.reduce((a, r) => a + Math.max(r.netoLibre ?? 0, 0), 0)
+  // Months are summed as they are, negatives included: clamping each one at zero made a
+  // bad month vanish inside a good year and the accumulated figure read as optimistic.
+  // Alfredo, 2026-08-22.
+  const totNeto  = filled.reduce((a, r) => a + (r.netoLibre ?? 0), 0)
   const totUSD   = filled.reduce((a, r) => a + (r.totUSD ?? 0), 0)
   const totCOP   = filled.reduce((a, r) => a + (r.totCOP ?? 0), 0)
 
@@ -131,11 +134,10 @@ export function AnnualTable({ year }: AnnualTableProps) {
   if (showOblig) restKpis.push({ key: 'oblig', label: 'Obligaciones tributarias', value: <span className="ts-amount-base" style={{ color: `var(${obligColor})` }}>{COP(totOblig)}</span>, sub: `${pct(totOblig, totBruto)} del bruto` })
   if (showProv)  restKpis.push({ key: 'prov',  label: 'Provisiones',              value: <span className="ts-amount-base" style={{ color: `var(${provColor})` }}>{COP(totProv)}</span>,  sub: `${pct(totProv, totBruto)} del bruto` })
   restKpis.push({ key: 'gast', label: 'Gastos',            value: <span className="ts-amount-base text-[var(--color-expense)]">{COP(totGast)}</span>, sub: `${pct(totGast, totBruto)} del bruto` })
-  // No sign check here, unlike the monthly KPI: totNeto clamps every month at zero
-  // (see its reduce above), so the accumulated figure cannot come out negative. A
-  // conditional would be dead code. Whether that clamp should exist is a product
-  // question — it hides a negative month inside a positive year.
-  restKpis.push({ key: 'neto', label: 'Neto libre acum.',  value: <span className="ts-amount-base text-[var(--color-net-txt)]">{COP(totNeto)}</span>, sub: `${pct(totNeto, totBruto)} del bruto` })
+  // Now that months are no longer clamped this can come out negative, so it takes the
+  // expense colour — the same rule as the monthly KPI. Here the real figure is shown
+  // rather than zero: a yearly total is a balance, not "what is left of this month".
+  restKpis.push({ key: 'neto', label: 'Neto libre acum.',  value: <span className={cn('ts-amount-base', totNeto >= 0 ? 'text-[var(--color-net-txt)]' : 'text-[var(--color-expense-txt)]')}>{COP(totNeto)}</span>, sub: `${pct(totNeto, totBruto)} del bruto` })
 
   return (
     <div className={cn('space-y-4', showDonut && 'lg:flex lg:flex-row lg:items-center lg:gap-5 lg:space-y-0')}>

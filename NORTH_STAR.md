@@ -238,7 +238,7 @@ devices; analytics dashboards exist; referral flow works.
 
 ---
 
-## 4bis. Product decisions parked for review
+## 4bis. Product decisions parked for review — RESOLVED 2026-08-22
 
 Raised by Dev on 2026-08-22 while closing the token migration. Both are older than that
 migration, both are Alfredo's call, and neither was changed.
@@ -252,7 +252,23 @@ migration, both are Alfredo's call, and neither was changed.
   `Math.max(r.netoLibre, 0)` per month, so a bad month cannot pull the annual total down and
   simply disappears from it. Same origin, same question.
 
-Both are one-line changes; what they need is a decision about what the number should say.
+**Both decided by Alfredo, 2026-08-22, and shipped.**
+
+- **The monthly figure stays `$0`, with the overspend on its own line.** Alfredo's reasoning
+  changed the recommendation: "neto libre" answers how much of *this month's* income is still
+  free, so when the month overspends the honest answer to that question is genuinely zero —
+  what was spent beyond it came from a previous balance, which is a different fact. A large
+  negative would claim something untrue (that the person is in the red overall) and cannot sit
+  in the distribution bar, which splits the gross into four parts that add up to it. The card
+  now reads `$0` plus "Gastaste $X más de lo que entró", and the detail adds "Salió de otro
+  saldo".
+- **The annual total sums months as they are.** A negative month now pulls the year down
+  instead of vanishing. Shown as the real figure rather than zero: a yearly total is a
+  balance, not "what is left of this month".
+
+Found while shipping it: `COP()` and `USD()` prefixed the symbol to the raw number, so a
+negative rendered as `$-45.311.067` — a corrupted amount rather than a negative one. Invisible
+until the annual clamp came off. Fixed, with tests.
 
 ## 5. Out of scope / explicitly deferred
 

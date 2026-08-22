@@ -1,9 +1,14 @@
 export function COP(n: number): string {
-  return '$' + Math.round(n).toLocaleString('es-CO')
+  // The sign goes outside the symbol. Prefixing '$' to a negative number produces
+  // "$-45.311.067", which reads as a corrupted amount rather than a negative one. It only
+  // became visible when the annual net stopped being clamped at zero.
+  const v = Math.round(n)
+  return (v < 0 ? '-$' : '$') + Math.abs(v).toLocaleString('es-CO')
 }
 
 export function USD(n: number): string {
-  return 'USD ' + (Math.round(n * 100) / 100).toLocaleString('es-CO', {
+  const v = Math.round(n * 100) / 100
+  return (v < 0 ? '-USD ' : 'USD ') + Math.abs(v).toLocaleString('es-CO', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })
