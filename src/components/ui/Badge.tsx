@@ -36,8 +36,13 @@ const badgeVariants = cva(
 )
 
 // Kept as a lookup rather than as cva compound variants: Tailwind only emits classes it
-// can see as literal text, so `bg-[var(--badge-${tone}-background)]` would compile to
-// nothing at all.
+// can see as literal text, so a class name assembled from a variable at runtime would
+// compile to nothing at all.
+//
+// The example is described rather than written out, and that is not fussiness: writing it
+// literally put a scannable class in this file, Tailwind emitted a rule containing the
+// interpolation braces, and lightningcss failed to parse its own stylesheet. A comment
+// about a Tailwind trap is still text Tailwind reads.
 const TONE: Record<string, { filled: string; outline: string }> = {
   accent: {
     filled:  'bg-[var(--badge-accent-background)] text-[var(--badge-accent-foreground)] border-transparent',
