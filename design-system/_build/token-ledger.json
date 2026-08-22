@@ -772,104 +772,79 @@
    "uses": 0,
    "via": "provenance",
    "why": "token-migration.removed — deleted in 1.2, nothing replaces it"
-  }
- },
- "pending": {
+  },
   "--account-1-foreground": {
-   "uses": 1,
-   "via": "needs-decision",
-   "frozen": {
+   "uses": 0,
+   "via": "decided",
+   "why": "Named a specific account (arq · toptal · bancol · other). Account colour became user data on 2026-08-22 — docs/25-account-color.md. Dev repointed build.py 109-112 and the preview mock at 525; verified at zero consumers before tombstoning, not taken from the commit message.",
+   "frozenWas": {
     "light": "#0e7490",
     "dark": "#67e8f9"
-   },
-   "recommend": "tombstone",
-   "decidedBy": "Alfredo 2026-08-21 — account colour becomes a user choice (see docs/25-account-color.md)",
-   "blockedOn": "build.py lines 109-112 still map --color-account-<name>-{bg,txt} onto these. They can only be tombstoned once that bridge points at account/<hue>/* instead.",
-   "why": "These name Alfredo's actual accounts (build.py lines 109-112: arq · toptal · bancol · other), not design-system roles. Figma now publishes a palette (account/purple|sky|emerald|lime|amber|pink) plus bg/account + fg/account for the neutral default, because which account gets which colour is runtime data. Recommendation: tombstone these and have build.py map the bridge onto the palette. That is a behaviour change, not a rename, so it goes to Alfredo rather than into aliases."
+   }
   },
   "--account-1-surface": {
-   "uses": 1,
-   "via": "needs-decision",
-   "frozen": {
+   "uses": 0,
+   "via": "decided",
+   "why": "Named a specific account (arq · toptal · bancol · other). Account colour became user data on 2026-08-22 — docs/25-account-color.md. Dev repointed build.py 109-112 and the preview mock at 525; verified at zero consumers before tombstoning, not taken from the commit message.",
+   "frozenWas": {
     "light": "#ecfeff",
     "dark": "#083344"
-   },
-   "recommend": "tombstone",
-   "decidedBy": "Alfredo 2026-08-21 — account colour becomes a user choice (see docs/25-account-color.md)",
-   "blockedOn": "build.py lines 109-112 still map --color-account-<name>-{bg,txt} onto these. They can only be tombstoned once that bridge points at account/<hue>/* instead.",
-   "why": "These name Alfredo's actual accounts (build.py lines 109-112: arq · toptal · bancol · other), not design-system roles. Figma now publishes a palette (account/purple|sky|emerald|lime|amber|pink) plus bg/account + fg/account for the neutral default, because which account gets which colour is runtime data. Recommendation: tombstone these and have build.py map the bridge onto the palette. That is a behaviour change, not a rename, so it goes to Alfredo rather than into aliases."
+   }
   },
   "--account-2-foreground": {
-   "uses": 2,
-   "via": "needs-decision",
-   "frozen": {
+   "uses": 0,
+   "via": "decided",
+   "why": "Named a specific account (arq · toptal · bancol · other). Account colour became user data on 2026-08-22 — docs/25-account-color.md. Dev repointed build.py 109-112 and the preview mock at 525; verified at zero consumers before tombstoning, not taken from the commit message.",
+   "frozenWas": {
     "light": "#7c3aed",
     "dark": "#c4b5fd"
-   },
-   "recommend": "tombstone",
-   "decidedBy": "Alfredo 2026-08-21 — account colour becomes a user choice (see docs/25-account-color.md)",
-   "blockedOn": "build.py lines 109-112 still map --color-account-<name>-{bg,txt} onto these. They can only be tombstoned once that bridge points at account/<hue>/* instead.",
-   "why": "These name Alfredo's actual accounts (build.py lines 109-112: arq · toptal · bancol · other), not design-system roles. Figma now publishes a palette (account/purple|sky|emerald|lime|amber|pink) plus bg/account + fg/account for the neutral default, because which account gets which colour is runtime data. Recommendation: tombstone these and have build.py map the bridge onto the palette. That is a behaviour change, not a rename, so it goes to Alfredo rather than into aliases."
+   }
   },
   "--account-2-surface": {
-   "uses": 2,
-   "via": "needs-decision",
-   "frozen": {
+   "uses": 0,
+   "via": "decided",
+   "why": "Named a specific account (arq · toptal · bancol · other). Account colour became user data on 2026-08-22 — docs/25-account-color.md. Dev repointed build.py 109-112 and the preview mock at 525; verified at zero consumers before tombstoning, not taken from the commit message.",
+   "frozenWas": {
     "light": "#f5f3ff",
     "dark": "#4c1d95"
-   },
-   "recommend": "tombstone",
-   "decidedBy": "Alfredo 2026-08-21 — account colour becomes a user choice (see docs/25-account-color.md)",
-   "blockedOn": "build.py lines 109-112 still map --color-account-<name>-{bg,txt} onto these. They can only be tombstoned once that bridge points at account/<hue>/* instead.",
-   "why": "These name Alfredo's actual accounts (build.py lines 109-112: arq · toptal · bancol · other), not design-system roles. Figma now publishes a palette (account/purple|sky|emerald|lime|amber|pink) plus bg/account + fg/account for the neutral default, because which account gets which colour is runtime data. Recommendation: tombstone these and have build.py map the bridge onto the palette. That is a behaviour change, not a rename, so it goes to Alfredo rather than into aliases."
+   }
   },
   "--account-3-foreground": {
-   "uses": 1,
-   "via": "needs-decision",
-   "frozen": {
+   "uses": 0,
+   "via": "decided",
+   "why": "Named a specific account (arq · toptal · bancol · other). Account colour became user data on 2026-08-22 — docs/25-account-color.md. Dev repointed build.py 109-112 and the preview mock at 525; verified at zero consumers before tombstoning, not taken from the commit message.",
+   "frozenWas": {
     "light": "#047857",
     "dark": "#6ee7b7"
-   },
-   "recommend": "tombstone",
-   "decidedBy": "Alfredo 2026-08-21 — account colour becomes a user choice (see docs/25-account-color.md)",
-   "blockedOn": "build.py lines 109-112 still map --color-account-<name>-{bg,txt} onto these. They can only be tombstoned once that bridge points at account/<hue>/* instead.",
-   "why": "These name Alfredo's actual accounts (build.py lines 109-112: arq · toptal · bancol · other), not design-system roles. Figma now publishes a palette (account/purple|sky|emerald|lime|amber|pink) plus bg/account + fg/account for the neutral default, because which account gets which colour is runtime data. Recommendation: tombstone these and have build.py map the bridge onto the palette. That is a behaviour change, not a rename, so it goes to Alfredo rather than into aliases."
+   }
   },
   "--account-3-surface": {
-   "uses": 1,
-   "via": "needs-decision",
-   "frozen": {
+   "uses": 0,
+   "via": "decided",
+   "why": "Named a specific account (arq · toptal · bancol · other). Account colour became user data on 2026-08-22 — docs/25-account-color.md. Dev repointed build.py 109-112 and the preview mock at 525; verified at zero consumers before tombstoning, not taken from the commit message.",
+   "frozenWas": {
     "light": "#ecfdf5",
     "dark": "#022c22"
-   },
-   "recommend": "tombstone",
-   "decidedBy": "Alfredo 2026-08-21 — account colour becomes a user choice (see docs/25-account-color.md)",
-   "blockedOn": "build.py lines 109-112 still map --color-account-<name>-{bg,txt} onto these. They can only be tombstoned once that bridge points at account/<hue>/* instead.",
-   "why": "These name Alfredo's actual accounts (build.py lines 109-112: arq · toptal · bancol · other), not design-system roles. Figma now publishes a palette (account/purple|sky|emerald|lime|amber|pink) plus bg/account + fg/account for the neutral default, because which account gets which colour is runtime data. Recommendation: tombstone these and have build.py map the bridge onto the palette. That is a behaviour change, not a rename, so it goes to Alfredo rather than into aliases."
+   }
   },
   "--account-4-foreground": {
-   "uses": 1,
-   "via": "needs-decision",
-   "frozen": {
+   "uses": 0,
+   "via": "decided",
+   "why": "Named a specific account (arq · toptal · bancol · other). Account colour became user data on 2026-08-22 — docs/25-account-color.md. Dev repointed build.py 109-112 and the preview mock at 525; verified at zero consumers before tombstoning, not taken from the commit message.",
+   "frozenWas": {
     "light": "#475569",
     "dark": "#cbd5e1"
-   },
-   "recommend": "tombstone",
-   "decidedBy": "Alfredo 2026-08-21 — account colour becomes a user choice (see docs/25-account-color.md)",
-   "blockedOn": "build.py lines 109-112 still map --color-account-<name>-{bg,txt} onto these. They can only be tombstoned once that bridge points at account/<hue>/* instead.",
-   "why": "These name Alfredo's actual accounts (build.py lines 109-112: arq · toptal · bancol · other), not design-system roles. Figma now publishes a palette (account/purple|sky|emerald|lime|amber|pink) plus bg/account + fg/account for the neutral default, because which account gets which colour is runtime data. Recommendation: tombstone these and have build.py map the bridge onto the palette. That is a behaviour change, not a rename, so it goes to Alfredo rather than into aliases."
+   }
   },
   "--account-4-surface": {
-   "uses": 1,
-   "via": "needs-decision",
-   "frozen": {
+   "uses": 0,
+   "via": "decided",
+   "why": "Named a specific account (arq · toptal · bancol · other). Account colour became user data on 2026-08-22 — docs/25-account-color.md. Dev repointed build.py 109-112 and the preview mock at 525; verified at zero consumers before tombstoning, not taken from the commit message.",
+   "frozenWas": {
     "light": "#f1f5f9",
     "dark": "#334155"
-   },
-   "recommend": "tombstone",
-   "decidedBy": "Alfredo 2026-08-21 — account colour becomes a user choice (see docs/25-account-color.md)",
-   "blockedOn": "build.py lines 109-112 still map --color-account-<name>-{bg,txt} onto these. They can only be tombstoned once that bridge points at account/<hue>/* instead.",
-   "why": "These name Alfredo's actual accounts (build.py lines 109-112: arq · toptal · bancol · other), not design-system roles. Figma now publishes a palette (account/purple|sky|emerald|lime|amber|pink) plus bg/account + fg/account for the neutral default, because which account gets which colour is runtime data. Recommendation: tombstone these and have build.py map the bridge onto the palette. That is a behaviour change, not a rename, so it goes to Alfredo rather than into aliases."
+   }
   }
- }
+ },
+ "pending": {}
 }

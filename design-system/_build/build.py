@@ -522,7 +522,10 @@ def mock(n, c):
         amount = {"income-itemrow": "$ 8.800.000", "outcome-itemrow": "− $ 1.240.000",
                   "transfer-itemrow": "$ 2.000.000", "savings-itemrow": "$ 600.000"}.get(n, "$ 352.000")
         tok = {"income-itemrow": "--kpi-income-foreground", "outcome-itemrow": "--kpi-expense-foreground"}.get(n, "--foreground-on-card")
-        badge = chip("Toptal", "--account-2-surface", "--account-2-foreground") if "item" in n else ""
+        # The chip keeps its sample label (§A3.8) but not an account-specific token: --account-2-*
+        # named one of Alfredo's accounts. The chrome is neutral; the account's own colour is
+        # runtime data now (docs/25-account-color.md).
+        badge = chip("Toptal", "--bg-account", "--fg-account") if "item" in n else ""
         return (f'<div style="width:100%;max-width:420px;display:flex;align-items:center;gap:8px;padding:10px 12px;'
                 f'background:var(--surface-wrap-card);border:1px solid var(--border-default);border-radius:var(--radius-xl)">'
                 f'{sq(16,"--foreground-subtle")}<span style="flex:1;min-width:0">'

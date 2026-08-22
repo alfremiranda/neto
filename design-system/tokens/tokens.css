@@ -486,14 +486,7 @@
   --surface-wrap-subtle: var(--bg-subtle);
 
   /* QUARANTINE — no Figma source. See token-ledger.json `pending`. Should only shrink. */
-  --account-1-foreground: #0e7490;
-  --account-1-surface: #ecfeff;
-  --account-2-foreground: #7c3aed;
-  --account-2-surface: #f5f3ff;
-  --account-3-foreground: #047857;
-  --account-3-surface: #ecfdf5;
-  --account-4-foreground: #475569;
-  --account-4-surface: #f1f5f9;
+
 }
 
 /* Two dark selectors on purpose: [data-theme] is what the generated previews in this
@@ -751,14 +744,7 @@
   --spinner-head-on-dark: #0f172a;
   --spinner-track-on-light: rgba(255,255,255,0.2);
   --spinner-head-on-light: #f8fafc;
-  --account-1-foreground: #67e8f9;
-  --account-1-surface: #083344;
-  --account-2-foreground: #c4b5fd;
-  --account-2-surface: #4c1d95;
-  --account-3-foreground: #6ee7b7;
-  --account-3-surface: #022c22;
-  --account-4-foreground: #cbd5e1;
-  --account-4-surface: #334155;
+
 }
 
 /* Text styles — Rethink Sans, tabular by default */
