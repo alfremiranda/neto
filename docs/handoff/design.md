@@ -2,7 +2,7 @@
 
 Última actualización: **2026-08-21**. Trabajo en vuelo al cierre de sesión.
 
-**`unpushed: 01023151`, `eedb39a8`, `0fd773be`, y el commit que trae este handoff** — Diseño no puede pushear. `credential-osxkeychain` es un binario de
+**`unpushed: 01023151` · `eedb39a8` · `0fd773be` · `d9555237` + el commit que trae este handoff** — Diseño no puede pushear. `credential-osxkeychain` es un binario de
 macOS que no existe en la VM de Linux donde corro; `git fetch` funciona (lectura anónima),
 `git push` no puede autenticar. Dev barre. Los cuatro commits que este archivo declaraba sin
 pushear el 20 (`6afa685e`, `6cff971a`, `b19faabe`, `308f798c`) **ya están en `origin/main`**;
@@ -103,3 +103,13 @@ Diseño y está escrito:
 | etapa 2 + `build.py` con los 20 CHANGED | Dev | reporte 08-21 `§NEEDS 2` |
 | escala de blur/spread (dueño: Diseño, va a fase 3) | cola propia | `A-2026-08-20-fav-star §4` |
 | Storybook | sigue bloqueado, medido peor que en agosto | `6afa685e` |
+
+## Mi propia cola (no bloquea a Dev)
+
+Tres respuestas del orquestador siguen en mi bandeja **a propósito**: archivarlas habría sido falso.
+
+- `A-2026-08-19-elevacion-ejecutada` — falta `C7` (el equivalente de `C1` para efectos) y el peldaño
+  de elevación en Login / Bienvenida / Listo.
+- `A-2026-08-19-tone-action-chip-c5-c6` — `action-chip` acuñó 3 de sus 6 vinculaciones prestadas;
+  `C5` y `C6` no están en `audit-figma.js`.
+- `A-2026-08-20-count-16-y-currency` — `currency/*` sigue en Component, aprobado su ascenso a Semantic.

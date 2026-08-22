@@ -103,6 +103,12 @@ the 132 broken names consumed by nothing at all.**
 
 ### What it cannot do
 
+`assemble-dump.py` is a pure transform: run it twice on the same chunks and you get the same
+bytes. That is not a nicety — a committed artefact you cannot re-derive and diff is one you have
+to take on trust. `exportedAt` therefore comes from `meta.json`, recorded by the run that actually
+read Figma, not from the clock at assembly time. It was the clock for one commit, and re-running
+the assembler produced a diff for no reason but the hour.
+
 It cannot reach Figma. `figma-dump.json` is produced by stage 1 *inside* Figma's sandbox
 (`docs/handoff/design.md` has the procedure). So the auditor prints the dump's date and its
 age, and warns when it is more than a day old, because **a green run against a stale dump

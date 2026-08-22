@@ -20,7 +20,7 @@ recorded in meta.json — the dump is verbatim, and that includes ordering.
 
   python3 design-system/_build/assemble-dump.py
 """
-import json, os, sys, datetime
+import json, os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PARTS = os.path.join(HERE, 'dump-parts')
@@ -39,6 +39,9 @@ CHUNKS = {
 }
 
 meta = json.load(open(os.path.join(PARTS, 'meta.json')))
+if 'exportedAt' not in meta:
+    sys.exit('FAIL: meta.json has no exportedAt. Stage 1 must record when it ran — the auditor '
+             'warns on dump age, and an age it invents at assembly time is not an age.')
 modes_by_collection = {c['name']: c['modes'] for c in meta['collections']}
 
 
@@ -112,7 +115,11 @@ for collection in CHUNKED:
 # aliases were followed by mode NAME, the bug that made 19 of 92 component
 # tokens silently wrong when they were followed by the target's default mode.
 dump = {
-    'exportedAt': datetime.date.today().isoformat(),
+    # NOT date.today(): this script is a pure transform of the chunks, and a field that
+    # changes on every run makes the committed dump unverifiable — you cannot re-run the
+    # assembler and diff it against what is in git. The date belongs to the EXTRACTION,
+    # so stage 1 records it in meta.json, next to the counts, for the same reason.
+    'exportedAt': meta['exportedAt'],
     'file': meta['exportedFrom'],   # verbatim figma.root.name — it really is "Document"
     'fileKey': 'Q2R72oH6MYxYr1VKAe5nOx',
     'exportedFrom': meta['exportedFrom'],
