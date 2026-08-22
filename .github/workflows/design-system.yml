@@ -12,9 +12,9 @@ name: Design system
 on:
   push:
     branches: [main]
-    paths: ['src/**', 'design-system/**', '.storybook/**', 'scripts/visual-regression.mjs', '.github/workflows/design-system.yml']
+    paths: ['src/**', 'design-system/**', '.storybook/**', 'scripts/visual-regression.mjs', 'test/visual-baseline/**', '.github/workflows/design-system.yml']
   pull_request:
-    paths: ['src/**', 'design-system/**', '.storybook/**', 'scripts/visual-regression.mjs', '.github/workflows/design-system.yml']
+    paths: ['src/**', 'design-system/**', '.storybook/**', 'scripts/visual-regression.mjs', 'test/visual-baseline/**', '.github/workflows/design-system.yml']
   workflow_dispatch:
 
 permissions:
