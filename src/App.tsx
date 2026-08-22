@@ -26,7 +26,7 @@ import { LoginScreen } from '@/components/auth/LoginScreen'
 import { ConsentScreen } from '@/components/auth/ConsentScreen'
 import { OnboardingView } from '@/components/onboarding/OnboardingView'
 import { needsPrivacyConsent } from '@/lib/privacy'
-import { DEV_PREVIEW, DEV_PREVIEW_ONBOARDING, previewDB, previewUser, backupBeforeSeed } from '@/lib/devPreview'
+import { DEV_PREVIEW, DEV_PREVIEW_ONBOARDING, DEV_PREVIEW_CONSENT, previewDB, previewUser, backupBeforeSeed } from '@/lib/devPreview'
 
 function PullIndicator({ pullY, refreshing, isPulling }: { pullY: number; refreshing: boolean; isPulling: boolean }) {
   const progress = Math.min(pullY / PTR_THRESHOLD, 1)
@@ -152,7 +152,7 @@ export default function App() {
   // user who already accepted on another device isn't re-prompted), BEFORE
   // onboarding so consent precedes entering any financial data. Catches existing
   // users too (they have onboardingDone but no consent record yet).
-  if (!DEV_PREVIEW && needsConsent) {
+  if (DEV_PREVIEW_CONSENT || (!DEV_PREVIEW && needsConsent)) {
     return <ConsentScreen />
   }
 

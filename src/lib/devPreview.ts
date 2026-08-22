@@ -37,7 +37,14 @@ export const DEV_PREVIEW = import.meta.env.DEV && PARAM !== null
  * so that view can be reached too. Plain `?preview` still lands on the app.
  * Anything else is treated as plain `?preview`.
  */
-export const DEV_PREVIEW_ONBOARDING = DEV_PREVIEW && PARAM === 'onboarding' 
+export const DEV_PREVIEW_ONBOARDING = DEV_PREVIEW && PARAM === 'onboarding'
+
+/**
+ * `?preview=consent` holds the consent gate OPEN instead of walking past it. It is a
+ * legal gate, so it is the one screen that cannot be reached by ordinary means once a
+ * device has consented — and therefore the one most likely to ship unlooked-at.
+ */
+export const DEV_PREVIEW_CONSENT = DEV_PREVIEW && PARAM === 'consent' 
 
 /**
  * The fixture lands in whatever month the app opens on, and dates every entry on

@@ -143,6 +143,12 @@ pocas cuentas, dos pueden coincidir; por eso el color nunca identifica una cuent
 nombre siempre va al lado, y el selector dice el nombre del color elegido.
 
 ### 4.11 Privacidad y consentimiento (Ley 1581)
+- **Pantalla de consentimiento rediseñada** (2026-08-22): tres bloques con título propio —
+  *qué es Neto*, *dónde termina Neto y empieza tu contador*, *qué pasa con tus datos*— en ese
+  orden, porque pedir permiso antes de decir para qué es pedirlo a ciegas. El botón dice
+  **«Autorizar y continuar»**: el instrumento de la Ley 1581 es la autorización, no la
+  aceptación. Ambos botones miden igual; el principal se distingue por color, nunca por tamaño,
+  porque un consentimiento tiene que poder rechazarse de verdad.
 - **Pantalla de consentimiento bloqueante** antes de usar la app: al entrar —usuarios nuevos **y** existentes que aún no aceptaron— Neto pide aceptar la política de tratamiento de datos. El flujo es **login → consentimiento → onboarding**. "No acepto" cierra sesión.
 - **Política de privacidad** publicada como página estática accesible **sin iniciar sesión** en `netofinanzas.app/privacidad.html`, enlazada desde el login y desde Configuración.
 - **Sin transferencia de datos a la nube antes de aceptar:** la sincronización (push) queda inhabilitada hasta que hay consentimiento; el pull sí sigue abierto para que quien aceptó en otro dispositivo no sea re-preguntado.
