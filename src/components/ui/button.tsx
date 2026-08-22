@@ -2,13 +2,14 @@ import * as React from "react"
 import { Slot } from "radix-ui"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
+import { Spinner } from "@/components/ui/Spinner"
 
 // Text comes from the Control/* styles, carried by the size variants — not from
 // `text-*` utilities here. Utilities outrank the .ts-* classes, so as long as
 // this component set its own size/weight, a `ts-control-*` at a call site was
 // silently dead (design-system/docs/03-typography.md §"Control/").
 const buttonVariants = cva(
-  "inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full border border-transparent whitespace-nowrap transition-all duration-100 active:scale-95 outline-none select-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-60 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full border border-transparent whitespace-nowrap transition-all duration-instant active:scale-95 outline-none select-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-60 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -54,16 +55,41 @@ function Button({
   variant,
   size,
   asChild = false,
+  busy = false,
+  children,
   ...props
 }: React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & { asChild?: boolean }) {
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean
+    /** Swap the label for a Spinner without changing the button's width. */
+    busy?: boolean
+  }) {
   const Comp = asChild ? Slot.Root : "button"
   return (
     <Comp
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      data-busy={busy || undefined}
+      aria-busy={busy || undefined}
+      className={cn(buttonVariants({ variant, size, className }), busy && "relative")}
       {...props}
-    />
+    >
+      {busy ? (
+        // The label stays in the layout and only goes invisible, so the button keeps
+        // its exact width. 23-onboarding-motion.md calls the alternative the single
+        // most common way this goes wrong: the label leaves, the spinner is narrower,
+        // the button collapses and the layout jumps under the user's finger at the
+        // exact moment they are waiting to find out whether something worked.
+        //
+        // Crossfade at `instant` so it reads as the same object changing rather than
+        // one thing leaving and another arriving.
+        <>
+          <span aria-hidden="true" className="invisible contents">{children}</span>
+          <span className="absolute inset-0 flex items-center justify-center">
+            <Spinner />
+          </span>
+        </>
+      ) : children}
+    </Comp>
   )
 }
 

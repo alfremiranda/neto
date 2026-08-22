@@ -30,7 +30,7 @@ export function ChoiceRow({ label, description, media, selected, onSelect, disab
       disabled={disabled}
       onClick={onSelect}
       className={cn(
-        'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-colors',
+        'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-colors duration-fast ease-move',
         'cursor-pointer disabled:cursor-not-allowed disabled:opacity-50',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]',
         // Selection is a wash plus a border, never a size change: a list where the
@@ -44,7 +44,7 @@ export function ChoiceRow({ label, description, media, selected, onSelect, disab
     >
       {media && (
         <span className={cn(
-          'w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors',
+          'w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors duration-fast ease-move',
           selected ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'bg-muted text-muted-foreground',
         )}>
           {media}
@@ -62,7 +62,7 @@ export function ChoiceRow({ label, description, media, selected, onSelect, disab
       <span
         aria-hidden="true"
         className={cn(
-          'w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors',
+          'w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors duration-fast ease-move',
           selected ? 'border-[var(--primary)] bg-[var(--primary)]' : 'border-[var(--border)]',
         )}
       >

@@ -11,6 +11,7 @@ import { ChoiceRow } from '@/components/ui/ChoiceRow'
 import { AccountRow } from '@/components/ui/AccountRow'
 import { Field } from '@/components/ui/Field'
 import { SegmentedControl } from '@/components/ui/SegmentedControl'
+import { useStepTransition } from '@/hooks/useStepTransition'
 import type { Account } from '@/types'
 
 type Currency = 'COP' | 'USD'
@@ -493,7 +494,10 @@ export function OnboardingView() {
   const isContentStep = CONTENT_STEPS.includes(step)
   // Which progress dot is active (1-based within content steps)
   const progressIndex = PROGRESS_STEPS.indexOf(step) + 1
-  const meta = STEP_META[step]
+  // Only the content column transitions; the rail and the header stay put — they
+  // are the frame the content moves inside.
+  const { shown, className: stepMotion } = useStepTransition(step)
+  const meta = STEP_META[shown]
 
   // What the rail reports for each step. Values, not tick marks: "Solo efectivo" or
   // "USD · sin secundaria" tells you what you chose, which is what a summary rail is
@@ -522,13 +526,13 @@ export function OnboardingView() {
 
   const stepBody = (
     <>
-      {step === 0 && <WelcomeStep />}
-      {step === 1 && (
+      {shown === 0 && <WelcomeStep />}
+      {shown === 1 && (
         <CurrencyStep primary={primary} secondary={secondary} onPrimary={setPrimary} onSecondary={setSecondary} />
       )}
-      {step === 2 && <AccountsStep added={added} onAdd={handleAdd} onRemove={handleRemove} />}
-      {step === 3 && <ProfileStep profile={profile} onSelect={setProfile} />}
-      {step === 4 && <DoneStep />}
+      {shown === 2 && <AccountsStep added={added} onAdd={handleAdd} onRemove={handleRemove} />}
+      {shown === 3 && <ProfileStep profile={profile} onSelect={setProfile} />}
+      {shown === 4 && <DoneStep />}
     </>
   )
 
@@ -560,6 +564,7 @@ export function OnboardingView() {
                     aria-hidden="true"
                     className={cn(
                       'w-6 h-6 rounded-full shrink-0 flex items-center justify-center ts-label-badge border',
+                      'transition-colors duration-fast ease-move',
                       done
                         ? 'bg-[var(--primary)] border-[var(--primary)] text-[var(--primary-foreground)]'
                         : active
@@ -597,7 +602,7 @@ export function OnboardingView() {
               <div
                 key={i}
                 className={cn(
-                  'h-1 flex-1 rounded-full transition-colors duration-300',
+                  'h-1 flex-1 rounded-full transition-colors duration-slow ease-move',
                   progressIndex > i ? 'bg-[var(--primary)]' : 'bg-[var(--muted)]',
                 )}
               />
@@ -609,7 +614,7 @@ export function OnboardingView() {
           'flex-1 px-6 lg:px-0 min-h-0',
           isContentStep ? 'overflow-y-auto py-5 lg:py-0' : 'flex flex-col justify-center',
         )}>
-          <div className="max-w-sm lg:max-w-[720px] mx-auto lg:mx-0 w-full flex flex-col gap-6 lg:gap-8">
+          <div className={cn('max-w-sm lg:max-w-[720px] mx-auto lg:mx-0 w-full flex flex-col gap-6 lg:gap-8', stepMotion)}>
             {meta && (
               <div className="flex flex-col gap-2">
                 {/* The eyebrow is fg/subtle, not brand: it is a position indicator,

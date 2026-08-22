@@ -51,7 +51,7 @@ export function SegmentedControl<T extends string>({ options, value, onChange, a
             onClick={() => onChange(o.value)}
             className={cn(
               'flex items-center justify-center gap-2 px-3 py-2.5 rounded-full ts-control-sm',
-              'cursor-pointer transition-colors whitespace-nowrap',
+              'cursor-pointer transition-colors duration-fast ease-move whitespace-nowrap',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]',
               // The border is always drawn, transparent when unselected: without it
               // the segment gains 1px on selection and every sibling shifts.

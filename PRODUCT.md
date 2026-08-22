@@ -129,6 +129,15 @@ deducciones activas), ajustable después en Configuración. Y en cuanto eliges a
 "Omitir este paso" desaparece — con una elección real en pantalla, omitir solo podría
 significar descartarla en silencio.
 
+**Movimiento con criterio.** Al avanzar, solo se mueve la mitad derecha: el riel se queda quieto
+porque es el marco, no el contenido. Retroceder invierte la dirección, que es lo único que te dice
+si avanzaste o volviste. Nada crece al seleccionarse —si el elegido crece, empuja a los demás y el
+ojo sigue el movimiento en vez de tu elección— y **un botón ocupado no cambia de tamaño**, para que
+la pantalla no salte bajo tu dedo justo cuando esperas saber si funcionó.
+
+Si tienes activado «reducir movimiento» en tu dispositivo, desaparece el desplazamiento **pero no
+el indicador de carga**: menos movimiento no significa menos información.
+
 **En escritorio, dos columnas.** Un riel fijo a la izquierda con los tres pasos y **lo que
 elegiste en cada uno** —«USD · COP», «Solo efectivo»—, y el contenido a la derecha. El riel no se
 mueve al avanzar: sólo cambia la mitad derecha. Un paso que omitiste conserva su número y una

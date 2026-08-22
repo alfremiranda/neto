@@ -34,7 +34,7 @@ export function CurrencyRadio({ code, description, flag, selected, onSelect, dis
       disabled={disabled}
       onClick={onSelect}
       className={cn(
-        'flex-1 flex flex-col items-center gap-2 py-5 px-3 rounded-xl transition-colors',
+        'flex-1 flex flex-col items-center gap-2 py-5 px-3 rounded-xl transition-colors duration-fast ease-move',
         'cursor-pointer disabled:cursor-not-allowed disabled:opacity-50',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]',
         selected
@@ -51,7 +51,7 @@ export function CurrencyRadio({ code, description, flag, selected, onSelect, dis
       <span
         aria-hidden="true"
         className={cn(
-          'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors',
+          'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors duration-fast ease-move',
           selected ? 'border-[var(--primary)] bg-[var(--primary)]' : 'border-[var(--border)]',
         )}
       >

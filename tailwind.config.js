@@ -95,6 +95,22 @@ export default {
       // value someone chose, not a calc() off a base — adjusting one no longer
       // drags the others. Note sm/md/lg mean 4/6/8 here, NOT the 8/10/12 they
       // meant while they were derived; component classes were migrated with this.
+      // Motion vocabulary (design-system/docs/23-onboarding-motion.md). Exposed as
+      // utilities so `duration-fast` / `ease-enter` are the natural thing to write and
+      // a hand-typed 150ms stops being the path of least resistance.
+      transitionDuration: {
+        instant:  'var(--motion-duration-instant)',
+        fast:     'var(--motion-duration-fast)',
+        moderate: 'var(--motion-duration-moderate)',
+        slow:     'var(--motion-duration-slow)',
+        spin:     'var(--motion-duration-spin)',
+      },
+      transitionTimingFunction: {
+        enter: 'var(--motion-easing-enter)',
+        exit:  'var(--motion-easing-exit)',
+        move:  'var(--motion-easing-move)',
+        spin:  'var(--motion-easing-spin)',
+      },
       borderRadius: {
         none: 'var(--radius-none)',
         xs: 'var(--radius-xs)',

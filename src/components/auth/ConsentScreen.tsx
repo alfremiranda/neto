@@ -4,7 +4,6 @@ import { useAuthStore } from '@/store/authStore'
 import { useFinanceStore } from '@/store/financeStore'
 import { PRIVACY_POLICY_VERSION, PRIVACY_POLICY_URL } from '@/lib/privacy'
 import { Button } from '@/components/ui/button'
-import { Spinner } from '@/components/ui/Spinner'
 
 // Blocking consent gate (Ley 1581). Rendered as a full-screen view in App's gating
 // chain (between login and onboarding), NOT a dismissible modal — there is no Esc,
@@ -126,9 +125,9 @@ export function ConsentScreen() {
             type="button"
             onClick={handleAccept}
             disabled={busy !== null}
+            busy={busy === 'accept'}
             className="w-full sm:flex-1 h-12"
           >
-            {busy === 'accept' && <Spinner />}
             Autorizar y continuar
           </Button>
           <Button
@@ -136,9 +135,9 @@ export function ConsentScreen() {
             variant="outline"
             onClick={handleDecline}
             disabled={busy !== null}
+            busy={busy === 'decline'}
             className="w-full sm:flex-1 h-12 text-muted-foreground hover:text-foreground"
           >
-            {busy === 'decline' && <Spinner />}
             No acepto
           </Button>
         </div>

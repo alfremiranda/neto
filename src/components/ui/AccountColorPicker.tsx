@@ -65,7 +65,7 @@ export function AccountColorPicker({ account, value, onChange, disabled, inUse }
               aria-pressed={c === value}
               style={accountColorVars(c)}
               className={cn(
-                'w-7 h-7 rounded-full flex items-center justify-center transition-transform',
+                'w-7 h-7 rounded-full flex items-center justify-center transition-colors duration-fast ease-move',
                 'bg-[var(--account-accent)] cursor-pointer border-2',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]',
                 'disabled:cursor-not-allowed disabled:opacity-50',

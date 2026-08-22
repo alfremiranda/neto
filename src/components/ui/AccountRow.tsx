@@ -29,7 +29,7 @@ export function AccountRow({ label, description, badge, type = 'user', onRemove,
   return (
     <div
       className={cn(
-        'w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors',
+        'w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors duration-fast ease-move',
         isUser
           ? 'bg-[var(--bg-brand-alpha-10)] border border-[var(--primary)]'
           : 'bg-[var(--card)] border border-[var(--border)]',
