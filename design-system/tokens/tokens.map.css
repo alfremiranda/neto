@@ -87,16 +87,6 @@
   --chart-4: var(--chart-categorical-4);
   --chart-5: var(--chart-categorical-5);
 
-  /* Accounts */
-  --color-account-arq-bg: var(--bg-account);
-  --color-account-arq-txt: var(--fg-account);
-  --color-account-toptal-bg: var(--bg-account);
-  --color-account-toptal-txt: var(--fg-account);
-  --color-account-bancol-bg: var(--bg-account);
-  --color-account-bancol-txt: var(--fg-account);
-  --color-account-other-bg: var(--bg-account);
-  --color-account-other-txt: var(--fg-account);
-
   /* Expense categories — app id -> Figma category id */
   --cat-home: var(--category-home-default);
   --cat-home-bg: var(--category-home-surface);

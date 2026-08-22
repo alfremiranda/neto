@@ -29,7 +29,7 @@ const ENTRY_ICONS = {
   egreso:       { Icon: ArrowUpRight,   color: 'text-[var(--color-danger)]',  bg: 'bg-[var(--color-danger-bg)]' },
   transfer_in:  { Icon: ArrowDownLeft,  color: 'text-[var(--color-income)]',    bg: 'bg-[var(--color-income-bg)]'   },
   transfer_out: { Icon: ArrowUpRight,   color: 'text-muted-foreground',   bg: 'bg-muted'                 },
-  ss:           { Icon: ShieldCheck,    color: 'text-[var(--color-tax)]',   bg: 'bg-[var(--color-account-other-bg)]'   },
+  ss:           { Icon: ShieldCheck,    color: 'text-[var(--color-tax)]',   bg: 'bg-[var(--color-tax-bg)]'             },
 }
 
 function LedgerRow({ entry, account, accounts }: { entry: LedgerEntry; account: Account; accounts: Account[] }) {

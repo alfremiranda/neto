@@ -158,18 +158,6 @@ MAP = [
         ("--chart-3", "--chart-categorical-3"), ("--chart-4", "--chart-categorical-4"),
         ("--chart-5", "--chart-categorical-5"),
     ]),
-    ("Accounts", [
-        # The old --account-{1..4}-* hard-coded four of Alfredo's own accounts into the
-        # design system. An account's identity colour is now runtime data on the record
-        # (docs/25-account-color.md); the chrome around it is neutral. All four app names
-        # therefore resolve to the one neutral pair, which is byte-identical to what
-        # --account-4-* held in both modes. Only `toptal` changes on screen: violet ->
-        # neutral, which is the defect surfacing, not a loss.
-        ("--color-account-arq-bg", "--bg-account"), ("--color-account-arq-txt", "--fg-account"),
-        ("--color-account-toptal-bg", "--bg-account"), ("--color-account-toptal-txt", "--fg-account"),
-        ("--color-account-bancol-bg", "--bg-account"), ("--color-account-bancol-txt", "--fg-account"),
-        ("--color-account-other-bg", "--bg-account"), ("--color-account-other-txt", "--fg-account"),
-    ]),
 ]
 CATS = [("home", "home"), ("food", "food"), ("bank", "bank"), ("health", "health"), ("transit", "transit"),
         ("tech", "connectivity"), ("recreation", "recreation"), ("work", "work"), ("family", "family"),

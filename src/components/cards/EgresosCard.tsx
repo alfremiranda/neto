@@ -119,12 +119,6 @@ function EgresoRow({
   const amtCOP    = egreso.currency === 'USD' ? egreso.amount * trm : egreso.amount
   const dateStr   = egreso.date ? fmtDate(egreso.date) : ''
   const acctLabel = egreso.account ? accountLabel(egreso.account, accounts) : null
-  const acctVariant = egreso.account
-    ? egreso.account.toLowerCase().includes('arq')    ? 'arq'
-      : egreso.account.toLowerCase().includes('toptal') ? 'toptal'
-      : egreso.account.toLowerCase().includes('bancol') ? 'bancol'
-      : 'otro'
-    : 'otro'
   // Dim the amount + icon only while the date is still in the future; once it arrives, treat as effective
   const isScheduled   = !!egreso.date && egreso.date > localToday()
 
@@ -140,7 +134,7 @@ function EgresoRow({
 
   const MetaRow = () => (
     <div className="flex items-center gap-1 mt-1 flex-wrap">
-      {acctLabel && <Badge variant={acctVariant}>{acctLabel}</Badge>}
+      {acctLabel && <Badge>{acctLabel}</Badge>}
       {isScheduled && <ScheduledBadge />}
       {dateStr && <span className="ts-detail-large text-muted-foreground">·</span>}
       {dateStr && <span className="ts-amount-small text-muted-foreground">{dateStr}</span>}

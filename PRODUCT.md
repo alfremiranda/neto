@@ -147,6 +147,12 @@ raya, no un visto: pasar no es lo mismo que responder. Aparece **«Atrás»**, q
 de ejemplo dentro del campo desaparece apenas escribes —justo cuando más falta hace— y además no
 tiene contraste suficiente para leerse. El ejemplo se queda, pero como ejemplo.
 
+**Las etiquetas de cuenta son neutras.** Antes cada cuenta tenía su propio color en la etiqueta,
+elegido adivinando por el nombre ("si dice arq, píntala de cian"). Eso tenía tus cuentas escritas
+dentro del sistema de diseño. El color de una cuenta ahora es un dato tuyo y vive en su avatar; la
+etiqueta solo dice el nombre. Las de moneda (USD/COP) sí conservan color propio, porque ahí el
+color significa algo.
+
 ### 4.10bis Color de cuenta
 Cada cuenta tiene un color de identidad que pinta **su avatar y nada más** (el círculo con el
 ícono del tipo de cuenta). Doce colores. Se elige al crear o editar la cuenta.

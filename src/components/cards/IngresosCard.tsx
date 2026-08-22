@@ -29,19 +29,13 @@ function IncomeRow({
   isPending: boolean
   onDeleteDesktop: () => void
 }) {
-  const accountLower = inc.account.toLowerCase()
-  const acctVariant = accountLower.includes('arq')    ? 'arq'
-    : accountLower.includes('toptal') ? 'toptal'
-    : accountLower.includes('bancol') ? 'bancol'
-    : 'otro'
-
   // Primary = original currency; secondary = equivalent in the other currency
   const primaryAmt   = inc.currency === 'USD' ? USD(inc.amount) : COP(inc.amount)
   const secondaryAmt = inc.currency === 'USD' ? COP(inc.amount * trm) : USD(inc.amount / trm)
 
   const meta = (
     <div className="flex items-center gap-1 flex-wrap">
-      <Badge variant={acctVariant}>{inc.account}</Badge>
+      <Badge>{inc.account}</Badge>
       {inc.applyProvisions === false && (
         <>
           <span className="ts-detail-large text-muted-foreground">·</span>
