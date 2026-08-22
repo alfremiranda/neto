@@ -184,7 +184,7 @@ export function KPIStrip({ onNavigate }: { onNavigate?: (tab: string) => void } 
     { label: '', value: '', separator: true },
     { label: 'Neto libre',            value: COP(Math.max(res.netoLibre, 0)) },
     ...(res.netoLibre < 0
-      ? [{ label: 'Salió de otro saldo', value: COP(-res.netoLibre) }]
+      ? [{ label: 'Tomado de tu saldo', value: COP(-res.netoLibre) }]
       : []),
   ] : []
 
@@ -243,7 +243,11 @@ export function KPIStrip({ onNavigate }: { onNavigate?: (tab: string) => void } 
       key="neto"
       label="Neto libre"
       value={COP(Math.max(res.netoLibre, 0))}
-      sub={overspend > 0 ? `Gastaste ${COP(overspend)} más de lo que entró` : pct(Math.max(res.netoLibre, 0))}
+      // No minus sign: "de tu saldo" already carries the direction, and the figure is
+      // already red. A sign would mark the same fact a third time — a bank statement says
+      // "Retiro $500.000", not "Retiro −$500.000". The annual total does take a sign,
+      // because there the number stands alone with nothing to explain it.
+      sub={overspend > 0 ? `${COP(overspend)} de tu saldo` : pct(Math.max(res.netoLibre, 0))}
       // A negative net takes the expense colour, not danger: the sign carries the
       // meaning, and danger is for something going wrong rather than for a number
       // that came out below zero (token-migration.json, behaviourChanges).
