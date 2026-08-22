@@ -41,7 +41,7 @@ function PullIndicator({ pullY, refreshing, isPulling }: { pullY: number; refres
       }}
     >
       <div className={[
-        'flex items-center justify-center w-8 h-8 rounded-full border shadow-sm transition-colors duration-150',
+        'flex items-center justify-center w-8 h-8 rounded-full border shadow-sm transition-colors duration-fast',
         ready || refreshing
           ? 'bg-[var(--primary)] border-[var(--primary)]'
           : 'bg-[var(--card)] border-[var(--border)]',

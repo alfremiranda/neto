@@ -54,7 +54,7 @@ function DashboardHeader() {
           <Button size="sm" className="hidden sm:inline-flex gap-1.5 shrink-0">
             <Plus size={13} />
             Agregar
-            <ChevronDown size={11} className={cn('transition-transform duration-150', open && 'rotate-180')} />
+            <ChevronDown size={11} className={cn('transition-transform duration-fast', open && 'rotate-180')} />
           </Button>
         </PopoverTrigger>
         <PopoverContent align="end" className="w-44 p-1">

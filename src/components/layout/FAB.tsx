@@ -21,10 +21,10 @@ function FABAction({ label, Icon, onTrigger, delay }: Action) {
         'gap-2.5 h-11 pl-3.5 pr-4 shadow-lg',
         'bg-[var(--card)] text-[var(--foreground)]',
         // Press feedback
-        'active:scale-95 transition-transform duration-100',
+        'active:scale-95 transition-transform duration-instant',
         // Entrance: fade + scale up from slightly below — fill-mode-backwards holds
         // the initial keyframe state during the delay so items stay hidden
-        'animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-2 fill-mode-backwards duration-200',
+        'animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-2 fill-mode-backwards duration-moderate',
       )}
     >
       <span className="text-[var(--primary)]"><Icon size={16} /></span>
@@ -73,7 +73,7 @@ export function FAB() {
         aria-hidden
         className={cn(
           'sm:hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-sm',
-          'transition-opacity duration-200',
+          'transition-opacity duration-moderate',
           open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none',
         )}
         onClick={() => setOpen(false)}
@@ -106,7 +106,7 @@ export function FAB() {
           className={cn(
             'w-14 h-14 rounded-full shadow-xl flex items-center justify-center',
             'bg-[var(--primary)] text-[var(--primary-foreground)]',
-            'active:scale-90 transition-transform duration-100',
+            'active:scale-90 transition-transform duration-instant',
           )}
         >
           <Plus

@@ -26,7 +26,7 @@ function CurrencyCard({
       type="button"
       onClick={onClick}
       className={cn(
-        'flex-1 flex flex-col items-center gap-2 py-4 px-3 rounded-xl border-2 transition-all duration-150',
+        'flex-1 flex flex-col items-center gap-2 py-4 px-3 rounded-xl border-2 transition-all duration-fast',
         selected
           ? 'border-[var(--primary)] bg-[var(--primary)]/8'
           : 'border-[var(--border)] bg-[var(--card)] hover:border-[var(--primary)]/40',
@@ -174,7 +174,7 @@ export function ProfileView() {
                 type="button"
                 onClick={() => setSecondary(opt.value)}
                 className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-xl border-2 text-left transition-all duration-150',
+                  'flex items-center gap-3 px-3 py-2.5 rounded-xl border-2 text-left transition-all duration-fast',
                   secondary === opt.value
                     ? 'border-[var(--primary)] bg-[var(--primary)]/8'
                     : 'border-[var(--border)] bg-[var(--background)] hover:border-[var(--primary)]/40',

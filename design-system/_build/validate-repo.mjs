@@ -149,6 +149,34 @@ if (process.argv.includes('--update-baseline')) {
   }
 }
 
+// ── R5 · a literal duration or easing in component code ──────────────────────
+// Approved 2026-08-22, and deliberately written only once the vocabulary was applied
+// everywhere: it would have opened at 22 failures, and a check that is red on day one gets
+// switched off within a week. Same criterion that moved the ΔE gate from 25 to 18.
+//
+// `duration-0` is exempt: it means "no transition", which is not a duration choice — the
+// step transition uses it to set an element's starting position without animating to it.
+const DURATION = /(?<![\w-])duration-(\d+)(?![\w-])/g
+const EASING = /(?<![\w-])ease-(linear|in|out|in-out|\[[^\]]+\])(?![\w-])/g
+const r5 = []
+for (const file of componentFiles) {
+  const src = readFileSync(file, 'utf8')
+  let inBlock = false
+  src.split('\n').forEach((line, i) => {
+    const { text, stillOpen } = stripComments(line, inBlock)
+    inBlock = stillOpen
+    for (const m of text.matchAll(DURATION)) {
+      if (m[1] === '0') continue
+      r5.push(`${relative(ROOT, file)}:${i + 1}  ${m[0]} — usa duration-{instant,fast,moderate,slow}`)
+    }
+    for (const m of text.matchAll(EASING)) {
+      r5.push(`${relative(ROOT, file)}:${i + 1}  ${m[0]} — usa ease-{enter,exit,move,spin}`)
+    }
+  })
+}
+r5.forEach(v => fail('R5', v))
+notes.push(`R5  ${componentFiles.length} archivos · ${r5.length} duraciones/curvas literales`)
+
 // ── report ───────────────────────────────────────────────────────────────────
 console.log('design-system · validador del lado del repo')
 console.log('(la mitad de Figma —T*/C*— necesita el Plugin API y no corre aquí; ver 20-roadmap §0.4)\n')

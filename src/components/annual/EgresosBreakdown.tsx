@@ -89,7 +89,11 @@ export function EgresosBreakdown({ year }: EgresosBreakdownProps) {
 
             <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
               <div
-                className="h-full rounded-full transition-all duration-500"
+                // 500ms had no token — the vocabulary tops out at slow (300). Mapped down rather
+                // than left as a magic number, because one literal duration is enough to keep the
+                // lint that catches them from ever being turned on. Reported to Design: if a bar
+                // filling wants to be slower than a screen transition, that needs a rung.
+                className="h-full rounded-full transition-all duration-slow ease-move"
                 style={{
                   width:      `${(cat.pct / maxPct) * 100}%`,
                   background: `var(${cat.color})`,

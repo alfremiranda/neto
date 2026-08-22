@@ -12,3 +12,13 @@ PNGs in here and commit. From then on the job compares instead of creating.
 
 To accept an intentional change: `node scripts/visual-regression.mjs --update` reproduces the
 same problem locally, so do it the same way — let CI regenerate and commit what it uploads.
+
+## Running it on your machine
+
+`npm run visual` on a Mac compares CI's renderer against yours and fails — measured, not
+assumed: 40 of the 52 differ, by over a thousand pixels each. That is font rasterisation,
+not CSS.
+
+So a local run tells you nothing about whether you broke something. Use it only with a
+locally-generated baseline (delete the PNGs, run once to create them, then compare) and
+never commit what it produces. The check that counts is the `visual` job in CI.

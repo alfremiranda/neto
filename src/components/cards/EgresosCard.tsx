@@ -68,7 +68,7 @@ function EgresosBar({ egresos, trm }: { egresos: Egreso[]; trm: number }) {
         {segments.map(seg => (
           <div
             key={seg.id}
-            className={cn('transition-opacity duration-150 cursor-default', hovered && hovered !== seg.id ? 'opacity-30' : 'opacity-100')}
+            className={cn('transition-opacity duration-fast cursor-default', hovered && hovered !== seg.id ? 'opacity-30' : 'opacity-100')}
             style={{ width: `${seg.pct}%`, background: `var(${seg.color})` }}
             onMouseEnter={() => setHovered(seg.id)}
             onMouseLeave={() => setHovered(null)}

@@ -54,8 +54,8 @@ export function RowActionsSheet({
             'fixed inset-x-0 bottom-0 z-50 flex flex-col',
             'bg-[var(--card)] rounded-t-2xl shadow-xl',
             'focus:outline-none',
-            'data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom-full data-[state=open]:duration-300',
-            'data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom-full data-[state=closed]:duration-200',
+            'data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom-full data-[state=open]:duration-slow',
+            'data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom-full data-[state=closed]:duration-moderate',
           ].join(' ')}
           style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
         >

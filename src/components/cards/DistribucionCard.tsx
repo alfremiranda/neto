@@ -69,7 +69,7 @@ export function DistribucionCard() {
             type="button"
             aria-label={`${seg.label}: ${Math.round(seg.pct)}% — ${COP(seg.amount)}`}
             className={cn(
-              'transition-opacity duration-150 focus-visible:outline-none focus-visible:brightness-125',
+              'transition-opacity duration-fast focus-visible:outline-none focus-visible:brightness-125',
               hovered && hovered !== seg.id ? 'opacity-40' : 'opacity-100',
             )}
             style={{ width: `${seg.pct}%`, background: `var(${seg.color})` }}
