@@ -11,7 +11,10 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "patch-preset": "node scripts/patch-shadcn-preset.mjs",
-    "apply-preset": "npx shadcn@latest apply --preset"
+    "apply-preset": "npx shadcn@latest apply --preset",
+    "storybook": "storybook dev -p 6006",
+    "storybook:build": "storybook build -o storybook-static",
+    "visual": "node scripts/visual-regression.mjs"
   },
   "dependencies": {
     "@fontsource-variable/rethink-sans": "^5.3.0",
@@ -38,6 +41,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@resvg/resvg-js": "^2.6.2",
+    "@storybook/react-vite": "^10.5.10",
     "@types/node": "^24.13.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
@@ -47,8 +51,11 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
+    "pixelmatch": "^7.2.0",
     "playwright": "^1.61.0",
+    "pngjs": "^7.0.0",
     "postcss": "^8.5.25",
+    "storybook": "^10.5.10",
     "tailwindcss": "^3.4.19",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.59.2",

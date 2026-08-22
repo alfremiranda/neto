@@ -12,9 +12,9 @@ name: Design system
 on:
   push:
     branches: [main]
-    paths: ['src/**', 'design-system/**', '.github/workflows/design-system.yml']
+    paths: ['src/**', 'design-system/**', '.storybook/**', 'scripts/visual-regression.mjs', '.github/workflows/design-system.yml']
   pull_request:
-    paths: ['src/**', 'design-system/**', '.github/workflows/design-system.yml']
+    paths: ['src/**', 'design-system/**', '.storybook/**', 'scripts/visual-regression.mjs', '.github/workflows/design-system.yml']
   workflow_dispatch:
 
 permissions:
@@ -44,3 +44,38 @@ jobs:
 
       - name: Validate
         run: node design-system/_build/validate-repo.mjs
+
+  # Separate job: the repo validator needs no npm install, and a visual diff that has to
+  # wait for one would discourage running it.
+  visual:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      # Screenshots differ between a Mac and a Linux runner — different font rasterisation,
+      # not different CSS. The baseline is committed from CI's own renderer, so the compare
+      # is like for like; a baseline taken locally would fail here on day one and the check
+      # would be switched off within a week.
+      - name: Visual regression
+        run: node scripts/visual-regression.mjs
+
+      - name: Upload diffs
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: visual-diff
+          path: test/visual-diff/
+          retention-days: 7
