@@ -1,5 +1,49 @@
 # 14 — Inventory: what is missing, measured
 
+> **Barrido 2026-08-22.** Figma tiene **81** componentes publicables. Las cifras de más abajo son
+> del 18 de agosto (71) y se conservan como registro de ese momento; el estado de hoy está en
+> §0, al principio a propósito, porque un inventario cuyo encabezado miente no es un inventario.
+
+## 0. Estado al 2026-08-22
+
+**81 en Figma · 57 en `_build/components.json`.** El registro que genera las páginas de
+documentación es del 2 de agosto y está desfasado en tres direcciones a la vez:
+
+| | |
+|---|---|
+| **26 componentes existen en Figma y no en el registro** | `Field` · `ChoiceRow` · `AccountRow` · `CurrencyRadio` · `Segment` · `SegmentedControl` · `Radio` · `Calendar Day` · `AccountColorSwatch` · `AccountColorPicker` · `AccountAvatar` · `AccountEditForm` · `SheetContent` · `AccountChart` · `AccountSummaryCard` · `AccountTypeBadge` · `obligation-itemrow` · `breadcrumb` · `breadcrumb-item` · `stepper` · `step-item` · `ErrorState` · `Spinner` · `Logo` · `brand-mark/google` · `brand-mark/flag` |
+| **2 están en el registro y ya no en Figma** | `DatePicker` y `MoneyInput`, retirados dentro de `Field` el 20-ago |
+| **23 cambiaron de número de variantes** | `Button` 72→168 · `Input` 24→30 · `AccountCard` 24→12 · `AccountBadge` 8→1 · `outcome-itemrow` 4→8 · `income-itemrow` 2→4 · y 17 más que constaban con 0 |
+
+### Lo que se arregló en Figma el 22-ago
+
+El barrido no era sólo de conteo. **28 de las 81 descripciones tenían defectos**, y ninguno se
+veía sin buscarlo:
+
+- **13 citaban tokens con nombres que la fase 1.2 retiró** — `interactive/primary`,
+  `surface/scrim`, `account-accent/*`, `color/account/*`, `foreground/on-popover`,
+  `status/danger`, `surface/inverse`. Corregidas todas; verificado a cero.
+- **20 tenían basura literal** (`&#39;`, `&lt;`, y en un caso `&amp;quot;`, la huella de un
+  intento anterior). Causa: **`use_figma` codifica `< > & ' "` en cada escritura**, así que
+  decodificar y volver a escribir es un bucle que no termina. Se sustituyeron por caracteres que
+  sí sobreviven — `{hue}` en vez de `<hue>`, comillas tipográficas en vez de rectas.
+- **4 no tenían descripción**: `AccountChart`, `AccountSummaryCard`, `step-item`, `Logo`.
+- **3 describían variantes que no existen** — mías, escritas sin comprobar el eje contra el
+  componente: `AccountChart` decía `Series=Balance|Debt` cuando es `Single|Dual`; `step-item`
+  inventaba un estado `Skipped`; `Logo` decía `Mark|Full` cuando es `Primary|Secondary`.
+- **2 las rompió mi propio reemplazo mecánico** (`color/bg/brand`, “an bg/brand”) y las cacé
+  releyendo el resultado. Un renombrado automático sobre prosa necesita una segunda pasada.
+
+Hoy: **0 nombres muertos, 0 entidades, 0 componentes sin descripción, en los 81.**
+
+### Lo que queda
+
+`_build/components.json` sigue sin regenerarse. Es una **copia** de lo que vive en Figma, y hoy
+demostramos que las copias se desincronizan en silencio — es el mismo defecto que tenía
+`rename-map.json`. Regenerarlo es una exportación por lotes como la del volcado de tokens; no lo
+hago a medias porque un registro mitad actual y mitad viejo, sin marca, es peor que uno viejo
+entero.
+
 **Measured 2026-08-18, updated 2026-08-19.** Everything here comes from counting, not from
 remembering. Every row carries its evidence; where I could not measure, I say so instead of
 estimating.
