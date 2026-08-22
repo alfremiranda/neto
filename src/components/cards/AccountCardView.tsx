@@ -1,10 +1,11 @@
-import { Landmark, Coins, CreditCard, PiggyBank, Pencil, Star, CalendarClock } from 'lucide-react'
+import { Pencil, Star, CalendarClock } from 'lucide-react'
 import { Fragment } from 'react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { computeAccountBalance, creditCardStats } from '@/lib/calc'
 import { COP, fmtDate } from '@/lib/format'
 import { CurrencyBadge } from '@/components/ui/Badge'
+import { AccountAvatar } from '@/components/ui/AccountAvatar'
 import { cn } from '@/lib/utils'
 import type { Account } from '@/types'
 
@@ -44,7 +45,6 @@ export function AccountCardView({ account, size = 'lg', selected = false, onClic
   const isCredit  = account.type === 'credit'
   const isSavings = account.type === 'savings'
   const isCash    = account.type === 'cash'
-  const TypeIcon  = isCredit ? CreditCard : isSavings ? PiggyBank : isCash ? Coins : Landmark
   const cc        = isCredit ? creditCardStats(account, balance) : null
   const hasConfig = isCredit ? account.creditLimit != null : account.startingBalance != null
   const sm        = size === 'sm'
@@ -81,7 +81,7 @@ export function AccountCardView({ account, size = 'lg', selected = false, onClic
     >
       {/* Header: icon · name · favorite (gap 6) */}
       <div className="flex items-center gap-1.5 w-full">
-        <TypeIcon size={13} className="text-muted-foreground shrink-0" />
+        <AccountAvatar account={account} size="sm" />
         <span className="flex-1 min-w-0 ts-body-small-emphasis text-muted-foreground truncate">{account.label}</span>
         <button
           type="button"

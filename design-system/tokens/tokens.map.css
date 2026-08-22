@@ -61,14 +61,14 @@
   --color-currency-cop-txt: var(--currency-cop-foreground);
 
   /* Accounts */
-  --color-account-arq-bg: var(--account-1-surface);
-  --color-account-arq-txt: var(--account-1-foreground);
-  --color-account-toptal-bg: var(--account-2-surface);
-  --color-account-toptal-txt: var(--account-2-foreground);
-  --color-account-bancol-bg: var(--account-3-surface);
-  --color-account-bancol-txt: var(--account-3-foreground);
-  --color-account-other-bg: var(--account-4-surface);
-  --color-account-other-txt: var(--account-4-foreground);
+  --color-account-arq-bg: var(--bg-account);
+  --color-account-arq-txt: var(--fg-account);
+  --color-account-toptal-bg: var(--bg-account);
+  --color-account-toptal-txt: var(--fg-account);
+  --color-account-bancol-bg: var(--bg-account);
+  --color-account-bancol-txt: var(--fg-account);
+  --color-account-other-bg: var(--bg-account);
+  --color-account-other-txt: var(--fg-account);
 
   /* Expense categories — app id -> Figma category id */
   --cat-home: var(--category-home-default);

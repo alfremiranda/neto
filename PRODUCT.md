@@ -129,6 +129,15 @@ deducciones activas), ajustable después en Configuración. Y en cuanto eliges a
 "Omitir este paso" desaparece — con una elección real en pantalla, omitir solo podría
 significar descartarla en silencio.
 
+### 4.10bis Color de cuenta
+Cada cuenta tiene un color de identidad que pinta **su avatar y nada más** (el círculo con el
+ícono del tipo de cuenta). Doce colores. Se elige al crear o editar la cuenta.
+
+Las cuentas que ya existían reciben uno automáticamente, derivado de su identificador: no hay
+que configurar nada y **una cuenta nunca cambia de color por su cuenta**. Con doce colores y
+pocas cuentas, dos pueden coincidir; por eso el color nunca identifica una cuenta solo — el
+nombre siempre va al lado, y el selector dice el nombre del color elegido.
+
 ### 4.11 Privacidad y consentimiento (Ley 1581)
 - **Pantalla de consentimiento bloqueante** antes de usar la app: al entrar —usuarios nuevos **y** existentes que aún no aceptaron— Neto pide aceptar la política de tratamiento de datos. El flujo es **login → consentimiento → onboarding**. "No acepto" cierra sesión.
 - **Política de privacidad** publicada como página estática accesible **sin iniciar sesión** en `netofinanzas.app/privacidad.html`, enlazada desde el login y desde Configuración.

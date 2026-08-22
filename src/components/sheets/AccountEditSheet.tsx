@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Trash2, Landmark, Wallet, CreditCard, PiggyBank } from 'lucide-react'
 import { SheetBase } from '@/components/ui/SheetBase'
+import { AccountColorPicker } from '@/components/ui/AccountColorPicker'
+import { accountColor, type AccountColor } from '@/lib/accountColor'
 import { MoneyInput } from '@/components/ui/MoneyInput'
 import { useMoneyInput } from '@/hooks/useMoneyInput'
 import { useFinanceStore } from '@/store/financeStore'
@@ -53,6 +55,14 @@ export function AccountEditSheet() {
   const [savingsKind, setSavingsKind] = useState<SavingsKind>('cuenta')
   const [maturity, setMaturity]       = useState('')
   const [favorite, setFavorite]       = useState(false)
+  // Held as a concrete colour so the picker always has something selected, but only
+  // written back when the user actually touched it — see `colorTouched` and handleSave.
+  const [color, setColor]             = useState<AccountColor>('purple')
+  const [colorTouched, setColorTouched] = useState(false)
+  // The id is minted when the sheet opens, not when it saves, so the colour preview
+  // shows the colour the account will actually get. Deriving from an id that does not
+  // exist yet would make the preview a guess.
+  const [draftId, setDraftId] = useState('')
   const [confirmingDelete, setConfirmingDelete] = useState(false)
 
   const decimals = currency === 'USD' ? 2 : 0
@@ -80,6 +90,8 @@ export function AccountEditSheet() {
         setSavingsKind(a.savingsKind ?? 'cuenta')
         setMaturity(a.maturityDate ?? '')
         setFavorite(a.favorite ?? false)
+        setColor(accountColor(a))
+        setColorTouched(a.color != null)
         balanceAmt.setValue(a.startingBalance ?? 0)
         limitAmt.setValue(a.creditLimit ?? 0)
         // Credit balance is stored as −debt; show the positive debt to the user
@@ -90,6 +102,10 @@ export function AccountEditSheet() {
       setCutoffDay(''); setDueDay('')
       setSavingsKind('cuenta'); setMaturity('')
       setFavorite(false)
+      const id = 'acc_' + Date.now()
+      setDraftId(id)
+      setColor(accountColor({ id }))
+      setColorTouched(false)
       balanceAmt.setValue(0); limitAmt.setValue(0); debtAmt.setValue(0)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -110,6 +126,9 @@ export function AccountEditSheet() {
           startingBalance: -debtAmt.numericValue,
           cutoffDay: clampDay(cutoffDay),
           dueDay: clampDay(dueDay),
+          // Only written when the user actually chose. Absent means derived, and
+          // writing it unasked would make every account look deliberately coloured.
+          ...(colorTouched ? { color } : {}),
         }
       : {
           label: label.trim(), currency, type, favorite,
@@ -120,6 +139,7 @@ export function AccountEditSheet() {
             savingsKind,
             maturityDate: savingsKind === 'cdt' ? (maturity || undefined) : undefined,
           } : {}),
+          ...(colorTouched ? { color } : {}),
         }
 
     if (editingAccountId) {
@@ -127,7 +147,7 @@ export function AccountEditSheet() {
       if (idx !== -1) accounts[idx] = { ...accounts[idx], ...payload }
       showToast(isCredit ? 'Tarjeta actualizada' : isCash ? 'Bolsillo actualizado' : isSavings ? 'Ahorro actualizado' : 'Cuenta actualizada')
     } else {
-      accounts.push({ id: 'acc_' + Date.now(), ...payload } as Account)
+      accounts.push({ id: draftId || 'acc_' + Date.now(), ...payload } as Account)
       showToast(isCredit ? 'Tarjeta agregada' : isCash ? 'Bolsillo agregado' : isSavings ? 'Ahorro agregado' : 'Cuenta agregada')
     }
     saveAccountsConfig(accounts)
@@ -229,6 +249,13 @@ export function AccountEditSheet() {
             disabled={isLocked}
           />
         </div>
+
+        <AccountColorPicker
+          account={{ id: editingAccountId || draftId, type }}
+          value={color}
+          onChange={c => { setColor(c); setColorTouched(true) }}
+          disabled={isLocked}
+        />
 
         <div className="grid grid-cols-2 gap-3">
           <div>

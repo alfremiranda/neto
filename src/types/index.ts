@@ -54,6 +54,11 @@ export interface Account {
   // ── Savings/investment only (type === 'savings') ──
   savingsKind?: 'cuenta' | 'cdt' | 'inversion'  // vehicle kind; default 'cuenta'
   maturityDate?: string     // CDT: fecha de vencimiento (YYYY-MM-DD)
+  // ── Identity colour ──
+  // Optional on purpose: absent means derived from the id, present means the user
+  // chose it. Writing it on first open would erase that distinction and make every
+  // account look deliberately coloured. See src/lib/accountColor.ts.
+  color?: import('@/lib/accountColor').AccountColor
   updatedAt?: number  // ms of last local edit — per-entry LWW for cross-device settings merge
 }
 

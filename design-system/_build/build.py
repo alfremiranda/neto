@@ -130,10 +130,16 @@ MAP = [
         ("--color-currency-cop-bg", "--currency-cop-surface"), ("--color-currency-cop-txt", "--currency-cop-foreground"),
     ]),
     ("Accounts", [
-        ("--color-account-arq-bg", "--account-1-surface"), ("--color-account-arq-txt", "--account-1-foreground"),
-        ("--color-account-toptal-bg", "--account-2-surface"), ("--color-account-toptal-txt", "--account-2-foreground"),
-        ("--color-account-bancol-bg", "--account-3-surface"), ("--color-account-bancol-txt", "--account-3-foreground"),
-        ("--color-account-other-bg", "--account-4-surface"), ("--color-account-other-txt", "--account-4-foreground"),
+        # The old --account-{1..4}-* hard-coded four of Alfredo's own accounts into the
+        # design system. An account's identity colour is now runtime data on the record
+        # (docs/25-account-color.md); the chrome around it is neutral. All four app names
+        # therefore resolve to the one neutral pair, which is byte-identical to what
+        # --account-4-* held in both modes. Only `toptal` changes on screen: violet ->
+        # neutral, which is the defect surfacing, not a loss.
+        ("--color-account-arq-bg", "--bg-account"), ("--color-account-arq-txt", "--fg-account"),
+        ("--color-account-toptal-bg", "--bg-account"), ("--color-account-toptal-txt", "--fg-account"),
+        ("--color-account-bancol-bg", "--bg-account"), ("--color-account-bancol-txt", "--fg-account"),
+        ("--color-account-other-bg", "--bg-account"), ("--color-account-other-txt", "--fg-account"),
     ]),
 ]
 CATS = [("home", "home"), ("food", "food"), ("bank", "bank"), ("health", "health"), ("transit", "transit"),
