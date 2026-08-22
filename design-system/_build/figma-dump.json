@@ -1807,22 +1807,22 @@
           "rgba(0,0,0,0.01)"
         ],
         [
-          "spinner/track/on-dark",
+          "spinner/track/on-solid",
           "rgba(255,255,255,0.2)",
           "rgba(0,0,0,0.2)"
         ],
         [
-          "spinner/head/on-dark",
+          "spinner/head/on-solid",
           "#ffffff",
           "#0f172a"
         ],
         [
-          "spinner/track/on-light",
+          "spinner/track/default",
           "rgba(0,0,0,0.2)",
           "rgba(255,255,255,0.2)"
         ],
         [
-          "spinner/head/on-light",
+          "spinner/head/default",
           "#0f172a",
           "#f8fafc"
         ]
@@ -6749,7 +6749,7 @@
     },
     {
       "collection": "Component",
-      "name": "spinner/track/on-dark",
+      "name": "spinner/track/on-solid",
       "type": "COLOR",
       "values": {
         "Light": "rgba(255,255,255,0.2)",
@@ -6762,7 +6762,7 @@
     },
     {
       "collection": "Component",
-      "name": "spinner/head/on-dark",
+      "name": "spinner/head/on-solid",
       "type": "COLOR",
       "values": {
         "Light": "#ffffff",
@@ -6775,7 +6775,7 @@
     },
     {
       "collection": "Component",
-      "name": "spinner/track/on-light",
+      "name": "spinner/track/default",
       "type": "COLOR",
       "values": {
         "Light": "rgba(0,0,0,0.2)",
@@ -6788,7 +6788,7 @@
     },
     {
       "collection": "Component",
-      "name": "spinner/head/on-light",
+      "name": "spinner/head/default",
       "type": "COLOR",
       "values": {
         "Light": "#0f172a",

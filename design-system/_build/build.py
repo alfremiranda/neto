@@ -559,8 +559,19 @@ def mock(n, c):
 def axes(c):
     if not c["p"]:
         return f'<div class="axis"><span class="k">Sin variantes</span><span class="v">{c["w"]} × {c["h"]}</span></div>'
-    out = [f'<div class="axis"><span class="k">{html.escape(k)}</span><span class="v">{html.escape(v.replace("|", " · "))}</span></div>'
-           for k, v in (p.split("=", 1) for p in c["p"])]
+    # A property is only an AXIS when it has options. Text, boolean and instance-swap
+    # properties have none — they are slots, not variants — and the registry now records them
+    # as a bare name. Splitting on "=" unconditionally crashed on the first one that arrived.
+    rows = []
+    for prop in c["p"]:
+        if "=" in prop:
+            k, v = prop.split("=", 1)
+            rows.append(f'<div class="axis"><span class="k">{html.escape(k)}</span>'
+                        f'<span class="v">{html.escape(v.replace("|", " · "))}</span></div>')
+        else:
+            rows.append(f'<div class="axis"><span class="k">{html.escape(prop)}</span>'
+                        f'<span class="v">slot</span></div>')
+    out = rows
     out.append(f'<div class="count">{c["v"]} variantes · {c["w"]} × {c["h"]}</div>')
     return "".join(out)
 

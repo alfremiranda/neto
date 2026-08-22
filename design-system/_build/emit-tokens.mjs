@@ -109,7 +109,12 @@ for (const [old, entry] of Object.entries(ledger.aliases ?? {})) {
 // ── report ────────────────────────────────────────────────────────────────────
 const flat = o => Object.fromEntries(Object.entries(o).flatMap(([b, kv]) =>
   b.endsWith('_dark') ? [] : Object.entries(kv)))
-const now = flat({ sem_light: current.sem_light ?? {}, cmp_light: current.cmp_light ?? {}, num: current.num ?? {} })
+// The baseline must cover EVERY block the new file writes. It used to list only three, so
+// dur, raw and alias counted as new on every single run — 133 phantom additions, which is
+// exactly enough noise to hide one real one.
+const now = flat({ sem_light: current.sem_light ?? {}, cmp_light: current.cmp_light ?? {},
+                   num: current.num ?? {}, dur: current.dur ?? {}, raw: current.raw ?? {},
+                   alias: current.alias ?? {}, legacy_light: current.legacy_light ?? {} })
 const next = flat(out)
 const added = Object.keys(next).filter(k => !(k in now))
 const removed = Object.keys(now).filter(k => !(k in next))

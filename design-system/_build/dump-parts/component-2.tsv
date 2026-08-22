@@ -81,7 +81,7 @@ calendar/day/border/today	COLOR	#0e7490	#06b6d4	bg/brand	bg/brand
 logo/mark	COLOR	#22d3ee	#22d3ee	color/cyan/400	color/cyan/400
 logo/bg	COLOR	#083344	#083344	color/cyan/950	color/cyan/950
 button/bg/focus-ring	COLOR	rgba(255,255,255,0.01)	rgba(0,0,0,0.01)	color/white/1	color/black/1
-spinner/track/on-dark	COLOR	rgba(255,255,255,0.2)	rgba(0,0,0,0.2)	color/white/20	color/black/20
-spinner/head/on-dark	COLOR	#ffffff	#0f172a	color/white	color/slate/900
-spinner/track/on-light	COLOR	rgba(0,0,0,0.2)	rgba(255,255,255,0.2)	color/black/20	color/white/20
-spinner/head/on-light	COLOR	#0f172a	#f8fafc	color/slate/900	color/slate/50
+spinner/track/on-solid	COLOR	rgba(255,255,255,0.2)	rgba(0,0,0,0.2)	color/white/20	color/black/20
+spinner/head/on-solid	COLOR	#ffffff	#0f172a	color/white	color/slate/900
+spinner/track/default	COLOR	rgba(0,0,0,0.2)	rgba(255,255,255,0.2)	color/black/20	color/white/20
+spinner/head/default	COLOR	#0f172a	#f8fafc	color/slate/900	color/slate/50

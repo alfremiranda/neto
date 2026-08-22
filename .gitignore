@@ -28,3 +28,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Files this environment cannot delete (device VM forbids unlink). Safe to remove by hand.
+**/_to_delete/

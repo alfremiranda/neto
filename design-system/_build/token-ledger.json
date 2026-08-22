@@ -750,6 +750,30 @@
    "to": "--bg-subtle",
    "via": "provenance",
    "why": "--color-wrap-subtle -> --bg-subtle in token-migration"
+  },
+  "--spinner-track-on-dark": {
+   "uses": 1,
+   "to": "--spinner-track-on-solid",
+   "via": "named",
+   "why": "Renamed 2026-08-22. on-light/on-dark named the BUTTON, not the surface: the values invert between modes, so on-dark was light in light mode and dark in dark — the opposite of what the name promised. Found by Dev while implementing the spinner."
+  },
+  "--spinner-head-on-dark": {
+   "uses": 1,
+   "to": "--spinner-head-on-solid",
+   "via": "named",
+   "why": "Renamed 2026-08-22. on-light/on-dark named the BUTTON, not the surface: the values invert between modes, so on-dark was light in light mode and dark in dark — the opposite of what the name promised. Found by Dev while implementing the spinner."
+  },
+  "--spinner-track-on-light": {
+   "uses": 1,
+   "to": "--spinner-track-default",
+   "via": "named",
+   "why": "Renamed 2026-08-22. on-light/on-dark named the BUTTON, not the surface: the values invert between modes, so on-dark was light in light mode and dark in dark — the opposite of what the name promised. Found by Dev while implementing the spinner."
+  },
+  "--spinner-head-on-light": {
+   "uses": 1,
+   "to": "--spinner-head-default",
+   "via": "named",
+   "why": "Renamed 2026-08-22. on-light/on-dark named the BUTTON, not the surface: the values invert between modes, so on-dark was light in light mode and dark in dark — the opposite of what the name promised. Found by Dev while implementing the spinner."
   }
  },
  "tombstones": {

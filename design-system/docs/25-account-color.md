@@ -53,6 +53,26 @@ Rungs are 600 for the accent and 300 in Dark, except lime at 700 — chosen per 
 uniformly. Every glyph is verified ≥3:1 against its own tint in both modes (WCAG **1.4.11**: a
 filled glyph is a graphic object). Light floor 3.07:1 (amber), Dark floor 8.02:1 (indigo).
 
+### The names, ratified 2026-08-22
+
+The spec required the colour to be named in words but named none. These are the names, and they
+are part of the contract — Figma and the app must not disagree:
+
+| token | nombre | | token | nombre |
+|---|---|---|---|---|
+| `purple` | Morado | | `blue` | Azul |
+| `sky` | Celeste | | `green` | Verde |
+| `emerald` | Esmeralda | | `indigo` | Índigo |
+| `lime` | Lima | | `orange` | Naranja |
+| `amber` | Ámbar | | `rose` | Rosa |
+| `pink` | **Fucsia** | | `teal` | Turquesa |
+
+`pink` is **Fucsia**, not "Rosado". Dev proposed Rosado/Rosa for pink/rose and flagged the pair
+themselves: those two are 14° apart, the tightest in the palette, and two names differing by one
+suffix rescue nothing. Worse, Figma had them **inverted** — `rose` was labelled "Rosado" there
+and "Rosa" in the app, so the same word meant two different colours. Fucsia and Rosa are told
+apart in speech, which is the entire job of the caption.
+
 ## 4. Existing accounts: derive, do not migrate
 
     color = PALETTE[ hash(account.id) % 12 ]
@@ -67,6 +87,18 @@ better on the three things that matter:
 
 `color` stays optional in the type: absent means derived, present means chosen. Writing it on
 first open would erase that distinction and make every account look deliberately coloured.
+
+### Collisions are expected, and the picker should say so
+
+With 7 accounts and 12 colours the chance of at least one repeat is ~85%. Alfredo's seven land on
+three oranges. That is not a defect in the hash — Dev measured the spread at 89–109 per colour
+over 1200 ids, against an ideal of 100 — it is what §4 costs: stability was chosen over
+distinction, and avoiding collisions would mean adding an account could change another account's
+colour, which §4 forbids.
+
+**Approved 2026-08-22: the picker marks colours already in use.** A small dot on the swatch, not
+a block — repeating is the user's right, and the picker's job is to inform the choice, not to
+police it. It does not change the derivation.
 
 ## 5. What Design built (2026-08-21)
 
