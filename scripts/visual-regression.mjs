@@ -69,6 +69,10 @@ for (const story of stories) {
         `${base}/iframe.html?id=${story.id}&globals=theme:${theme};device:${dev.id}`,
         { waitUntil: 'networkidle' },
       )
+      // The version header is library chrome, not the component under test — and it
+      // carries the commit sha, so leaving it in the frame makes every baseline stale on
+      // every push. A detector that goes red because someone committed is no detector.
+      await page.addStyleTag({ content: '[data-ds-stamp]{display:none !important}' })
       // Transitions must have finished before the shot, or the baseline records a frame
       // mid-flight and every later run disagrees with it.
       await page.emulateMedia({ reducedMotion: 'reduce' })

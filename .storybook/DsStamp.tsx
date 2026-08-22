@@ -9,6 +9,7 @@ export function DsStamp() {
   const s = __DS_STAMP__
   return (
     <div
+      data-ds-stamp=""
       style={{
         position: 'sticky', top: 0, zIndex: 10, marginBottom: 16,
         display: 'flex', gap: 12, alignItems: 'baseline', flexWrap: 'wrap',
