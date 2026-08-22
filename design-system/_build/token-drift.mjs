@@ -62,6 +62,18 @@ for (const [lightBlock, darkBlock] of [['sem_light', 'sem_dark'], ['cmp_light', 
   for (const [k, v] of Object.entries(tokens[lightBlock] ?? {})) pkg.set(k, [v, tokens[darkBlock]?.[k]])
 }
 for (const [k, v] of Object.entries(tokens.num ?? {})) if (!pkg.has(k)) pkg.set(k, [v, v])
+for (const [k, v] of Object.entries(tokens.dur ?? {})) if (!pkg.has(k)) pkg.set(k, [v, v])
+for (const [k, v] of Object.entries(tokens.raw ?? {})) if (!pkg.has(k)) pkg.set(k, [v, v])
+// The quarantine MUST be read. When it was added, these keys moved out of the blocks this map
+// was built from and the auditor stopped seeing them — it reported 0 pending and exited clean
+// while eight undecided names sat in the package. An instrument that goes green because it
+// stopped looking is worse than one that is red.
+for (const [k, v] of Object.entries(tokens.legacy_light ?? {}))
+  if (!pkg.has(k)) pkg.set(k, [v, tokens.legacy_dark?.[k] ?? v])
+// Aliases are emitted names too, but they are accounted for by construction — skip them here
+// so they are not re-reported as drift against the targets they point at.
+const ALIASED = new Set(Object.keys(tokens.alias ?? {}))
+for (const k of ALIASED) if (!pkg.has(k)) pkg.set(k, ['(alias)', '(alias)'])
 
 // ── who actually consumes a name ──────────────────────────────────────────────
 // Counted where consumers really live, which is NOT only `src/`. Getting this wrong
@@ -109,6 +121,7 @@ const R = { added: [], removed: [], changed: [], aliased: [], tombstoned: [], pe
 for (const [k, v] of figma) {
   if (!pkg.has(k)) { R.added.push({ name: k, light: v.values.Light, dark: v.values.Dark }); continue }
   const [pl, pd] = pkg.get(k)
+  if (pl === '(alias)') continue
   const fl = String(v.values.Light), fd = String(v.values.Dark)
   if (String(pl) !== fl || String(pd) !== fd) R.changed.push({ name: k, from: [pl, pd], to: [fl, fd] })
 }

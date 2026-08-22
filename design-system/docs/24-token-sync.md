@@ -70,7 +70,43 @@ the obvious idea. It left **88 of 132 ambiguous** and produced confidently wrong
 `--currency-usd-surface`. Two tokens sharing a value today is **Rule 7**, not identity; an
 account surface is not a currency chip any more than a favourite was a tax.
 
-## 4. The auditor
+## 4. The generator
+
+`node design-system/_build/emit-tokens.mjs [--check]` — replaces `apply-rename-map.mjs`, which now
+fails loudly rather than quietly republishing the old namespace.
+
+It writes `tokens.json` in blocks, and **the block is the unit**, because `build.py` appends one per
+block. Semantic now carries lengths, durations and easing curves side by side, so they cannot share:
+
+| block | holds | unit |
+|---|---|---|
+| `sem_light` / `sem_dark` · `cmp_light` / `cmp_dark` | colour | — |
+| `num` | lengths | `px` |
+| `dur` | `motion/duration/*` | `ms` — `150px` would be silent nonsense |
+| `raw` | easing curves | — |
+| `alias` | retired name → `var(new)` | — |
+| `legacy_light` / `legacy_dark` | **quarantine** | — |
+
+Three refusals, each with its own exit code, and none of them overridable by a general flag:
+
+- **Unsigned value change (2).** Every disagreement between Figma and the package is signed
+  individually in `token-ledger.json.acceptedValueChanges`, with a reason and a commit. A *new*
+  disagreement still stops the write, so the accept step can never launder something nobody read.
+- **Broken alias (1).** An alias whose target is not emitted.
+- **Unfrozen pending name (4).** See quarantine below.
+
+### Quarantine is not amnesty
+
+A `pending` name has no Figma source *and* no replacement. Dropping it breaks live consumers;
+inventing a target is the value-matching §3 refuses. So its current value is **frozen in the
+ledger** and emitted under a block that says what it is. Nothing moves a pixel, the auditor keeps
+reporting it as undecided, and the block can only shrink.
+
+The frozen value lives in the ledger and never in `tokens.json`. The first version read it from
+`tokens.json` — which this script also *writes* — so the second run found the key already gone and
+froze nothing. A value that has to survive a transform cannot live in the thing being transformed.
+
+## 5. The auditor
 
 `node design-system/_build/token-drift.mjs [--json]`
 
@@ -114,7 +150,7 @@ It cannot reach Figma. `figma-dump.json` is produced by stage 1 *inside* Figma's
 age, and warns when it is more than a day old, because **a green run against a stale dump
 proves nothing** — which is precisely how the last four days passed without anyone noticing.
 
-## 5. When it runs
+## 6. When it runs
 
 **At the start of every design session, before touching anything.** Alfredo's call,
 2026-08-21. Stage 1, then the auditor, then work. The reasoning: that is the moment the
@@ -126,7 +162,7 @@ CI cannot do this half — it has no Figma access. What CI does own is the repo 
 `tokens.json`. Between them the loop is closed: `R2` proves the package matches the tokens,
 the auditor proves the tokens match Figma, and neither one alone is a claim about the other.
 
-## 6. Order of operations for a rename, from now on
+## 7. Order of operations for a rename, from now on
 
 1. Rename it in Figma.
 2. Append the alias to `token-ledger.json` **in the same session**, with `via` and a reason.

@@ -135,7 +135,13 @@ for n in broken:
                 'but deliberately no border-width/none — a zero-width border is no border. Zero consumers.')
         continue
     if n.startswith('--account-'):
-        ledger['pending'][n] = dict(entry_base, via='needs-decision',
+        # The frozen value lives HERE, not in tokens.json. emit-tokens.mjs both reads
+        # tokens.json as its baseline and writes it, so sourcing the quarantine from there
+        # made the script destroy its own input on a second run: the first pass dropped the
+        # key, the second found nothing to freeze. A value that must survive the transform
+        # belongs in the record, not in the artefact being transformed.
+        frozen = {'light': t['sem_light'].get(n), 'dark': t['sem_dark'].get(n)}
+        ledger['pending'][n] = dict(entry_base, via='needs-decision', frozen=frozen,
             recommend='tombstone',
             decidedBy='Alfredo 2026-08-21 — account colour becomes a user choice (see docs/25-account-color.md)',
             blockedOn='build.py lines 109-112 still map --color-account-<name>-{bg,txt} onto these. '
@@ -163,7 +169,28 @@ meta = {
   'notDerivedFromValues': 'Value equality is not identity (Rule 7). Value matching left 88 of 132 '
                           'ambiguous and produced confidently wrong uniques. It is not used here.',
 }
-out = {'_meta': meta, **ledger}
+# Every value that disagrees between Figma and the published package, signed off one by
+# one. `emit-tokens.mjs` refuses to write any change that is NOT on this list, so
+# --accept-changes stops being a blind flag: a NEW disagreement still stops the build.
+ACCEPTED = {
+ '--badge-neutral-background':        'Light surface ladder — bg/subtle moved slate-100 -> slate-20 (7882f319)',
+ '--badge-accent-background':         'Light surface ladder — bg/subtle moved slate-100 -> slate-20 (7882f319)',
+ '--notification-secondary-background':'Light surface ladder — bg/subtle moved slate-100 -> slate-20 (7882f319)',
+ '--badge-neutral-foreground':        'fg/subtle moved slate-500 -> slate-700 for contrast (7882f319)',
+ '--button-ghost-foreground':         'fg/subtle moved slate-500 -> slate-700 for contrast (7882f319)',
+ '--notification-secondary-foreground':'fg/subtle moved slate-500 -> slate-700 for contrast (7882f319)',
+ '--badge-info-background':           'income moved cyan -> blue at Alfredo\'s instruction; badge/info aliases income (f99b16ad)',
+ '--badge-info-foreground':           'income moved cyan -> blue at Alfredo\'s instruction; badge/info aliases income (f99b16ad)',
+ '--button-outline-border':           'outline border was slate-200 on light and read as no border; now slate-500 in both modes',
+ '--button-danger-border':            'dark border was red-800 on a dark surface; now red-600, same as light',
+ '--sidebar-surface':                 'decided 2026-08-17, a token with no consumers: rgba(255,255,255,0.5) -> #ffffff',
+ '--input-size-sm-height':            'Field/Input rework — control heights moved onto the 8-point scale, 28 -> 32 (f904c8cd)',
+ '--input-size-md-height':            'Field/Input rework — 36 -> 40 (f904c8cd)',
+ '--input-size-lg-height':            'Field/Input rework — 44 -> 48 (f904c8cd)',
+ '--input-size-lg-padding-x':         'Field/Input rework — 16 -> 14, to keep the lg control on the scale (f904c8cd)',
+}
+
+out = {'_meta': meta, 'acceptedValueChanges': ACCEPTED, **ledger}
 json.dump(out, open(os.path.join(H, 'token-ledger.json'), 'w'), indent=1, ensure_ascii=False)
 
 print(f'broken {len(broken)}  ->  aliases {len(ledger["aliases"])} · tombstones {len(ledger["tombstones"])} · pending {len(ledger["pending"])}')

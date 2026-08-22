@@ -7,6 +7,19 @@ OUT = os.environ.get("DS_OUT", "/home/claude/design-system")
 T = json.load(open(f"{HERE}/tokens.json"))
 COMPS = json.load(open(f"{HERE}/components.json"))
 SL, SD, CL, CD, NUM = T["sem_light"], T["sem_dark"], T["cmp_light"], T["cmp_dark"], T["num"]
+# Blocks added 2026-08-21 when the published names started following Figma (docs/24-token-sync.md).
+# The block IS the unit — build.py appends one per block — so a duration cannot share the px
+# block with a length: --motion-duration-fast: 150px would be silent nonsense, not a rounding
+# error. ALIAS holds every retired name pointing at its replacement via var(), which is what
+# lets the rename land in one commit while src/ and the bridge below keep resolving.
+DUR   = T.get("dur", {})     # ms
+RAW   = T.get("raw", {})     # easing curves — no unit
+ALIAS = T.get("alias", {})   # --old: var(--new) — no unit, resolves per mode through the target
+# Quarantine: published names with NO Figma source, frozen at their current value because
+# dropping them would break live consumers and inventing a source would be a guess. Every one
+# is listed in token-ledger.json under `pending`. This block should only ever shrink.
+LEG_L = T.get("legacy_light", {})
+LEG_D = T.get("legacy_dark", {})
 
 TS = {}
 for row in T["text"]:
@@ -47,6 +60,16 @@ def tokens_css():
 {blk(SL)}
 {blk(CL)}
 {blk(NUM, "px")}
+{blk(DUR, "ms")}
+{blk(RAW)}
+
+  /* Retired names, still emitted so nothing breaks mid-migration. Each one resolves
+     through var(), so it follows its replacement into dark without a second declaration.
+     token-drift.mjs lists the ones at zero consumers as RETIRABLE — delete those. */
+{blk(ALIAS)}
+
+  /* QUARANTINE — no Figma source. See token-ledger.json `pending`. Should only shrink. */
+{blk(LEG_L)}
 }}
 
 /* Two dark selectors on purpose: [data-theme] is what the generated previews in this
@@ -59,6 +82,7 @@ def tokens_css():
 [data-theme="dark"], .dark {{
 {blk(SD)}
 {blk(CD)}
+{blk(LEG_D)}
 }}
 
 /* Text styles — Rethink Sans, tabular by default */
@@ -140,7 +164,10 @@ def check_map_sources():
     which lines 109-112 below still reference; whoever accepts that kill has to retarget
     those four pairs in the SAME commit. This turns that into a loud failure.
     """
-    known = set(SL) | set(SD) | set(CL) | set(CD) | set(NUM)
+    # ALIAS counts as known on purpose: a retired name that still resolves is not missing.
+    # That is the whole point of the alias layer — the bridge below may keep pointing at old
+    # names until Dev migrates it, and doing so must not be an error.
+    known = set(SL) | set(SD) | set(CL) | set(CD) | set(NUM) | set(DUR) | set(RAW) | set(ALIAS) | set(LEG_L)
     missing = [(app, tok) for _, pairs in MAP for app, tok in pairs if tok not in known]
     missing += [(f"--cat-{app}", f"--category-{fig}-{kind}")
                 for app, fig in CATS for kind in ("default", "surface")

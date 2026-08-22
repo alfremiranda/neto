@@ -2,11 +2,17 @@
 
 Última actualización: **2026-08-21**. Trabajo en vuelo al cierre de sesión.
 
-**`unpushed: 01023151` · `eedb39a8` · `0fd773be` · `d9555237` + el commit que trae este handoff** — Diseño no puede pushear. `credential-osxkeychain` es un binario de
+**`unpushed: 01023151` · `eedb39a8` · `0fd773be` · `d9555237` · `71df9e46` + el commit que trae este handoff** — Diseño no puede pushear. `credential-osxkeychain` es un binario de
 macOS que no existe en la VM de Linux donde corro; `git fetch` funciona (lectura anónima),
 `git push` no puede autenticar. Dev barre. Los cuatro commits que este archivo declaraba sin
 pushear el 20 (`6afa685e`, `6cff971a`, `b19faabe`, `308f798c`) **ya están en `origin/main`**;
 verificado con `git fetch`, no supuesto.
+
+## Cómo le respondo a Alfredo (2026-08-21)
+
+Pocas palabras, frases concretas, sin explicación técnica. **Alfredo no es developer.**
+Qué cambió y qué significa para la app — no cómo funciona por dentro. El detalle técnico va
+a los docs, a los mensajes de commit y a la bandeja de Dev, no a la conversación.
 
 ## Dónde quedó el roadmap
 
@@ -19,7 +25,7 @@ verificado con `git fetch`, no supuesto.
 | 1.2 · aplicar en Figma | ✅ 138 → 121 tokens de color, renombrados, scopes derivados, `codeSyntax`, descripciones |
 | 1.3 · escalas numéricas | ✅ Semantic 58 → 33, Primitives 43 → 30, **cero colisiones de nombre** |
 | 1.4 · ocultar primitivas (`T2`) | ✅ `T2` 334 → 0, y las 203 vinculaciones directas que ocultaba bajaron a 57 (marcas y geometría de íconos, excepción estructural) |
-| 2 · pipeline / exporter | 🟡 **etapa 1 corrida y commiteada** (`figma-dump.json`, 731 variables + 26 estilos). La etapa 2 espera una decisión, no un archivo — ver abajo |
+| 2 · pipeline / exporter | ✅ **cerrada 21-ago.** Etapas 1 y 2 corridas, paquete regenerado, `validate-repo` verde. El auditor da **ADDED 0 · CHANGED 0**: Figma y el paquete coinciden por primera vez |
 | 3 · movimiento e interacción | ⬜ API de Motion verificada. `23-onboarding-motion.md` ya escrito. `bg/neutral-alpha-{10,20}` reservados para state layers. La escala de blur/spread se acuña aquí |
 | 4 · componentes que faltan | ⬜ tres gráficos anuales, barra de distribución, `LedgerRow`, asa de drawer. `chart/*` reservado |
 | 5 · mantenerlo vivo | ⬜ `C5`, `C6`, `C7` |
@@ -100,7 +106,8 @@ Diseño y está escrito:
 | ~~los 8 `--account-{1..4}-*`~~ | **decidido 08-21: mueren.** El color pasa a ser elección del usuario | `docs/25-account-color.md` · siguen en `pending` hasta que Dev repunte `build.py` 109-112 |
 | la fila `destructive` del mapa de migración: ¿la aplicó Dev? | Dev | `Q-2026-08-21-la-fila-destructive` |
 | `Frame 1` en `Components · Forms` (30 instancias de `Input` suyas) | Alfredo | pendiente desde el 20 |
-| etapa 2 + `build.py` con los 20 CHANGED | Dev | reporte 08-21 `§NEEDS 2` |
+| migrar los 132 nombres viejos a su ritmo (75 ya sin consumidores) | Dev | `token-drift.mjs` → RETIRABLE |
+| repuntar `build.py` 109-112 y matar la cuarentena | Dev | `TASK-2026-08-21-color-de-cuenta` |
 | escala de blur/spread (dueño: Diseño, va a fase 3) | cola propia | `A-2026-08-20-fav-star §4` |
 | Storybook | sigue bloqueado, medido peor que en agosto | `6afa685e` |
 

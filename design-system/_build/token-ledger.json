@@ -13,6 +13,23 @@
   },
   "notDerivedFromValues": "Value equality is not identity (Rule 7). Value matching left 88 of 132 ambiguous and produced confidently wrong uniques. It is not used here."
  },
+ "acceptedValueChanges": {
+  "--badge-neutral-background": "Light surface ladder — bg/subtle moved slate-100 -> slate-20 (7882f319)",
+  "--badge-accent-background": "Light surface ladder — bg/subtle moved slate-100 -> slate-20 (7882f319)",
+  "--notification-secondary-background": "Light surface ladder — bg/subtle moved slate-100 -> slate-20 (7882f319)",
+  "--badge-neutral-foreground": "fg/subtle moved slate-500 -> slate-700 for contrast (7882f319)",
+  "--button-ghost-foreground": "fg/subtle moved slate-500 -> slate-700 for contrast (7882f319)",
+  "--notification-secondary-foreground": "fg/subtle moved slate-500 -> slate-700 for contrast (7882f319)",
+  "--badge-info-background": "income moved cyan -> blue at Alfredo's instruction; badge/info aliases income (f99b16ad)",
+  "--badge-info-foreground": "income moved cyan -> blue at Alfredo's instruction; badge/info aliases income (f99b16ad)",
+  "--button-outline-border": "outline border was slate-200 on light and read as no border; now slate-500 in both modes",
+  "--button-danger-border": "dark border was red-800 on a dark surface; now red-600, same as light",
+  "--sidebar-surface": "decided 2026-08-17, a token with no consumers: rgba(255,255,255,0.5) -> #ffffff",
+  "--input-size-sm-height": "Field/Input rework — control heights moved onto the 8-point scale, 28 -> 32 (f904c8cd)",
+  "--input-size-md-height": "Field/Input rework — 36 -> 40 (f904c8cd)",
+  "--input-size-lg-height": "Field/Input rework — 44 -> 48 (f904c8cd)",
+  "--input-size-lg-padding-x": "Field/Input rework — 16 -> 14, to keep the lg control on the scale (f904c8cd)"
+ },
  "aliases": {
   "--badge-primary-background": {
    "uses": 0,
@@ -761,6 +778,10 @@
   "--account-1-foreground": {
    "uses": 1,
    "via": "needs-decision",
+   "frozen": {
+    "light": "#0e7490",
+    "dark": "#67e8f9"
+   },
    "recommend": "tombstone",
    "decidedBy": "Alfredo 2026-08-21 — account colour becomes a user choice (see docs/25-account-color.md)",
    "blockedOn": "build.py lines 109-112 still map --color-account-<name>-{bg,txt} onto these. They can only be tombstoned once that bridge points at account/<hue>/* instead.",
@@ -769,6 +790,10 @@
   "--account-1-surface": {
    "uses": 1,
    "via": "needs-decision",
+   "frozen": {
+    "light": "#ecfeff",
+    "dark": "#083344"
+   },
    "recommend": "tombstone",
    "decidedBy": "Alfredo 2026-08-21 — account colour becomes a user choice (see docs/25-account-color.md)",
    "blockedOn": "build.py lines 109-112 still map --color-account-<name>-{bg,txt} onto these. They can only be tombstoned once that bridge points at account/<hue>/* instead.",
@@ -777,6 +802,10 @@
   "--account-2-foreground": {
    "uses": 2,
    "via": "needs-decision",
+   "frozen": {
+    "light": "#7c3aed",
+    "dark": "#c4b5fd"
+   },
    "recommend": "tombstone",
    "decidedBy": "Alfredo 2026-08-21 — account colour becomes a user choice (see docs/25-account-color.md)",
    "blockedOn": "build.py lines 109-112 still map --color-account-<name>-{bg,txt} onto these. They can only be tombstoned once that bridge points at account/<hue>/* instead.",
@@ -785,6 +814,10 @@
   "--account-2-surface": {
    "uses": 2,
    "via": "needs-decision",
+   "frozen": {
+    "light": "#f5f3ff",
+    "dark": "#4c1d95"
+   },
    "recommend": "tombstone",
    "decidedBy": "Alfredo 2026-08-21 — account colour becomes a user choice (see docs/25-account-color.md)",
    "blockedOn": "build.py lines 109-112 still map --color-account-<name>-{bg,txt} onto these. They can only be tombstoned once that bridge points at account/<hue>/* instead.",
@@ -793,6 +826,10 @@
   "--account-3-foreground": {
    "uses": 1,
    "via": "needs-decision",
+   "frozen": {
+    "light": "#047857",
+    "dark": "#6ee7b7"
+   },
    "recommend": "tombstone",
    "decidedBy": "Alfredo 2026-08-21 — account colour becomes a user choice (see docs/25-account-color.md)",
    "blockedOn": "build.py lines 109-112 still map --color-account-<name>-{bg,txt} onto these. They can only be tombstoned once that bridge points at account/<hue>/* instead.",
@@ -801,6 +838,10 @@
   "--account-3-surface": {
    "uses": 1,
    "via": "needs-decision",
+   "frozen": {
+    "light": "#ecfdf5",
+    "dark": "#022c22"
+   },
    "recommend": "tombstone",
    "decidedBy": "Alfredo 2026-08-21 — account colour becomes a user choice (see docs/25-account-color.md)",
    "blockedOn": "build.py lines 109-112 still map --color-account-<name>-{bg,txt} onto these. They can only be tombstoned once that bridge points at account/<hue>/* instead.",
@@ -809,6 +850,10 @@
   "--account-4-foreground": {
    "uses": 1,
    "via": "needs-decision",
+   "frozen": {
+    "light": "#475569",
+    "dark": "#cbd5e1"
+   },
    "recommend": "tombstone",
    "decidedBy": "Alfredo 2026-08-21 — account colour becomes a user choice (see docs/25-account-color.md)",
    "blockedOn": "build.py lines 109-112 still map --color-account-<name>-{bg,txt} onto these. They can only be tombstoned once that bridge points at account/<hue>/* instead.",
@@ -817,6 +862,10 @@
   "--account-4-surface": {
    "uses": 1,
    "via": "needs-decision",
+   "frozen": {
+    "light": "#f1f5f9",
+    "dark": "#334155"
+   },
    "recommend": "tombstone",
    "decidedBy": "Alfredo 2026-08-21 — account colour becomes a user choice (see docs/25-account-color.md)",
    "blockedOn": "build.py lines 109-112 still map --color-account-<name>-{bg,txt} onto these. They can only be tombstoned once that bridge points at account/<hue>/* instead.",
