@@ -4,26 +4,32 @@
   "n": "action-chip",
   "v": 8,
   "p": [
+   "Show Leading Icon",
    "State=Disabled|Default|Hover|Selected",
    "Badge=True|False"
   ],
   "w": 322,
-  "h": 220,
-  "d": "Filter chip with an optional count badge. State × Badge.\n\nUsed for the expense category filter. Only categories that have data that month are rendered, so the strip length varies. State=Selected is the active filter; Badge=True shows how many entries match."
+  "h": 412,
+  "d": "Filter chip with an optional count badge. State × Badge.\n\nUsed for the expense category filter. Only categories that have data that month are rendered, so the strip length varies. State=Selected is the active filter; Badge=True shows how many entries match.\n\nSelected has its own three tokens (action-chip/selected/*). The other three states still borrow badge/neutral/* and badge/accent/*, which is a loan, not a decision — a filter chip is not a badge. Authorised to finish on 2026-08-19, still open."
  },
  {
   "g": "Actions",
   "n": "Button",
-  "v": 72,
+  "v": 168,
   "p": [
+   "label",
+   "Show Leading Icon",
+   "Show Trailing Icon",
    "Variant=Filled|Outline|Ghost",
-   "Severity=Default|Danger",
+   "Severity=Primary|Neutral|Danger",
    "Size=SM|MD|LG|XL",
-   "State=Default|Hover|Disabled"
+   "State=Default|Hover|Focused",
+   "Disabled=False|True",
+   "Loading=False|True"
   ],
-  "w": 1454,
-  "h": 356,
-  "d": "Primary action control. Variant × Severity × Size × State.\n\nFilled = the single main action on a screen. Outline = secondary. Ghost = tertiary and inline actions.\n\nSeverity=Danger is only for destructive actions, which must follow the two-tap confirm pattern: first tap shows \"¿Eliminar?\", second deletes. Never delete on one tap.\n\nLabels use Control/SM–XL, whose line height is 100% so the text centres in the frame."
+  "w": 1277,
+  "h": 1354,
+  "d": "Primary action control. Variant × Severity × Size, with State plus orthogonal Disabled and Loading.\n\nFilled = the single main action on a screen. Outline = secondary. Ghost = tertiary and inline actions.\n\nSeverity=Danger is only for destructive actions, which must follow the two-tap confirm pattern: first tap shows “¿Eliminar?”, second deletes. Never delete on one tap.\n\nDisabled and Loading are independent axes because they co-occur: a submitting button is both, and an aria-disabled control still takes keyboard focus.\n\nLabels use Control/SM–XL, whose line height is 100% so the text centres in the frame."
  },
  {
   "g": "Actions",
@@ -32,18 +38,18 @@
   "p": [
    "State=Closed|Open"
   ],
-  "w": 284,
+  "w": 294,
   "h": 284,
-  "d": "Mobile-only entry point for creating records. State = Closed | Open.\n\nOpen reveals three FABAction items and dims the page behind with surface/scrim. The plus rotates 45° into a close icon rather than swapping glyphs, so the button never changes shape.\n\nSits above the bottom nav, not inside it. Only visible on the Mes, Dashboard and Cuentas views. On desktop the same actions live in MonthNav's \"Agregar\" popover."
+  "d": "Mobile-only entry point for creating records. State = Closed | Open.\n\nOpen reveals three FABAction items and dims the page behind with bg/scrim. The plus rotates 45° into a close icon rather than swapping glyphs, so the button never changes shape.\n\nSits above the bottom nav, not inside it. Only visible on the Mes, Dashboard and Cuentas views — elsewhere there is nothing to create. On desktop the same actions live in MonthNav’s “Agregar” popover."
  },
  {
   "g": "Actions",
   "n": "FABAction",
-  "v": 0,
+  "v": 1,
   "p": [],
-  "w": 103,
+  "w": 110,
   "h": 44,
-  "d": "One item of the FAB speed-dial. Card surface with a border so it separates from the dimmed page behind it.\n\nThe icon takes interactive/primary — the only colour in the row, which is what makes the three items scannable at a glance.\n\nThe three are always Ingreso · Gasto · Movimiento, in that order, staggered 40ms apart from the FAB outward."
+  "d": "One item of the FAB speed-dial. Card surface with a border so it separates from the dimmed page behind it.\n\nThe icon takes bg/brand — the only colour in the row, which is what makes the three items scannable at a glance.\n\nThe three are always Ingreso · Gasto · Movimiento, in that order, staggered 40ms apart from the FAB outward."
  },
  {
   "g": "Actions",
@@ -57,19 +63,28 @@
   ],
   "w": 560,
   "h": 356,
-  "d": "Icon-only action. Same four axes as Button.\n\nRow actions are ALWAYS visible — never hidden behind hover. Use SM in filter bars and list rows, MD as the default.\n\nEvery instance needs an accessible label in code; the icon alone is not a name."
+  "d": "Icon-only action. Same four axes as Button.\n\nRow actions are ALWAYS visible — never hidden behind hover (opacity-0 group-hover is an anti-pattern here). Use SM in filter bars and list rows, MD as the default.\n\nEvery instance needs an accessible label in code; the icon alone is not a name."
  },
  {
   "g": "Badges",
   "n": "AccountBadge",
-  "v": 8,
+  "v": 1,
+  "p": [],
+  "w": 104,
+  "h": 20,
+  "d": "Chip that identifies WHICH account a row belongs to. What KIND of account it is, is AccountTypeBadge’s job; the two answer different questions and can appear together.\n\nThe dot carries the account’s accent. At runtime that fill comes from the USER’S DATA — each account stores a hue picked from account/{hue}/accent — so account/purple/accent here is a canvas default, not a decision. Do not “fix” it to a static token: an audit that repoints this to a fixed colour breaks user-chosen account colour.\n\nThe body stays neutral on purpose (bg/account · border/subtle · fg/account). Only the dot carries hue, so a row with four chips does not become a colour chart.\n\nThe dot sits on bg/account, NOT on the avatar tint, and that is a second background nobody checked until 2026-08-22: amber measured 2.91:1 there and green passed by 0.01. Both moved to rung 700 in light. Any new accent has to clear 3:1 against BOTH.\n\nNOT a component set, deliberately. It used to be one, with Color=Cyan|Purple|Green|Neutral standing in for account slots 1-4; those were renamed to slots, and then the slot model died when the hue became a user choice. What was left were two variant axes with exactly one option each — which is not variance, and would have extracted into code as Color=”Account 4”, a name meaning nothing. Dissolved 2026-08-17; 27 instances verified intact across four pages.\n\nShipped in code 2026-08-22. The earlier note here said extraction was blocked until the exporter landed — it landed, and this is one of the components it unblocked."
+ },
+ {
+  "g": "Badges",
+  "n": "AccountTypeBadge",
+  "v": 4,
   "p": [
-   "Color=Cyan|Green|Neutral|Purple",
-   "Icon=False|True"
+   "Show Leading Icon",
+   "Type=Cash|Bank Account|Credit Card|Savings"
   ],
   "w": 158,
   "h": 148,
-  "d": "Account chip attached to an income, expense or transfer row. Colour maps to the account/1–4 token pairs (ARQ · Toptal · Bancolombia · other)."
+  "d": "Says what KIND of account this is — Cash, Bank Account, Credit Card, Savings — not which account it is. Which account is AccountBadge’s job; the two chips answer different questions and can appear together.\n\nThe four variants map 1:1 to the account types the product supports, so this set gains a variant only when the product gains a type.\n\nCorrected 2026-08-17: this component was carrying AccountBadge’s description verbatim, which claimed its variants were the account/1..4 slots. They never were. Second instance of a pasted-over description in this file — the token then called color/account/border, today border/subtle, had Input’s."
  },
  {
   "g": "Badges",
@@ -77,23 +92,24 @@
   "v": 24,
   "p": [
    "Variant=Outline|Filled",
-   "Color=Purple|Green|Blue|Orange|Red|Gray",
+   "Tone=Accent|Danger|Info|Neutral|Success|Warning",
    "Icon=False|True"
   ],
-  "w": 158,
-  "h": 212,
-  "d": "Generic label chip. Variant × Color × Icon.\n\nVariant=Filled paints badge/{semantic}/background; Variant=Outline paints badge/{semantic}/border with no fill. Same geometry, same six token families — this used to be two component sets (Badge filled, Status outline), and the filled one had zero instances in the whole file. Filled and outline are a treatment, not two components.\n\nOutline is the entry-state treatment: scheduled, unconfirmed, overdue. Filled is a plain label.\n\nColour here is decorative. The moment a badge carries meaning — an account, a category, a currency — use the specific component instead, so the semantic token layer stays the source of that meaning."
+  "w": 903,
+  "h": 152,
+  "d": "Generic label chip. Variant × Tone × Icon.\n\nVariant=Filled paints badge/{tone}/background; Variant=Outline paints badge/{tone}/border with no fill. Same geometry, same six token families — this used to be two component sets (Badge filled, Status outline), and the filled one had zero instances in the whole file. Filled and outline are a treatment, not two components.\n\nOutline is the entry-state treatment: scheduled, unconfirmed, overdue. Filled is a plain label.\n\nColour here is decorative. The moment a badge carries meaning — an account, a category, a currency — use the specific component instead, so the semantic token layer stays the source of that meaning. AccountBadge is the worked example: it exists precisely because a generic Badge was carrying an account name."
  },
  {
   "g": "Badges",
   "n": "category-badge",
   "v": 15,
   "p": [
+   "Show Label",
    "category=health|bank|transit|recreation|food|home|travel|other|family|taxes|savings|work|connectivity|insurance|shopping"
   ],
   "w": 462,
-  "h": 212,
-  "d": "One variant per expense category — 15, mapped 1:1 to EGRESO_CATEGORIAS in code.\n\nColour comes from category/{id}/default and /surface. In dark mode the surface is -950 and the text -300, uniformly; connectivity and other are the documented exception because their neutral -950 disappears against the page background."
+  "h": 260,
+  "d": "One variant per expense category — 15, mapped 1:1 to EGRESO_CATEGORIAS in code.\n\nColour comes from category/{id}/accent and /surface. In dark mode the surface is -950 and the text -300, uniformly; connectivity and other are the documented exception because their neutral -950 disappears against the page background."
  },
  {
   "g": "Badges",
@@ -102,9 +118,9 @@
   "p": [
    "Currency=USD|COP"
   ],
-  "w": 122,
+  "w": 126,
   "h": 52,
-  "d": "USD or COP marker. Used wherever an amount could be misread as the wrong currency — this product lives in two.\n\nPaints currency/usd/* and currency/cop/*, which alias account/1 and account/3. A currency is not an account: they share a colour by convention, and the split means moving the account palette does not silently repaint the currency chip."
+  "d": "USD or COP marker. Used wherever an amount could be misread as the wrong currency — this product lives in two."
  },
  {
   "g": "Badges",
@@ -115,12 +131,12 @@
   ],
   "w": 92,
   "h": 64,
-  "d": "Star toggle on an account. Favourites pin as compact cards on Resumen and sort first in every account picker."
+  "d": "Star toggle on an account. Favourites pin as compact cards on Resumen and sort first in every account picker.\n\nSelected is amber-700, not amber-500. Filling the glyph is what puts it inside WCAG 1.4.11 as a graphic object, not outside it — 500 measured 2.15:1 against white and failed all three backgrounds it can land on."
  },
  {
   "g": "Badges",
   "n": "Indicator",
-  "v": 0,
+  "v": 1,
   "p": [],
   "w": 6,
   "h": 6,
@@ -140,33 +156,90 @@
  {
   "g": "Badges",
   "n": "TRMBadge",
-  "v": 0,
+  "v": 1,
   "p": [],
-  "w": 103,
-  "h": 26,
-  "d": "Live TRM chip in the header. Informative only — every calculation uses the month's stored TRM, never this one."
+  "w": 115,
+  "h": 28,
+  "d": "Live TRM chip in the header. Informative only — every calculation uses the month’s stored TRM, never this one."
+ },
+ {
+  "g": "Brand",
+  "n": "brand-mark/flag",
+  "v": 2,
+  "p": [
+   "Country=Colombia|USA"
+  ],
+  "w": 289,
+  "h": 105,
+  "d": "Country flag, used to recognise a currency at a glance. Its colours belong to a state, not to us: they stay raw on purpose and must never be tokenised, exactly like the Google mark. The brand-mark/ prefix is what makes C1 skip them by configuration rather than by anyone remembering (design-system/docs/16-marks.md)."
+ },
+ {
+  "g": "Brand",
+  "n": "brand-mark/google",
+  "v": 1,
+  "p": [],
+  "w": 24,
+  "h": 24,
+  "d": "Google mark, used on the sign-in button. Its four colours are Google’s, not ours: they are raw hexes ON PURPOSE and must never be bound to a token, because a token implies we are allowed to change them and we are not. They have no dark mode either — the mark is the same in both, which is also why it sits on Brand and not in the Icon Library. Exempt from C1 by CONFIG.foreignBrand; see design-system/docs/16-marks.md. The GitHub mark is the opposite case and is a normal glyph: monochrome, inherits currentColor."
+ },
+ {
+  "g": "Brand",
+  "n": "Logo",
+  "v": 2,
+  "p": [
+   "Style=Primary|Secondary"
+  ],
+  "w": 240,
+  "h": 460,
+  "d": "The Neto mark. Style=Primary is the mark on its brand ground; Style=Secondary is the reversed treatment for dark or photographic backgrounds.\n\nBound to logo/mark and logo/bg, which hold the SAME value in light and dark on purpose: a logo that changes colour with the theme is a different logo. This is identity, not a semantic colour, and it is the one place in the system where mode-invariance is the point."
  },
  {
   "g": "Cards",
   "n": "AccountCard",
-  "v": 24,
+  "v": 12,
   "p": [
+   "Show Account Number",
+   "Show Favorite",
    "Type=Bank Account|Credit Card|Savings|Cash",
-   "State=Default|Selected|Hover",
-   "Size=Medium|Small"
+   "State=Default|Selected|Hover"
   ],
   "w": 1000,
-  "h": 1128,
-  "d": "Account card. Type × State × Size.\n\nEach type shows different data, which is why this is one set and not four components: Bank Account adds the estimated monthly yield, Credit Card shows limit, debt, % used and the cut/payment dates, Savings shows the CDT maturity countdown, Cash has neither number nor rate.\n\nThe account type is locked after creation — the card never needs to handle a type change."
+  "h": 540,
+  "d": "Account card. Type × State.\n\nEach type shows different data, which is why this is one set and not four components: Bank Account adds the estimated monthly yield, Credit Card shows limit, debt, % used and the cut/payment dates, Savings shows the CDT maturity countdown, Cash has neither number nor rate.\n\nThe account type is locked after creation — to reclassify, the account must be recreated. The card never needs to handle a type change.\n\nThe banner carries the account accent. At runtime that fill comes from the USER’S DATA — each account stores a hue picked from account/{hue}/accent — so account/purple/accent is the canvas default, not a decision. Repointing it to a fixed colour breaks user-chosen account colour.\n\nThe palette is twelve account/{hue}/accent + /surface pairs; the picker is AccountColorPicker. See design-system/docs/25-account-color.md.\n\n2026-08-17: was bound to color/purple/500, a raw primitive inside a component, across all 12 variants."
  },
  {
   "g": "Cards",
   "n": "AccountCard (legacy)",
-  "v": 0,
+  "v": 1,
   "p": [],
   "w": 180,
   "h": 102,
-  "d": "DEPRECATED — superseded by the AccountCard set. 180×102, no variants, and it duplicated the name of the set, which made both unusable from the asset panel.\n\nRemap any remaining instances to the set, then delete."
+  "d": "DEPRECATED — superseded by the AccountCard set above. 180×102, no variants, and it duplicated the name of the set, which made both unusable from the asset panel.\n\nRemap any remaining instances to the set, then delete."
+ },
+ {
+  "g": "Cards",
+  "n": "AccountChart",
+  "v": 4,
+  "p": [
+   "Series=Single|Dual",
+   "Device=Desktop|Mobile"
+  ],
+  "w": 1084,
+  "h": 490,
+  "d": "Balance over time for one account. Series=Single is the balance area alone; Series=Dual adds the debt series beneath it, for credit cards where what is owed grows downward.\n\nBoth series carry a gradient that fades to fully transparent — account-chart/series/*/fill-to is the same hue at 0 alpha, not white — so the fill never turns milky over a dark canvas.\n\nThe marker line is account-chart/marker/line: slate on light, white at 70% on dark, because one fixed grey disappears against one of the two."
+ },
+ {
+  "g": "Cards",
+  "n": "AccountSummaryCard",
+  "v": 8,
+  "p": [
+   "Title",
+   "Type=Credit Card|Savings|Bank Account|Cash",
+   "Device=Desktop|Mobile"
+  ],
+  "w": 1156,
+  "h": 1695,
+  "d": "The header card of an account page: name, type and the headline balance. Type follows the account kinds and Device switches the desktop and mobile layouts.\n\nOPEN: the icon still takes account-summary-card/icon/foreground, a fixed purple. The account colour feature landed on 2026-08-22, so this is one of the surfaces that should now resolve to the account’s own accent. The note here used to say “when the feature lands” — it landed, and the note became a pending change nobody was tracking."
  },
  {
   "g": "Cards",
@@ -176,26 +249,26 @@
    "Footer=False|True"
   ],
   "w": 712,
-  "h": 200,
+  "h": 218,
   "d": "The generic surface everything else sits on. Footer = True/False.\n\nSlots: header (title + description), content, footer. The footer carries a top border and is the only part that is optional.\n\nThis is the base of AccountCard, SavingsCard and SectionCard — if the card chrome changes, it changes here."
  },
  {
   "g": "Cards",
   "n": "DistribucionCard",
-  "v": 0,
+  "v": 1,
   "p": [],
   "w": 420,
-  "h": 66,
-  "d": "Where the gross income of the month went, as one bar. Not a chart component — it always shows the same four segments in the same order: Obligaciones · Provisiones · Gastos · Neto libre.\n\nSegments come from kpi/*/default, so a segment can never drift from the KPI card it corresponds to. Hovering one dims the rest to 40% and reveals its amount on the right.\n\nSegments with a zero amount are not rendered, so the bar can have between one and four."
+  "h": 70,
+  "d": "Where the gross income of the month went, as one bar. Not a chart component — it always shows the same four segments in the same order: Obligaciones · Provisiones · Gastos · Neto libre.\n\nSegments come from chart/categorical/*, so a segment can never drift from the KPI card it corresponds to. Hovering one dims the rest to 40% and reveals its amount on the right.\n\nSegments with a zero amount are not rendered, so the bar can have between one and four."
  },
  {
   "g": "Cards",
   "n": "KPI-Card",
-  "v": 0,
+  "v": 1,
   "p": [],
-  "w": 180,
-  "h": 95,
-  "d": "A month KPI: label, figure, and a breakdown on hover.\n\nLabel uses Label/Micro, figure uses Amount/Hero. Clicking a KPI jumps to its tab — the card is a control, not just a readout.\n\nThe strip is adaptive: Tributarias and Provisiones disappear entirely for the empleado profile, so the row must read correctly with three cards or five."
+  "w": 194,
+  "h": 105,
+  "d": "Dashboard KPI tile: label, figure, secondary line. The figure is Amount/Hero — it was bound to Heading/Section, a heading style on money, which the typography spec forbids (§3: money always takes an Amount/* style). The strip’s five figures are the ones a user opens the app to read."
  },
  {
   "g": "Cards",
@@ -205,21 +278,24 @@
    "Sub=False|True"
   ],
   "w": 432,
-  "h": 138,
-  "d": "A single figure with its label. Sub = True/False.\n\nSits on surface/wrap/subtle, not on a card — it is meant to be embedded inside another card, not to stand alone. That is what separates it from KPI-Card, which is a control you can click.\n\nThe figure uses Amount/Large; the label Detail/Large."
+  "h": 140,
+  "d": "A single figure with its label. Sub = True/False.\n\nSits on bg/subtle, not on a card — it is meant to be embedded inside another card, not to stand alone. That is what separates it from KPI-Card, which is a control you can click.\n\nThe figure uses Amount/Large; the label Detail/Large."
  },
  {
   "g": "Cards",
   "n": "SavingsCard",
   "v": 18,
   "p": [
+   "Show Maturity",
+   "Show Yield",
+   "Show Account Number",
    "Type=Cuenta|CDT|Inversión",
    "State=Default|Selected|Hover",
    "Size=Medium|Small"
   ],
   "w": 756,
-  "h": 1140,
-  "d": "Savings account card. Type × State × Size.\n\nOnly savings-type accounts appear in the Ahorros view. CDT variants show a maturity countdown.\n\nKnown inconsistency: the variant values are still Spanish (Cuenta | CDT | Inversión) while every other set in the file is English."
+  "h": 1146,
+  "d": "Savings account card. Type × State × Size.\n\nOnly savings-type accounts appear in the Ahorros view. CDT variants show a maturity countdown — Show Maturity is live on Type=CDT and controls three nodes; it was nearly deleted on 2026-08-20 by a scan that sampled only the first variant of the set.\n\nKnown inconsistency: the variant values are still Spanish (Cuenta | CDT | Inversión) while every other set in the file is English. Worth normalising when this set is next touched."
  },
  {
   "g": "Cards",
@@ -229,18 +305,19 @@
    "Action=False|True"
   ],
   "w": 792,
-  "h": 133,
-  "d": "THE most used container in the product — 10 files import it. Action = True/False.\n\nA Card with an icon + title header and an optional action on the right. The title uses Heading/Group, which is the most common header in the app precisely because of this component.\n\nEvery list section in the Mes view is one of these."
+  "h": 136,
+  "d": "THE most used container in the product — 10 files import it. Action = True/False.\n\nA Card with an icon + title header and an optional action on the right. The title uses Heading/Group, which is the most common header in the app precisely because of this component.\n\nEvery list section in the Mes view is one of these: Ingresos, Gastos, Movimientos, Tributarias, Provisiones."
  },
  {
   "g": "Containers",
   "n": "ExpenseContainer",
   "v": 2,
   "p": [
+   "Expenses",
    "Device=Mobile|Desktop"
   ],
   "w": 1332,
-  "h": 1744,
+  "h": 1790,
   "d": "The Gastos tab — the largest container in the system: category chips with counts, sort and filters, and a distribution bar.\n\nThe strip of category chips only renders categories that have data that month, so its length changes month to month and the layout has to survive one chip or fifteen."
  },
  {
@@ -248,28 +325,29 @@
   "n": "IncomeContainer",
   "v": 2,
   "p": [
+   "Container",
    "Device=Mobile|Desktop"
   ],
   "w": 1013,
-  "h": 712,
-  "d": "The Ingresos tab of the Mes view. Device = Mobile | Desktop.\n\nLists the month's incomes with account badges and a gross total converted with that month's TRM."
+  "h": 745,
+  "d": "The Ingresos tab of the Mes view.\n\nLists the month’s incomes with account badges and a gross total converted with that month’s TRM."
  },
  {
   "g": "Containers",
   "n": "ProvisionContainer",
-  "v": 0,
+  "v": 1,
   "p": [],
   "w": 380,
-  "h": 432,
+  "h": 441,
   "d": "The Provisiones tab: primas, cesantías, vacaciones, computed on gross income with provisions enabled.\n\nConditional in the same way as TaxContainer. Users can add their own provisions, so the list length is not fixed."
  },
  {
   "g": "Containers",
   "n": "TaxContainer",
-  "v": 0,
+  "v": 1,
   "p": [],
   "w": 380,
-  "h": 401,
+  "h": 408,
   "d": "The Tributarias tab: salud, pensión, ARL and retención, plus the FSS row that appears automatically when IBC ≥ 4 SMMLV.\n\nConditional — the whole tab is absent for the empleado profile. Also holds the payment calendar keyed to the last digits of the cédula."
  },
  {
@@ -277,10 +355,12 @@
   "n": "transferContainer",
   "v": 2,
   "p": [
+   "Account Cards",
+   "Transfers",
    "Device=Mobile|Desktop"
   ],
   "w": 1013,
-  "h": 743,
+  "h": 391,
   "d": "The Movimientos tab. Transfers between own accounts, with the effective-TRM calculator."
  },
  {
@@ -542,6 +622,17 @@
  },
  {
   "g": "Icons & Avatar",
+  "n": "AccountAvatar",
+  "v": 12,
+  "p": [
+   "Color=orange|amber|lime|green|emerald|teal|sky|blue|indigo|purple|pink|rose"
+  ],
+  "w": 764,
+  "h": 88,
+  "d": "An account’s identity mark: the tinted circle in account/{hue}/surface with the account-type glyph in account/{hue}/accent. This is the pairing the colour picker chooses, and the only place the surface token is used.\n\nThe account TYPE stays a nested Icon Account swap rather than a variant axis. Twelve colours times four types would be 48 variants for two decisions that belong to different people: the colour is the user’s, the type is the account’s.\n\nGlyph contrast verified against its own tint in both modes — a filled glyph is a graphic object (WCAG 1.4.11), the rule the favourite star was got wrong on.\n\nOrdered by hue angle: orange 21° · amber 32 · lime 86 · green 142 · emerald 161 · teal 175 · sky 200 · blue 221 · indigo 243 · purple 271 · pink 333 · rose 347. The neighbours are the pairs that measure closest, which is what lets someone see they are two colours."
+ },
+ {
+  "g": "Icons & Avatar",
   "n": "Avatar",
   "v": 4,
   "p": [
@@ -556,11 +647,12 @@
   "n": "Icon",
   "v": 4,
   "p": [
+   "Glyph",
    "size=XS|S|M|L"
   ],
   "w": 172,
   "h": 64,
-  "d": "Sized wrapper around a Lucide glyph. size = XS 12 · S 16 · M 20 · L 24, bound to size/icon/*.\n\nThe glyph itself is the Glyph property — an instance swap wired to the 76 icons on the Icons page. Change the glyph there, never by detaching.\n\nEvery icon in the product goes through this component, which is why size is a variant and not a manual resize: an icon at 17px is a bug, not a choice."
+  "d": "Sized wrapper around a Lucide glyph. size = XS 12 · S 16 · M 20 · L 24, bound to icon-size/*.\n\nThe glyph itself is the Glyph property — an instance swap wired to the 76 icons on the Icons page. Change the glyph there, never by detaching.\n\nEvery icon in the product goes through this component, which is why size is a variant and not a manual resize: an icon at 17px is a bug, not a choice."
  },
  {
   "g": "Icons & Avatar",
@@ -576,11 +668,11 @@
  {
   "g": "Navigation",
   "n": "bottom-nav",
-  "v": 0,
+  "v": 1,
   "p": [],
   "w": 412,
   "h": 58,
-  "d": "Mobile tab bar, 412×58. The FAB with speed-dial sits above it."
+  "d": "Mobile tab bar, 412×58. The FAB with its speed-dial sits above it, not inside it."
  },
  {
   "g": "Navigation",
@@ -591,19 +683,45 @@
   ],
   "w": 92,
   "h": 168,
-  "d": "A single bottom-nav tab. State = Default | Selected."
+  "d": "A single bottom-nav tab."
+ },
+ {
+  "g": "Navigation",
+  "n": "breadcrumb",
+  "v": 3,
+  "p": [
+   "Levels=3|2|4"
+  ],
+  "w": 428,
+  "h": 168,
+  "d": "Hierarchical navigation between pages. The last crumb is the current page and is not a link.\n\nLevels = how many crumbs are shown. More than 4 is not supported: if the path is deeper, collapse the middle segments before reaching this component — the breadcrumb does not truncate on its own.\n\nThe house icon lives in the first crumb and is off by default, because only the root carries it.\n\nTokens: breadcrumb/* in the Component collection, all aliases, both modes."
+ },
+ {
+  "g": "Navigation",
+  "n": "breadcrumb-item",
+  "v": 4,
+  "p": [
+   "Show Leading Icon",
+   "Label",
+   "Type=Link|Current",
+   "State=Default|Hover|Focus"
+  ],
+  "w": 387,
+  "h": 88,
+  "d": "One crumb. Type=Link is navigable; Type=Current is the current page, marked with aria-current, and therefore only exists in State=Default — it does not react to the pointer and does not take focus.\n\nState documents the link states: Default, Hover (underline plus a darker foreground), Focus (a 2px ring drawn outside, over the 4px padding that exists precisely to house it).\n\nThe 4px padding-x is not decoration: it is the box of the focus ring. Removing it makes the ring cut through the letters."
  },
  {
   "g": "Navigation",
   "n": "menu-item",
   "v": 8,
   "p": [
+   "Label",
    "State=Selected|default|disabled|hover",
    "Expanded=False|True"
   ],
   "w": 339,
   "h": 260,
-  "d": "A sidebar row. State × Expanded.\n\n40px tall, 12px radius, px-3 py-2 expanded and p-3 centred when collapsed.\n\nSelected is cyan. Hover stays neutral on purpose: two cyan states next to each other read as two selections.\n\nNaming nit: State values mix casing."
+  "d": "A sidebar row. State × Expanded.\n\n40px tall, 12px radius, px-3 py-2 expanded and p-3 centred when collapsed.\n\nSelected is cyan. Hover stays neutral on purpose: two cyan states next to each other read as two selections.\n\nNaming nit, still open: the State values mix casing (Selected | default | disabled | hover)."
  },
  {
   "g": "Navigation",
@@ -614,7 +732,7 @@
   ],
   "w": 704,
   "h": 160,
-  "d": "Month stepper at the top of the Mes view. Device = Mobile | Desktop.\n\nThe arrows are the only way to change month — there is no date picker here, because the app is built around one month at a time and jumping is rare.\n\nPrev is disabled in January and next in December: the store holds one calendar year. Touch targets are 44px on mobile and 32px on desktop.\n\nDesktop adds the \"Agregar\" popover, which carries the same three actions the FAB carries on mobile."
+  "d": "Month stepper at the top of the Mes view.\n\nThe arrows are the only way to change month — there is no date picker here, because the app is built around one month at a time and jumping is rare.\n\nPrev is disabled in January and next in December: the store holds one calendar year, so there is nowhere to step to. Touch targets are 44px on mobile and 32px on desktop.\n\nDesktop adds the “Agregar” popover, which carries the same three actions the FAB carries on mobile. Title is Heading/Subsection — the code had 17px bold, snapped to the 18px scale step."
  },
  {
   "g": "Navigation",
@@ -625,12 +743,35 @@
   ],
   "w": 380,
   "h": 814,
-  "d": "Desktop navigation. isExpanded=True is 255px, False is 65px.\n\nOn mobile this is not reflowed — it is replaced by bottom-nav. Different platform, different pattern.\n\nIn code the container is absolute, not fixed, so it respects the header above it. Collapsed items get a tooltip; expanded items must not, or the Radix portal leaks.\n\nNaming nit: the variant values are True|false — mixed casing."
+  "d": "Full-height navigation panel. The panel itself is square (radius/none) — it is flush to the viewport edge, so a corner radius there would read as a floating card, which it is not. The rows are menu-item instances (radius/16 on a 40px row)."
+ },
+ {
+  "g": "Navigation",
+  "n": "step-item",
+  "v": 4,
+  "p": [
+   "Label",
+   "Value",
+   "Show Connector",
+   "State=Done|Done · hover|Current|Pending"
+  ],
+  "w": 152,
+  "h": 360,
+  "d": "One step of the onboarding stepper. Done is interactive — you can go back — which is why it alone has a hover; Current and Pending are not.\n\nShow Connector is false on the last item only. The connector belongs to the item rather than the parent so the stepper can wrap without leaving a line pointing at nothing."
+ },
+ {
+  "g": "Navigation",
+  "n": "stepper",
+  "v": 1,
+  "p": [],
+  "w": 300,
+  "h": 216,
+  "d": "The onboarding wizard rail. It reports progress AND what has been chosen so far, because in a three-step flow where every step is optional and pre-filled, “how far along am I” is a weak question — the answer is always “almost done” — and “what am I actually keeping” is the useful one.\n\nThat second line matters in Neto specifically: the flow lets you skip any step. A rail that shows the value makes the consequence visible.\n\nState is carried by silhouette, not only by hue: Done is filled with a check, Current is a ring with a solid dot, Pending is an empty ring. Colour alone would leave Current and Pending indistinguishable to anyone who cannot separate the two tints. The connector line is the redundant encoding of the same progress — not decoration.\n\nDesktop only. On mobile the bar stays: no room for a rail, and none for the value line either."
  },
  {
   "g": "Navigation",
   "n": "tab-navigation",
-  "v": 0,
+  "v": 1,
   "p": [],
   "w": 780,
   "h": 44,
@@ -645,16 +786,25 @@
   ],
   "w": 683,
   "h": 168,
-  "d": "Header bar, 54px. Device = Mobile | Desktop.\n\nHolds the live TRM chip, the notification bell, the theme toggle and the account menu. Configuración and Perfil live in that menu, not in the main navigation — which is why the nav shows four destinations for five surfaces."
+  "d": "Header bar, 54px.\n\nHolds the live TRM chip, the notification bell, the theme toggle and the account menu. Configuración and Perfil live in that menu, not in the main navigation — which is why the nav shows four destinations for five surfaces."
+ },
+ {
+  "g": "Overlays",
+  "n": "AccountEditForm",
+  "v": 1,
+  "p": [],
+  "w": 372,
+  "h": 192,
+  "d": "The colour section of the account edit drawer — the part that feature adds, not the whole form. Name, type, currency, number and balance already exist above it in code and are not redrawn here.\n\nTwo things it fixes in place: the live AccountAvatar shows what the choice produces, so the picker chips do not have to preview the tint themselves; and the picker is wrapped in Field, so its label comes from the same place every other label in Neto does."
  },
  {
   "g": "Overlays",
   "n": "Popover",
-  "v": 0,
+  "v": 1,
   "p": [],
   "w": 288,
-  "h": 145,
-  "d": "Floating panel anchored to a trigger. 288px wide.\n\nDesktop only — on mobile the same content opens in a Sheet, because a popover near the bottom of a phone screen ends up under the thumb or off-screen.\n\nUses surface/popover and foreground/on-popover, which are separate from the card tokens so a popover over a card still reads as a layer above it."
+  "h": 150,
+  "d": "Floating panel anchored to a trigger. 288px wide.\n\nDesktop only — on mobile the same content opens in a Sheet, because a popover near the bottom of a phone screen ends up under the thumb or off-screen.\n\nUses bg/anchored, which is a separate elevation rung from the card surface, so a popover over a card still reads as a layer above it."
  },
  {
   "g": "Overlays",
@@ -664,20 +814,30 @@
    "State=Default|Confirming"
   ],
   "w": 920,
-  "h": 339,
-  "d": "Mobile action menu for a list row. State = Default | Confirming.\n\nDeleting takes two taps and the sheet stays open between them: the first tap turns the row red and rewrites it. There is no modal — the confirmation happens in place, so the user never loses sight of which entry they are deleting.\n\nDesktop uses inline row actions instead; this component does not appear there."
+  "h": 344,
+  "d": "Mobile action menu for a list row.\n\nDeleting takes two taps and the sheet stays open between them: the first tap turns the row red and rewrites it to “Tocar para confirmar eliminación”. There is no modal — the confirmation happens in place, so the user never loses sight of which entry they are deleting.\n\nDesktop uses inline row actions instead; this component does not appear there."
  },
  {
   "g": "Overlays",
   "n": "Sheet",
   "v": 4,
   "p": [
+   "Content",
    "Device=Mobile|Desktop",
    "Footer=True|False"
   ],
   "w": 936,
   "h": 936,
-  "d": "The panel every form opens in. Device × Footer.\n\nMobile slides up from the bottom with a drag handle and rounds its top corners. Desktop slides in from the right and rounds only the left side. Different patterns, not a reflow — that is why Device is a variant and not a breakpoint.\n\nThe scrim behind it is surface/scrim, not part of this component. On mobile the sheet is clamped to the visual viewport so the keyboard never covers the fields."
+  "d": "The panel every form opens in. Device × Footer, plus a Content instance-swap slot.\n\nMobile slides up from the bottom with a drag handle and rounds its top corners. Desktop slides in from the right and rounds only the left side. Different patterns, not a reflow — that is why Device is a variant and not a breakpoint.\n\nThe scrim behind it is bg/scrim and is not part of this component. On mobile the sheet is clamped to the visual viewport so the keyboard never covers the fields.\n\nContent was added 2026-08-21. Before it, the body held a text node and an instance cannot have children added or removed, so every flow that needed a real form had to detach the sheet."
+ },
+ {
+  "g": "Overlays",
+  "n": "SheetContent",
+  "v": 1,
+  "p": [],
+  "w": 372,
+  "h": 24,
+  "d": "The default occupant of Sheet’s Content slot. Swap it for the real form. It exists so Sheet has something to swap: an instance-swap property needs a component as its default, and a bare text node cannot be one."
  },
  {
   "g": "Overlays",
@@ -687,70 +847,89 @@
    "Side=Top|Right|Bottom|Left"
   ],
   "w": 1051,
-  "h": 94,
-  "d": "Short explanation on hover or focus. Side = where it sits relative to the trigger, which is also where the arrow points.\n\nInverts against the page — surface/inverse with foreground/on-inverse — so it reads as an overlay and never as part of the content underneath.\n\nDesktop only: there is no hover on touch. Anything a mobile user needs to know must be visible without one."
+  "h": 116,
+  "d": "Short explanation on hover or focus. Side = where it sits relative to the trigger, which is also where the arrow points.\n\nInverts against the page — bg/inverse with fg/on-inverse — so it reads as an overlay and never as part of the content underneath.\n\nDesktop only: there is no hover on touch. Anything a mobile user needs to know must be visible without one."
  },
  {
   "g": "Rows",
   "n": "chart-legend",
-  "v": 0,
+  "v": 1,
   "p": [],
-  "w": 88,
-  "h": 18,
-  "d": "Legend entry for the annual donut and the 8-month trend bars.\n\nColour comes from data/categorical/1–5, which alias the KPI tokens — so a legend swatch can never drift from the KPI it labels."
+  "w": 100,
+  "h": 20,
+  "d": "Legend entry for the annual donut and the 8-month trend bars.\n\nColour comes from chart/categorical/1–5, which alias the KPI tokens — so a legend swatch can never drift from the KPI it labels."
  },
  {
   "g": "Rows",
   "n": "income-itemrow",
-  "v": 2,
+  "v": 4,
   "p": [
-   "Device=Desktop|Mobile"
+   "Device=Desktop|Mobile",
+   "State=Default|Confirming|Pressed"
   ],
   "w": 630,
-  "h": 198,
-  "d": "Income row. Device = Desktop | Mobile.\n\nThese are different patterns, not a reflow: on mobile the whole row opens an edit sheet; on desktop the actions sit inline and stay visible.\n\nStructure: icon 16px · content flex-1 min-w-0 · amount · actions. The amount uses Amount/Base.\n\nCarries the \"sin prov.\" marker when an income of type servicios has provisions switched off."
+  "h": 404,
+  "d": "Income row. State=Pressed is the mobile tap feedback (the row is a button on mobile, a static line on desktop); State=Confirming is the desktop inline delete confirmation, where the danger icon button is replaced by a filled danger button reading “¿Eliminar?”.\n\nThe account chip is AccountBadge, not a generic Badge: it carries the account’s colour dot."
+ },
+ {
+  "g": "Rows",
+  "n": "obligation-itemrow",
+  "v": 2,
+  "p": [
+   "Show Badge",
+   "Show USD",
+   "Show Divider",
+   "State=Default|Dimmed"
+  ],
+  "w": 560,
+  "h": 174,
+  "d": "Obligations row — the line inside ObligacionesCard. Modelled from ItemRow in code: label, an optional percentage badge, and a right-aligned amount column of 104px with an optional USD line under it. State=Dimmed is the 35% opacity the code applies to obligations that do not apply this month. Show divider off is the last row of the list."
  },
  {
   "g": "Rows",
   "n": "outcome-itemrow",
-  "v": 4,
+  "v": 8,
   "p": [
+   "Monthly",
    "Device=Desktop|Mobile",
-   "Schedule=True|False"
+   "Schedule=True|False",
+   "State=Default|Confirming|Pressed"
   ],
   "w": 643,
-  "h": 396,
-  "d": "Expense row. Device × Schedule.\n\nSchedule=True is a future-dated expense: it renders, but it does NOT add to the month total and does not move any account balance until its date arrives. That distinction is the whole reason this axis exists.\n\nRecurring expenses arrive in the next month unconfirmed, so the row must also read as \"needs checking\"."
+  "h": 836,
+  "d": "Expense row. State=Pressed is the mobile tap feedback; State=Confirming is the desktop inline delete confirmation, where the danger icon button is replaced by a filled danger button reading “¿Eliminar?”. Schedule marks a scheduled expense; Monthly is a boolean on top of it.\n\nThe account chip is AccountBadge, not a generic Badge. In code it was a generic one until 2026-08-22, which is why the colour dot was missing from every expense row."
  },
  {
   "g": "Rows",
   "n": "savings-itemrow",
   "v": 2,
   "p": [
+   "Show Hint",
    "Device=Desktop|Mobile"
   ],
   "w": 441,
-  "h": 192,
+  "h": 200,
   "d": "Contribution to a savings account.\n\nNot an expense: it does not reduce neto libre. Getting this wrong double-counted savings until the v5 migration fixed it."
  },
  {
   "g": "Rows",
   "n": "ss-itemrow/ss",
-  "v": 0,
+  "v": 1,
   "p": [],
   "w": 223,
   "h": 53,
-  "d": "Social-security line: salud, pensión, ARL.\n\nNaming: the slash creates a phantom \"ss-itemrow\" group in the layer tree containing a single \"ss\". Rename to SSItemRow."
+  "d": "Social-security line: salud, pensión, ARL.\n\nNaming: the slash creates a phantom “ss-itemrow” group in the layer tree containing a single “ss”. Rename to ss-itemrow."
  },
  {
   "g": "Rows",
   "n": "transfer-itemrow",
-  "v": 2,
+  "v": 3,
   "p": [
-   "Device=Desktop|Mobile"
+   "Device=Desktop|Mobile",
+   "State=Default|Pressed"
   ],
   "w": 630,
-  "h": 173,
-  "d": "Transfer between the user's own accounts. Neither income nor expense — it relocates money.\n\nCovers credit-card payments and savings contributions. Where a TRM applies, the row can show the effective rate and the implicit fee against the official one."
+  "h": 263,
+  "d": "Transfer row. State=Pressed is the mobile tap feedback (the row is a button on mobile, a static line on desktop). No Confirming state: unlike income and outcome rows, the transfer row has no inline delete confirmation in code."
  }
 ]

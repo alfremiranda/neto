@@ -1,4 +1,4 @@
-<!-- @dsCard group="Components · Actions" name="Button" subtitle="Variant · Severity · Size · State" -->
+<!-- @dsCard group="Components · Actions" name="Button" subtitle="label · Show Leading Icon · Show Trailing Icon · Variant · Severity · Size · State · Disabled · Loading" -->
 <!DOCTYPE html>
 <html lang="es" data-theme="light">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -34,12 +34,14 @@ h1{margin:0 0 4px;font-weight:800;font-size:24px;line-height:32px;letter-spacing
   <h1>Button</h1>
   <p class="crumb">Actions — Neto design system</p>
   <div class="spec">
-    <div class="axes"><div class="axis"><span class="k">Variant</span><span class="v">Filled · Outline · Ghost</span></div><div class="axis"><span class="k">Severity</span><span class="v">Default · Danger</span></div><div class="axis"><span class="k">Size</span><span class="v">SM · MD · LG · XL</span></div><div class="axis"><span class="k">State</span><span class="v">Default · Hover · Disabled</span></div><div class="count">72 variantes · 1454 × 356</div></div>
-    <div class="desc">Primary action control. Variant × Severity × Size × State.
+    <div class="axes"><div class="axis"><span class="k">label</span><span class="v">slot</span></div><div class="axis"><span class="k">Show Leading Icon</span><span class="v">slot</span></div><div class="axis"><span class="k">Show Trailing Icon</span><span class="v">slot</span></div><div class="axis"><span class="k">Variant</span><span class="v">Filled · Outline · Ghost</span></div><div class="axis"><span class="k">Severity</span><span class="v">Primary · Neutral · Danger</span></div><div class="axis"><span class="k">Size</span><span class="v">SM · MD · LG · XL</span></div><div class="axis"><span class="k">State</span><span class="v">Default · Hover · Focused</span></div><div class="axis"><span class="k">Disabled</span><span class="v">False · True</span></div><div class="axis"><span class="k">Loading</span><span class="v">False · True</span></div><div class="count">168 variantes · 1277 × 1354</div></div>
+    <div class="desc">Primary action control. Variant × Severity × Size, with State plus orthogonal Disabled and Loading.
 
 Filled = the single main action on a screen. Outline = secondary. Ghost = tertiary and inline actions.
 
-Severity=Danger is only for destructive actions, which must follow the two-tap confirm pattern: first tap shows &quot;¿Eliminar?&quot;, second deletes. Never delete on one tap.
+Severity=Danger is only for destructive actions, which must follow the two-tap confirm pattern: first tap shows “¿Eliminar?”, second deletes. Never delete on one tap.
+
+Disabled and Loading are independent axes because they co-occur: a submitting button is both, and an aria-disabled control still takes keyboard focus.
 
 Labels use Control/SM–XL, whose line height is 100% so the text centres in the frame.</div>
   </div>

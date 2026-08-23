@@ -23,6 +23,71 @@
 //
 // Foundations is NOT excluded. It is the system describing itself, and its
 // swatches are system material even when they are chrome.
+
+// ── C5 · familias compartidas a propósito ───────────────────────────────────
+// C5 marca un nodo pintado con el token de OTRO componente. La mayor parte de lo
+// que parece un préstamo no lo es: `AccountChart` usa `account-chart/*` y sólo
+// difiere en la puntuación, `topnav` usa `nav/*`, `Icon Button` usa `button/*`.
+// Eso lo resuelve la comparación por contención, no una lista.
+//
+// Lo que sí necesita lista son las tres veces que dos componentes comparten
+// familia POR DECISIÓN, cada una con su motivo:
+const SHARED_FAMILIES = {
+  'Select':    ['input'],    // comparte ejes y alturas con Input para que alineen en una fila
+  'Field':     ['input'],    // envuelve al control; su slot por defecto es un Input
+  'menu-item': ['sidebar'],  // menu-item ES la fila del sidebar, no un vecino suyo
+};
+
+// ── C7 · efectos ────────────────────────────────────────────────────────────
+// Una sombra con color escrito a mano es la misma clase de defecto que C1, pero
+// vive en `effects` y por eso C1 no la ve. Un efecto que viene de un estilo de
+// efecto está bien: el estilo es el token.
+
+
+// ── C6 · la descripción nombra un peldaño que el token no usa ───────────────
+// Una descripción es lo único que alguien lee para saber a qué está atado un
+// token. Cuando dice "slate-100" y el alias resuelve a slate-20, la descripción
+// no está desactualizada: está dando una instrucción falsa.
+//
+// ACOTADO A PROPÓSITO, y el recorte es la mitad del valor. Un barrido ingenuo
+// da 18 hallazgos sobre 68 descripciones con peldaño, y nueve son legítimos: una
+// primitiva que explica que se sitúa ENTRE sus vecinas, o un acento que nombra
+// el FONDO sobre el que se apoya. Ambos mencionan un peldaño sin afirmar ser él.
+//
+// Dos reglas los separan sin criterio humano:
+//   1. Las primitivas quedan fuera. `color/slate/850` describe a sus vecinas por
+//      definición, y no tiene alias que contradecir.
+//   2. Sólo cuenta si la familia coincide. "amber-700 sobre slate-100" no es una
+//      afirmación sobre amber; "cyan-600" en un token que resuelve a cyan-700 sí.
+//
+// Y una tercera, que apareció leyendo los hallazgos en vez de contarlos: hay
+// descripciones que nombran un peldaño para decir que NO es el valor — "el código
+// usa white/25, redondeado a white/30", "apuntaba a cyan/500 en vez de rose".
+// Esas son las descripciones BUENAS: documentan una reconciliación o un error ya
+// corregido. Marcarlas sería castigar justo lo que queremos que la gente escriba.
+// Por eso hay una guarda de negación. Cambia un posible hallazgo perdido por un
+// chequeo en el que se confía, que es el intercambio correcto: un chequeo con la
+// mitad de ruido se apaga en una semana, y entonces no encuentra nada.
+//
+// Cuatro chequeos mecánicos de este archivo han fallado por la misma razón —ver
+// §A6—. Éste se calibró leyendo los 18 hallazgos del primer barrido uno por uno,
+// no contándolos.
+const C6_NEGACION = /(code uses|used to|was |instead of|pointed at|rather than|not |previous value|previously|the old |el código usa|antes|era |en vez de|apuntaba|redondead|valor anterior)/i;
+const C6_RUNG = /\b(slate|gray|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|pink|rose|white|black)[-\/](\d{1,3})\b/gi;
+
+// ── Trinquetes ──────────────────────────────────────────────────────────────
+// C5 y C7 abren con deuda: 155 vinculaciones prestadas y 12 efectos sin token.
+// Un chequeo que nace en rojo se apaga en una semana — es el criterio con el que
+// Dev retrasó `R5` hasta haber arreglado sus 22 infracciones, y aplica igual aquí.
+//
+// Así que no fallan por el número: fallan si SUBE. La cifra sólo puede bajar, y
+// cada bajada se fija aquí. Cuando llegue a 0, el trinquete se borra y el chequeo
+// pasa a ser absoluto.
+//
+// C5 = 155 el 2026-08-22. De esas, 12 son `action-chip ← badge/*`, ya autorizadas
+// a cerrarse el 19-ago; cerrarlas baja el trinquete a 143.
+const BASELINE = { C5_token_de_otro_componente: 155, C7_efecto_sin_token: 12 };
+
 const OUT_OF_SCOPE = /^(_docs-kit|Screens · Neto \(WIP\))/;
 
 // Frames whose job is to DOCUMENT the system rather than to be it. The rule is a
@@ -141,6 +206,8 @@ async function auditPage(pageId) {
   const known = new Set(styles.map(s => s.id));
   const vars = await figma.variables.getLocalVariablesAsync();
   const vmap = {}; vars.forEach(v => vmap[v.id] = v.name);
+  const allCols = await figma.variables.getLocalVariableCollectionsAsync();
+  const compCollectionId = (allCols.find(c => c.name === 'Component') || {}).id;
 
   const V = {};
   const add = (code, where, detail) => {
@@ -170,6 +237,48 @@ async function auditPage(pageId) {
     return false;
   };
 
+
+  // ── C5 · token de otro componente, pintado en un nodo propio ──────────────
+  // Los nodos DENTRO de una instancia quedan fuera: ahí el token lo decide el
+  // componente instanciado, que es composición y no préstamo. Lo que queda es un
+  // componente que dibuja su propia caja y la pinta con la paleta de otro —
+  // exactamente lo que hizo action-chip con badge/*.
+  const norm = t => String(t).toLowerCase().replace(/[^a-z0-9]+/g, '');
+  const ownerOf = nd => { for (let a = nd; a; a = a.parent) {
+    if (a.type === 'COMPONENT_SET') return a.name;
+    if (a.type === 'COMPONENT') return (a.parent && a.parent.type === 'COMPONENT_SET') ? a.parent.name : a.name;
+  } return null; };
+  const compVarIds = new Set(vars.filter(v => v.variableCollectionId === compCollectionId).map(v => v.id));
+
+  const c5 = (nd) => {
+    if (dentroDeInstancia(nd)) return;
+    const owner = ownerOf(nd);
+    if (!owner) return;
+    const shared = (SHARED_FAMILIES[owner] || []).map(norm);
+    for (const arr of [nd.fills, nd.strokes]) {
+      if (!arr || arr === figma.mixed) continue;
+      for (const paint of arr) {
+        const b = paint.boundVariables && paint.boundVariables.color;
+        if (!b || !compVarIds.has(b.id)) continue;
+        const fam = (vmap[b.id] || '').split('/')[0];
+        const a = norm(owner), f = norm(fam);
+        if (!f || a.includes(f) || f.includes(a) || shared.includes(f)) continue;
+        add('C5_token_de_otro_componente', owner + ' / ' + nd.name, fam + '/*');
+      }
+    }
+  };
+
+  // ── C7 · efecto sin token ─────────────────────────────────────────────────
+  const c7 = (nd) => {
+    if (nd.effectStyleId) return;                    // un estilo de efecto ES el token
+    if (!nd.effects || nd.effects === figma.mixed) return;
+    for (const e of nd.effects) {
+      if (e.type !== 'DROP_SHADOW' && e.type !== 'INNER_SHADOW') continue;
+      if (e.boundVariables && e.boundVariables.color) continue;
+      add('C7_efecto_sin_token', (ownerOf(nd) || page.name) + ' / ' + nd.name, e.type);
+    }
+  };
+
   for (const n of page.findAll(() => true)) {
     const path = n.name;
     const ajeno = esMarcaAjena(n);
@@ -183,6 +292,8 @@ async function auditPage(pageId) {
     }
     if (!ajeno && !esSet && unbound(n.fills))   add('C1_fill_sin_variable', path, n.type);
     if (!ajeno && !esSet && unbound(n.strokes)) add('C1b_stroke_sin_variable', path, n.type);
+    if (!ajeno) c5(n);
+    c7(n);
 
     // C8 — un numero de layout escrito a mano. Las instancias quedan fuera: su geometria
     // la decide el componente, no la pantalla que lo usa.
@@ -294,3 +405,52 @@ async function auditProperty() {
 // return await auditTokens();
 // return await auditPage('PAGE_ID');
 // return await auditProperty();
+
+// ── C6 · chequeo de peldaños citados ────────────────────────────────────────
+// Corre con el auditor de TOKENS (una sola llamada: las variables son globales).
+// Devuelve [] cuando el archivo está limpio, que es el estado esperado.
+async function auditRungClaims() {
+  const cols = await figma.variables.getLocalVariableCollectionsAsync();
+  const byId = {}; cols.forEach(c => byId[c.id] = c);
+  const primitives = (cols.find(c => c.name === 'Primitives') || {}).id;
+  const vars = await figma.variables.getLocalVariablesAsync();
+  const vById = {}; vars.forEach(v => vById[v.id] = v);
+  const modeId = (c, n) => (c.modes.find(x => x.name.toLowerCase() === n.toLowerCase()) || c.modes[0]).modeId;
+
+  function resolvedRungs(v, mode, depth) {
+    depth = depth || 0;
+    const out = [];
+    const m = /^color\/([a-z]+)\/(\d+)/.exec(v.name);
+    if (m) out.push(m[1] + '/' + m[2]);
+    if (depth > 8) return out;
+    const c = byId[v.variableCollectionId];
+    const raw = v.valuesByMode[modeId(c, mode)];
+    if (raw && raw.type === 'VARIABLE_ALIAS' && vById[raw.id])
+      return out.concat(resolvedRungs(vById[raw.id], mode, depth + 1));
+    return out;
+  }
+
+  const findings = [];
+  for (const v of vars) {
+    if (v.variableCollectionId === primitives) continue;   // regla 1
+    const d = v.description || '';
+    if (!d) continue;
+    const claimed = [...d.matchAll(C6_RUNG)].map(m => m[1].toLowerCase() + '/' + m[2]);
+    if (!claimed.length) continue;
+    const actual = new Set();
+    for (const mode of ['Light', 'Dark', 'Default']) for (const r of resolvedRungs(v, mode)) actual.add(r);
+    const families = new Set([...actual].map(r => r.split('/')[0]));
+    for (const c of new Set(claimed)) {
+      if (!families.has(c.split('/')[0])) continue;        // regla 2
+      if (actual.has(c)) continue;
+      // regla 3 — ¿lo nombra para negarlo? Entonces la descripción es correcta.
+      const at = d.toLowerCase().indexOf(c.split('/')[0] + c.slice(c.indexOf('/')).replace('/', '-'));
+      const around = d.slice(Math.max(0, (at < 0 ? d.toLowerCase().indexOf(c.split('/')[0]) : at) - 60),
+                             (at < 0 ? 0 : at) + 40);
+      if (C6_NEGACION.test(around)) continue;
+      findings.push({ rule: 'C6_peldano_citado_no_usado', token: v.name,
+                      dice: c, resuelve: [...actual].join(' · ') });
+    }
+  }
+  return findings;
+}

@@ -1,4 +1,4 @@
-<!-- @dsCard group="Components · Badges" name="AccountBadge" subtitle="Color · Icon" -->
+<!-- @dsCard group="Components · Badges" name="AccountBadge" subtitle="Sin variantes" -->
 <!DOCTYPE html>
 <html lang="es" data-theme="light">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -34,8 +34,18 @@ h1{margin:0 0 4px;font-weight:800;font-size:24px;line-height:32px;letter-spacing
   <h1>AccountBadge</h1>
   <p class="crumb">Badges — Neto design system</p>
   <div class="spec">
-    <div class="axes"><div class="axis"><span class="k">Color</span><span class="v">Cyan · Green · Neutral · Purple</span></div><div class="axis"><span class="k">Icon</span><span class="v">False · True</span></div><div class="count">8 variantes · 158 × 148</div></div>
-    <div class="desc">Account chip attached to an income, expense or transfer row. Colour maps to the account/1–4 token pairs (ARQ · Toptal · Bancolombia · other).</div>
+    <div class="axes"><div class="axis"><span class="k">Sin variantes</span><span class="v">104 × 20</span></div></div>
+    <div class="desc">Chip that identifies WHICH account a row belongs to. What KIND of account it is, is AccountTypeBadge’s job; the two answer different questions and can appear together.
+
+The dot carries the account’s accent. At runtime that fill comes from the USER’S DATA — each account stores a hue picked from account/{hue}/accent — so account/purple/accent here is a canvas default, not a decision. Do not “fix” it to a static token: an audit that repoints this to a fixed colour breaks user-chosen account colour.
+
+The body stays neutral on purpose (bg/account · border/subtle · fg/account). Only the dot carries hue, so a row with four chips does not become a colour chart.
+
+The dot sits on bg/account, NOT on the avatar tint, and that is a second background nobody checked until 2026-08-22: amber measured 2.91:1 there and green passed by 0.01. Both moved to rung 700 in light. Any new accent has to clear 3:1 against BOTH.
+
+NOT a component set, deliberately. It used to be one, with Color=Cyan|Purple|Green|Neutral standing in for account slots 1-4; those were renamed to slots, and then the slot model died when the hue became a user choice. What was left were two variant axes with exactly one option each — which is not variance, and would have extracted into code as Color=”Account 4”, a name meaning nothing. Dissolved 2026-08-17; 27 instances verified intact across four pages.
+
+Shipped in code 2026-08-22. The earlier note here said extraction was blocked until the exporter landed — it landed, and this is one of the components it unblocked.</div>
   </div>
   <div class="modes">
     <div><span class="lbl">Light</span><div data-theme="light" style="border-radius:var(--radius-lg)"><div class="stage"><div class="row"><span style="display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:999px;background:var(--account-1-surface);color:var(--account-1-foreground);border:1px solid transparent;font-weight:500;font-size:10px;line-height:10px;white-space:nowrap">ARQ</span><span style="display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:999px;background:var(--account-2-surface);color:var(--account-2-foreground);border:1px solid transparent;font-weight:500;font-size:10px;line-height:10px;white-space:nowrap">Toptal</span><span style="display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:999px;background:var(--account-3-surface);color:var(--account-3-foreground);border:1px solid transparent;font-weight:500;font-size:10px;line-height:10px;white-space:nowrap">Bancolombia</span><span style="display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:999px;background:var(--account-4-surface);color:var(--account-4-foreground);border:1px solid transparent;font-weight:500;font-size:10px;line-height:10px;white-space:nowrap">Otra</span></div></div></div></div>

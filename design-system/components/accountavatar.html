@@ -1,0 +1,51 @@
+<!-- @dsCard group="Components · Icons & Avatar" name="AccountAvatar" subtitle="Color" -->
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Neto · AccountAvatar</title>
+<link href="https://fonts.googleapis.com/css2?family=Rethink+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font-family:'Rethink Sans',ui-sans-serif,system-ui,sans-serif;background:var(--surface-wrap-default);
+ color:var(--foreground-default);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.page{max-width:1000px;margin:0 auto;padding:40px 28px 64px}
+h1{margin:0 0 4px;font-weight:800;font-size:24px;line-height:32px;letter-spacing:.5px}
+.crumb{margin:0 0 32px;font-size:11px;line-height:17px;color:var(--foreground-subtle)}
+.spec{display:flex;gap:32px;align-items:flex-start;flex-wrap:wrap;margin-bottom:28px}
+.axes{flex:0 0 200px}
+.axis{margin-bottom:8px}
+.axis .k{display:block;font-weight:600;font-size:10px;line-height:15px;letter-spacing:.5px;text-transform:uppercase;color:var(--foreground-subtle)}
+.axis .v{display:block;font-size:10px;line-height:15px;color:var(--foreground-default)}
+.count{font-size:10px;line-height:15px;color:var(--foreground-placeholder);margin-top:10px}
+.desc{flex:1 1 420px;min-width:280px;font-size:14px;line-height:21px;white-space:pre-line}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:820px){.modes{grid-template-columns:1fr}}
+.lbl{display:block;font-weight:600;font-size:10px;line-height:15px;letter-spacing:.5px;text-transform:uppercase;
+ color:var(--foreground-subtle);margin-bottom:6px}
+.stage{background:var(--surface-wrap-subtle);border-radius:var(--radius-lg);padding:20px;
+ display:flex;flex-direction:column;gap:14px;align-items:flex-start;min-height:90px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.note{font-size:10px;color:var(--foreground-placeholder)}
+</style>
+</head>
+<body>
+<main class="page">
+  <h1>AccountAvatar</h1>
+  <p class="crumb">Icons &amp; Avatar — Neto design system</p>
+  <div class="spec">
+    <div class="axes"><div class="axis"><span class="k">Color</span><span class="v">orange · amber · lime · green · emerald · teal · sky · blue · indigo · purple · pink · rose</span></div><div class="count">12 variantes · 764 × 88</div></div>
+    <div class="desc">An account’s identity mark: the tinted circle in account/{hue}/surface with the account-type glyph in account/{hue}/accent. This is the pairing the colour picker chooses, and the only place the surface token is used.
+
+The account TYPE stays a nested Icon Account swap rather than a variant axis. Twelve colours times four types would be 48 variants for two decisions that belong to different people: the colour is the user’s, the type is the account’s.
+
+Glyph contrast verified against its own tint in both modes — a filled glyph is a graphic object (WCAG 1.4.11), the rule the favourite star was got wrong on.
+
+Ordered by hue angle: orange 21° · amber 32 · lime 86 · green 142 · emerald 161 · teal 175 · sky 200 · blue 221 · indigo 243 · purple 271 · pink 333 · rose 347. The neighbours are the pairs that measure closest, which is what lets someone see they are two colours.</div>
+  </div>
+  <div class="modes">
+    <div><span class="lbl">Light</span><div data-theme="light" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición de 764×88px — la fuente visual es Figma.</div></div></div></div>
+    <div><span class="lbl">Dark</span><div data-theme="dark" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición de 764×88px — la fuente visual es Figma.</div></div></div></div>
+  </div>
+</main>
+</body></html>

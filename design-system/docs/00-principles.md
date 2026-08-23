@@ -177,6 +177,33 @@ through there.
 | `C4` generic layer name | structure that is illegible to whoever arrives next |
 | `C8` layout number without a variable | a gap, padding, radius or border width typed by hand, drifting off the scale one screen at a time |
 
+## A5b. C5, C6 and C7 — what calibrating them cost (2026-08-22)
+
+The three were specified in August and written today. What took the time was not writing them;
+it was that **all three fired on correct work the first time**, and the fourth instrument this
+month to do so.
+
+- **C5** (a node painted with another component's token) opened at ~30 pairings, most of them
+  legitimate: `AccountChart ← account-chart` differs only in punctuation, `topnav ← nav`,
+  `Icon Button ← button`. Fixed by comparing names by containment rather than equality, plus
+  three documented sharings in `SHARED_FAMILIES` — `Select`/`Field` share Input's ramp on
+  purpose, `menu-item` IS the sidebar row.
+- **C6** (a description naming a rung the token does not resolve to) opened at 18 findings on
+  68 descriptions, and **nine were correct**. Two kinds: a primitive explaining that it sits
+  BETWEEN its neighbours, and an accent naming the BACKGROUND it rests on. Excluding primitives
+  and requiring the hue family to match killed both kinds. Then a third kind appeared, and only
+  by reading rather than counting: descriptions that name a rung **to say it is not the value** —
+  *"code uses white/25, rounded to white/30"*, *"pointed at cyan/500 instead of rose"*,
+  *"slate/300, the previous value, sat at 1.6:1"*. Those are the descriptions we want people to
+  write. A negation guard skips them, at the price of one possible miss.
+- **C7** (an effect with a hand-written colour) needed no calibration and found 12.
+
+**The rule this produces:** a mechanical check is calibrated by READING its first run, one finding
+at a time — never by counting it. Every false positive above survives counting; none survives
+reading. And a check is not shipped at whatever number it opens at: C5 and C7 carry a ratchet, the
+same call Dev made when they held `R5` back until its 22 violations were fixed. A check that opens
+red is a check that gets switched off.
+
 ## A6. The failure mode to watch for
 
 Almost no design-system defect comes from not knowing the rule. They come from **using an

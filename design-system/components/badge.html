@@ -1,4 +1,4 @@
-<!-- @dsCard group="Components · Badges" name="Badge" subtitle="Variant · Color · Icon" -->
+<!-- @dsCard group="Components · Badges" name="Badge" subtitle="Variant · Tone · Icon" -->
 <!DOCTYPE html>
 <html lang="es" data-theme="light">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -34,14 +34,14 @@ h1{margin:0 0 4px;font-weight:800;font-size:24px;line-height:32px;letter-spacing
   <h1>Badge</h1>
   <p class="crumb">Badges — Neto design system</p>
   <div class="spec">
-    <div class="axes"><div class="axis"><span class="k">Variant</span><span class="v">Outline · Filled</span></div><div class="axis"><span class="k">Color</span><span class="v">Purple · Green · Blue · Orange · Red · Gray</span></div><div class="axis"><span class="k">Icon</span><span class="v">False · True</span></div><div class="count">24 variantes · 158 × 212</div></div>
-    <div class="desc">Generic label chip. Variant × Color × Icon.
+    <div class="axes"><div class="axis"><span class="k">Variant</span><span class="v">Outline · Filled</span></div><div class="axis"><span class="k">Tone</span><span class="v">Accent · Danger · Info · Neutral · Success · Warning</span></div><div class="axis"><span class="k">Icon</span><span class="v">False · True</span></div><div class="count">24 variantes · 903 × 152</div></div>
+    <div class="desc">Generic label chip. Variant × Tone × Icon.
 
-Variant=Filled paints badge/{semantic}/background; Variant=Outline paints badge/{semantic}/border with no fill. Same geometry, same six token families — this used to be two component sets (Badge filled, Status outline), and the filled one had zero instances in the whole file. Filled and outline are a treatment, not two components.
+Variant=Filled paints badge/{tone}/background; Variant=Outline paints badge/{tone}/border with no fill. Same geometry, same six token families — this used to be two component sets (Badge filled, Status outline), and the filled one had zero instances in the whole file. Filled and outline are a treatment, not two components.
 
 Outline is the entry-state treatment: scheduled, unconfirmed, overdue. Filled is a plain label.
 
-Colour here is decorative. The moment a badge carries meaning — an account, a category, a currency — use the specific component instead, so the semantic token layer stays the source of that meaning.</div>
+Colour here is decorative. The moment a badge carries meaning — an account, a category, a currency — use the specific component instead, so the semantic token layer stays the source of that meaning. AccountBadge is the worked example: it exists precisely because a generic Badge was carrying an account name.</div>
   </div>
   <div class="modes">
     <div><span class="lbl">Light</span><div data-theme="light" style="border-radius:var(--radius-lg)"><div class="stage"><div class="row"><span style="display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:999px;background:var(--badge-neutral-background);color:var(--badge-neutral-foreground);border:1px solid transparent;font-weight:500;font-size:10px;line-height:10px;white-space:nowrap">Gray</span><span style="display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:999px;background:var(--badge-success-background);color:var(--badge-success-foreground);border:1px solid transparent;font-weight:500;font-size:10px;line-height:10px;white-space:nowrap">Green</span><span style="display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:999px;background:var(--badge-info-background);color:var(--badge-info-foreground);border:1px solid transparent;font-weight:500;font-size:10px;line-height:10px;white-space:nowrap">Blue</span><span style="display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:999px;background:var(--badge-warning-background);color:var(--badge-warning-foreground);border:1px solid transparent;font-weight:500;font-size:10px;line-height:10px;white-space:nowrap">Orange</span><span style="display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:999px;background:var(--badge-danger-background);color:var(--badge-danger-foreground);border:1px solid transparent;font-weight:500;font-size:10px;line-height:10px;white-space:nowrap">Red</span><span style="display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:999px;background:var(--badge-accent-background);color:var(--badge-accent-foreground);border:1px solid transparent;font-weight:500;font-size:10px;line-height:10px;white-space:nowrap">Purple</span></div></div></div></div>

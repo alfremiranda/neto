@@ -1,4 +1,4 @@
-<!-- @dsCard group="Components · Overlays" name="Sheet" subtitle="Device · Footer" -->
+<!-- @dsCard group="Components · Overlays" name="Sheet" subtitle="Content · Device · Footer" -->
 <!DOCTYPE html>
 <html lang="es" data-theme="light">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -34,12 +34,14 @@ h1{margin:0 0 4px;font-weight:800;font-size:24px;line-height:32px;letter-spacing
   <h1>Sheet</h1>
   <p class="crumb">Overlays — Neto design system</p>
   <div class="spec">
-    <div class="axes"><div class="axis"><span class="k">Device</span><span class="v">Mobile · Desktop</span></div><div class="axis"><span class="k">Footer</span><span class="v">True · False</span></div><div class="count">4 variantes · 936 × 936</div></div>
-    <div class="desc">The panel every form opens in. Device × Footer.
+    <div class="axes"><div class="axis"><span class="k">Content</span><span class="v">slot</span></div><div class="axis"><span class="k">Device</span><span class="v">Mobile · Desktop</span></div><div class="axis"><span class="k">Footer</span><span class="v">True · False</span></div><div class="count">4 variantes · 936 × 936</div></div>
+    <div class="desc">The panel every form opens in. Device × Footer, plus a Content instance-swap slot.
 
 Mobile slides up from the bottom with a drag handle and rounds its top corners. Desktop slides in from the right and rounds only the left side. Different patterns, not a reflow — that is why Device is a variant and not a breakpoint.
 
-The scrim behind it is surface/scrim, not part of this component. On mobile the sheet is clamped to the visual viewport so the keyboard never covers the fields.</div>
+The scrim behind it is bg/scrim and is not part of this component. On mobile the sheet is clamped to the visual viewport so the keyboard never covers the fields.
+
+Content was added 2026-08-21. Before it, the body held a text node and an instance cannot have children added or removed, so every flow that needed a real form had to detach the sheet.</div>
   </div>
   <div class="modes">
     <div><span class="lbl">Light</span><div data-theme="light" style="border-radius:var(--radius-lg)"><div class="stage"><div class="row"><div style="width:250px;background:var(--surface-wrap-default);border:1px solid var(--border-default);border-radius:16px 16px 0 0;overflow:hidden"><div style="display:flex;justify-content:center;padding:8px 0 4px"><span style="width:40px;height:4px;border-radius:999px;background:var(--border-default)"></span></div><div style="display:flex;align-items:center;gap:8px;padding:14px 16px;border-bottom:1px solid var(--border-default)"><span style="flex:1;font-family:var(--font-sans);font-weight:600;font-size:18px;line-height:26px;letter-spacing:0.0px;color:var(--foreground-default)">Nuevo ingreso</span><span style="color:var(--foreground-subtle)">✕</span></div><div style="padding:16px;font-family:var(--font-sans);font-weight:400;font-size:16px;line-height:24px;letter-spacing:0.0px;color:var(--foreground-subtle);min-height:70px">Contenido del formulario</div><div style="padding:12px 16px 16px;border-top:1px solid var(--border-default)"><span style="display:inline-flex;align-items:center;justify-content:center;height:36px;padding:0 14px;border-radius:9999px;font-weight:500;font-size:14px;line-height:1;letter-spacing:.5px;white-space:nowrap;background:var(--button-filled-background-default);color:var(--button-filled-foreground);border:1px solid transparent;">Guardar</span></div></div><div style="width:250px;background:var(--surface-wrap-default);border:1px solid var(--border-default);border-radius:16px 0 0 16px;overflow:hidden"><div style="display:flex;align-items:center;gap:8px;padding:14px 16px;border-bottom:1px solid var(--border-default)"><span style="flex:1;font-family:var(--font-sans);font-weight:600;font-size:18px;line-height:26px;letter-spacing:0.0px;color:var(--foreground-default)">Nuevo ingreso</span><span style="color:var(--foreground-subtle)">✕</span></div><div style="padding:16px;font-family:var(--font-sans);font-weight:400;font-size:16px;line-height:24px;letter-spacing:0.0px;color:var(--foreground-subtle);min-height:70px">Contenido del formulario</div></div></div></div></div></div>

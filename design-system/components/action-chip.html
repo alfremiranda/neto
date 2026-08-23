@@ -1,4 +1,4 @@
-<!-- @dsCard group="Components · Actions" name="action-chip" subtitle="State · Badge" -->
+<!-- @dsCard group="Components · Actions" name="action-chip" subtitle="Show Leading Icon · State · Badge" -->
 <!DOCTYPE html>
 <html lang="es" data-theme="light">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -34,10 +34,12 @@ h1{margin:0 0 4px;font-weight:800;font-size:24px;line-height:32px;letter-spacing
   <h1>action-chip</h1>
   <p class="crumb">Actions — Neto design system</p>
   <div class="spec">
-    <div class="axes"><div class="axis"><span class="k">State</span><span class="v">Disabled · Default · Hover · Selected</span></div><div class="axis"><span class="k">Badge</span><span class="v">True · False</span></div><div class="count">8 variantes · 322 × 220</div></div>
+    <div class="axes"><div class="axis"><span class="k">Show Leading Icon</span><span class="v">slot</span></div><div class="axis"><span class="k">State</span><span class="v">Disabled · Default · Hover · Selected</span></div><div class="axis"><span class="k">Badge</span><span class="v">True · False</span></div><div class="count">8 variantes · 322 × 412</div></div>
     <div class="desc">Filter chip with an optional count badge. State × Badge.
 
-Used for the expense category filter. Only categories that have data that month are rendered, so the strip length varies. State=Selected is the active filter; Badge=True shows how many entries match.</div>
+Used for the expense category filter. Only categories that have data that month are rendered, so the strip length varies. State=Selected is the active filter; Badge=True shows how many entries match.
+
+Selected has its own three tokens (action-chip/selected/*). The other three states still borrow badge/neutral/* and badge/accent/*, which is a loan, not a decision — a filter chip is not a badge. Authorised to finish on 2026-08-19, still open.</div>
   </div>
   <div class="modes">
     <div><span class="lbl">Light</span><div data-theme="light" style="border-radius:var(--radius-lg)"><div class="stage"><div class="row"><span style="display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:999px;border:1px solid var(--border-default);color:var(--foreground-subtle)">Alimentación</span><span style="display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:999px;background:var(--surface-status-selected);color:var(--interactive-primary);border:1px solid transparent">Vivienda <span style="display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:999px;background:var(--notification-primary-background);color:var(--notification-primary-foreground);border:1px solid transparent;font-weight:500;font-size:10px;line-height:10px;white-space:nowrap">4</span></span><span style="display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:999px;border:1px solid var(--border-default);color:var(--foreground-placeholder);opacity:.5">Viajes</span></div></div></div></div>
