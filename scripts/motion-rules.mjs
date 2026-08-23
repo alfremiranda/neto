@@ -11,10 +11,28 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 // the dev server.
 const dev = spawn('npx', ['vite', '--port', '5199', '--strictPort'], { cwd: ROOT, stdio: 'pipe' })
 const base = 'http://localhost:5199'
-await new Promise((resolve, reject) => {
-  const t = setTimeout(() => reject(new Error('el dev server no arrancó en 30s')), 30_000)
-  dev.stdout.on('data', d => { if (/Local:.*5199/.test(String(d))) { clearTimeout(t); resolve() } })
-})
+
+// Polls the URL rather than watching stdout for a banner. Parsing the log made this depend
+// on Vite's output format and on a cold CI runner printing it inside 30s — it did not, and
+// the failure said "no arrancó" when the real cause was "no dijo lo que yo esperaba oír".
+let log = ''
+dev.stdout.on('data', d => { log += d })
+dev.stderr.on('data', d => { log += d })
+const ready = await (async () => {
+  for (let i = 0; i < 120; i++) {
+    try {
+      const r = await fetch(base, { signal: AbortSignal.timeout(1000) })
+      if (r.ok) return true
+    } catch { /* not up yet */ }
+    await new Promise(r => setTimeout(r, 1000))
+  }
+  return false
+})()
+if (!ready) {
+  console.error('el dev server no respondió en 120s. Salida:\n' + log.slice(-2000))
+  dev.kill('SIGTERM')
+  process.exit(1)
+}
 const stop = () => { try { dev.kill('SIGTERM') } catch { /* already gone */ } }
 
 const fails = []
