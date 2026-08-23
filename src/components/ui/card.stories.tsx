@@ -8,7 +8,7 @@ import { Skeleton } from './skeleton'
 import { Separator } from './separator'
 import { Button } from './button'
 
-const meta = { title: 'Contenedores/Tarjetas', parameters: { layout: 'padded' } } satisfies Meta
+const meta = { title: 'Containers/Cards', parameters: { layout: 'padded' } } satisfies Meta
 export default meta
 type Story = StoryObj<typeof meta>
 
@@ -17,10 +17,10 @@ export const Card_: Story = {
   render: () => (
     <Card className="max-w-sm">
       <CardHeader>
-        <CardTitle>Título</CardTitle>
-        <CardDescription>Una descripción de apoyo</CardDescription>
+        <CardTitle>Title</CardTitle>
+        <CardDescription>A supporting description</CardDescription>
       </CardHeader>
-      <CardContent>Contenido de la tarjeta.</CardContent>
+      <CardContent>Card content.</CardContent>
     </Card>
   ),
 }
@@ -29,9 +29,9 @@ export const SectionCard_: Story = {
   name: 'SectionCard',
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 560 }}>
-      <SectionCard icon={Landmark} title="Mis Cuentas">Contenido</SectionCard>
-      <SectionCard icon={TrendingUp} title="Con acción" action={<Button size="sm" variant="outline">Ver todo</Button>}>
-        Contenido
+      <SectionCard icon={Landmark} title="Mis Cuentas">Content</SectionCard>
+      <SectionCard icon={TrendingUp} title="With an action" action={<Button size="sm" variant="outline">Ver todo</Button>}>
+        Content
       </SectionCard>
     </div>
   ),
@@ -48,7 +48,7 @@ export const MetricCard_: Story = {
 }
 
 /** The state a list reaches most often and the one most often left undesigned. */
-export const Vacio: Story = {
+export const EmptyState: Story = {
   name: 'Empty',
   render: () => (
     <Empty className="max-w-md">
@@ -64,8 +64,8 @@ export const Vacio: Story = {
   ),
 }
 
-export const CargaYSeparador: Story = {
-  name: 'Skeleton y Separator',
+export const LoadingAndSeparator: Story = {
+  name: 'Skeleton and Separator',
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 360 }}>
       <Skeleton className="h-4 w-40" />

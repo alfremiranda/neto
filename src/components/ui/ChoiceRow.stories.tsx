@@ -3,18 +3,18 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Briefcase, UserRound, Layers } from 'lucide-react'
 import { ChoiceRow } from './ChoiceRow'
 
-const meta = { title: 'Filas/ChoiceRow', parameters: { layout: 'padded' } } satisfies Meta
+const meta = { title: 'Rows/ChoiceRow', parameters: { layout: 'padded' } } satisfies Meta
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Estados: Story = {
+export const States: Story = {
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxWidth: 420 }}>
-      <ChoiceRow label="Sin seleccionar" selected={false} onSelect={() => {}} />
-      <ChoiceRow label="Seleccionado" selected onSelect={() => {}} />
-      <ChoiceRow label="Con descripción" description="Una línea que explica la opción" selected={false} onSelect={() => {}} />
-      <ChoiceRow label="Con ícono" description="Media a la izquierda" media={<Briefcase size={17} />} selected onSelect={() => {}} />
-      <ChoiceRow label="Deshabilitado" selected={false} onSelect={() => {}} disabled />
+      <ChoiceRow label="Unselected" selected={false} onSelect={() => {}} />
+      <ChoiceRow label="Selected" selected onSelect={() => {}} />
+      <ChoiceRow label="With a description" description="A line explaining the option" selected={false} onSelect={() => {}} />
+      <ChoiceRow label="With media" description="Leading tile" media={<Briefcase size={17} />} selected onSelect={() => {}} />
+      <ChoiceRow label="Disabled" selected={false} onSelect={() => {}} disabled />
     </div>
   ),
 }
@@ -26,8 +26,8 @@ export const Estados: Story = {
  * The two columns hold the same rows, selected and not. Any height difference between
  * them is the defect, and a visual diff catches it without anyone measuring.
  */
-export const SeleccionSinCambioDeTamano: Story = {
-  name: 'Selección — nada cambia de tamaño',
+export const SelectionDoesNotResize: Story = {
+  name: 'Selection — nothing resizes',
   render: () => {
     const opts = [
       { label: 'Empleado', desc: 'Recibo salario', Icon: Briefcase },
@@ -49,13 +49,13 @@ export const SeleccionSinCambioDeTamano: Story = {
   },
 }
 
-export const Interactivo: Story = {
+export const Interactive: Story = {
   render: () => {
     const [v, setV] = useState('a')
     return (
       <div role="radiogroup" aria-label="Demo" style={{ display: 'flex', flexDirection: 'column', gap: 8, maxWidth: 420 }}>
         {['a', 'b', 'c'].map(k => (
-          <ChoiceRow key={k} label={`Opción ${k.toUpperCase()}`} selected={v === k} onSelect={() => setV(k)} />
+          <ChoiceRow key={k} label={`Option ${k.toUpperCase()}`} selected={v === k} onSelect={() => setV(k)} />
         ))}
       </div>
     )

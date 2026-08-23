@@ -2,21 +2,21 @@ import { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { CurrencyRadio } from './CurrencyRadio'
 
-const meta = { title: 'Formularios/CurrencyRadio', parameters: { layout: 'padded' } } satisfies Meta
+const meta = { title: 'Forms/CurrencyRadio', parameters: { layout: 'padded' } } satisfies Meta
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Estados: Story = {
+export const States: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: 12, maxWidth: 460 }}>
       <CurrencyRadio code="COP" description="Peso colombiano" flag="🇨🇴" selected={false} onSelect={() => {}} />
       <CurrencyRadio code="USD" description="Dólar americano" flag="🇺🇸" selected onSelect={() => {}} />
-      <CurrencyRadio code="EUR" description="Deshabilitado" flag="🇪🇺" selected={false} onSelect={() => {}} disabled />
+      <CurrencyRadio code="EUR" description="Disabled" flag="🇪🇺" selected={false} onSelect={() => {}} disabled />
     </div>
   ),
 }
 
-export const Interactivo: Story = {
+export const Interactive: Story = {
   render: () => {
     const [v, setV] = useState('COP')
     return (

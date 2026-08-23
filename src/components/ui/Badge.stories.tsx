@@ -9,7 +9,7 @@ type Story = StoryObj<typeof meta>
 const TONES = ['accent', 'success', 'info', 'warning', 'danger', 'neutral'] as const
 
 /** The whole matrix: six tones by two treatments, the shape Figma publishes. */
-export const Matriz: Story = {
+export const Matrix: Story = {
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       {(['filled', 'outline'] as const).map(v => (
@@ -27,8 +27,8 @@ export const Matriz: Story = {
  * account — the thing needs its own component, so the semantic token layer stays the
  * source of that meaning instead of a `tone` chosen at the call site.
  */
-export const CuandoElColorSignifica: Story = {
-  name: 'Cuando el color significa algo',
+export const WhenColourCarriesMeaning: Story = {
+  name: 'When colour carries meaning',
   render: () => (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
       <CurrencyBadge currency="USD" />

@@ -2,13 +2,13 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from './button'
 
 const meta = {
-  title: 'Elementos/Button',
+  title: 'Elements/Button',
   parameters: { layout: 'padded' },
 } satisfies Meta
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Variantes: Story = {
+export const Variants: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
       <Button>Guardar</Button>
@@ -20,7 +20,7 @@ export const Variantes: Story = {
   ),
 }
 
-export const Tamanos: Story = {
+export const Sizes: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
       <Button size="sm">SM</Button>
@@ -38,8 +38,8 @@ export const Tamanos: Story = {
  *
  * Both buttons carry the same label, so a visual diff shows any width change immediately.
  */
-export const Ocupado: Story = {
-  name: 'Ocupado — no debe cambiar de ancho',
+export const Busy: Story = {
+  name: 'Busy — must not change width',
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start' }}>
       <Button>Autorizar y continuar</Button>

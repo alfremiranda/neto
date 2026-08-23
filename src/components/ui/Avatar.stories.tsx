@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Avatar } from './Avatar'
 
-const meta = { title: 'Elementos/Avatar', parameters: { layout: 'padded' } } satisfies Meta
+const meta = { title: 'Elements/Avatar', parameters: { layout: 'padded' } } satisfies Meta
 export default meta
 type Story = StoryObj<typeof meta>
 
@@ -10,7 +10,7 @@ type Story = StoryObj<typeof meta>
  * which is why they cannot be one text style. Before this component the same fallback was
  * written in three places at three sizes, and the header shipped 10px where SM says 12.
  */
-export const Tamanos: Story = {
+export const Sizes: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
       {(['sm', 'md', 'lg', 'xl'] as const).map(s => (
@@ -20,7 +20,7 @@ export const Tamanos: Story = {
   ),
 }
 
-export const SinBorde: Story = {
+export const Borderless: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
       <Avatar size="lg" name="Con borde" initials="CB" />

@@ -4,7 +4,7 @@ import { AccountColorPicker } from './AccountColorPicker'
 import { Field } from './Field'
 import type { AccountColor } from '@/lib/accountColor'
 
-const meta = { title: 'Cuentas/AccountColorPicker', parameters: { layout: 'padded' } } satisfies Meta
+const meta = { title: 'Accounts/AccountColorPicker', parameters: { layout: 'padded' } } satisfies Meta
 export default meta
 type Story = StoryObj<typeof meta>
 
@@ -14,8 +14,8 @@ type Story = StoryObj<typeof meta>
  * choosing a colour is a preference, not a task with a right answer, and the check carries
  * the selection. The names survive as each swatch's accessible name.
  */
-export const EnUnField: Story = {
-  name: 'Dentro de un Field',
+export const InsideAField: Story = {
+  name: 'Inside a Field',
   render: () => {
     const [c, setC] = useState<AccountColor>('purple')
     return (
@@ -26,7 +26,7 @@ export const EnUnField: Story = {
   },
 }
 
-export const Deshabilitado: Story = {
+export const Disabled: Story = {
   render: () => (
     <div style={{ maxWidth: 372 }}>
       <AccountColorPicker value="teal" onChange={() => {}} disabled />

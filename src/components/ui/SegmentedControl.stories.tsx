@@ -3,11 +3,11 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Landmark, Wallet, CreditCard } from 'lucide-react'
 import { SegmentedControl } from './SegmentedControl'
 
-const meta = { title: 'Formularios/SegmentedControl', parameters: { layout: 'padded' } } satisfies Meta
+const meta = { title: 'Forms/SegmentedControl', parameters: { layout: 'padded' } } satisfies Meta
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const DosYTres: Story = {
+export const TwoAndThree: Story = {
   render: () => {
     const [a, setA] = useState<'COP' | 'USD'>('COP')
     const [b, setB] = useState<'account' | 'cash' | 'credit'>('account')
@@ -27,8 +27,8 @@ export const DosYTres: Story = {
 }
 
 /** Segments fill the track, so every option is the same width whatever its label. */
-export const AnchosIguales: Story = {
-  name: 'Anchos iguales, etiquetas desiguales',
+export const EqualWidths: Story = {
+  name: 'Equal widths, unequal labels',
   render: () => {
     const [v, setV] = useState('a')
     return (

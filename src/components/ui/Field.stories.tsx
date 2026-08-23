@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Field } from './Field'
 import { Input } from './input'
 
-const meta = { title: 'Formularios/Field', parameters: { layout: 'padded' } } satisfies Meta
+const meta = { title: 'Forms/Field', parameters: { layout: 'padded' } } satisfies Meta
 export default meta
 type Story = StoryObj<typeof meta>
 
@@ -11,16 +11,16 @@ type Story = StoryObj<typeof meta>
  * `DatePicker` let the placeholder carry the field's name — it disappears the moment the
  * user types, and at #94a3b8 it measures 2.56:1 where a real label measures 10.35:1.
  */
-export const Estados: Story = {
+export const States: Story = {
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 360 }}>
-      <Field label="Sin mensaje">
+      <Field label="No message">
         {id => <Input id={id} placeholder="Ej: Bancolombia Ahorros" />}
       </Field>
-      <Field label="Con pista" state="hint" message="Solo los últimos 4 dígitos">
+      <Field label="With a hint" state="hint" message="Last 4 digits only">
         {id => <Input id={id} placeholder="1234" />}
       </Field>
-      <Field label="Con error" state="error" message="Ingresa un monto mayor que cero">
+      <Field label="With an error" state="error" message="Enter an amount above zero">
         {id => <Input id={id} defaultValue="0" aria-invalid />}
       </Field>
     </div>

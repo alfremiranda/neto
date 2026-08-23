@@ -28,17 +28,17 @@ const preview: Preview = {
   decorators: [withTheme],
   globalTypes: {
     theme: {
-      description: 'Modo de color',
+      description: 'Colour mode',
       defaultValue: 'light',
       toolbar: { icon: 'circlehollow', items: [
-        { value: 'light', title: 'Claro' }, { value: 'dark', title: 'Oscuro' },
+        { value: 'light', title: 'Light' }, { value: 'dark', title: 'Dark' },
       ] },
     },
     device: {
-      description: 'Ancho',
+      description: 'Width',
       defaultValue: 'desktop',
       toolbar: { icon: 'mobile', items: [
-        { value: 'mobile', title: 'Móvil · 412' }, { value: 'desktop', title: 'Escritorio' },
+        { value: 'mobile', title: 'Mobile · 412' }, { value: 'desktop', title: 'Desktop' },
       ] },
     },
   },

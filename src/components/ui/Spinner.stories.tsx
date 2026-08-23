@@ -6,7 +6,7 @@ const meta = { title: 'Feedback/Spinner', parameters: { layout: 'padded' } } sat
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Tonos: Story = {
+export const Tones: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
       <Spinner size="sm" /><Spinner size="md" />
@@ -23,8 +23,8 @@ export const Tonos: Story = {
  * with the label the way a two-option variant can — an outline danger button has a red
  * label and neither named tone is red.
  */
-export const HeredaElColorDeSuEtiqueta: Story = {
-  name: 'Hereda el color de su etiqueta',
+export const InheritsLabelColour: Story = {
+  name: 'Inherits its label colour',
   render: () => (
     <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
       <Button busy>Filled</Button>

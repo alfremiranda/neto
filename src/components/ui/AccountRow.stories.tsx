@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { AccountRow } from './AccountRow'
 import { CurrencyBadge } from './Badge'
 
-const meta = { title: 'Filas/AccountRow', parameters: { layout: 'padded' } } satisfies Meta
+const meta = { title: 'Rows/AccountRow', parameters: { layout: 'padded' } } satisfies Meta
 export default meta
 type Story = StoryObj<typeof meta>
 
@@ -12,7 +12,7 @@ type Story = StoryObj<typeof meta>
  * Calling the axis `selected` would make the check and the brand wash look like the same
  * state when they are not.
  */
-export const Tipos: Story = {
+export const Types: Story = {
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxWidth: 460 }}>
       <AccountRow type="fixed" label="Efectivo" description="Siempre incluida"
@@ -23,7 +23,7 @@ export const Tipos: Story = {
         badge={<CurrencyBadge currency="USD" />} onRemove={() => {}} />
       <AccountRow type="user"
         label="Bancolombia Ahorros Cuenta Nómina Principal Empresarial Extra Larga"
-        description="El nombre se recorta, la fila no crece"
+        description="The name truncates, the row does not grow"
         badge={<CurrencyBadge currency="COP" />} onRemove={() => {}} />
     </div>
   ),
