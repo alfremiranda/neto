@@ -728,7 +728,7 @@ export const useFinanceStore = create<FinanceState>()(
           // rest (non-locked). Deterministic across devices → converges to one.
           const byKey = new Map<string, DeductionConfig>()
           for (const d of deductions) {
-            const k = `${d.label} ${d.group}`
+            const k = `${d.label}\0${d.group}`
             const ex = byKey.get(k)
             if (!ex || String(d.id) < String(ex.id)) byKey.set(k, d)
           }
