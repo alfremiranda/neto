@@ -47,6 +47,19 @@ jobs:
       - name: Build
         run: npm run build
 
+      # Storybook ships inside the same artifact, at /storybook/. A design system whose
+      # only viewer is a local dev server is one that only Dev can open — which is the
+      # thing a living library exists to stop being true.
+      #
+      # After the app build on purpose: vite-plugin-pwa globs dist/ to build the service
+      # worker's precache, so anything written afterwards cannot end up in it. globIgnores
+      # and navigateFallbackDenylist cover it regardless, in case the order ever changes.
+      - name: Build Storybook
+        run: npx storybook build -o dist/storybook --quiet
+        env:
+          STORYBOOK_BASE: /storybook/
+          STORYBOOK_DISABLE_TELEMETRY: '1'
+
       - name: Setup Pages
         uses: actions/configure-pages@v6
 

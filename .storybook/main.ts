@@ -32,6 +32,9 @@ const config: StorybookConfig = {
   framework: { name: '@storybook/react-vite', options: {} },
   viteFinal: async (cfg) => {
     cfg.define = { ...cfg.define, __DS_STAMP__: JSON.stringify(packageStamp()) }
+    // Published under netofinanzas.app/storybook/ so the library is reachable without a
+    // checkout — the point of a living library is that people who are not Dev can open it.
+    if (process.env.STORYBOOK_BASE) cfg.base = process.env.STORYBOOK_BASE
     // The app's PWA plugin has no business here: Storybook is not the app, and its
     // manager bundle is larger than workbox's precache limit, which fails the build.
     // Flattened first: Vite allows nested plugin arrays, and vite-plugin-pwa returns one,

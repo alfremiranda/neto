@@ -51,7 +51,9 @@ Cinco superficies (la navegación expone cuatro; Configuración y Perfil viven e
 \* Tabs condicionales: solo aparecen si el usuario tiene ese grupo de deducciones habilitado.
 
 **Superficies públicas** (fuera de la app, sin login y sin cargar el bundle): la política de
-privacidad (`/privacidad.html`) y las calculadoras SEO (`/calculadoras/…`, ver 4.12).
+privacidad (`/privacidad.html`), las calculadoras SEO (`/calculadoras/…`, ver 4.12) y el
+**sistema de diseño en vivo** (`/storybook/`) — cada componente con todos sus estados, en claro
+y oscuro, en móvil y escritorio. Se puede abrir desde cualquier dispositivo sin tener el repo.
 
 **Navegación:** sidebar colapsable (desktop) / bottom tab bar (mobile). Header con chip de TRM en vivo, campana de notificaciones, toggle de tema y menú de cuenta. Navegador de mes sticky en la vista Mes. FAB con speed-dial en mobile; popover “Agregar” en desktop.
 
