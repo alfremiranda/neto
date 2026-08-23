@@ -14,7 +14,8 @@
     "apply-preset": "npx shadcn@latest apply --preset",
     "storybook": "storybook dev -p 6006",
     "storybook:build": "storybook build -o storybook-static",
-    "visual": "node scripts/visual-regression.mjs"
+    "visual": "node scripts/visual-regression.mjs",
+    "motion": "node scripts/motion-rules.mjs"
   },
   "dependencies": {
     "@fontsource-variable/rethink-sans": "^5.3.0",

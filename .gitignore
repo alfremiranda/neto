@@ -33,3 +33,4 @@ dist-ssr
 **/_to_delete/
 storybook-static/
 test/visual-diff/
+dist-motion/
