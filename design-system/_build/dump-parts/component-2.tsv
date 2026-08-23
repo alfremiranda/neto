@@ -40,10 +40,6 @@ switch/track/on	COLOR	#0e7490	#06b6d4	bg/brand	bg/brand
 switch/track/off	COLOR	rgba(0,0,0,0.2)	rgba(255,255,255,0.3)	color/black/20	color/white/30
 switch/thumb	COLOR	#ffffff	#ffffff	color/white	color/white
 input/menu/radius	FLOAT	8	8	radius/8	radius/8
-currency/usd/surface	COLOR	#ecfeff	#083344	color/cyan/50	color/cyan/950
-currency/usd/foreground	COLOR	#0e7490	#67e8f9	color/cyan/700	color/cyan/300
-currency/cop/surface	COLOR	#ecfdf5	#022c22	color/emerald/50	color/emerald/950
-currency/cop/foreground	COLOR	#047857	#6ee7b7	color/emerald/700	color/emerald/300
 breadcrumb/item/foreground	COLOR	#64748b	#94a3b8	color/slate/500	color/slate/400
 breadcrumb/item/foreground-hover	COLOR	#0f172a	#f8fafc	color/slate/900	color/slate/50
 breadcrumb/current/foreground	COLOR	#0f172a	#f8fafc	color/slate/900	color/slate/50
@@ -85,3 +81,9 @@ spinner/track/on-solid	COLOR	rgba(255,255,255,0.2)	rgba(0,0,0,0.2)	color/white/2
 spinner/head/on-solid	COLOR	#ffffff	#0f172a	color/white	color/slate/900
 spinner/track/default	COLOR	rgba(0,0,0,0.2)	rgba(255,255,255,0.2)	color/black/20	color/white/20
 spinner/head/default	COLOR	#0f172a	#f8fafc	color/slate/900	color/slate/50
+action-chip/default/border	COLOR	#cbd5e1	#475569	color/slate/300	color/slate/600
+action-chip/default/foreground	COLOR	#334155	#cbd5e1	fg/subtle	fg/subtle
+action-chip/hover/border	COLOR	#64748b	#475569	color/slate/500	color/slate/600
+action-chip/hover/foreground	COLOR	#1e293b	#f1f5f9	fg/on-subtle	fg/on-subtle
+action-chip/disabled/border	COLOR	#cbd5e1	#475569	color/slate/300	color/slate/600
+action-chip/disabled/foreground	COLOR	#334155	#cbd5e1	fg/subtle	fg/subtle

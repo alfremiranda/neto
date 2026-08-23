@@ -935,6 +935,26 @@
           "account/teal/surface",
           "#f0fdfa",
           "#042f2e"
+        ],
+        [
+          "currency/usd/surface",
+          "#ecfeff",
+          "#083344"
+        ],
+        [
+          "currency/usd/foreground",
+          "#0e7490",
+          "#67e8f9"
+        ],
+        [
+          "currency/cop/surface",
+          "#ecfdf5",
+          "#022c22"
+        ],
+        [
+          "currency/cop/foreground",
+          "#047857",
+          "#6ee7b7"
         ]
       ]
     },
@@ -1602,26 +1622,6 @@
           8
         ],
         [
-          "currency/usd/surface",
-          "#ecfeff",
-          "#083344"
-        ],
-        [
-          "currency/usd/foreground",
-          "#0e7490",
-          "#67e8f9"
-        ],
-        [
-          "currency/cop/surface",
-          "#ecfdf5",
-          "#022c22"
-        ],
-        [
-          "currency/cop/foreground",
-          "#047857",
-          "#6ee7b7"
-        ],
-        [
           "breadcrumb/item/foreground",
           "#64748b",
           "#94a3b8"
@@ -1825,6 +1825,36 @@
           "spinner/head/default",
           "#0f172a",
           "#f8fafc"
+        ],
+        [
+          "action-chip/default/border",
+          "#cbd5e1",
+          "#475569"
+        ],
+        [
+          "action-chip/default/foreground",
+          "#334155",
+          "#cbd5e1"
+        ],
+        [
+          "action-chip/hover/border",
+          "#64748b",
+          "#475569"
+        ],
+        [
+          "action-chip/hover/foreground",
+          "#1e293b",
+          "#f1f5f9"
+        ],
+        [
+          "action-chip/disabled/border",
+          "#cbd5e1",
+          "#475569"
+        ],
+        [
+          "action-chip/disabled/foreground",
+          "#334155",
+          "#cbd5e1"
         ]
       ]
     }
@@ -4171,6 +4201,58 @@
       }
     },
     {
+      "collection": "Semantic",
+      "name": "currency/usd/surface",
+      "type": "COLOR",
+      "values": {
+        "Light": "#ecfeff",
+        "Dark": "#083344"
+      },
+      "aliases": {
+        "Light": "color/cyan/50",
+        "Dark": "color/cyan/950"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "currency/usd/foreground",
+      "type": "COLOR",
+      "values": {
+        "Light": "#0e7490",
+        "Dark": "#67e8f9"
+      },
+      "aliases": {
+        "Light": "color/cyan/700",
+        "Dark": "color/cyan/300"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "currency/cop/surface",
+      "type": "COLOR",
+      "values": {
+        "Light": "#ecfdf5",
+        "Dark": "#022c22"
+      },
+      "aliases": {
+        "Light": "color/emerald/50",
+        "Dark": "color/emerald/950"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "currency/cop/foreground",
+      "type": "COLOR",
+      "values": {
+        "Light": "#047857",
+        "Dark": "#6ee7b7"
+      },
+      "aliases": {
+        "Light": "color/emerald/700",
+        "Dark": "color/emerald/300"
+      }
+    },
+    {
       "collection": "Typography",
       "name": "font-family",
       "type": "STRING",
@@ -6216,58 +6298,6 @@
     },
     {
       "collection": "Component",
-      "name": "currency/usd/surface",
-      "type": "COLOR",
-      "values": {
-        "Light": "#ecfeff",
-        "Dark": "#083344"
-      },
-      "aliases": {
-        "Light": "color/cyan/50",
-        "Dark": "color/cyan/950"
-      }
-    },
-    {
-      "collection": "Component",
-      "name": "currency/usd/foreground",
-      "type": "COLOR",
-      "values": {
-        "Light": "#0e7490",
-        "Dark": "#67e8f9"
-      },
-      "aliases": {
-        "Light": "color/cyan/700",
-        "Dark": "color/cyan/300"
-      }
-    },
-    {
-      "collection": "Component",
-      "name": "currency/cop/surface",
-      "type": "COLOR",
-      "values": {
-        "Light": "#ecfdf5",
-        "Dark": "#022c22"
-      },
-      "aliases": {
-        "Light": "color/emerald/50",
-        "Dark": "color/emerald/950"
-      }
-    },
-    {
-      "collection": "Component",
-      "name": "currency/cop/foreground",
-      "type": "COLOR",
-      "values": {
-        "Light": "#047857",
-        "Dark": "#6ee7b7"
-      },
-      "aliases": {
-        "Light": "color/emerald/700",
-        "Dark": "color/emerald/300"
-      }
-    },
-    {
-      "collection": "Component",
       "name": "breadcrumb/item/foreground",
       "type": "COLOR",
       "values": {
@@ -6797,6 +6827,84 @@
       "aliases": {
         "Light": "color/slate/900",
         "Dark": "color/slate/50"
+      }
+    },
+    {
+      "collection": "Component",
+      "name": "action-chip/default/border",
+      "type": "COLOR",
+      "values": {
+        "Light": "#cbd5e1",
+        "Dark": "#475569"
+      },
+      "aliases": {
+        "Light": "color/slate/300",
+        "Dark": "color/slate/600"
+      }
+    },
+    {
+      "collection": "Component",
+      "name": "action-chip/default/foreground",
+      "type": "COLOR",
+      "values": {
+        "Light": "#334155",
+        "Dark": "#cbd5e1"
+      },
+      "aliases": {
+        "Light": "fg/subtle",
+        "Dark": "fg/subtle"
+      }
+    },
+    {
+      "collection": "Component",
+      "name": "action-chip/hover/border",
+      "type": "COLOR",
+      "values": {
+        "Light": "#64748b",
+        "Dark": "#475569"
+      },
+      "aliases": {
+        "Light": "color/slate/500",
+        "Dark": "color/slate/600"
+      }
+    },
+    {
+      "collection": "Component",
+      "name": "action-chip/hover/foreground",
+      "type": "COLOR",
+      "values": {
+        "Light": "#1e293b",
+        "Dark": "#f1f5f9"
+      },
+      "aliases": {
+        "Light": "fg/on-subtle",
+        "Dark": "fg/on-subtle"
+      }
+    },
+    {
+      "collection": "Component",
+      "name": "action-chip/disabled/border",
+      "type": "COLOR",
+      "values": {
+        "Light": "#cbd5e1",
+        "Dark": "#475569"
+      },
+      "aliases": {
+        "Light": "color/slate/300",
+        "Dark": "color/slate/600"
+      }
+    },
+    {
+      "collection": "Component",
+      "name": "action-chip/disabled/foreground",
+      "type": "COLOR",
+      "values": {
+        "Light": "#334155",
+        "Dark": "#cbd5e1"
+      },
+      "aliases": {
+        "Light": "fg/subtle",
+        "Dark": "fg/subtle"
       }
     },
     {

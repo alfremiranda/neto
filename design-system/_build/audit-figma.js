@@ -84,9 +84,12 @@ const C6_RUNG = /\b(slate|gray|red|orange|amber|yellow|lime|green|emerald|teal|c
 // cada bajada se fija aquí. Cuando llegue a 0, el trinquete se borra y el chequeo
 // pasa a ser absoluto.
 //
-// C5 = 155 el 2026-08-22. De esas, 12 son `action-chip ← badge/*`, ya autorizadas
-// a cerrarse el 19-ago; cerrarlas baja el trinquete a 143.
-const BASELINE = { C5_token_de_otro_componente: 155, C7_efecto_sin_token: 12 };
+// C5 = 104 el 2026-08-22, bajado desde 155 el mismo día. Predije 143 —restando las 12
+// de `action-chip ← badge/*`— y me quedé corto: mover `currency/*` a Semantic retiró
+// otras 51 de golpe, porque un token que ya no vive en Component deja de poder
+// prestarse. Colocar un token en la capa correcta cierra más préstamos que perseguir
+// los préstamos uno a uno.
+const BASELINE = { C5_token_de_otro_componente: 104, C7_efecto_sin_token: 12 };
 
 const OUT_OF_SCOPE = /^(_docs-kit|Screens · Neto \(WIP\))/;
 

@@ -97,3 +97,7 @@ account/indigo/surface	COLOR	#eef2ff	#1e1b4b	color/indigo/50	color/indigo/950
 account/orange/surface	COLOR	#fff7ed	#431407	color/orange/50	color/orange/950
 account/rose/surface	COLOR	#fff1f2	#4c0519	color/rose/50	color/rose/950
 account/teal/surface	COLOR	#f0fdfa	#042f2e	color/teal/50	color/teal/950
+currency/usd/surface	COLOR	#ecfeff	#083344	color/cyan/50	color/cyan/950
+currency/usd/foreground	COLOR	#0e7490	#67e8f9	color/cyan/700	color/cyan/300
+currency/cop/surface	COLOR	#ecfdf5	#022c22	color/emerald/50	color/emerald/950
+currency/cop/foreground	COLOR	#047857	#6ee7b7	color/emerald/700	color/emerald/300
