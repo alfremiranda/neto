@@ -9,7 +9,12 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 // and fold to false in anything production-like, which is exactly the guarantee that keeps
 // the fixture out of the shipped bundle. So the only place these screens are reachable is
 // the dev server.
-const dev = spawn('npx', ['vite', '--port', '5199', '--strictPort'], { cwd: ROOT, stdio: 'pipe' })
+// detached so the whole process group can be killed: `npx` spawns vite as a child, and
+// killing only npx leaves vite alive holding the port and the pipes, which hangs the run
+// after the checks have already passed.
+const dev = spawn('npx', ['vite', '--port', '5199', '--strictPort'], {
+  cwd: ROOT, stdio: 'pipe', detached: true,
+})
 const base = 'http://localhost:5199'
 
 // Polls the URL rather than watching stdout for a banner. Parsing the log made this depend
@@ -33,7 +38,14 @@ if (!ready) {
   dev.kill('SIGTERM')
   process.exit(1)
 }
-const stop = () => { try { dev.kill('SIGTERM') } catch { /* already gone */ } }
+const stop = () => { try { process.kill(-dev.pid, 'SIGKILL') } catch { /* already gone */ } }
+// Belt and braces: if anything below hangs — a browser that never closes, a page that
+// never settles — the job must fail loudly rather than burn the runner's six hours.
+const guard = setTimeout(() => {
+  console.error('✗ las reglas de movimiento excedieron 5 minutos')
+  stop(); process.exit(1)
+}, 5 * 60_000)
+guard.unref()
 
 const fails = []
 const check = (name, ok, detail) => {
@@ -109,10 +121,9 @@ const browser = await chromium.launch()
 }
 
 await browser.close()
+clearTimeout(guard)
 stop()
 
-if (fails.length) {
-  console.log(`\n✗ ${fails.length} regla(s) de movimiento incumplidas`)
-  process.exit(1)
-}
-console.log('\n✓ las reglas temporales se cumplen')
+if (fails.length) console.log(`\n✗ ${fails.length} regla(s) de movimiento incumplidas`)
+else console.log('\n✓ las reglas temporales se cumplen')
+process.exit(fails.length ? 1 : 0)
