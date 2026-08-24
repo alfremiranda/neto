@@ -203,6 +203,11 @@ async function auditTokens() {
 // ── auditoría de nodos, una página por llamada ──────────────────────────────
 async function auditPage(pageId) {
   const page = await figma.getNodeByIdAsync(pageId);
+  // Las tres exclusiones de CONFIG se declararon el 2026-08-20 y nunca se
+  // cablearon: estaban en el objeto y ninguna funcion las leia. Un 0 que nadie
+  // aplica y ~350 falsos positivos que la nota decia haber quitado. §A6.
+  if (CONFIG.outOfScopePages.test(page.name))
+    return { scope: 'page', page: page.name, skipped: 'fuera de alcance por CONFIG.outOfScopePages' };
   await figma.setCurrentPageAsync(page);
 
   const styles = await figma.getLocalTextStylesAsync();
@@ -237,6 +242,20 @@ async function auditPage(pageId) {
   const esMarcaAjena = n => {
     for (let a = n; a; a = a.parent)
       if ((CONFIG.foreignBrand || []).some(re => re.test(a.name))) return true;
+    return false;
+  };
+
+  // ── cromo de documentacion ────────────────────────────────────────────────
+  // Un `doc:` y todo lo que lo envuelve explican el sistema; no SON el sistema.
+  // Su padding es maquetacion de una pagina de documentacion, no una decision
+  // de espaciado. Pero el componente que el frame documenta si es el sistema:
+  // en cuanto la subida cruza un COMPONENT o COMPONENT_SET dejamos de excluir.
+  // Solo apaga C8. Un fill sin token en cromo sigue siendo un fill sin token.
+  const esCromoDeDoc = n => {
+    for (let a = n; a; a = a.parent) {
+      if (a.type === 'COMPONENT' || a.type === 'COMPONENT_SET') return false;
+      if (CONFIG.docChrome.test(a.name)) return true;
+    }
     return false;
   };
 
@@ -287,7 +306,7 @@ async function auditPage(pageId) {
     const ajeno = esMarcaAjena(n);
     // El borde punteado de un COMPONENT_SET lo pinta Figma, no nosotros: no es un stroke
     // sin token, es cromo del editor. Contarlo hacia C1b hace ruido en cada set del archivo.
-    const esSet = n.type === 'COMPONENT_SET';
+    const esSet = CONFIG.figmaChrome.has(n.type);
     if (CONFIG.genericNames.test(n.name)) add('C4_nombre_generico', path, n.type);
     if (n.type === 'TEXT') {
       if (n.textStyleId === figma.mixed) add('C2_texto_estilos_mezclados', path);
@@ -300,7 +319,7 @@ async function auditPage(pageId) {
 
     // C8 — un numero de layout escrito a mano. Las instancias quedan fuera: su geometria
     // la decide el componente, no la pantalla que lo usa.
-    if (!esSet && n.type !== 'SECTION' && n.type !== 'INSTANCE' && !dentroDeInstancia(n)) {
+    if (!esSet && n.type !== 'SECTION' && n.type !== 'INSTANCE' && !dentroDeInstancia(n) && !esCromoDeDoc(n)) {
       const bv = n.boundVariables || {};
       const N = CONFIG.numeric;
       if (n.layoutMode && n.layoutMode !== 'NONE') {
