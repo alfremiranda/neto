@@ -2,8 +2,8 @@
 
 Última actualización: **2026-08-24**. Trabajo en vuelo al cierre de sesión.
 
-**`unpushed: 9f785d10` · `49e9c272` · `897afebe` · `9c2cf26d` · `a59b5955` + el commit que trae
-este handoff** — Diseño no puede pushear. `credential-osxkeychain` es un binario de macOS que no
+**`unpushed: 9f785d10` · `49e9c272` · `897afebe` · `9c2cf26d` · `a59b5955` · `a377c4f1` ·
+`ac88d543` + el commit que trae este handoff** — Diseño no puede pushear. `credential-osxkeychain` es un binario de macOS que no
 existe en la VM de Linux donde corro; `git fetch` funciona (lectura anónima), `git push` no puede
 autenticar. Dev barre.
 
