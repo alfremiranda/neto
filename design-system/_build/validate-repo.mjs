@@ -101,15 +101,29 @@ try {
   execFileSync('python3', [join(HERE, 'build.py')], {
     env: { ...process.env, DS_OUT: TMP }, stdio: 'pipe',
   })
-  for (const f of ['tokens.css', 'tokens.map.css']) {
-    const committed = join(ROOT, 'design-system', 'tokens', f)
-    const rebuilt = join(TMP, 'tokens', f)
-    if (!existsSync(rebuilt)) { fail('R2', `build.py no produjo ${f}`); continue }
-    if (readFileSync(committed, 'utf8') !== readFileSync(rebuilt, 'utf8')) {
-      fail('R2', `${f} no se reproduce desde tokens.json — o fue editado a mano, o build.py cambió sin republicar`)
-    }
+  // R2 reconstruía los 89 archivos y comparaba DOS. El 2026-08-24 se encontró que
+  // `tokens/tokens.json` y `foundations/colors.html` llevaban tres commits atrasados
+  // — con los valores de account/green|amber/accent ANTES de subirlos a rung 700 por
+  // contraste — mientras `tokens.css` estaba al día. La regla decía «design-system/ es
+  // un artefacto generado» y medía el 2% de él. Ahora compara TODO lo que build.py
+  // produce. Es unidireccional a propósito: un archivo que existe en el repo y no en
+  // la salida no es un fallo de R2, porque build.py no dice nada sobre él.
+  const emitted = []
+  const walk = d => { for (const e of readdirSync(d, { withFileTypes: true })) {
+    const p = join(d, e.name)
+    if (e.isDirectory()) walk(p); else emitted.push(relative(TMP, p))
+  } }
+  walk(TMP)
+  const rotos = []
+  for (const rel of emitted.sort()) {
+    const committed = join(ROOT, 'design-system', rel)
+    if (!existsSync(committed)) { rotos.push(`falta ${rel}`); continue }
+    if (readFileSync(committed).equals(readFileSync(join(TMP, rel)))) continue
+    rotos.push(`difiere ${rel}`)
   }
-  notes.push('R2  build.py corrió y se comparó tokens.css + tokens.map.css')
+  // Se listan, no se cuentan: un número no dice qué token se quedó con el valor viejo.
+  rotos.forEach(r => fail('R2', `${r} — design-system/ no se reproduce desde tokens.json`))
+  notes.push(`R2  build.py corrió y se compararon ${emitted.length} archivos generados`)
 } catch (e) {
   fail('R2', `build.py falló: ${String(e.message).split('\n').slice(-3).join(' ').trim()}`)
 } finally {

@@ -666,6 +666,17 @@
   "d": "Account-type glyph. One variant per account type, so the icon can never disagree with the account type it sits next to."
  },
  {
+  "g": "Icons & Avatar",
+  "n": "LedgerEntryIcon",
+  "v": 6,
+  "p": [
+   "Type=income|egreso|transfer-in|transfer-out|ss|scheduled"
+  ],
+  "w": 360,
+  "h": 80,
+  "d": "The tinted bubble that opens every ledger row: a 32px circle in a subtle background token with a 16px glyph in the matching foreground token. Six types, one nested swap — putting them on LedgerRow instead would multiply every row state by six for a decision the entry already carries.\n\nTwo glyphs do double duty. income and transfer-in share arrow-down-left; egreso and transfer-out share arrow-up-right. Colour is the only thing separating each pair inside the bubble, so it is never the only carrier in use: the row prints “Desde {cuenta}” or “Hacia {cuenta}” for a transfer and the entry description for the rest (WCAG 1.4.1).\n\nscheduled OVERRIDES the type rather than sitting beside it. A scheduled entry shows the clock on the neutral tint whatever it is underneath, because at that point what matters is that it has not happened yet. The row also drops to 60% and prints the “Programado” badge.\n\nGlyph contrast is measured against its own tint in both modes: Light floor 3.58:1 (income), Dark floor 5.84:1 (egreso). A filled glyph is a graphic object, so 1.4.11 applies.\n\nThe glyph is 16 (icon-size/md), not the 14 the code passes. 14 is not a rung on the icon scale — 12 · 16 · 20 · 24 — and a one-off would flatten the scale for one row.\n\nOPEN for Dev: the ss bubble in code paints its glyph with --color-tax, which resolves to bg/tax (amber/400) and measures 1.61:1 on amber/50 in Light. That fails 1.4.11. Figma uses fg/tax (amber/700, 4.84:1); the published name is --color-tax-txt."
+ },
+ {
   "g": "Navigation",
   "n": "bottom-nav",
   "v": 1,
@@ -870,6 +881,19 @@
   "w": 630,
   "h": 404,
   "d": "Income row. State=Pressed is the mobile tap feedback (the row is a button on mobile, a static line on desktop); State=Confirming is the desktop inline delete confirmation, where the danger icon button is replaced by a filled danger button reading “¿Eliminar?”.\n\nThe account chip is AccountBadge, not a generic Badge: it carries the account’s colour dot."
+ },
+ {
+  "g": "Rows",
+  "n": "ledger-itemrow",
+  "v": 10,
+  "p": [
+   "Device=Desktop|Mobile",
+   "Flow=Debit|Credit",
+   "State=Default|Scheduled|Confirming"
+  ],
+  "w": 651,
+  "h": 812,
+  "d": "One entry in an account’s ledger. The five sibling rows each show one KIND of thing in its own view; this one shows whatever the account did, in date order, so a single row has to carry an income, an expense, both legs of a transfer and a social-security payment.\n\nThat is why the leading mark is a nested LedgerEntryIcon swap and not an axis. Six entry types times the axes below would be sixty variants for a fact the entry already carries.\n\nThree axes, and the matrix is deliberately sparse:\n· Device — which trailing controls the row offers. Desktop edits and deletes in place; Mobile opens RowActionsSheet behind one button.\n· Flow — Credit prints the sign and paints the amount fg/provision; Debit leaves it fg/default. This is the one thing the siblings never needed, because each of them only ever moves money one way.\n· State — Default, Scheduled, Confirming. Confirming is Desktop only: it is the inline delete confirmation, and Mobile confirms inside the sheet. There is no Pressed, which the siblings do have, because this row has no pressed styling in code — the mobile tap opens the sheet and nothing else happens.\n\nScheduled is a state of the ENTRY, not of the row: the whole row drops to 60%, the mark becomes the clock whatever the type underneath, and the “Programado” badge appears next to the description.\n\nTwo measurements are load-bearing. The amount column is pinned to 104 so a leading “+” does not shift the column between neighbouring rows — a ledger is read down the right edge. And the badge never shrinks: the description’s cap is derived per variant from what is actually left after the mark, the amount column and that variant’s own actions, so on Mobile + Scheduled the description truncates and the badge stays whole. A truncated badge reads as a different word.\n\nOPEN for Dev — four measurements where this row follows the row family and the code does not. None of them is this row’s invention:\n· description Body/Base-Emphasis (16 Medium); code passes ts-body-base (16 Regular).\n· running balance Amount/Micro (12); code passes a raw 10px. 10 is not a rung on the type scale.\n· action buttons Icon Button Size=LG (36); code passes size md.\n· row height 62; code sets min-h 52. The 62 falls out of the family’s padding, it is not set."
  },
  {
   "g": "Rows",

@@ -214,6 +214,31 @@ name constructed instead of read.
 The countermeasure is not more discipline. It is that **the result gets measured**, always, by
 something that does not depend on anyone remembering.
 
+### A6b. A rule in the wrong place beats a rule applied by hand (2026-08-24)
+
+Two checks were repaired on the same day, and the repair was the same both times: the rule was
+sitting one level away from where it belonged.
+
+**`C8`.** `docChrome`, `figmaChrome` and `outOfScopePages` were written into `CONFIG` on
+2026-08-20, with a comment recording that the layout sweep had left ~350 doc-chrome findings as
+permanent false positives. **No function ever read any of the three.** The decision existed only
+as prose sitting inside a config object, which reads exactly like a decision that is in force.
+Wired, one page went from 94 findings to 12 — and the 12 were real.
+
+**`C5`.** A node *inside* an instance was excluded as composition. The instance *itself* was not,
+so putting a `Badge` inside a row counted as borrowing `badge/*`. C5 went **116 → 1 → 0**
+file-wide; the 115 it dropped were every card containing a button and every row containing a
+badge, which is what a component library is FOR.
+
+The lesson is not "check your config". It is the one the token layers already taught: **three
+times now, moving the rule to the right place has retired more findings than working through the
+findings one at a time** — `currency/*` into Semantic retired 51 borrows at once, the instance
+guard retired 115, and neither was reachable by fixing instances.
+
+A corollary for the ratchet: `C5` reached 0, so its baseline entry is **deleted** rather than set
+to 0. A ratchet at 0 still says "this used to be broken"; no ratchet says "this check is
+absolute", which is the truth and the thing the next person needs to know.
+
 ## A7. The three-piece shape
 
 | Piece | What it is | Where it lives |

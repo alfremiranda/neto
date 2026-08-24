@@ -158,9 +158,35 @@ file is freshest, and the moment the person reading the diff is the one who can 
 because they either just caused it or are about to.
 
 CI cannot do this half — it has no Figma access. What CI does own is the repo half
-(`validate-repo.mjs`, `R1`–`R4`), including `R2`: the package is reproducible from
+(`validate-repo.mjs`, `R1`–`R5`), including `R2`: the package is reproducible from
 `tokens.json`. Between them the loop is closed: `R2` proves the package matches the tokens,
 the auditor proves the tokens match Figma, and neither one alone is a claim about the other.
+
+### R2 was rebuilding 89 files and comparing 2 (fixed 2026-08-24)
+
+`build.py` cannot write in place on this machine, so it runs with `DS_OUT=/tmp/dsout` and the
+result is copied back **by hand**. A hand copy copies what someone remembers.
+
+On 2026-08-24 the published tree was three commits behind in two files: `tokens/tokens.json`
+and `foundations/colors.html` still carried `account/green/accent` and `account/amber/accent`
+at their pre-fix rungs — the values that measured 3.01:1 and 2.91:1 and were raised to rung
+700 precisely because they failed — and neither had the `action-chip` un-borrowing nor the
+`currency/*` move. `tokens/tokens.css`, copied in the same sessions, was current.
+
+Nothing caught it, and the reason is worth keeping. `token-drift.mjs` compares Figma against
+`_build/tokens.json`, the SOURCE; it is structurally blind to what happens downstream of it.
+`R2` was the check that owned the downstream half — it already rebuilt the entire tree into a
+temp dir — and then compared `tokens.css` and `tokens.map.css` and stopped. Its own comment
+read *"the system declares design-system/ a generated artefact; if a hand edit can survive in
+it, that declaration is a comment rather than a fact"*, above code that measured 2% of it.
+
+`R2` now compares **every file `build.py` emits** (89 today), one-directional: a file that
+exists in the repo and not in the output is not a failure, because `build.py` makes no claim
+about it. It names each drifted file rather than counting them — a count does not tell you
+which token kept the old value.
+
+The two checks are now the two ends of the same cable, and both ends are held:
+`token-drift.mjs` — Figma vs the source · `R2` — the source vs what is published.
 
 ## 7. Order of operations for a rename, from now on
 

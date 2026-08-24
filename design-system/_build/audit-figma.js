@@ -36,6 +36,13 @@ const SHARED_FAMILIES = {
   'Select':    ['input'],    // comparte ejes y alturas con Input para que alineen en una fila
   'Field':     ['input'],    // envuelve al control; su slot por defecto es un Input
   'menu-item': ['sidebar'],  // menu-item ES la fila del sidebar, no un vecino suyo
+  // bottom-nav-button es la fila del sidebar a ancho de movil. La pestana
+  // seleccionada pinta glifo y etiqueta con `sidebar/accent-foreground` porque es
+  // el MISMO trabajo -- el primer plano del elemento de navegacion activo -- en
+  // otro viewport. Acunar `bottom-nav/*` con el mismo valor seria un token nuevo
+  // para un trabajo que ya tiene el suyo (regla 7), y dejaria que la app cambiara
+  // de identidad al redimensionar.
+  'bottom-nav-button': ['sidebar'],
 };
 
 // ── C7 · efectos ────────────────────────────────────────────────────────────
@@ -76,20 +83,28 @@ const C6_NEGACION = /(code uses|used to|was |instead of|pointed at|rather than|n
 const C6_RUNG = /\b(slate|gray|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|pink|rose|white|black)[-\/](\d{1,3})\b/gi;
 
 // ── Trinquetes ──────────────────────────────────────────────────────────────
-// C5 y C7 abren con deuda: 155 vinculaciones prestadas y 12 efectos sin token.
-// Un chequeo que nace en rojo se apaga en una semana — es el criterio con el que
-// Dev retrasó `R5` hasta haber arreglado sus 22 infracciones, y aplica igual aquí.
+// C7 abre con deuda: 12 efectos sin token. Un chequeo que nace en rojo se apaga
+// en una semana -- es el criterio con el que Dev retraso `R5` hasta haber
+// arreglado sus 22 infracciones, y aplica igual aqui. Asi que no falla por el
+// numero: falla si SUBE.
 //
-// Así que no fallan por el número: fallan si SUBE. La cifra sólo puede bajar, y
-// cada bajada se fija aquí. Cuando llegue a 0, el trinquete se borra y el chequeo
-// pasa a ser absoluto.
+// C5 YA NO TIENE TRINQUETE. Llego a 0 el 2026-08-24 y el chequeo es absoluto.
+// El camino fue 155 -> 104 -> 116 -> 0, y las tres caidas dicen lo mismo:
+//   155 -> 104  mover `currency/*` a Semantic. Un token que ya no vive en
+//               Component deja de poder prestarse.
+//   104 -> 116  no es una subida real: son las 12 de `ledger-itemrow` al nacer,
+//               y sirvieron de control -- 104 + 12 = 116 cuadra la medicion.
+//   116 -> 1    la guarda de INSTANCE. Una instancia pintada con el token de su
+//               propio componente es COMPOSICION. Sus hijos ya quedaban fuera;
+//               ella no, y por eso meter un Badge en una fila contaba como
+//               prestamo de badge/*. Las 115 retiradas son todas de esa forma:
+//               AccountSummaryCard con un Favorite, Sheet con un Button,
+//               ExpenseContainer con action-chips. Ninguna era un prestamo.
+//   1 -> 0      `bottom-nav-button <- sidebar`, que es familia compartida.
 //
-// C5 = 104 el 2026-08-22, bajado desde 155 el mismo día. Predije 143 —restando las 12
-// de `action-chip ← badge/*`— y me quedé corto: mover `currency/*` a Semantic retiró
-// otras 51 de golpe, porque un token que ya no vive en Component deja de poder
-// prestarse. Colocar un token en la capa correcta cierra más préstamos que perseguir
-// los préstamos uno a uno.
-const BASELINE = { C5_token_de_otro_componente: 104, C7_efecto_sin_token: 12 };
+// Tres veces seguidas ha salido lo mismo: colocar bien la REGLA retira mas
+// hallazgos que perseguir los hallazgos uno a uno.
+const BASELINE = { C7_efecto_sin_token: 12 };
 
 const OUT_OF_SCOPE = /^(_docs-kit|Screens · Neto \(WIP\))/;
 
@@ -274,6 +289,18 @@ async function auditPage(pageId) {
 
   const c5 = (nd) => {
     if (dentroDeInstancia(nd)) return;
+    // Una INSTANCE pintada con el token de SU PROPIO componente es composicion,
+    // no prestamo: ese token lo eligio el componente instanciado, igual que sus
+    // hijos, que ya quedaban fuera. Solo cuenta si esta pantalla PISO el relleno.
+    // Medido el 2026-08-24 sobre los 15 casos de Components · Rows: los 15 traian
+    // el token de su main y ninguno tenia `fills` en overriddenFields. Cero
+    // positivos reales en la clase. Sin esta guarda, componer un Badge dentro de
+    // una fila contaba como prestamo de badge/*, que es justo lo que queremos.
+    if (nd.type === 'INSTANCE') {
+      const ov = (nd.overrides || []).find(o => o.id === nd.id);
+      const campos = (ov && ov.overriddenFields) || [];
+      if (!campos.includes('fills') && !campos.includes('strokes')) return;
+    }
     const owner = ownerOf(nd);
     if (!owner) return;
     const shared = (SHARED_FAMILIES[owner] || []).map(norm);

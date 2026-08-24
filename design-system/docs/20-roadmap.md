@@ -306,12 +306,28 @@ users are checking money.
 
 ## Phase 4 — The missing components
 
-From the measured inventory (`14-component-inventory.md`), still open:
+From the measured inventory (`14-component-inventory.md`). **Two of the four items on the
+original list were wrong**, and both were wrong in a way only a look at Figma could show — which
+is what `§B6` asks for and why the list is re-measured before it is worked, not after:
+
+- **the drawer handle already exists**, inside `Sheet`. It was never a missing component.
+- **the distribution bar is two different things.** Figma's `DistribucionCard` has four fixed
+  segments; the code's bar at `EgresosCard.tsx:67` draws one segment per category and dims the
+  others on hover. Naming them as one item hid a real gap behind a component that already exists.
+
+Done, 2026-08-24:
+
+- `LedgerEntryIcon` — the 32px tinted bubble, six entry types as one nested swap. It also
+  needed three glyphs the library did not have: `arrow-down-left`, `arrow-up-right` and
+  `shield-check`.
+- `ledger-itemrow` — the row that blocks the account page (`10`). Ten variants over
+  `Device × Flow × State`, sparse on purpose: no `Pressed`, because this row has none in code.
+
+Still open:
 
 - the three annual charts — 748 lines of hand-built SVG with no Figma counterpart;
-- the distribution bar (`EgresosCard.tsx:67`);
-- `LedgerRow` and a transactions container — the pair that blocks the account page (`10`);
-- the drawer handle.
+- the per-category distribution bar (`EgresosCard.tsx:67`), which is NOT `DistribucionCard`;
+- a transactions container to hold the rows.
 
 These come **after** Phase 1 on purpose. New components mint new tokens — Alfredo said as much —
 and minting them under the old naming means renaming them twice.
@@ -320,10 +336,23 @@ and minting them under the old naming means renaming them twice.
 
 ## Phase 5 — Keeping it alive
 
-**5.1 · Finish the validator.** `C5` (a node bound to another component's token — the class `T7`
-cannot see because the borrowing lives in the node) and `C6` (a description citing a palette rung
-its alias does not use) are authorised. `C7` for effects and `C8` for layout numbers exist or are
-proposed. `C8` already found 343 raw gaps on one page.
+**5.1 · Finish the validator.** `C5`, `C6`, `C7` and `C8` all ship. Two of them were repaired on
+2026-08-24 and both repairs were the same shape — the rule was in the wrong place, not the
+findings:
+
+- `C8` reported ~350 doc-chrome false positives because `docChrome`, `figmaChrome` and
+  `outOfScopePages` were written into `CONFIG` on 2026-08-20 and **never read by any function**.
+  The decision existed only as prose. Wired, `C8` on `Components · Icons & Avatar` went from 94
+  findings to 12, and the 12 were real: `AccountAvatar`'s twelve variants each carried a raw
+  `padding: 10` while `spacing/10` already existed.
+- `C5` counted composition as borrowing. A node *inside* an instance was already excluded; the
+  instance *itself* was not, so putting a `Badge` in a row counted as borrowing `badge/*`. With
+  the guard, C5 went **116 → 1 → 0** file-wide and its ratchet is deleted: the check is now
+  absolute. The 115 it dropped were every `AccountSummaryCard` with a `Favorite`, every `Sheet`
+  with a `Button`, every `ExpenseContainer` with an `action-chip`.
+
+Three times now, placing the rule correctly has retired more findings than chasing the findings
+one at a time.
 
 **5.2 · The coherence log becomes the review.** Numbers with dates, not opinions with adjectives.
 
