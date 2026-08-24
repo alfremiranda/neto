@@ -29,7 +29,10 @@ const ENTRY_ICONS = {
   egreso:       { Icon: ArrowUpRight,   color: 'text-[var(--color-danger)]',  bg: 'bg-[var(--color-danger-bg)]' },
   transfer_in:  { Icon: ArrowDownLeft,  color: 'text-[var(--color-income)]',    bg: 'bg-[var(--color-income-bg)]'   },
   transfer_out: { Icon: ArrowUpRight,   color: 'text-muted-foreground',   bg: 'bg-muted'                 },
-  ss:           { Icon: ShieldCheck,    color: 'text-[var(--color-tax)]',   bg: 'bg-[var(--color-tax-bg)]'             },
+  // --color-tax is amber/400 and measures 1.61:1 on its own surface. A filled glyph is a
+  // graphic object, so WCAG 1.4.11 asks for 3:1 — this one was effectively invisible.
+  // --color-tax-txt is amber/700: 4.84:1. Dark was already fine at 10.39 and does not move.
+  ss:           { Icon: ShieldCheck,    color: 'text-[var(--color-tax-txt)]',   bg: 'bg-[var(--color-tax-bg)]'         },
 }
 
 function LedgerRow({ entry, account, accounts }: { entry: LedgerEntry; account: Account; accounts: Account[] }) {
@@ -82,16 +85,16 @@ function LedgerRow({ entry, account, accounts }: { entry: LedgerEntry; account: 
 
   return (
     <>
-      <div className={cn('flex items-center gap-3 min-h-[52px] py-1.5 border-b border-[var(--border)] last:border-0', entry.scheduled && 'opacity-60')}>
+      <div className={cn('flex items-center gap-3 min-h-[62px] py-1.5 border-b border-[var(--border)] last:border-0', entry.scheduled && 'opacity-60')}>
         {/* Icon bubble */}
         <div className={cn('w-8 h-8 rounded-full flex items-center justify-center shrink-0', entry.scheduled ? 'bg-muted' : bg)}>
-          {entry.scheduled ? <Clock size={14} className="text-muted-foreground" /> : <Icon size={14} className={color} />}
+          {entry.scheduled ? <Clock size={16} className="text-muted-foreground" /> : <Icon size={16} className={color} />}
         </div>
 
         {/* Description + date */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 min-w-0">
-            <span className="ts-body-base truncate">{desc}</span>
+            <span className="ts-body-base-emphasis truncate">{desc}</span>
             {entry.scheduled && (
               <span className="shrink-0 ts-label-badge text-[var(--color-tax-txt)] bg-[var(--color-tax)]/10 px-1.5 py-0.5 rounded-full">
                 Programado
@@ -102,16 +105,16 @@ function LedgerRow({ entry, account, accounts }: { entry: LedgerEntry; account: 
         </div>
 
         {/* Amount + running balance */}
-        <div className="text-right shrink-0">
+        <div className="w-[104px] text-right shrink-0">
           <div className={cn('ts-amount-base', isCredit ? 'text-[var(--color-provision)]' : 'text-foreground')}>
             {isCredit ? '+' : ''}{fmt(entry.convertedAmount)}
           </div>
-          <div className="text-[10px] text-muted-foreground tabular-nums">{fmt(runningBalance)}</div>
+          <div className="ts-amount-micro text-muted-foreground">{fmt(runningBalance)}</div>
         </div>
 
         {/* Desktop actions */}
         <div className="hidden sm:flex items-center gap-1 shrink-0">
-          <IconButton variant="ghost" size="md" onClick={handleEdit} aria-label="Editar">
+          <IconButton variant="ghost" size="lg" onClick={handleEdit} aria-label="Editar">
             <Pencil size={12} />
           </IconButton>
           {pendingDelete ? (
@@ -127,7 +130,7 @@ function LedgerRow({ entry, account, accounts }: { entry: LedgerEntry; account: 
           ) : (
             <IconButton
               variant="ghost-danger"
-              size="md"
+              size="lg"
               onClick={handleDeleteDesktop}
               aria-label="Eliminar"
             >
