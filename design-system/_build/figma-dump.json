@@ -955,6 +955,126 @@
           "currency/cop/foreground",
           "#047857",
           "#6ee7b7"
+        ],
+        [
+          "elevation/raised/ambient/blur",
+          3,
+          3
+        ],
+        [
+          "elevation/raised/ambient/spread",
+          0,
+          0
+        ],
+        [
+          "elevation/raised/ambient/offset-y",
+          1,
+          1
+        ],
+        [
+          "elevation/raised/key/blur",
+          2,
+          2
+        ],
+        [
+          "elevation/raised/key/spread",
+          0,
+          0
+        ],
+        [
+          "elevation/raised/key/offset-y",
+          1,
+          1
+        ],
+        [
+          "elevation/menu/ambient/blur",
+          8,
+          8
+        ],
+        [
+          "elevation/menu/ambient/spread",
+          -2,
+          -2
+        ],
+        [
+          "elevation/menu/ambient/offset-y",
+          4,
+          4
+        ],
+        [
+          "elevation/menu/key/blur",
+          4,
+          4
+        ],
+        [
+          "elevation/menu/key/spread",
+          -1,
+          -1
+        ],
+        [
+          "elevation/menu/key/offset-y",
+          2,
+          2
+        ],
+        [
+          "elevation/floating/ambient/blur",
+          20,
+          20
+        ],
+        [
+          "elevation/floating/ambient/spread",
+          -4,
+          -4
+        ],
+        [
+          "elevation/floating/ambient/offset-y",
+          10,
+          10
+        ],
+        [
+          "elevation/floating/key/blur",
+          6,
+          6
+        ],
+        [
+          "elevation/floating/key/spread",
+          -2,
+          -2
+        ],
+        [
+          "elevation/floating/key/offset-y",
+          4,
+          4
+        ],
+        [
+          "elevation/overlay/ambient/blur",
+          48,
+          48
+        ],
+        [
+          "elevation/overlay/ambient/spread",
+          -12,
+          -12
+        ],
+        [
+          "elevation/overlay/ambient/offset-y",
+          24,
+          24
+        ],
+        [
+          "elevation/overlay/key/blur",
+          12,
+          12
+        ],
+        [
+          "elevation/overlay/key/spread",
+          -4,
+          -4
+        ],
+        [
+          "elevation/overlay/key/offset-y",
+          8,
+          8
         ]
       ]
     },
@@ -4250,6 +4370,318 @@
       "aliases": {
         "Light": "color/emerald/700",
         "Dark": "color/emerald/300"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "elevation/raised/ambient/blur",
+      "type": "FLOAT",
+      "values": {
+        "Light": 3,
+        "Dark": 3
+      },
+      "aliases": {
+        "Light": "scale/3",
+        "Dark": "scale/3"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "elevation/raised/ambient/spread",
+      "type": "FLOAT",
+      "values": {
+        "Light": 0,
+        "Dark": 0
+      },
+      "aliases": {
+        "Light": "scale/0",
+        "Dark": "scale/0"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "elevation/raised/ambient/offset-y",
+      "type": "FLOAT",
+      "values": {
+        "Light": 1,
+        "Dark": 1
+      },
+      "aliases": {
+        "Light": "scale/1",
+        "Dark": "scale/1"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "elevation/raised/key/blur",
+      "type": "FLOAT",
+      "values": {
+        "Light": 2,
+        "Dark": 2
+      },
+      "aliases": {
+        "Light": "scale/2",
+        "Dark": "scale/2"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "elevation/raised/key/spread",
+      "type": "FLOAT",
+      "values": {
+        "Light": 0,
+        "Dark": 0
+      },
+      "aliases": {
+        "Light": "scale/0",
+        "Dark": "scale/0"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "elevation/raised/key/offset-y",
+      "type": "FLOAT",
+      "values": {
+        "Light": 1,
+        "Dark": 1
+      },
+      "aliases": {
+        "Light": "scale/1",
+        "Dark": "scale/1"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "elevation/menu/ambient/blur",
+      "type": "FLOAT",
+      "values": {
+        "Light": 8,
+        "Dark": 8
+      },
+      "aliases": {
+        "Light": "scale/8",
+        "Dark": "scale/8"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "elevation/menu/ambient/spread",
+      "type": "FLOAT",
+      "values": {
+        "Light": -2,
+        "Dark": -2
+      },
+      "aliases": {
+        "Light": "scale/-2",
+        "Dark": "scale/-2"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "elevation/menu/ambient/offset-y",
+      "type": "FLOAT",
+      "values": {
+        "Light": 4,
+        "Dark": 4
+      },
+      "aliases": {
+        "Light": "scale/4",
+        "Dark": "scale/4"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "elevation/menu/key/blur",
+      "type": "FLOAT",
+      "values": {
+        "Light": 4,
+        "Dark": 4
+      },
+      "aliases": {
+        "Light": "scale/4",
+        "Dark": "scale/4"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "elevation/menu/key/spread",
+      "type": "FLOAT",
+      "values": {
+        "Light": -1,
+        "Dark": -1
+      },
+      "aliases": {
+        "Light": "scale/-1",
+        "Dark": "scale/-1"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "elevation/menu/key/offset-y",
+      "type": "FLOAT",
+      "values": {
+        "Light": 2,
+        "Dark": 2
+      },
+      "aliases": {
+        "Light": "scale/2",
+        "Dark": "scale/2"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "elevation/floating/ambient/blur",
+      "type": "FLOAT",
+      "values": {
+        "Light": 20,
+        "Dark": 20
+      },
+      "aliases": {
+        "Light": "scale/20",
+        "Dark": "scale/20"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "elevation/floating/ambient/spread",
+      "type": "FLOAT",
+      "values": {
+        "Light": -4,
+        "Dark": -4
+      },
+      "aliases": {
+        "Light": "scale/-4",
+        "Dark": "scale/-4"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "elevation/floating/ambient/offset-y",
+      "type": "FLOAT",
+      "values": {
+        "Light": 10,
+        "Dark": 10
+      },
+      "aliases": {
+        "Light": "scale/10",
+        "Dark": "scale/10"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "elevation/floating/key/blur",
+      "type": "FLOAT",
+      "values": {
+        "Light": 6,
+        "Dark": 6
+      },
+      "aliases": {
+        "Light": "scale/6",
+        "Dark": "scale/6"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "elevation/floating/key/spread",
+      "type": "FLOAT",
+      "values": {
+        "Light": -2,
+        "Dark": -2
+      },
+      "aliases": {
+        "Light": "scale/-2",
+        "Dark": "scale/-2"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "elevation/floating/key/offset-y",
+      "type": "FLOAT",
+      "values": {
+        "Light": 4,
+        "Dark": 4
+      },
+      "aliases": {
+        "Light": "scale/4",
+        "Dark": "scale/4"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "elevation/overlay/ambient/blur",
+      "type": "FLOAT",
+      "values": {
+        "Light": 48,
+        "Dark": 48
+      },
+      "aliases": {
+        "Light": "scale/48",
+        "Dark": "scale/48"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "elevation/overlay/ambient/spread",
+      "type": "FLOAT",
+      "values": {
+        "Light": -12,
+        "Dark": -12
+      },
+      "aliases": {
+        "Light": "scale/-12",
+        "Dark": "scale/-12"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "elevation/overlay/ambient/offset-y",
+      "type": "FLOAT",
+      "values": {
+        "Light": 24,
+        "Dark": 24
+      },
+      "aliases": {
+        "Light": "scale/24",
+        "Dark": "scale/24"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "elevation/overlay/key/blur",
+      "type": "FLOAT",
+      "values": {
+        "Light": 12,
+        "Dark": 12
+      },
+      "aliases": {
+        "Light": "scale/12",
+        "Dark": "scale/12"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "elevation/overlay/key/spread",
+      "type": "FLOAT",
+      "values": {
+        "Light": -4,
+        "Dark": -4
+      },
+      "aliases": {
+        "Light": "scale/-4",
+        "Dark": "scale/-4"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "elevation/overlay/key/offset-y",
+      "type": "FLOAT",
+      "values": {
+        "Light": 8,
+        "Dark": 8
+      },
+      "aliases": {
+        "Light": "scale/8",
+        "Dark": "scale/8"
       }
     },
     {
@@ -9713,6 +10145,38 @@
       "type": "COLOR",
       "values": {
         "Default": "#3d4b5f"
+      }
+    },
+    {
+      "collection": "Primitives",
+      "name": "scale/-1",
+      "type": "FLOAT",
+      "values": {
+        "Default": -1
+      }
+    },
+    {
+      "collection": "Primitives",
+      "name": "scale/-2",
+      "type": "FLOAT",
+      "values": {
+        "Default": -2
+      }
+    },
+    {
+      "collection": "Primitives",
+      "name": "scale/-4",
+      "type": "FLOAT",
+      "values": {
+        "Default": -4
+      }
+    },
+    {
+      "collection": "Primitives",
+      "name": "scale/-12",
+      "type": "FLOAT",
+      "values": {
+        "Default": -12
       }
     }
   ],

@@ -169,3 +169,7 @@ color/slate/900/20	COLOR	rgba(15,23,42,0.2)
 color/slate/850	COLOR	#162032
 color/slate/750	COLOR	#283548
 color/slate/650	COLOR	#3d4b5f
+scale/-1	FLOAT	-1
+scale/-2	FLOAT	-2
+scale/-4	FLOAT	-4
+scale/-12	FLOAT	-12

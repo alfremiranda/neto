@@ -310,3 +310,40 @@ Dark has 34 L\* of room and spends it on eight distinct rungs. Light has 3.65 an
 three. The four top rungs sharing white in Light is now a **stated consequence of the ceiling**,
 not an oversight — and the shadow scale is what separates them, which is what §5 decided and
 measured in the first place.
+
+
+---
+
+## The geometry became tokens (2026-08-22)
+
+The roadmap said shadows borrowed `border-width/thick` for their effect geometry. Measured, that
+was wrong in both directions.
+
+**The four elevation styles borrowed nothing — they carried sixteen raw numbers.** `radius`,
+`spread` and `offsetY` were literals on every layer of every rung. No check saw them: `C1` reads
+fills and strokes, `C8` reads layout, and effect geometry is neither. The one thing that *did*
+bind to `border-width` was the focus ring, and there it is correct: a focus ring IS a border with
+a width, so `spread = border-width/focus/*` is the right token, not a loan.
+
+Now bound, 24 tokens, `elevation/{rung}/{layer}/{blur,spread,offset-y}`:
+
+| rung | ambient blur · spread · y | key blur · spread · y |
+|---|---|---|
+| raised | 3 · 0 · 1 | 2 · 0 · 1 |
+| menu | 8 · −2 · 4 | 4 · −1 · 2 |
+| floating | 20 · −4 · 10 | 6 · −2 · 4 |
+| overlay | 48 · −12 · 24 | 12 · −4 · 8 |
+
+Two layers per rung and both are load-bearing: the **ambient** layer is the wide soft one that
+says how high the object is, the **key** layer is the tight dark one that says it is solid. One
+alone reads as a blur or as a border.
+
+`x` is always 0 and has no token. Light in Neto comes from directly above; a token for a value
+that is a constant of the system invites someone to change it.
+
+**The scale gained negative rungs** — `scale/-1`, `-2`, `-4`, `-12` — because spread pulls a
+shadow inward so it does not halo past its object. One signed ladder rather than a second family
+called `inset/*`: the magnitudes are the same magnitudes, and splitting them would put 4 and −4
+in different scales.
+
+Verified: all sixteen values identical before and after binding. Nothing moved.
