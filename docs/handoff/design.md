@@ -1,12 +1,15 @@
 # Handoff · Diseño
 
-Última actualización: **2026-08-21**. Trabajo en vuelo al cierre de sesión.
+Última actualización: **2026-08-24**. Trabajo en vuelo al cierre de sesión.
 
-**`unpushed: 01023151` · `eedb39a8` · `0fd773be` · `d9555237` · `71df9e46` + el commit que trae este handoff** — Diseño no puede pushear. `credential-osxkeychain` es un binario de
-macOS que no existe en la VM de Linux donde corro; `git fetch` funciona (lectura anónima),
-`git push` no puede autenticar. Dev barre. Los cuatro commits que este archivo declaraba sin
-pushear el 20 (`6afa685e`, `6cff971a`, `b19faabe`, `308f798c`) **ya están en `origin/main`**;
-verificado con `git fetch`, no supuesto.
+**`unpushed: 9f785d10` · `49e9c272` · `897afebe` · `9c2cf26d` · `a59b5955` + el commit que trae
+este handoff** — Diseño no puede pushear. `credential-osxkeychain` es un binario de macOS que no
+existe en la VM de Linux donde corro; `git fetch` funciona (lectura anónima), `git push` no puede
+autenticar. Dev barre.
+
+Los cinco que este archivo declaraba sin pushear el 21 (`01023151`, `eedb39a8`, `0fd773be`,
+`d9555237`, `71df9e46`) **ya están en `origin/main`**; verificado con `git fetch` y
+`git merge-base --is-ancestor`, no supuesto.
 
 ## Cómo le respondo a Alfredo (2026-08-21)
 
@@ -27,8 +30,8 @@ a los docs, a los mensajes de commit y a la bandeja de Dev, no a la conversació
 | 1.4 · ocultar primitivas (`T2`) | ✅ `T2` 334 → 0, y las 203 vinculaciones directas que ocultaba bajaron a 57 (marcas y geometría de íconos, excepción estructural) |
 | 2 · pipeline / exporter | ✅ **cerrada 21-ago.** Etapas 1 y 2 corridas, paquete regenerado, `validate-repo` verde. El auditor da **ADDED 0 · CHANGED 0**: Figma y el paquete coinciden por primera vez |
 | 3 · movimiento e interacción | ⬜ API de Motion verificada. `23-onboarding-motion.md` ya escrito. `bg/neutral-alpha-{10,20}` reservados para state layers. La escala de blur/spread se acuña aquí |
-| 4 · componentes que faltan | ⬜ tres gráficos anuales, barra de distribución, `LedgerRow`, asa de drawer. `chart/*` reservado |
-| 5 · mantenerlo vivo | ⬜ `C5`, `C6`, `C7` |
+| 4 · componentes que faltan | 🟡 **`LedgerEntryIcon` y `ledger-itemrow` hechos el 24-ago**, con tres glifos nuevos. Quedan los tres gráficos anuales y la barra de distribución por categoría. Dos ítems de la lista original estaban mal: el asa de drawer **ya existía** dentro de `Sheet`, y la barra del código no es la `DistribucionCard` de Figma. `chart/*` reservado |
+| 5 · mantenerlo vivo | 🟡 `C5` `C6` `C7` `C8` en pie. `C5` llegó a **0 y perdió su trinquete**. `R2` pasó de comparar 2 archivos a comparar los 89 que genera `build.py` |
 
 ## Fase 2: resuelto el 21-ago. Cómo quedó
 
