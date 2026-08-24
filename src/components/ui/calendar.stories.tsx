@@ -9,10 +9,24 @@ const meta = { title: 'Overlays/Calendar and floating', parameters: { layout: 'p
 export default meta
 type Story = StoryObj<typeof meta>
 
+/**
+ * `today` is pinned, not left to the clock. DayPicker marks the real current date, so this
+ * story changed appearance at midnight and the visual regression reported 1720 changed
+ * pixels — a true diff of a story that had no business moving. A library page that drifts
+ * daily teaches people to wave the detector through.
+ */
 export const CalendarStory: Story = {
   render: () => {
     const [d, setD] = useState<Date | undefined>(new Date(2026, 7, 19))
-    return <Calendar mode="single" selected={d} onSelect={setD} defaultMonth={new Date(2026, 7)} />
+    return (
+      <Calendar
+        mode="single"
+        selected={d}
+        onSelect={setD}
+        defaultMonth={new Date(2026, 7)}
+        today={new Date(2026, 7, 19)}
+      />
+    )
   },
 }
 
