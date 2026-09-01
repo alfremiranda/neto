@@ -20,6 +20,27 @@ export function nextMonthKey(key: string): string {
   return m === 12 ? `${y + 1}-01` : `${y}-${String(m + 1).padStart(2, '0')}`
 }
 
+/**
+ * Advance the period a recurring settlement covers, by the same one-month step the
+ * copy itself takes. Without this a recurring SS payment carries July's period into
+ * September: July would look paid twice and August never paid at all. Retención is
+ * annual, so its period only moves when the copy crosses into a new year.
+ */
+export function shiftSettlesPeriod(settles: Settles, newKey: string): Settles {
+  const [ny, nm] = newKey.split('-').map(Number)
+  if (settles.kind === 'ss') {
+    // The offset is fixed at one month in arrears — the same relationship the payment
+    // had in the month it was copied from.
+    const py = nm === 1 ? ny - 1 : ny
+    const pm = nm === 1 ? 12 : nm - 1
+    return { ...settles, period: `${py}-${String(pm).padStart(2, '0')}` }
+  }
+  // 'YYYY' — keep the same distance from the year the payment lives in.
+  const prevYear = nm === 1 ? ny - 1 : ny
+  const delta    = ny - prevYear
+  return { ...settles, period: String(Number(settles.period) + delta) }
+}
+
 export function yearOf(key: string): string {
   return key.split('-')[0]
 }

@@ -30,9 +30,18 @@ the money actually moved. Verified in dev: total unchanged, row present in the l
 ledger enough, or does the month view owe the user a trace of it? (Q1's Pagado badge would be
 that trace, which is why I'm asking the two together.)
 
-Q5. Minor: the gasto sheet still asks for a Categoría when the gasto is marked as a settlement,
-where it means nothing — settlements are out of every category aggregation. Hide the field in
-that state, or leave it harmless?
+Q5. Minor: the gasto sheet still asks for a Categoría when the gasto is a settlement, where it
+means nothing — settlements are out of every category aggregation. Hide the field in that
+state, or leave it harmless?
+
+UPDATE (same day): the user moved the entry point. Settling is a once-a-month action, so it no
+longer sits in the ordinary "add expense" flow — the Obligaciones card now carries a Registrar
+pago action per group, and the sheet opens prefilled (description, category, currency, period)
+with the accrual shown as a reference. I built that with existing pieces: Button
+size=sm/variant=outline on a bordered row, and a muted "Pagado $X" beside it. That row is
+provisional and overlaps Q1 — it is the paid/pending state, just written in plain type because
+the DS has no vocabulary for it yet. Q2's pending strip is still unbuilt and still the piece
+that stops the user having to navigate back a month.
 
 POINTER: src/components/cards/ObligacionesCard.tsx (Total SS at L334, GroupBox at L234),
 src/components/views/AhorrosView.tsx, design-system/components/{badge,action-chip,savingscard,

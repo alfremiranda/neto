@@ -5,6 +5,7 @@ import { sbPush, sbPullAll } from '@/lib/supabase'
 import { mergeMonth, localHasExtra, mergeSettings, canonicalTieBreak } from './merge'
 import { DEFAULT_DEDUCTIONS, migrateDeductions } from '@/data/deductions'
 import { needsPrivacyConsent } from '@/lib/privacy'
+import { shiftSettlesPeriod } from '@/lib/obligations'
 import type { FinanceDB, MonthData, Account, Settings, Income, Egreso, Transfer, DeductionConfig } from '@/types'
 
 // The old settingsStore persisted deductions + display prefs under this key. The
@@ -304,7 +305,8 @@ function shiftRecurring(egresos: Egreso[], newKey: string): Egreso[] {
         const d       = Math.min(day, lastDay)
         date = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`
       }
-      return { ...e, id: base + i, date, confirmed: false }
+      const settles = e.settles ? shiftSettlesPeriod(e.settles, newKey) : undefined
+      return { ...e, id: base + i, date, confirmed: false, settles }
     })
 }
 

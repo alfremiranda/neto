@@ -10,6 +10,13 @@ import { COP, USD, localToday } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { IconButton } from '@/components/ui/icon-button'
+import { Button } from '@/components/ui/button'
+import { useUIStore } from '@/store/uiStore'
+import { settledFor, retencionReserve } from '@/lib/obligations'
+import type { Settles } from '@/types'
+
+const MONTH_LONG = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                    'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
 
 // ─── SS Payment schedule data ─────────────────────────────────────────────────
 
@@ -59,9 +66,6 @@ function SSScheduleDialog({ year, month }: { year: number; month: number }) {
   // SS for month M is paid in month M+1
   const payYear  = month === 12 ? year + 1 : year
   const payMonth = month === 12 ? 1 : month + 1
-
-  const MONTH_LONG = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
-                       'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
 
   return (
     <DialogPrimitive.Root open={open} onOpenChange={setOpen}>
@@ -255,10 +259,49 @@ function GroupBox({ label, children, action, trmNote, ibcRow }: { label: string;
   )
 }
 
+/**
+ * The action that settles an obligation lives here, not in the ordinary "add expense"
+ * flow: it happens once a month, and the card is the only place that knows what is
+ * owed and for which period. It hands the sheet the fields it can fill (description,
+ * category, currency, the period) and leaves the amount, date and paying account to
+ * the user — the accrual is a reference, since the PILA rounds.
+ */
+function SettleRow({ label, settles, accrued, paid }: {
+  label: string; settles: Settles; accrued: number; paid: number
+}) {
+  const openSettlement = useUIStore(s => s.openSettlement)
+  // A tolerance, not a nicety: a payment almost never equals the accrual to the peso.
+  const outstanding = accrued - paid > 1000
+
+  return (
+    <div className="flex items-center gap-2 py-2 border-t border-[var(--border)]">
+      {paid > 0 && (
+        <span className="flex-1 min-w-0 ts-body-small text-muted-foreground">
+          Pagado {COP(paid)}
+        </span>
+      )}
+      {outstanding ? (
+        <Button
+          size="sm"
+          variant="outline"
+          className={paid > 0 ? '' : 'w-full'}
+          onClick={() => openSettlement({
+            desc: label, category: 'impuestos', currency: 'COP', settles, accrued: accrued - paid,
+          })}
+        >
+          Registrar pago
+        </Button>
+      ) : (
+        paid > 0 && <span className="ts-body-small-emphasis text-muted-foreground">Al día</span>
+      )}
+    </div>
+  )
+}
+
 // ─── Main card ────────────────────────────────────────────────────────────────
 
 export function ObligacionesCard() {
-  const { getCurrentMonth, getSMMLV, curKey } = useFinanceStore()
+  const { getCurrentMonth, getSMMLV, curKey, db } = useFinanceStore()
   const deductions = useSettingsStore(s => s.deductions)
   const { trm: liveTRM } = useLiveTRM()
   const month = getCurrentMonth()
@@ -274,6 +317,9 @@ export function ObligacionesCard() {
   const ibcIsMin   = ibc <= smmlv * 1.001
   const showUSD    = totUSD > 0
   const retefuente = res.provItems.filter(i => i.id === 'retencion' && i.applies)
+  // The DIAN is paid once a year, so what's owed is the year's accrual — not this
+  // month's slice, which is only the row above it.
+  const retencionYearAccrued = retencionReserve(db, y, deductions, getSMMLV).accrued
   const totalOblig = res.ssTotal + retefuente.reduce((a, i) => a + i.amount, 0)
 
   // For USD transfer amounts: prefer live TRM (actionable), fall back to month TRM (accounting)
@@ -340,6 +386,12 @@ export function ObligacionesCard() {
                 )}
               </div>
             </div>
+            <SettleRow
+              label={`Seguridad social · ${MONTH_LONG[m - 1]} ${y}`}
+              settles={{ kind: 'ss', period: curKey }}
+              accrued={res.ssTotal}
+              paid={settledFor(db, 'ss', curKey)}
+            />
           </GroupBox>
         )}
 
@@ -359,6 +411,14 @@ export function ObligacionesCard() {
                 showUSD={showUSD}
               />
             ))}
+            {/* Retención is paid to the DIAN once a year, so the period is the year —
+                not this month. The reserve that funds it lives in Ahorros. */}
+            <SettleRow
+              label={`Retención en la fuente · ${y}`}
+              settles={{ kind: 'retencion', period: String(y) }}
+              accrued={retencionYearAccrued}
+              paid={settledFor(db, 'retencion', String(y))}
+            />
           </GroupBox>
         )}
       </div>

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
-  nextMonthKey, accruedIn, settledFor, reservedFor, pendingSS, retencionReserve,
+  nextMonthKey, accruedIn, shiftSettlesPeriod, settledFor, reservedFor, pendingSS, retencionReserve,
 } from '@/lib/obligations'
 import { calcGastos, calcAllDeductions, calcTotales, calcIBC, calcProvisionBase } from '@/lib/calc'
 import { DEFAULT_DEDUCTIONS } from '@/data/deductions'
@@ -201,5 +201,29 @@ describe('retencionReserve', () => {
     const db: FinanceDB = { '2026-07': m() }
     const r = retencionReserve(db, 2025, DEFAULT_DEDUCTIONS, smmlvFn)
     expect(r).toMatchObject({ accrued: 0, reserved: 0, gap: 0, pct: 0 })
+  })
+})
+
+describe('shiftSettlesPeriod — a recurring settlement must not repay the same month', () => {
+  it('advances an SS period by one month, matching the copy', () => {
+    // Copied into September, a payment that settled July must now settle August.
+    // Carrying July forward would show July paid twice and August never paid.
+    expect(shiftSettlesPeriod({ kind: 'ss', period: '2026-07' }, '2026-09'))
+      .toEqual({ kind: 'ss', period: '2026-08' })
+  })
+
+  it('rolls an SS period back across the year boundary', () => {
+    expect(shiftSettlesPeriod({ kind: 'ss', period: '2026-11' }, '2027-01'))
+      .toEqual({ kind: 'ss', period: '2026-12' })
+  })
+
+  it('holds a retención year steady inside the year', () => {
+    expect(shiftSettlesPeriod({ kind: 'retencion', period: '2026' }, '2026-09'))
+      .toEqual({ kind: 'retencion', period: '2026' })
+  })
+
+  it('advances a retención year only when the copy crosses into a new one', () => {
+    expect(shiftSettlesPeriod({ kind: 'retencion', period: '2026' }, '2027-01'))
+      .toEqual({ kind: 'retencion', period: '2027' })
   })
 })

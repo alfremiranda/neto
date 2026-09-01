@@ -109,10 +109,16 @@ Cuatro tipos, cada uno con su semántica:
 
 **Causación vs. pago.** Las obligaciones se **causan** en el mes que las genera y se **pagan**
 en otro: la SS de julio se paga en agosto (mes vencido), la retención se paga a la DIAN año
-vencido. Al registrar ese pago se marca **"Liquida una obligación"** con el período que cubre.
-Un pago marcado **sale de la cuenta pero no cuenta como Gasto** — ya está contado como
-obligación del mes que la causó; sin la marca se sumaba dos veces y subestimaba el neto libre.
-Aparece en el movimiento de la cuenta, no en la lista de Gastos.
+vencido. El pago se registra con **"Registrar pago"** desde la propia tarjeta de Obligaciones
+tributarias — no desde el flujo común de agregar un gasto, porque es una acción de una vez al
+mes. La tarjeta llena descripción, categoría y moneda, y muestra el valor causado como
+referencia; el usuario pone el **monto, la fecha y la cuenta que paga** (el causado es un punto
+de partida: la PILA redondea y el IBC se ajusta). Puede marcarse **recurrente**, y entonces el
+período que liquida **avanza un mes** en cada copia.
+
+Un pago así **sale de la cuenta pero no cuenta como Gasto** — ya está contado como obligación
+del mes que la causó; sin esa marca se sumaba dos veces y subestimaba el neto libre. Aparece en
+el movimiento de la cuenta, no en la lista de Gastos, y la tarjeta muestra cuánto se ha pagado.
 
 Las dos cifras se conservan a propósito: la causada es la estimación con la que se reserva, y
 la pagada es el hecho — casi nunca coinciden, porque la PILA redondea y el IBC se ajusta.
