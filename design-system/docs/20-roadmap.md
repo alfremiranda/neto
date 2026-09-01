@@ -322,6 +322,14 @@ Done, 2026-08-24:
   `shield-check`.
 - `ledger-itemrow` — the row that blocks the account page (`10`). Ten variants over
   `Device × Flow × State`, sparse on purpose: no `Pressed`, because this row has none in code.
+  **Rebuilt the same day after putting it on the real screen**, which found three things the
+  row family had already solved and I had not looked at hard enough: the “Programado” badge
+  belongs on the metadata line rather than beside the description (the `maxWidth` cap I used
+  instead cannot be overridden per instance, so a cap authored at 603 still truncated at the
+  942 the account page actually uses); Mobile has to restack into three lines, because at the
+  346 that screen gives it a single-line row cannot hold description, date and amount column;
+  and Mobile's action is 44, the 2.5.5 touch target, not 36.
+- Both account screens (`Desktop · 2` and `Mobile · 2`) now use it.
 
 Still open:
 

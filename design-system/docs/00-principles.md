@@ -239,6 +239,31 @@ A corollary for the ratchet: `C5` reached 0, so its baseline entry is **deleted*
 to 0. A ratchet at 0 still says "this used to be broken"; no ratchet says "this check is
 absolute", which is the truth and the thing the next person needs to know.
 
+### A6c. Put a new component on the real screen before calling it done (2026-08-24)
+
+`ledger-itemrow` passed the audit, had a `doc:` frame, lived in its container and was
+committed. It was still wrong in three ways, and all three appeared within minutes of placing
+it on the account page it was built for:
+
+1. Its badge was pinned beside the description by a `maxWidth` cap. **`maxWidth` is one of the
+   few properties Figma refuses to override per instance**, so a cap authored for the 603
+   canvas width still truncated at the 942 the page actually uses. A measurement that cannot
+   follow the component is not a measurement, it is a guess frozen at authoring time.
+2. Mobile could not hold its own layout at the 346 the screen gives it.
+3. Its mobile action was 36, under the 2.5.5 touch target.
+
+Every one of the three was already solved by `outcome-itemrow`, on the same shelf, and none
+was reachable from the doc frame — where the component sits at exactly the width its author
+chose, next to nothing, at one zoom level.
+
+So `§A4`'s four clauses are necessary and **not sufficient**. A fifth: **a component is not
+done until it has been placed in a real screen at a real width.** The doc frame proves the
+component is internally coherent. Only the screen proves it survives contact with the layout
+it exists for.
+
+The cheaper half of the lesson: **read the sibling before building.** All three answers were
+one `get_metadata` call away in a component shipped weeks ago.
+
 ## A7. The three-piece shape
 
 | Piece | What it is | Where it lives |
