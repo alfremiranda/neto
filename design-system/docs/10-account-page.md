@@ -1,6 +1,6 @@
 # 10 — AccountChart and AccountSummaryCard (the account page)
 
-Status: **complete in Figma and handed to Dev on 2026-08-24** (`TASK-2026-08-24e`). The flow
+Status: **complete in Figma and handed to Dev on 2026-09-01** (`TASK-2026-09-01e`). The flow
 Alfredo approved is §10. Two things are still open and NEITHER is a design decision: where the
 detail view lives (§4) and which tooltip language wins (§5a).
 
@@ -119,7 +119,7 @@ light mode). `TrendChart` in the code draws it with `--popover`: same-tone surfa
 `rounded-xl`. Two different languages for the same object. One has to be chosen before
 implementing, or the app will have two kinds of tooltip.
 
-**b. ~~The account icon's colour.~~ RESOLVED 2026-08-24.** Neither purple nor grey: it is an
+**b. ~~The account icon's colour.~~ RESOLVED 2026-09-01.** Neither purple nor grey: it is an
 `AccountAvatar` carrying the account's own hue, which is what `25-account-color.md` §2 always
 said and what `AccountCardView` already rendered. `AccountSummaryCard`'s fixed
 `account-summary-card/icon/foreground` is retired and has no consumer left.
@@ -208,7 +208,7 @@ becomes an index. All of that is product and architecture.
 
 ---
 
-## 10. The flow as shipped (2026-08-24)
+## 10. The flow as shipped (2026-09-01)
 
 Both screens compose the same three pieces, in this order:
 

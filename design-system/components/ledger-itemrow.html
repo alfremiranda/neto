@@ -50,7 +50,7 @@ THE BADGE SITS ON THE METADATA LINE, not beside the description, and that is the
 
 State=Opening is the account’s STARTING balance, and it is a row rather than the strip it used to be above the list. That is the whole change: as a strip it had its own background and its own edges and read as a lid on the table; as a row it takes the same rules, the same left rail and the same right edge as the movements it explains, so the card is one table. It sits LAST, because the ledger runs newest first.
 
-It carries the same mark and the same trailing actions as every other row — Alfredo’s call on 2026-08-24, and the right one. The first build replaced both with blank spacers on the reasoning that a starting balance is not a movement, which kept the columns aligned but made the row read as a footer that had lost its furniture. Giving it a mark of its own (LedgerEntryIcon Type=opening: a wallet on the neutral tint) says what it is instead of saying what it is missing, and keeping the actions means the whole column behaves the same way down the card.
+It carries the same mark and the same trailing actions as every other row — Alfredo’s call on 2026-09-01, and the right one. The first build replaced both with blank spacers on the reasoning that a starting balance is not a movement, which kept the columns aligned but made the row read as a footer that had lost its furniture. Giving it a mark of its own (LedgerEntryIcon Type=opening: a wallet on the neutral tint) says what it is instead of saying what it is missing, and keeping the actions means the whole column behaves the same way down the card.
 
 It still carries no date and no running balance: at the opening, the amount IS the balance.
 
@@ -58,19 +58,17 @@ OPEN for Dev — “eliminar” has no target here. A starting balance is a FIEL
 
 Flow is INERT on Opening and it is minted only at Flow=Debit. A starting balance has no direction. The alternative was two identical variants to keep the matrix square, which is a variant nobody maintains.
 
-Mobile RESTACKS into three lines — amounts, description, metadata — and again the family got there first. At the account page’s 346 the single-line desktop shape has to fit a description, a date, a 104 amount column, the mark and an action: it cannot, and something has to truncate. Stacking gives the text the full width instead. Desktop keeps one line.
+Mobile RESTACKS into three lines — amounts, description, metadata — and again the family got there first. At the account page’s 346 the single-line desktop shape has to fit a description, a date, an amount column, the mark and an action: it cannot, and something has to truncate. Stacking gives the text the full width instead. Desktop keeps one line.
 
 Mobile’s action is Icon Button Size=XL (44), not LG. 44 is the 2.5.5 touch target and it is what the sibling rows use on Mobile. Desktop stays LG (36), where there is a pointer.
 
-On Desktop the amount column is pinned to 104 so a leading “+” does not shift it between neighbouring rows — a ledger is read down the right edge. On Mobile the amounts move into the stack and the pin does not apply.
+On Desktop the amount block HUGS its content and its children are right-aligned. It was pinned to 104 until 2026-09-01 on my reasoning that a leading “+” would otherwise shift the column between neighbouring rows. That reasoning was wrong and I never measured it: with right alignment the “+” extends LEFTWARD, so the right edge never moves. Measured after Alfredo changed it — every Default, Scheduled and Opening row lands its right edge at the same x, and the pin was solving a problem the alignment already solved.
 
-OPEN for Dev — where this row follows the row family and the code does not. None of it is this row’s invention:
-· Mobile restacks to three lines; the code renders one flex row at every width.
-· Mobile action 44px (2.5.5); code passes size icon-sm.
-· description Body/Base-Emphasis (16 Medium); code passes ts-body-base (16 Regular).
-· running balance Amount/Micro (12); code passes a raw 10px. 10 is not a rung on the type scale.
-· desktop action buttons Icon Button Size=LG (36); code passes size md.
-· the “Programado” badge belongs on the metadata line, not beside the description.</div>
+The pin also had a cost it could not pay: `-USD 12.534,00` at Amount/Base measures 116 and wrapped to two lines inside 104, so a USD account got a different row height from a COP one. Hugging fixes that for free, at any currency and any string length. On Mobile the amounts move into the stack and none of this applies.
+
+CLOSED 2026-09-01 — the six differences this row opened against the code are all implemented (`a082dbfa`, `03173232`): the mobile restack, the 44px mobile target, Body/Base-Emphasis, Amount/Micro, the LG desktop actions and the badge on the metadata line. Dev flagged three of them as stale here; it was six. Verified in the source, not taken on trust.
+
+One difference is left and it is small: the metadata line orders it [date][badge], the family and this component order it [badge][date] — outcome-itemrow puts its chips before the date. Not worth a ticket on its own; fold it into the next thing that touches the row.</div>
   </div>
   <div class="modes">
     <div><span class="lbl">Light</span><div data-theme="light" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;max-width:420px;display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--surface-wrap-card);border:1px solid var(--border-default);border-radius:var(--radius-xl)"><span style="display:inline-block;width:16px;height:16px;border:1.5px solid var(--foreground-subtle);border-radius:3px"></span><span style="flex:1;min-width:0"><span style="display:block;font-family:var(--font-sans);font-weight:500;font-size:16px;line-height:24px;letter-spacing:0.0px;color:var(--foreground-on-card)">Sequel Studio LLC</span><span style="display:flex;align-items:center;gap:6px;margin-top:2px"><span style="display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:999px;background:var(--bg-account);color:var(--fg-account);border:1px solid transparent;font-weight:500;font-size:10px;line-height:10px;white-space:nowrap">Toptal</span><span style="font-family:var(--font-sans);font-weight:400;font-size:11px;line-height:16px;letter-spacing:0.0px;color:var(--foreground-subtle)">18 jun</span></span></span><span style="font-family:var(--font-sans);font-weight:600;font-size:16px;line-height:20px;letter-spacing:0.0px;font-variant-numeric:tabular-nums;color:var(--foreground-on-card)">$ 352.000</span></div></div></div></div>

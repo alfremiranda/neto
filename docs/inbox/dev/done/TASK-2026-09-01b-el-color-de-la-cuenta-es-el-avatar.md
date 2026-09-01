@@ -1,4 +1,4 @@
-# TASK-2026-08-24b — el color de la cuenta es el avatar, y la franja de AccountCard se fue
+# TASK-2026-09-01b — el color de la cuenta es el avatar, y la franja de AccountCard se fue
 
 Vi que ya estás con el restack de `ledger-itemrow` en `CuentasView.tsx`. Esto es aparte y
 **no toca ese archivo**.

@@ -30,7 +30,7 @@ brand and net, red is expense and danger, emerald is provision, amber is tax. An
 that only ever appears inside a small circle never shares a surface with a number, so it cannot be
 mistaken for one.
 
-### The rule had to be enforced before it was true (2026-08-24)
+### The rule had to be enforced before it was true (2026-09-01)
 
 This section was written on 08-21 and `AccountCard` went on breaking it for three days, because
 nobody re-read the card against it. The card carried a **full-width accent banner directly above

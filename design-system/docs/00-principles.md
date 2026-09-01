@@ -239,7 +239,7 @@ A corollary for the ratchet: `C5` reached 0, so its baseline entry is **deleted*
 to 0. A ratchet at 0 still says "this used to be broken"; no ratchet says "this check is
 absolute", which is the truth and the thing the next person needs to know.
 
-### A6c. Put a new component on the real screen before calling it done (2026-08-24)
+### A6c. Put a new component on the real screen before calling it done (2026-09-01)
 
 `ledger-itemrow` passed the audit, had a `doc:` frame, lived in its container and was
 committed. It was still wrong in three ways, and all three appeared within minutes of placing

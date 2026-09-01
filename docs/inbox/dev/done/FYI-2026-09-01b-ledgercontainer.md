@@ -1,4 +1,4 @@
-# FYI-2026-08-24b — `LedgerContainer`: la página de cuenta deja de pedir prestado el contenedor
+# FYI-2026-09-01b — `LedgerContainer`: la página de cuenta deja de pedir prestado el contenedor
 
 Las dos pantallas de cuenta ya no usan `IncomeContainer`. Hay un componente propio.
 

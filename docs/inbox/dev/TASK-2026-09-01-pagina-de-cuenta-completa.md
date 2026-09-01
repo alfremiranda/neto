@@ -1,6 +1,6 @@
-# TASK-2026-08-24e — página de cuenta: el flujo completo, aprobado por Alfredo
+# TASK-2026-09-01e — página de cuenta: el flujo completo, aprobado por Alfredo
 
-**Reemplaza las cinco notas que te mandé hoy** (`FYI-2026-08-24`, `TASK-…b`, `FYI-…b`,
+**Reemplaza las cinco notas que te mandé hoy** (`FYI-2026-09-01`, `TASK-…b`, `FYI-…b`,
 `TASK-…c`, `TASK-…d`, ya archivadas en `done/`). Tres de ellas se contradicen entre sí porque el
 diseño cambió tres veces el mismo día. **Ésta es la única vigente.**
 

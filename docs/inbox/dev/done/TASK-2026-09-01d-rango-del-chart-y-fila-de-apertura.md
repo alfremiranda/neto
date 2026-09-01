@@ -1,4 +1,4 @@
-# TASK-2026-08-24d — selector de rango en el chart, y la fila de apertura completa
+# TASK-2026-09-01d — selector de rango en el chart, y la fila de apertura completa
 
 Dos cosas nuevas en la página de cuenta. La primera **no existe en tu código todavía**: el chart
 de la página de cuenta sólo vive en Figma (`AccountChart` / `AccountSummaryCard`); en `src/` los
@@ -38,7 +38,7 @@ alguien tocara `1A`.
 
 ## 2. La fila de saldo inicial ya lleva icono y acciones
 
-Corrige lo que te pasé en `TASK-2026-08-24c`. La fila `State=Opening` **no** va con huecos en
+Corrige lo que te pasé en `TASK-2026-09-01c`. La fila `State=Opening` **no** va con huecos en
 blanco: lleva su propia marca y las mismas acciones que las demás.
 
 - **Marca**: `LedgerEntryIcon` gana un séptimo tipo, `Type=opening` — glifo `wallet` sobre el

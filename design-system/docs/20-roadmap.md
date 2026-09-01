@@ -322,7 +322,7 @@ Done, 2026-08-24:
   `shield-check`.
 - `ledger-itemrow` — the row that blocks the account page (`10`). Ten variants over
   `Device × Flow × State`, sparse on purpose: no `Pressed`, because this row has none in code.
-  **Rebuilt the same day after putting it on the real screen**, which found three things the
+  **Rebuilt on 2026-09-01 after putting it on the real screen**, which found three things the
   row family had already solved and I had not looked at hard enough: the “Programado” badge
   belongs on the metadata line rather than beside the description (the `maxWidth` cap I used
   instead cannot be overridden per instance, so a cap authored at 603 still truncated at the
@@ -335,7 +335,7 @@ Still open:
 
 - the three annual charts — 748 lines of hand-built SVG with no Figma counterpart;
 - the per-category distribution bar (`EgresosCard.tsx:67`), which is NOT `DistribucionCard`;
-- ~~a transactions container to hold the rows~~ — **`LedgerContainer`, 2026-08-24.** Both account
+- ~~a transactions container to hold the rows~~ — **`LedgerContainer`, 2026-09-01.** Both account
   screens were borrowing `IncomeContainer`, the Ingresos tab of the Mes view: it opens with an
   icon and the title “Ingresos del mes” and closes with a converted monthly gross, and a ledger
   has neither. Because its header could not carry the account, the page named the account twice —

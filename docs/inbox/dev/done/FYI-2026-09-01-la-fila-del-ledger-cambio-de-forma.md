@@ -1,6 +1,6 @@
-# FYI-2026-08-24 — la fila del ledger cambió de forma, y las pantallas de cuenta ya la usan
+# FYI-2026-09-01 — la fila del ledger cambió de forma, y las pantallas de cuenta ya la usan
 
-Actualiza `TASK-2026-08-24`, no lo reemplaza: el fallo de contraste del glifo `ss` sigue igual
+Actualiza `TASK-2026-09-01`, no lo reemplaza: el fallo de contraste del glifo `ss` sigue igual
 de urgente y sigue siendo el punto 1 de ese archivo.
 
 Las dos pantallas de cuenta en Figma (`Desktop · 2 · Cuenta (detalle)` y `Mobile · 2 ·

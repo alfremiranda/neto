@@ -1,6 +1,6 @@
-# TASK-2026-08-24c — el ledger pierde su cabecera, y Entradas/Salidas no deben existir así
+# TASK-2026-09-01c — el ledger pierde su cabecera, y Entradas/Salidas no deben existir así
 
-Reemplaza el diseño que te pasé en `FYI-2026-08-24b`. El contenedor cambió el mismo día,
+Reemplaza el diseño que te pasé en `FYI-2026-09-01b`. El contenedor cambió el mismo día,
 después de verlo en la pantalla real.
 
 ## 1. El header del ledger se va entero
