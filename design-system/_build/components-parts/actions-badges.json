@@ -1,16 +1,165 @@
 [
-{"g":"Actions","n":"FABAction","v":1,"p":[],"w":110,"h":44,"d":"One item of the FAB speed-dial. Card surface with a border so it separates from the dimmed page behind it.\n\nThe icon takes bg/brand — the only colour in the row, which is what makes the three items scannable at a glance.\n\nThe three are always Ingreso · Gasto · Movimiento, in that order, staggered 40ms apart from the FAB outward."},
-{"g":"Actions","n":"FAB","v":2,"p":["State=Closed|Open"],"w":294,"h":284,"d":"Mobile-only entry point for creating records. State = Closed | Open.\n\nOpen reveals three FABAction items and dims the page behind with bg/scrim. The plus rotates 45° into a close icon rather than swapping glyphs, so the button never changes shape.\n\nSits above the bottom nav, not inside it. Only visible on the Mes, Dashboard and Cuentas views — elsewhere there is nothing to create. On desktop the same actions live in MonthNav’s “Agregar” popover."},
-{"g":"Actions","n":"Icon Button","v":72,"p":["Variant=Filled|Outline|Ghost","Severity=Default|Danger","Size=SM|MD|LG|XL","State=Default|Hover|Disabled"],"w":560,"h":356,"d":"Icon-only action. Same four axes as Button.\n\nRow actions are ALWAYS visible — never hidden behind hover (opacity-0 group-hover is an anti-pattern here). Use SM in filter bars and list rows, MD as the default.\n\nEvery instance needs an accessible label in code; the icon alone is not a name."},
-{"g":"Actions","n":"action-chip","v":8,"p":["Show Leading Icon","State=Disabled|Default|Hover|Selected","Badge=True|False"],"w":322,"h":412,"d":"Filter chip with an optional count badge. State × Badge.\n\nUsed for the expense category filter. Only categories that have data that month are rendered, so the strip length varies. State=Selected is the active filter; Badge=True shows how many entries match.\n\nSelected has its own three tokens (action-chip/selected/*). The other three states still borrow badge/neutral/* and badge/accent/*, which is a loan, not a decision — a filter chip is not a badge. Authorised to finish on 2026-08-19, still open."},
-{"g":"Actions","n":"Button","v":168,"p":["label","Show Leading Icon","Show Trailing Icon","Variant=Filled|Outline|Ghost","Severity=Primary|Neutral|Danger","Size=SM|MD|LG|XL","State=Default|Hover|Focused","Disabled=False|True","Loading=False|True"],"w":1277,"h":1354,"d":"Primary action control. Variant × Severity × Size, with State plus orthogonal Disabled and Loading.\n\nFilled = the single main action on a screen. Outline = secondary. Ghost = tertiary and inline actions.\n\nSeverity=Danger is only for destructive actions, which must follow the two-tap confirm pattern: first tap shows “¿Eliminar?”, second deletes. Never delete on one tap.\n\nDisabled and Loading are independent axes because they co-occur: a submitting button is both, and an aria-disabled control still takes keyboard focus.\n\nLabels use Control/SM–XL, whose line height is 100% so the text centres in the frame."},
-{"g":"Badges","n":"CurrencyBadge","v":2,"p":["Currency=USD|COP"],"w":126,"h":52,"d":"USD or COP marker. Used wherever an amount could be misread as the wrong currency — this product lives in two."},
-{"g":"Badges","n":"Favorite","v":2,"p":["State=Default|Selected"],"w":92,"h":64,"d":"Star toggle on an account. Favourites pin as compact cards on Resumen and sort first in every account picker.\n\nSelected is amber-700, not amber-500. Filling the glyph is what puts it inside WCAG 1.4.11 as a graphic object, not outside it — 500 measured 2.15:1 against white and failed all three backgrounds it can land on."},
-{"g":"Badges","n":"Indicator","v":1,"p":[],"w":6,"h":6,"d":"A 6px dot. Presence marker: unconfirmed entry, unread notification. Carries no colour meaning of its own."},
-{"g":"Badges","n":"NotificationBadge","v":2,"p":["Severity=Primary|Secondary"],"w":158,"h":52,"d":"Counter on the header bell. Primary counts overdue and due-today only. Secondary is upcoming (next 7 days) and is deliberately not counted in the badge number."},
-{"g":"Badges","n":"Badge","v":24,"p":["Variant=Outline|Filled","Tone=Accent|Danger|Info|Neutral|Success|Warning","Icon=False|True"],"w":903,"h":152,"d":"Generic label chip. Variant × Tone × Icon.\n\nVariant=Filled paints badge/{tone}/background; Variant=Outline paints badge/{tone}/border with no fill. Same geometry, same six token families — this used to be two component sets (Badge filled, Status outline), and the filled one had zero instances in the whole file. Filled and outline are a treatment, not two components.\n\nOutline is the entry-state treatment: scheduled, unconfirmed, overdue. Filled is a plain label.\n\nColour here is decorative. The moment a badge carries meaning — an account, a category, a currency — use the specific component instead, so the semantic token layer stays the source of that meaning. AccountBadge is the worked example: it exists precisely because a generic Badge was carrying an account name."},
-{"g":"Badges","n":"TRMBadge","v":1,"p":[],"w":115,"h":28,"d":"Live TRM chip in the header. Informative only — every calculation uses the month’s stored TRM, never this one."},
-{"g":"Badges","n":"category-badge","v":15,"p":["Show Label","category=health|bank|transit|recreation|food|home|travel|other|family|taxes|savings|work|connectivity|insurance|shopping"],"w":462,"h":260,"d":"One variant per expense category — 15, mapped 1:1 to EGRESO_CATEGORIAS in code.\n\nColour comes from category/{id}/accent and /surface. In dark mode the surface is -950 and the text -300, uniformly; connectivity and other are the documented exception because their neutral -950 disappears against the page background."},
-{"g":"Badges","n":"AccountBadge","v":1,"p":[],"w":104,"h":20,"d":"Chip that identifies WHICH account a row belongs to. What KIND of account it is, is AccountTypeBadge’s job; the two answer different questions and can appear together.\n\nThe dot carries the account’s accent. At runtime that fill comes from the USER’S DATA — each account stores a hue picked from account/{hue}/accent — so account/purple/accent here is a canvas default, not a decision. Do not “fix” it to a static token: an audit that repoints this to a fixed colour breaks user-chosen account colour.\n\nThe body stays neutral on purpose (bg/account · border/subtle · fg/account). Only the dot carries hue, so a row with four chips does not become a colour chart.\n\nThe dot sits on bg/account, NOT on the avatar tint, and that is a second background nobody checked until 2026-08-22: amber measured 2.91:1 there and green passed by 0.01. Both moved to rung 700 in light. Any new accent has to clear 3:1 against BOTH.\n\nNOT a component set, deliberately. It used to be one, with Color=Cyan|Purple|Green|Neutral standing in for account slots 1-4; those were renamed to slots, and then the slot model died when the hue became a user choice. What was left were two variant axes with exactly one option each — which is not variance, and would have extracted into code as Color=”Account 4”, a name meaning nothing. Dissolved 2026-08-17; 27 instances verified intact across four pages.\n\nShipped in code 2026-08-22. The earlier note here said extraction was blocked until the exporter landed — it landed, and this is one of the components it unblocked."},
-{"g":"Badges","n":"AccountTypeBadge","v":4,"p":["Show Leading Icon","Type=Cash|Bank Account|Credit Card|Savings"],"w":158,"h":148,"d":"Says what KIND of account this is — Cash, Bank Account, Credit Card, Savings — not which account it is. Which account is AccountBadge’s job; the two chips answer different questions and can appear together.\n\nThe four variants map 1:1 to the account types the product supports, so this set gains a variant only when the product gains a type.\n\nCorrected 2026-08-17: this component was carrying AccountBadge’s description verbatim, which claimed its variants were the account/1..4 slots. They never were. Second instance of a pasted-over description in this file — the token then called color/account/border, today border/subtle, had Input’s."}
+  {
+    "g": "Actions",
+    "n": "FABAction",
+    "v": 1,
+    "p": [],
+    "w": 110,
+    "h": 44,
+    "d": "One item of the FAB speed-dial. Card surface with a border so it separates from the dimmed page behind it.\n\nThe icon takes bg/brand — the only colour in the row, which is what makes the three items scannable at a glance.\n\nThe three are always Ingreso · Gasto · Movimiento, in that order, staggered 40ms apart from the FAB outward."
+  },
+  {
+    "g": "Actions",
+    "n": "FAB",
+    "v": 2,
+    "p": [
+      "State=Closed|Open"
+    ],
+    "w": 294,
+    "h": 284,
+    "d": "Mobile-only entry point for creating records. State = Closed | Open.\n\nOpen reveals three FABAction items and dims the page behind with bg/scrim. The plus rotates 45° into a close icon rather than swapping glyphs, so the button never changes shape.\n\nSits above the bottom nav, not inside it. Only visible on the Mes, Dashboard and Cuentas views — elsewhere there is nothing to create. On desktop the same actions live in MonthNav’s “Agregar” popover."
+  },
+  {
+    "g": "Actions",
+    "n": "Icon Button",
+    "v": 72,
+    "p": [
+      "Variant=Filled|Outline|Ghost",
+      "Severity=Default|Danger",
+      "Size=SM|MD|LG|XL",
+      "State=Default|Hover|Disabled"
+    ],
+    "w": 560,
+    "h": 356,
+    "d": "Icon-only action. Same four axes as Button.\n\nRow actions are ALWAYS visible — never hidden behind hover (opacity-0 group-hover is an anti-pattern here). Use SM in filter bars and list rows, MD as the default.\n\nEvery instance needs an accessible label in code; the icon alone is not a name."
+  },
+  {
+    "g": "Actions",
+    "n": "action-chip",
+    "v": 8,
+    "p": [
+      "Show Leading Icon",
+      "State=Disabled|Default|Hover|Selected",
+      "Badge=True|False"
+    ],
+    "w": 322,
+    "h": 412,
+    "d": "Filter chip with an optional count badge. State × Badge.\n\nUsed for the expense category filter. Only categories that have data that month are rendered, so the strip length varies. State=Selected is the active filter; Badge=True shows how many entries match.\n\nSelected has its own three tokens (action-chip/selected/*). The other three states still borrow badge/neutral/* and badge/accent/*, which is a loan, not a decision — a filter chip is not a badge. Authorised to finish on 2026-08-19, still open."
+  },
+  {
+    "g": "Actions",
+    "n": "Button",
+    "v": 168,
+    "p": [
+      "label",
+      "Show Leading Icon",
+      "Show Trailing Icon",
+      "Variant=Filled|Outline|Ghost",
+      "Severity=Primary|Neutral|Danger",
+      "Size=SM|MD|LG|XL",
+      "State=Default|Hover|Focused",
+      "Disabled=False|True",
+      "Loading=False|True"
+    ],
+    "w": 1277,
+    "h": 1354,
+    "d": "Primary action control. Variant × Severity × Size, with State plus orthogonal Disabled and Loading.\n\nFilled = the single main action on a screen. Outline = secondary. Ghost = tertiary and inline actions.\n\nSeverity=Danger is only for destructive actions, which must follow the two-tap confirm pattern: first tap shows “¿Eliminar?”, second deletes. Never delete on one tap.\n\nDisabled and Loading are independent axes because they co-occur: a submitting button is both, and an aria-disabled control still takes keyboard focus.\n\nLabels use Control/SM–XL, whose line height is 100% so the text centres in the frame."
+  },
+  {
+    "g": "Badges",
+    "n": "CurrencyBadge",
+    "v": 2,
+    "p": [
+      "Currency=USD|COP"
+    ],
+    "w": 126,
+    "h": 52,
+    "d": "USD or COP marker. Used wherever an amount could be misread as the wrong currency — this product lives in two."
+  },
+  {
+    "g": "Badges",
+    "n": "Favorite",
+    "v": 2,
+    "p": [
+      "State=Default|Selected"
+    ],
+    "w": 92,
+    "h": 64,
+    "d": "Star toggle on an account. Favourites pin as compact cards on Resumen and sort first in every account picker.\n\nSelected is amber-700, not amber-500. Filling the glyph is what puts it inside WCAG 1.4.11 as a graphic object, not outside it — 500 measured 2.15:1 against white and failed all three backgrounds it can land on."
+  },
+  {
+    "g": "Badges",
+    "n": "Indicator",
+    "v": 1,
+    "p": [],
+    "w": 6,
+    "h": 6,
+    "d": "A 6px dot. Presence marker: unconfirmed entry, unread notification. Carries no colour meaning of its own."
+  },
+  {
+    "g": "Badges",
+    "n": "NotificationBadge",
+    "v": 2,
+    "p": [
+      "Severity=Primary|Secondary"
+    ],
+    "w": 158,
+    "h": 52,
+    "d": "Counter on the header bell. Primary counts overdue and due-today only. Secondary is upcoming (next 7 days) and is deliberately not counted in the badge number."
+  },
+  {
+    "g": "Badges",
+    "n": "Badge",
+    "v": 24,
+    "p": [
+      "Variant=Outline|Filled",
+      "Tone=Accent|Danger|Info|Neutral|Success|Warning",
+      "Icon=False|True"
+    ],
+    "w": 903,
+    "h": 152,
+    "d": "Generic label chip. Variant × Tone × Icon.\n\nVariant=Filled paints badge/{tone}/background; Variant=Outline paints badge/{tone}/border with no fill. Same geometry, same six token families — this used to be two component sets (Badge filled, Status outline), and the filled one had zero instances in the whole file. Filled and outline are a treatment, not two components.\n\nOutline is the entry-state treatment: scheduled, unconfirmed, overdue. Filled is a plain label.\n\nColour here is decorative. The moment a badge carries meaning — an account, a category, a currency — use the specific component instead, so the semantic token layer stays the source of that meaning. AccountBadge is the worked example: it exists precisely because a generic Badge was carrying an account name."
+  },
+  {
+    "g": "Badges",
+    "n": "TRMBadge",
+    "v": 1,
+    "p": [],
+    "w": 115,
+    "h": 28,
+    "d": "Live TRM chip in the header. Informative only — every calculation uses the month’s stored TRM, never this one."
+  },
+  {
+    "g": "Badges",
+    "n": "category-badge",
+    "v": 15,
+    "p": [
+      "Show Label",
+      "category=health|bank|transit|recreation|food|home|travel|other|family|taxes|savings|work|connectivity|insurance|shopping"
+    ],
+    "w": 462,
+    "h": 260,
+    "d": "One variant per expense category — 15, mapped 1:1 to EGRESO_CATEGORIAS in code.\n\nColour comes from category/{id}/accent and /surface. In dark mode the surface is -950 and the text -300, uniformly; connectivity and other are the documented exception because their neutral -950 disappears against the page background."
+  },
+  {
+    "g": "Badges",
+    "n": "AccountBadge",
+    "v": 1,
+    "p": [],
+    "w": 104,
+    "h": 20,
+    "d": "Chip that identifies WHICH account a row belongs to. What KIND of account it is, is AccountTypeBadge’s job; the two answer different questions and can appear together.\n\nThe dot carries the account’s accent. At runtime that fill comes from the USER’S DATA — each account stores a hue picked from account/{hue}/accent — so account/purple/accent here is a canvas default, not a decision. Do not “fix” it to a static token: an audit that repoints this to a fixed colour breaks user-chosen account colour.\n\nThe body stays neutral on purpose (bg/account · border/subtle · fg/account). Only the dot carries hue, so a row with four chips does not become a colour chart.\n\nThe dot sits on bg/account, NOT on the avatar tint, and that is a second background nobody checked until 2026-08-22: amber measured 2.91:1 there and green passed by 0.01. Both moved to rung 700 in light. Any new accent has to clear 3:1 against BOTH.\n\nNOT a component set, deliberately. It used to be one, with Color=Cyan|Purple|Green|Neutral standing in for account slots 1-4; those were renamed to slots, and then the slot model died when the hue became a user choice. What was left were two variant axes with exactly one option each — which is not variance, and would have extracted into code as Color=”Account 4”, a name meaning nothing. Dissolved 2026-08-17; 27 instances verified intact across four pages.\n\nShipped in code 2026-08-22. The earlier note here said extraction was blocked until the exporter landed — it landed, and this is one of the components it unblocked."
+  },
+  {
+    "g": "Badges",
+    "n": "AccountTypeBadge",
+    "v": 4,
+    "p": [
+      "Show Leading Icon",
+      "Type=Cash|Bank Account|Credit Card|Savings"
+    ],
+    "w": 158,
+    "h": 148,
+    "d": "Says what KIND of account this is — Cash, Bank Account, Credit Card, Savings — not which account it is. Which account is AccountBadge’s job; the two chips answer different questions and can appear together.\n\nThe four variants map 1:1 to the account types the product supports, so this set gains a variant only when the product gains a type.\n\nCorrected 2026-08-17: this component was carrying AccountBadge’s description verbatim, which claimed its variants were the account/1..4 slots. They never were. (Second instance of a pasted-over description in this file — color/account/border (the pre-1.2 name; today border/subtle) had Input’s.) The rationale line above is reconstructed from the variants themselves; whoever specified the chip should confirm the intent.\n\n2026-08-24 · SIN CONSUMIDORES. AccountCard was its only user and now prints the type as plain text: with its leading icon removed the pill was a border around a single word. Kept, not deleted — absence of use is not absence of purpose, and a labelled type chip is the right shape the day a denser surface needs one. If nothing claims it by the next inventory, retire it."
+  }
 ]

@@ -43,7 +43,11 @@ The account type is locked after creation — to reclassify, the account must be
 
 THE ACCOUNT COLOUR IS THE AVATAR, AND NOTHING ELSE. 2026-08-24: the full-width AccountBanner was removed. It was the card’s only colour and it sat directly above the amount, which is what docs/25-account-color.md §2 forbids in as many words — “cards, rows and amounts stay neutral… an identity colour that only ever appears inside a small circle never shares a surface with a number, so it cannot be mistaken for one.” That boundary is the whole reason twelve hues are safe in an app where cyan already means net, red means expense and amber means tax. The banner also contradicted the code, which has never drawn one.
 
-So the header now opens with an AccountAvatar (size=SM), which is the sanctioned carrier, and the AccountTypeBadge lost its leading icon: the avatar already draws the type glyph, and two identical icons side by side stated the same fact twice. The type still reads as TEXT in the badge, which is the form that survives colour blindness and screen readers.
+So the header now opens with an AccountAvatar (size=SM), which is the sanctioned carrier, paired with the account type as PLAIN TEXT in fg/account — a neutral slate, not the account’s hue.
+
+That pairing arrived in two steps. Design first dropped the AccountTypeBadge’s leading icon, because the avatar already draws the type glyph and two identical icons side by side stated the same fact twice. Alfredo then removed the badge altogether on 2026-08-24: once the icon was gone, the outlined pill was a container around a word, and a chip that contains only its own label is a border pretending to be information. AccountTypeBadge now has NO consumer anywhere in the file.
+
+The type still reads as TEXT, which is the form that survives colour blindness and a screen reader — the glyph in the avatar is decorative and announced by nothing. Measured at 11px Medium: 6.92:1 on the default surface, 6.30:1 on selected, 10.99:1 Dark. Small text needs 4.5:1.
 
 BEFORE 2026-08-24 this description said the banner must not be “fixed”. It was written on 08-17, four days before the colour system, and the two decisions had been contradicting each other since. Alfredo settled it on 08-24: the doc wins.
 
