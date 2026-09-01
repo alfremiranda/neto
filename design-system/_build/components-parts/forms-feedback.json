@@ -1,259 +1,268 @@
 [
- {
-  "g": "Forms",
-  "n": "Calendar",
-  "v": 1,
-  "p": [],
-  "w": 304,
-  "h": 300,
-  "d": "Month grid inside the date popover. DatePicker was retired into Field + Input on 2026-08-20, so the popover now belongs to a date-configured Input, not to a component of its own. Spanish weekday initials, Monday first — es-CO, not the Sunday-first US default.\n\nOne selected day, today outlined. Days outside the month are dimmed but still pickable."
- },
- {
-  "g": "Forms",
-  "n": "Calendar Day",
-  "v": 6,
-  "p": [
-   "label",
-   "today",
-   "state=default|selected|outside|hover|focus-visible|disabled"
-  ],
-  "w": 360,
-  "h": 80,
-  "d": "Single day cell in the Calendar month grid.\n\nState is a property, not a baked layer — hover, focus-visible and disabled exist here and nowhere else. “outside” days belong to the adjacent month and remain pickable, so they are active text and meet 4.5:1."
- },
- {
-  "g": "Forms",
-  "n": "Input",
-  "v": 30,
-  "p": [
-   "value",
-   "Show Leading Icon",
-   "Show Trailing Icon",
-   "Filled=False|True",
-   "State=Default|Focused|Error|Disabled|Hover",
-   "Size=SM|MD|LG"
-  ],
-  "w": 1076,
-  "h": 392,
-  "d": "Text field. HasValue × State × Size.\n\nMD (36px) is the standard for every form. SM (28px) belongs to filter bars only. All controls in the same row must share a size — an input, a select and a date picker side by side at different heights is the most common visual bug in this product.\n\nOverflow: the value fills the remaining width and truncates with an ellipsis; the icons hug and never shrink. A value longer than the field must not widen it."
- },
- {
-  "g": "Forms",
-  "n": "Field",
-  "v": 3,
-  "p": [
-   "Label",
-   "Message",
-   "Control",
-   "State=Default|Error|Hint"
-  ],
-  "w": 1000,
-  "h": 146,
-  "d": "A form field: the label, the control, and the message. Built 2026-08-20 because the system had four form components and four different answers about labels — Input, Select and DatePicker had none at all and were letting the placeholder do the job, at 2.56:1 contrast and gone as soon as the user types.\n\nThe control is an INSTANCE SWAP: swap in Input, Select or anything else — including an Input configured as a date or money field, which is what replaced DatePicker and MoneyInput. The field’s own visual state (focus, disabled) belongs to the control; this wrapper only knows whether the message is a hint or an error.\n\nThe control slot HUGS. It was FIXED at 40px — the height of an Input — which silently clipped anything taller the moment one was swapped in: AccountColorPicker lost its second row and the drawer looked like it had six colours. An instance-swap slot cannot carry the height of its default occupant."
- },
- {
-  "g": "Forms",
-  "n": "Select",
-  "v": 24,
-  "p": [
-   "placeholder",
-   "Show Leading Icon",
-   "HasValue=False|True",
-   "State=Default|Open|Error|Disabled",
-   "Size=SM|MD|LG"
-  ],
-  "w": 818,
-  "h": 364,
-  "d": "Dropdown trigger. Deliberately shares the axes and heights of Input so the two align in a row.\n\nIn code the height comes from the size prop or from data-size=“none” — never from an h-* class, which loses to the data-attribute specificity and silently does nothing.\n\nOverflow: the value fills the remaining width and truncates with an ellipsis; the icons hug and never shrink. A value longer than the field must not widen it."
- },
- {
-  "g": "Forms",
-  "n": "Radio",
-  "v": 2,
-  "p": [
-   "State=Default|Selected"
-  ],
-  "w": 20,
-  "h": 80,
-  "d": "Single choice within a group. 20px, 2px ring, filled with bg/brand and a check when selected.\n\nSelected is also what a locked, always-on row looks like — the “Efectivo” account in onboarding is drawn with this, not with a separate indicator, because it means the same thing to the reader: this one is in.\n\nNo Disabled and no Hover: nothing in Neto disables one option of a group, and the whole row is the hit target, so the ring itself never carries a hover. Both come back as decisions if a screen needs them.\n\nCreated 2026-08-17 while mapping the onboarding flow, where this was hand-rolled five times."
- },
- {
-  "g": "Forms",
-  "n": "CurrencyRadio",
-  "v": 8,
-  "p": [
-   "Currency",
-   "Currency Description",
-   "State=Default|Hover|Disabled|Focused",
-   "Selected=False|True"
-  ],
-  "w": 778,
-  "h": 793,
-  "d": "Choosing one currency among several, in card form. It is a radio, not a button: the choice is exclusive and the state lives in the group, not in the card. That is why it carries the system Radio inside instead of drawing its own mark.\n\nThe flag is not decoration: in an app that shows two currencies at once, it is what gets recognised before anything is read. Its colours stay raw on purpose — they belong to a country, not to us — so it lives in brand-mark/flag, exempt from C1 (see design-system/docs/16-marks.md).\n\nSelected=True paints bg/brand-alpha-10 with a bg/brand border; State=Focused is the ring and never replaces the selection: you can be focused without having chosen, and both have to be visible at once."
- },
- {
-  "g": "Forms",
-  "n": "ChoiceRow",
-  "v": 8,
-  "p": [
-   "Show Media",
-   "Show Description",
-   "Label",
-   "Description",
-   "State=Default|Hover|Focused|Disabled",
-   "Selected=False|True"
-  ],
-  "w": 768,
-  "h": 760,
-  "d": "A single choice among options, drawn as a row. It is a radio in row form: the choice is exclusive and the state lives in the group, so it carries the system Radio instead of drawing its own mark.\n\nShow media turns on the leading tile — use it when the options are kinds of thing rather than values, because an icon is what gets scanned before the words. Show description turns on the second line; a row with no description is a value, a row with one is a decision.\n\nState and Selected are separate axes and are visible at the same time. Focused is the two-ring shadow, the same one CurrencyRadio uses; it never replaces the selection."
- },
- {
-  "g": "Forms",
-  "n": "AccountRow",
-  "v": 8,
-  "p": [
-   "Show Badge",
-   "Show Description",
-   "Label",
-   "Description",
-   "Type=Fixed|User",
-   "State=Default|Hover|Focused|Disabled"
-  ],
-  "w": 768,
-  "h": 776,
-  "d": "One account in the onboarding list. The leading check is not a choice: it says the account is included, and it is always on — what varies is whether the user can take it out.\n\nType=Fixed is an account the product includes and nobody can remove (Efectivo). Type=User is one the person added: it carries the brand wash, the primary border and the remove button. The difference in weight is deliberate — it marks what is theirs.\n\nShow badge turns on the currency chip; Show description the second line. Focused is the two-ring shadow, clipped behind the node so it does not tint the translucent fill (see 19-choice-rows.md)."
- },
- {
-  "g": "Forms",
-  "n": "Segment",
-  "v": 3,
-  "p": [
-   "label",
-   "Show Leading Icon",
-   "State=Default|Selected|Hover"
-  ],
-  "w": 353,
-  "h": 32,
-  "d": "One segment of a segmented control. Compose them inside SegmentedControl — a segment on its own is not a control.\n\nSelected paints bg/brand with primary-foreground text; Default and Hover have no fill and differ only in text colour. There is deliberately NO Disabled state: the two segmented controls in the product (account type, currency) never disable a segment, and designing one would be inventing a state nobody asked for.\n\nBuilt 2026-08-17 from OnboardingView.tsx, where this control was hand-rolled twice out of raw button elements with two different paddings. This unifies them at 10/6; if a tighter one is genuinely needed it comes back as a Size property, not as a second drawing."
- },
- {
-  "g": "Forms",
-  "n": "SegmentedControl",
-  "v": 2,
-  "p": [
-   "Items=2|3"
-  ],
-  "w": 284,
-  "h": 116,
-  "d": "Segmented control: a small, flat set of mutually exclusive choices, all visible at once. Use it when the options are few and comparable; use Select when they are many or long.\n\nItems=3 is the account-type picker (Cuenta · Efectivo · Crédito), Items=2 is the currency picker (COP · USD). Segments FILL the track, so every option is the same width and the control reads as one object rather than as buttons in a row — resize the instance, do not resize the segments.\n\nGeometry: container radius/full, bg/chrome with a border/subtle hairline, padding spacing/4, gap spacing/2. The selected segment is bg/brand-alpha-20 with a border/brand-alpha-50 border and fg/on-subtle text — a wash, not a solid fill. A solid brand fill forces white text and makes the control the loudest thing on screen, which is wrong for a picker inside a form. Both states are 34px because the border is always drawn, transparent when inactive; otherwise selecting shifts its neighbours by 1px."
- },
- {
-  "g": "Forms",
-  "n": "Switch",
-  "v": 4,
-  "p": [
-   "State=Off|On",
-   "Disabled=False|True"
-  ],
-  "w": 264,
-  "h": 68,
-  "d": "Toggle for a boolean setting. State × Disabled.\n\nTrack 36×20, thumb 16. The off track is an alpha (black 20% light / white 30% dark) so it reads on any surface — a solid grey would disappear on a card and shout on the page background.\n\nUsed for “aplicar provisiones”, “gasto recurrente” and the deduction toggles. Never for an action — a switch commits immediately, it has no confirm step."
- },
- {
-  "g": "Forms",
-  "n": "Tab",
-  "v": 3,
-  "p": [
-   "Show Leading Icon",
-   "Show Badge",
-   "Status=Default|Selected|Disabled"
-  ],
-  "w": 128,
-  "h": 212,
-  "d": "Tab in the Mes view navigation: Ingresos · Gastos · Movimientos · Tributarias · Provisiones.\n\nThe last two only exist when the user has that deduction group enabled, so the strip must read correctly with three tabs or five. Do not design for five and hope."
- },
- {
-  "g": "Forms",
-  "n": "AccountColorSwatch",
-  "v": 36,
-  "p": [
-   "Color=orange|amber|lime|green|emerald|teal|sky|blue|indigo|purple|pink|rose",
-   "State=Default|Hover|Selected"
-  ],
-  "w": 764,
-  "h": 224,
-  "d": "One colour a user can pick for an account. The chip is the accent at full strength; the tint the avatar uses is a separate token and is not shown here, because it is invisible against a light canvas.\n\nGeometry: 44px hit target, 36px disc, radius/full. 44 rather than the 40 it started at — these sit close together and the minimum is a floor, not a target. The 4px inset is the gap the selection ring needs so a ring in the same accent still reads as a ring.\n\nSelected draws a 2px ring in the account’s own accent. Not the brand colour: the ring has to survive eleven other hues beside it. Hover is a neutral 1px border/strong ring — a hover ring in the accent is one step from reading as selected.\n\nEvery swatch needs an accessible name (Morado · Celeste · Esmeralda · Lima · Ámbar · Fucsia · Azul · Verde · Índigo · Naranja · Rosa · Turquesa). The name is not shown; a screen-reader user still has to hear one.\n\nOrdered by HUE ANGLE, measured from each accent’s Light value: orange 21° · amber 32 · lime 86 · green 142 · emerald 161 · teal 175 · sky 200 · blue 221 · indigo 243 · purple 271 · pink 333 · rose 347.\n\nThe order is not decoration. The neighbours are the pairs that measure closest — orange/amber at 11°, emerald/teal at 14 — and sitting them side by side is what lets someone SEE they are two colours, instead of meeting the second one six positions later and reading it as the first again."
- },
- {
-  "g": "Forms",
-  "n": "AccountColorPicker",
-  "v": 1,
-  "p": [],
-  "w": 372,
-  "h": 100,
-  "d": "The twelve account colours, two rows of six, spread across the full width of whatever holds them.\n\nNo caption and no colour name on screen. Choosing an account colour is a preference, not a task with a right answer, so nothing is lost when two hues are hard to tell apart — and the selection is carried by a check mark, not by colour, so 1.4.1 is satisfied without words. The names survive as each swatch’s accessible name.\n\nNo “in use” marker. Colours repeat across accounts by design; an unexplained dot on a choice with no wrong answer reads as a restriction.\n\nOrdered by hue — warm, green, cyan, blue, violet, pink — so the two closest pairs sit adjacent and read as two colours rather than as one met twice.\n\nTwo explicit rows, not a wrapping grid: wrap packs as many as fit and becomes eight per row at this width. Six per row is a decision.\n\nCarries no label of its own. Wrap it in Field."
- },
- {
-  "g": "Feedback",
-  "n": "Empty",
-  "v": 2,
-  "p": [
-   "Media=Icon|None"
-  ],
-  "w": 816,
-  "h": 272,
-  "d": "Empty state for a list that has no entries yet. Media = Icon | None.\n\nThe dashed border is deliberate: it says “this container is real but has nothing in it”, which a solid border would not. It is the one place in the system that uses a dash.\n\nAlways carries an action. An empty state without a way out is a dead end."
- },
- {
-  "g": "Feedback",
-  "n": "ErrorState",
-  "v": 2,
-  "p": [
-   "Media=Icon|None"
-  ],
-  "w": 816,
-  "h": 272,
-  "d": "Something failed and has to be retried. Sibling of Empty: same anatomy, different intent.\n\nThe border is SOLID on purpose. Empty’s dashed border means “a real container, but empty” and is the only dash in the system; an error is not empty.\n\nThe media uses bg/danger-subtle with the icon in fg/danger — the tint, not the emphasis: a failed load is not a catastrophe.\n\nThe description reminds the reader that the data is still on the device. The app is local-first and a view failure puts nothing saved at risk."
- },
- {
-  "g": "Feedback",
-  "n": "Separator",
-  "v": 2,
-  "p": [
-   "Orientation=Horizontal|Vertical"
-  ],
-  "w": 297,
-  "h": 144,
-  "d": "A 1px rule on border/default.\n\nOnly for separating peers inside one container. Between containers the gap does the work — a rule there reads as a border that failed."
- },
- {
-  "g": "Feedback",
-  "n": "Skeleton",
-  "v": 1,
-  "p": [],
-  "w": 280,
-  "h": 52,
-  "d": "Loading placeholder. Uses bg/disabled — the same token as a disabled control, because both mean “here but not usable yet”.\n\nMatches the shape of what is coming, never a spinner. A spinner tells you to wait; a skeleton tells you what you are waiting for."
- },
- {
-  "g": "Feedback",
-  "n": "Spinner",
-  "v": 4,
-  "p": [
-   "Size=S|M",
-   "Color=Light|Dark"
-  ],
-  "w": 200,
-  "h": 72,
-  "d": "Work in progress after a user action. Does NOT replace Skeleton: a skeleton says what content is coming, and can only do so when there is a shape to anticipate. When someone presses a button there is nothing to anticipate — the only thing to confirm is that the click was handled.\n\nColour: prefer INHERITING. A spinner inside a control should take currentColor for the head and currentColor at 20% for the track, so it can never disagree with the label beside it — a danger outline button has a red label and neither fixed tone is red. spinner/head/on-solid and /default exist for a spinner standing alone with no label to inherit from.\n\nRenamed 2026-08-22: the tokens were on-dark / on-light, which named the BUTTON and not the surface — their values invert between modes, so on-dark was light in light mode. Dev found it.\n\nRotation: motion/duration/spin on motion/easing/spin."
- },
- {
-  "g": "Feedback",
-  "n": "Toast",
-  "v": 1,
-  "p": [],
-  "w": 153,
-  "h": 36,
-  "d": "Transient confirmation. Inverts against the page via bg/inverse + fg/on-inverse.\n\nCentred at the bottom, above the mobile nav and above any open sheet — it has to stay visible over a drawer.\n\nNo action, no dismiss button. If the user needs to do something about it, it is not a toast."
- }
+  {
+    "g": "Forms",
+    "n": "Calendar",
+    "v": 1,
+    "p": [],
+    "w": 304,
+    "h": 300,
+    "d": "Month grid inside the date popover. DatePicker was retired into Field + Input on 2026-08-20, so the popover now belongs to a date-configured Input, not to a component of its own. Spanish weekday initials, Monday first — es-CO, not the Sunday-first US default.\n\nOne selected day, today outlined. Days outside the month are dimmed but still pickable."
+  },
+  {
+    "g": "Forms",
+    "n": "Calendar Day",
+    "v": 6,
+    "p": [
+      "label",
+      "today",
+      "state=default|selected|outside|hover|focus-visible|disabled"
+    ],
+    "w": 360,
+    "h": 80,
+    "d": "Single day cell in the Calendar month grid.\n\nState is a property, not a baked layer — hover, focus-visible and disabled exist here and nowhere else. “outside” days belong to the adjacent month and remain pickable, so they are active text and meet 4.5:1."
+  },
+  {
+    "g": "Forms",
+    "n": "Input",
+    "v": 30,
+    "p": [
+      "value",
+      "Show Leading Icon",
+      "Show Trailing Icon",
+      "Filled=False|True",
+      "State=Default|Focused|Error|Disabled|Hover",
+      "Size=SM|MD|LG"
+    ],
+    "w": 1076,
+    "h": 392,
+    "d": "Text field. HasValue × State × Size.\n\nMD (36px) is the standard for every form. SM (28px) belongs to filter bars only. All controls in the same row must share a size — an input, a select and a date picker side by side at different heights is the most common visual bug in this product.\n\nOverflow: the value fills the remaining width and truncates with an ellipsis; the icons hug and never shrink. A value longer than the field must not widen it."
+  },
+  {
+    "g": "Forms",
+    "n": "Field",
+    "v": 3,
+    "p": [
+      "Label",
+      "Message",
+      "Control",
+      "State=Default|Error|Hint"
+    ],
+    "w": 1000,
+    "h": 146,
+    "d": "A form field: the label, the control, and the message. Built 2026-08-20 because the system had four form components and four different answers about labels — Input, Select and DatePicker had none at all and were letting the placeholder do the job, at 2.56:1 contrast and gone as soon as the user types.\n\nThe control is an INSTANCE SWAP: swap in Input, Select or anything else — including an Input configured as a date or money field, which is what replaced DatePicker and MoneyInput. The field’s own visual state (focus, disabled) belongs to the control; this wrapper only knows whether the message is a hint or an error.\n\nThe control slot HUGS. It was FIXED at 40px — the height of an Input — which silently clipped anything taller the moment one was swapped in: AccountColorPicker lost its second row and the drawer looked like it had six colours. An instance-swap slot cannot carry the height of its default occupant."
+  },
+  {
+    "g": "Forms",
+    "n": "Select",
+    "v": 24,
+    "p": [
+      "placeholder",
+      "Show Leading Icon",
+      "HasValue=False|True",
+      "State=Default|Open|Error|Disabled",
+      "Size=SM|MD|LG"
+    ],
+    "w": 818,
+    "h": 364,
+    "d": "Dropdown trigger. Deliberately shares the axes and heights of Input so the two align in a row.\n\nIn code the height comes from the size prop or from data-size=“none” — never from an h-* class, which loses to the data-attribute specificity and silently does nothing.\n\nOverflow: the value fills the remaining width and truncates with an ellipsis; the icons hug and never shrink. A value longer than the field must not widen it."
+  },
+  {
+    "g": "Forms",
+    "n": "Radio",
+    "v": 2,
+    "p": [
+      "State=Default|Selected"
+    ],
+    "w": 20,
+    "h": 80,
+    "d": "Single choice within a group. 20px, 2px ring, filled with bg/brand and a check when selected.\n\nSelected is also what a locked, always-on row looks like — the “Efectivo” account in onboarding is drawn with this, not with a separate indicator, because it means the same thing to the reader: this one is in.\n\nNo Disabled and no Hover: nothing in Neto disables one option of a group, and the whole row is the hit target, so the ring itself never carries a hover. Both come back as decisions if a screen needs them.\n\nCreated 2026-08-17 while mapping the onboarding flow, where this was hand-rolled five times."
+  },
+  {
+    "g": "Forms",
+    "n": "CurrencyRadio",
+    "v": 8,
+    "p": [
+      "Currency",
+      "Currency Description",
+      "State=Default|Hover|Disabled|Focused",
+      "Selected=False|True"
+    ],
+    "w": 778,
+    "h": 793,
+    "d": "Choosing one currency among several, in card form. It is a radio, not a button: the choice is exclusive and the state lives in the group, not in the card. That is why it carries the system Radio inside instead of drawing its own mark.\n\nThe flag is not decoration: in an app that shows two currencies at once, it is what gets recognised before anything is read. Its colours stay raw on purpose — they belong to a country, not to us — so it lives in brand-mark/flag, exempt from C1 (see design-system/docs/16-marks.md).\n\nSelected=True paints bg/brand-alpha-10 with a bg/brand border; State=Focused is the ring and never replaces the selection: you can be focused without having chosen, and both have to be visible at once."
+  },
+  {
+    "g": "Forms",
+    "n": "ChoiceRow",
+    "v": 8,
+    "p": [
+      "Show Media",
+      "Show Description",
+      "Label",
+      "Description",
+      "State=Default|Hover|Focused|Disabled",
+      "Selected=False|True"
+    ],
+    "w": 768,
+    "h": 760,
+    "d": "A single choice among options, drawn as a row. It is a radio in row form: the choice is exclusive and the state lives in the group, so it carries the system Radio instead of drawing its own mark.\n\nShow media turns on the leading tile — use it when the options are kinds of thing rather than values, because an icon is what gets scanned before the words. Show description turns on the second line; a row with no description is a value, a row with one is a decision.\n\nState and Selected are separate axes and are visible at the same time. Focused is the two-ring shadow, the same one CurrencyRadio uses; it never replaces the selection."
+  },
+  {
+    "g": "Forms",
+    "n": "AccountRow",
+    "v": 8,
+    "p": [
+      "Show Badge",
+      "Show Description",
+      "Label",
+      "Description",
+      "Type=Fixed|User",
+      "State=Default|Hover|Focused|Disabled"
+    ],
+    "w": 768,
+    "h": 776,
+    "d": "One account in the onboarding list. The leading check is not a choice: it says the account is included, and it is always on — what varies is whether the user can take it out.\n\nType=Fixed is an account the product includes and nobody can remove (Efectivo). Type=User is one the person added: it carries the brand wash, the primary border and the remove button. The difference in weight is deliberate — it marks what is theirs.\n\nShow badge turns on the currency chip; Show description the second line. Focused is the two-ring shadow, clipped behind the node so it does not tint the translucent fill (see 19-choice-rows.md)."
+  },
+  {
+    "g": "Forms",
+    "n": "Segment",
+    "v": 3,
+    "p": [
+      "label",
+      "Show Leading Icon",
+      "State=Default|Selected|Hover"
+    ],
+    "w": 353,
+    "h": 32,
+    "d": "One segment of a segmented control. Compose them inside SegmentedControl — a segment on its own is not a control.\n\nSelected paints bg/brand with primary-foreground text; Default and Hover have no fill and differ only in text colour. There is deliberately NO Disabled state: the two segmented controls in the product (account type, currency) never disable a segment, and designing one would be inventing a state nobody asked for.\n\nBuilt 2026-08-17 from OnboardingView.tsx, where this control was hand-rolled twice out of raw button elements with two different paddings. This unifies them at 10/6; if a tighter one is genuinely needed it comes back as a Size property, not as a second drawing."
+  },
+  {
+    "g": "Forms",
+    "n": "SegmentedControl",
+    "v": 2,
+    "p": [
+      "Items=2|3"
+    ],
+    "w": 284,
+    "h": 116,
+    "d": "Segmented control: a small, flat set of mutually exclusive choices, all visible at once. Use it when the options are few and comparable; use Select when they are many or long.\n\nItems=3 is the account-type picker (Cuenta · Efectivo · Crédito), Items=2 is the currency picker (COP · USD). Segments FILL the track, so every option is the same width and the control reads as one object rather than as buttons in a row — resize the instance, do not resize the segments.\n\nGeometry: container radius/full, bg/chrome with a border/subtle hairline, padding spacing/4, gap spacing/2. The selected segment is bg/brand-alpha-20 with a border/brand-alpha-50 border and fg/on-subtle text — a wash, not a solid fill. A solid brand fill forces white text and makes the control the loudest thing on screen, which is wrong for a picker inside a form. Both states are 34px because the border is always drawn, transparent when inactive; otherwise selecting shifts its neighbours by 1px."
+  },
+  {
+    "g": "Forms",
+    "n": "Switch",
+    "v": 4,
+    "p": [
+      "State=Off|On",
+      "Disabled=False|True"
+    ],
+    "w": 264,
+    "h": 68,
+    "d": "Toggle for a boolean setting. State × Disabled.\n\nTrack 36×20, thumb 16. The off track is an alpha (black 20% light / white 30% dark) so it reads on any surface — a solid grey would disappear on a card and shout on the page background.\n\nUsed for “aplicar provisiones”, “gasto recurrente” and the deduction toggles. Never for an action — a switch commits immediately, it has no confirm step."
+  },
+  {
+    "g": "Forms",
+    "n": "Tab",
+    "v": 3,
+    "p": [
+      "Show Leading Icon",
+      "Show Badge",
+      "Status=Default|Selected|Disabled"
+    ],
+    "w": 128,
+    "h": 212,
+    "d": "Tab in the Mes view navigation: Ingresos · Gastos · Movimientos · Tributarias · Provisiones.\n\nThe last two only exist when the user has that deduction group enabled, so the strip must read correctly with three tabs or five. Do not design for five and hope."
+  },
+  {
+    "g": "Forms",
+    "n": "AccountColorSwatch",
+    "v": 36,
+    "p": [
+      "Color=orange|amber|lime|green|emerald|teal|sky|blue|indigo|purple|pink|rose",
+      "State=Default|Hover|Selected"
+    ],
+    "w": 764,
+    "h": 224,
+    "d": "One colour a user can pick for an account. The chip is the accent at full strength; the tint the avatar uses is a separate token and is not shown here, because it is invisible against a light canvas.\n\nGeometry: 44px hit target, 36px disc, radius/full. 44 rather than the 40 it started at — these sit close together and the minimum is a floor, not a target. The 4px inset is the gap the selection ring needs so a ring in the same accent still reads as a ring.\n\nSelected draws a 2px ring in the account’s own accent. Not the brand colour: the ring has to survive eleven other hues beside it. Hover is a neutral 1px border/strong ring — a hover ring in the accent is one step from reading as selected.\n\nEvery swatch needs an accessible name (Morado · Celeste · Esmeralda · Lima · Ámbar · Fucsia · Azul · Verde · Índigo · Naranja · Rosa · Turquesa). The name is not shown; a screen-reader user still has to hear one.\n\nOrdered by HUE ANGLE, measured from each accent’s Light value: orange 21° · amber 32 · lime 86 · green 142 · emerald 161 · teal 175 · sky 200 · blue 221 · indigo 243 · purple 271 · pink 333 · rose 347.\n\nThe order is not decoration. The neighbours are the pairs that measure closest — orange/amber at 11°, emerald/teal at 14 — and sitting them side by side is what lets someone SEE they are two colours, instead of meeting the second one six positions later and reading it as the first again."
+  },
+  {
+    "g": "Forms",
+    "n": "AccountColorPicker",
+    "v": 1,
+    "p": [],
+    "w": 372,
+    "h": 100,
+    "d": "The twelve account colours, two rows of six, spread across the full width of whatever holds them.\n\nNo caption and no colour name on screen. Choosing an account colour is a preference, not a task with a right answer, so nothing is lost when two hues are hard to tell apart — and the selection is carried by a check mark, not by colour, so 1.4.1 is satisfied without words. The names survive as each swatch’s accessible name.\n\nNo “in use” marker. Colours repeat across accounts by design; an unexplained dot on a choice with no wrong answer reads as a restriction.\n\nOrdered by hue — warm, green, cyan, blue, violet, pink — so the two closest pairs sit adjacent and read as two colours rather than as one met twice.\n\nTwo explicit rows, not a wrapping grid: wrap packs as many as fit and becomes eight per row at this width. Six per row is a decision.\n\nCarries no label of its own. Wrap it in Field."
+  },
+  {
+    "g": "Forms",
+    "n": "chart-range",
+    "v": 1,
+    "p": [],
+    "w": 315,
+    "h": 32,
+    "d": "The date range of an account chart — the strip of pills under it, the pattern every stocks app uses.\n\nIt composes Segment instances rather than minting a pill of its own. Segment’s own description says a segment on its own is not a control; this is one of the controls that composes them, the same relationship tab-navigation has with Tab. Selected therefore reuses Segment’s Selected — bg/brand-alpha-20 with border/brand-alpha-50 — so “selected” means the same thing here as in every other control in the file.\n\nTHE STRIP IS VARIABLE LENGTH, AND THAT IS THE RULE, NOT A CONVENIENCE. A range is rendered only when the account has at least one movement OLDER than that range’s start. Otherwise it draws exactly the same line as the shorter range beside it, and a control that cannot change what you see is not a choice — it is a promise the data does not keep. Alfredo’s call, 2026-08-24, and it is the reason the full seven can be offered at all.\n\nTwo of the seven need something the data model does not guarantee. `date` is OPTIONAL on an income (src/types), so an account whose movements only carry a month has no day-level series at all: 1D and 1S cannot be drawn for it and must not be offered. 5A waits the same way — the app is younger than five years, so the pill appears the first time an account is.\n\nThat is why this is a strip of instances and not a variant axis. Its length is data, not design, exactly as tab-navigation’s is (Tributarias and Provisiones only exist when the user enabled those groups) and action-chip’s is (only categories with data that month).\n\nAccountChart lost its static “Últimos 30 días” label the day this arrived. The strip now states the range, the axis already prints the dates, and a fixed label would have contradicted both the moment anyone picked 1A.\n\nOPEN — two copy choices Alfredo should settle: “1S” for the week (mirrors the reference’s 1W; “7D” is less ambiguous in Spanish) and “YTD”, kept as the acronym Colombian finance uses, where “Año” would be plainer.\n\nThe pills are 32 high, like every Segment. That clears 2.5.8 (24) and not 2.5.5 (44); it is the height the rest of the system already uses for this control, so changing it is a decision about Segment, not about this strip."
+  },
+  {
+    "g": "Feedback",
+    "n": "Empty",
+    "v": 2,
+    "p": [
+      "Media=Icon|None"
+    ],
+    "w": 816,
+    "h": 272,
+    "d": "Empty state for a list that has no entries yet. Media = Icon | None.\n\nThe dashed border is deliberate: it says “this container is real but has nothing in it”, which a solid border would not. It is the one place in the system that uses a dash.\n\nAlways carries an action. An empty state without a way out is a dead end."
+  },
+  {
+    "g": "Feedback",
+    "n": "ErrorState",
+    "v": 2,
+    "p": [
+      "Media=Icon|None"
+    ],
+    "w": 816,
+    "h": 272,
+    "d": "Something failed and has to be retried. Sibling of Empty: same anatomy, different intent.\n\nThe border is SOLID on purpose. Empty’s dashed border means “a real container, but empty” and is the only dash in the system; an error is not empty.\n\nThe media uses bg/danger-subtle with the icon in fg/danger — the tint, not the emphasis: a failed load is not a catastrophe.\n\nThe description reminds the reader that the data is still on the device. The app is local-first and a view failure puts nothing saved at risk."
+  },
+  {
+    "g": "Feedback",
+    "n": "Separator",
+    "v": 2,
+    "p": [
+      "Orientation=Horizontal|Vertical"
+    ],
+    "w": 297,
+    "h": 144,
+    "d": "A 1px rule on border/default.\n\nOnly for separating peers inside one container. Between containers the gap does the work — a rule there reads as a border that failed."
+  },
+  {
+    "g": "Feedback",
+    "n": "Skeleton",
+    "v": 1,
+    "p": [],
+    "w": 280,
+    "h": 52,
+    "d": "Loading placeholder. Uses bg/disabled — the same token as a disabled control, because both mean “here but not usable yet”.\n\nMatches the shape of what is coming, never a spinner. A spinner tells you to wait; a skeleton tells you what you are waiting for."
+  },
+  {
+    "g": "Feedback",
+    "n": "Spinner",
+    "v": 4,
+    "p": [
+      "Size=S|M",
+      "Color=Light|Dark"
+    ],
+    "w": 200,
+    "h": 72,
+    "d": "Work in progress after a user action. Does NOT replace Skeleton: a skeleton says what content is coming, and can only do so when there is a shape to anticipate. When someone presses a button there is nothing to anticipate — the only thing to confirm is that the click was handled.\n\nColour: prefer INHERITING. A spinner inside a control should take currentColor for the head and currentColor at 20% for the track, so it can never disagree with the label beside it — a danger outline button has a red label and neither fixed tone is red. spinner/head/on-solid and /default exist for a spinner standing alone with no label to inherit from.\n\nRenamed 2026-08-22: the tokens were on-dark / on-light, which named the BUTTON and not the surface — their values invert between modes, so on-dark was light in light mode. Dev found it.\n\nRotation: motion/duration/spin on motion/easing/spin."
+  },
+  {
+    "g": "Feedback",
+    "n": "Toast",
+    "v": 1,
+    "p": [],
+    "w": 153,
+    "h": 36,
+    "d": "Transient confirmation. Inverts against the page via bg/inverse + fg/on-inverse.\n\nCentred at the bottom, above the mobile nav and above any open sheet — it has to stay visible over a drawer.\n\nNo action, no dismiss button. If the user needs to do something about it, it is not a toast."
+  }
 ]

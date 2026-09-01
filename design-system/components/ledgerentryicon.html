@@ -34,8 +34,8 @@ h1{margin:0 0 4px;font-weight:800;font-size:24px;line-height:32px;letter-spacing
   <h1>LedgerEntryIcon</h1>
   <p class="crumb">Icons &amp; Avatar — Neto design system</p>
   <div class="spec">
-    <div class="axes"><div class="axis"><span class="k">Type</span><span class="v">income · egreso · transfer-in · transfer-out · ss · scheduled</span></div><div class="count">6 variantes · 360 × 80</div></div>
-    <div class="desc">The tinted bubble that opens every ledger row: a 32px circle in a subtle background token with a 16px glyph in the matching foreground token. Six types, one nested swap — putting them on LedgerRow instead would multiply every row state by six for a decision the entry already carries.
+    <div class="axes"><div class="axis"><span class="k">Type</span><span class="v">income · egreso · transfer-in · transfer-out · ss · scheduled · opening</span></div><div class="count">7 variantes · 416 × 80</div></div>
+    <div class="desc">The tinted bubble that opens every ledger row: a 32px circle in a subtle background token with a 16px glyph in the matching foreground token. Seven types, one nested swap — putting them on the row instead would multiply every row state by seven for a decision the entry already carries.
 
 Two glyphs do double duty. income and transfer-in share arrow-down-left; egreso and transfer-out share arrow-up-right. Colour is the only thing separating each pair inside the bubble, so it is never the only carrier in use: the row prints “Desde {cuenta}” or “Hacia {cuenta}” for a transfer and the entry description for the rest (WCAG 1.4.1).
 
@@ -43,13 +43,15 @@ scheduled OVERRIDES the type rather than sitting beside it. A scheduled entry sh
 
 Glyph contrast is measured against its own tint in both modes: Light floor 3.58:1 (income), Dark floor 5.84:1 (egreso). A filled glyph is a graphic object, so 1.4.11 applies.
 
+Type=opening is the seventh, added 2026-08-24, and it is the only one that is not a movement: it marks the account’s STARTING balance at the foot of the ledger. It takes the wallet glyph on the neutral tint — wallet because it is the account itself rather than anything that happened to it, and neutral because the five movement colours all mean a direction and this has none. It deliberately avoids landmark, which Icon Account already uses for a bank account, and the two arrows, the clock and the shield, which are taken.
+
 The glyph is 16 (icon-size/md), not the 14 the code passes. 14 is not a rung on the icon scale — 12 · 16 · 20 · 24 — and a one-off would flatten the scale for one row.
 
 OPEN for Dev: the ss bubble in code paints its glyph with --color-tax, which resolves to bg/tax (amber/400) and measures 1.61:1 on amber/50 in Light. That fails 1.4.11. Figma uses fg/tax (amber/700, 4.84:1); the published name is --color-tax-txt.</div>
   </div>
   <div class="modes">
-    <div><span class="lbl">Light</span><div data-theme="light" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición de 360×80px — la fuente visual es Figma.</div></div></div></div>
-    <div><span class="lbl">Dark</span><div data-theme="dark" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición de 360×80px — la fuente visual es Figma.</div></div></div></div>
+    <div><span class="lbl">Light</span><div data-theme="light" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición de 416×80px — la fuente visual es Figma.</div></div></div></div>
+    <div><span class="lbl">Dark</span><div data-theme="dark" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición de 416×80px — la fuente visual es Figma.</div></div></div></div>
   </div>
 </main>
 </body></html>

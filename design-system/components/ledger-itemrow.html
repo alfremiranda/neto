@@ -34,7 +34,7 @@ h1{margin:0 0 4px;font-weight:800;font-size:24px;line-height:32px;letter-spacing
   <h1>ledger-itemrow</h1>
   <p class="crumb">Rows — Neto design system</p>
   <div class="spec">
-    <div class="axes"><div class="axis"><span class="k">Device</span><span class="v">Desktop · Mobile</span></div><div class="axis"><span class="k">Flow</span><span class="v">Debit · Credit</span></div><div class="axis"><span class="k">State</span><span class="v">Default · Scheduled · Confirming · Opening</span></div><div class="count">12 variantes · 651 × 1042</div></div>
+    <div class="axes"><div class="axis"><span class="k">Device</span><span class="v">Desktop · Mobile</span></div><div class="axis"><span class="k">Flow</span><span class="v">Debit · Credit</span></div><div class="axis"><span class="k">State</span><span class="v">Default · Scheduled · Confirming · Opening</span></div><div class="count">12 variantes · 651 × 1046</div></div>
     <div class="desc">One entry in an account’s ledger. The five sibling rows each show one KIND of thing in its own view; this one shows whatever the account did, in date order, so a single row has to carry an income, an expense, both legs of a transfer and a social-security payment.
 
 That is why the leading mark is a nested LedgerEntryIcon swap and not an axis. Six entry types times the axes below would be sixty variants for a fact the entry already carries.
@@ -50,7 +50,11 @@ THE BADGE SITS ON THE METADATA LINE, not beside the description, and that is the
 
 State=Opening is the account’s STARTING balance, and it is a row rather than the strip it used to be above the list. That is the whole change: as a strip it had its own background and its own edges and read as a lid on the table; as a row it takes the same rules, the same left rail and the same right edge as the movements it explains, so the card is one table. It sits LAST, because the ledger runs newest first.
 
-It drops the two things a starting balance does not have — a type mark and row actions — and puts a spacer of the same width in each place, so the left rail and the amount column stay aligned with the rows above. It also carries no date and no running balance: at the opening, the amount IS the balance.
+It carries the same mark and the same trailing actions as every other row — Alfredo’s call on 2026-08-24, and the right one. The first build replaced both with blank spacers on the reasoning that a starting balance is not a movement, which kept the columns aligned but made the row read as a footer that had lost its furniture. Giving it a mark of its own (LedgerEntryIcon Type=opening: a wallet on the neutral tint) says what it is instead of saying what it is missing, and keeping the actions means the whole column behaves the same way down the card.
+
+It still carries no date and no running balance: at the opening, the amount IS the balance.
+
+OPEN for Dev — “eliminar” has no target here. A starting balance is a FIELD on the account (Account.startingBalance), not a ledger entry, so the pencil should open the account edit sheet and the bin has nothing to delete; clearing it means setting the field to null, which is an edit. Either the bin goes on this row or it means “borrar el saldo inicial”, and that is a product decision, not a design one.
 
 Flow is INERT on Opening and it is minted only at Flow=Debit. A starting balance has no direction. The alternative was two identical variants to keep the matrix square, which is a variant nobody maintains.
 

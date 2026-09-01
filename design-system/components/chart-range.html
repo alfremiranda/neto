@@ -1,0 +1,59 @@
+<!-- @dsCard group="Components · Forms" name="chart-range" subtitle="Sin variantes" -->
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Neto · chart-range</title>
+<link href="https://fonts.googleapis.com/css2?family=Rethink+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font-family:'Rethink Sans',ui-sans-serif,system-ui,sans-serif;background:var(--surface-wrap-default);
+ color:var(--foreground-default);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.page{max-width:1000px;margin:0 auto;padding:40px 28px 64px}
+h1{margin:0 0 4px;font-weight:800;font-size:24px;line-height:32px;letter-spacing:.5px}
+.crumb{margin:0 0 32px;font-size:11px;line-height:17px;color:var(--foreground-subtle)}
+.spec{display:flex;gap:32px;align-items:flex-start;flex-wrap:wrap;margin-bottom:28px}
+.axes{flex:0 0 200px}
+.axis{margin-bottom:8px}
+.axis .k{display:block;font-weight:600;font-size:10px;line-height:15px;letter-spacing:.5px;text-transform:uppercase;color:var(--foreground-subtle)}
+.axis .v{display:block;font-size:10px;line-height:15px;color:var(--foreground-default)}
+.count{font-size:10px;line-height:15px;color:var(--foreground-placeholder);margin-top:10px}
+.desc{flex:1 1 420px;min-width:280px;font-size:14px;line-height:21px;white-space:pre-line}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:820px){.modes{grid-template-columns:1fr}}
+.lbl{display:block;font-weight:600;font-size:10px;line-height:15px;letter-spacing:.5px;text-transform:uppercase;
+ color:var(--foreground-subtle);margin-bottom:6px}
+.stage{background:var(--surface-wrap-subtle);border-radius:var(--radius-lg);padding:20px;
+ display:flex;flex-direction:column;gap:14px;align-items:flex-start;min-height:90px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.note{font-size:10px;color:var(--foreground-placeholder)}
+</style>
+</head>
+<body>
+<main class="page">
+  <h1>chart-range</h1>
+  <p class="crumb">Forms — Neto design system</p>
+  <div class="spec">
+    <div class="axes"><div class="axis"><span class="k">Sin variantes</span><span class="v">315 × 32</span></div></div>
+    <div class="desc">The date range of an account chart — the strip of pills under it, the pattern every stocks app uses.
+
+It composes Segment instances rather than minting a pill of its own. Segment’s own description says a segment on its own is not a control; this is one of the controls that composes them, the same relationship tab-navigation has with Tab. Selected therefore reuses Segment’s Selected — bg/brand-alpha-20 with border/brand-alpha-50 — so “selected” means the same thing here as in every other control in the file.
+
+THE STRIP IS VARIABLE LENGTH, AND THAT IS THE RULE, NOT A CONVENIENCE. A range is rendered only when the account has at least one movement OLDER than that range’s start. Otherwise it draws exactly the same line as the shorter range beside it, and a control that cannot change what you see is not a choice — it is a promise the data does not keep. Alfredo’s call, 2026-08-24, and it is the reason the full seven can be offered at all.
+
+Two of the seven need something the data model does not guarantee. `date` is OPTIONAL on an income (src/types), so an account whose movements only carry a month has no day-level series at all: 1D and 1S cannot be drawn for it and must not be offered. 5A waits the same way — the app is younger than five years, so the pill appears the first time an account is.
+
+That is why this is a strip of instances and not a variant axis. Its length is data, not design, exactly as tab-navigation’s is (Tributarias and Provisiones only exist when the user enabled those groups) and action-chip’s is (only categories with data that month).
+
+AccountChart lost its static “Últimos 30 días” label the day this arrived. The strip now states the range, the axis already prints the dates, and a fixed label would have contradicted both the moment anyone picked 1A.
+
+OPEN — two copy choices Alfredo should settle: “1S” for the week (mirrors the reference’s 1W; “7D” is less ambiguous in Spanish) and “YTD”, kept as the acronym Colombian finance uses, where “Año” would be plainer.
+
+The pills are 32 high, like every Segment. That clears 2.5.8 (24) and not 2.5.5 (44); it is the height the rest of the system already uses for this control, so changing it is a decision about Segment, not about this strip.</div>
+  </div>
+  <div class="modes">
+    <div><span class="lbl">Light</span><div data-theme="light" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición de 315×32px — la fuente visual es Figma.</div></div></div></div>
+    <div><span class="lbl">Dark</span><div data-theme="dark" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición de 315×32px — la fuente visual es Figma.</div></div></div></div>
+  </div>
+</main>
+</body></html>
