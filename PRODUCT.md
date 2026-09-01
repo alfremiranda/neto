@@ -113,7 +113,9 @@ vencido. El pago se registra con **"Registrar pago"** desde la propia tarjeta de
 tributarias — no desde el flujo común de agregar un gasto, porque es una acción de una vez al
 mes. La tarjeta llena descripción, categoría y moneda, y muestra el valor causado como
 referencia; el usuario pone el **monto, la fecha y la cuenta que paga** (el causado es un punto
-de partida: la PILA redondea y el IBC se ajusta). Puede marcarse **recurrente**, y entonces el
+de partida: la PILA redondea y el IBC se ajusta). No pregunta categoría ni moneda: la PILA y la
+DIAN se pagan en COP, y la categoría no significa nada en una liquidación porque queda fuera de
+toda agregación por categoría. Puede marcarse **recurrente**, y entonces el
 período que liquida **avanza un mes** en cada copia.
 
 Un pago así **sale de la cuenta pero no cuenta como Gasto** — ya está contado como obligación

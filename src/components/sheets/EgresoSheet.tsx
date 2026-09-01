@@ -27,6 +27,7 @@ export function EgresoSheet() {
   const [recurring, setRecurring] = useState(false)
   const [account, setAccount]     = useState('')
   const [settles, setSettles]     = useState<Settles | undefined>(undefined)
+  const isSettlement = !!settles
   const [confirmingDelete, setConfirmingDelete] = useState(false)
 
   const decimals = currency === 'USD' ? 2 : 0
@@ -155,7 +156,13 @@ export function EgresoSheet() {
           />
         </div>
 
-        {/* Category select */}
+        {/* Category select.
+            Hidden for a settlement: it is offered nowhere it would mean anything —
+            settlements are excluded from the Gastos list, the category chart, the
+            annual breakdown and the KPI tooltip, and the account ledger renders no
+            category. Offering thirteen choices that all do the same nothing is worse
+            than not asking. The prefill still sets it, so the stored shape is intact. */}
+        {!isSettlement && (
         <div>
           <label htmlFor="eg-cat" className="field-label ts-label-base">Categoría</label>
           <Select value={category} onValueChange={setCategory}>
@@ -177,8 +184,21 @@ export function EgresoSheet() {
             </SelectContent>
           </Select>
         </div>
+        )}
 
-        {/* Amount + Currency */}
+        {/* Amount + Currency.
+            The currency picker is hidden for a settlement: the PILA and the DIAN are
+            paid in pesos, so COP is a fact of the obligation, not a choice. Paying from
+            a USD account still works — the ledger converts at the month's TRM. */}
+        {isSettlement ? (
+          <MoneyInput
+            id="eg-amt"
+            label="Monto"
+            currency={currency}
+            value={amt.display}
+            onChange={amt.handleChange}
+          />
+        ) : (
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label htmlFor="eg-cur" className="field-label ts-label-base">Moneda</label>
@@ -200,6 +220,7 @@ export function EgresoSheet() {
             onChange={amt.handleChange}
           />
         </div>
+        )}
 
         {/* Date */}
         <div>

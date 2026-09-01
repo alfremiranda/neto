@@ -3,7 +3,7 @@ import { useFinanceStore } from '@/store/financeStore'
 import { useMonthData } from '@/hooks/useMonthData'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useDeductionGroups } from '@/hooks/useDeductionGroups'
-import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase } from '@/lib/calc'
+import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase, settledEgresos } from '@/lib/calc'
 import { COP, USD, localToday } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { Card } from '@/components/ui/card'
@@ -164,8 +164,12 @@ export function KPIStrip({ onNavigate }: { onNavigate?: (tab: string) => void } 
     })),
   ]
 
-  // Group egresos by category
-  const egresosByCategory = (month.egresos || []).reduce<Record<string, number>>((acc, e) => {
+  // Group egresos by category — through settledEgresos, like every other aggregation,
+  // so the breakdown adds up to the KPI it explains. It used to read month.egresos raw,
+  // which put savings, future-dated entries and (once settlements existed) obligation
+  // payments into a tooltip whose total excluded them.
+  const egresosByCategory = settledEgresos(month.egresos || [], localToday())
+    .reduce<Record<string, number>>((acc, e) => {
     const amtCOP = e.currency === 'USD' ? e.amount * month.trm : e.amount
     if (amtCOP === 0) return acc
     const cat = egresoCategory(e.category)
