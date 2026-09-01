@@ -1,7 +1,8 @@
 # 10 — AccountChart and AccountSummaryCard (the account page)
 
-Status: **organised in Figma. No ticket to Dev.** Three decisions are open (§5) and there is a
-blocker that is not a design one (§4).
+Status: **complete in Figma and handed to Dev on 2026-08-24** (`TASK-2026-08-24e`). The flow
+Alfredo approved is §10. Two things are still open and NEITHER is a design decision: where the
+detail view lives (§4) and which tooltip language wins (§5a).
 
 Figma: page `Components · Cards` (`302:10368`).
 Sets: `AccountChart` (`379:12672`), `AccountSummaryCard` (`379:12631`), both already inside their
@@ -118,9 +119,10 @@ light mode). `TrendChart` in the code draws it with `--popover`: same-tone surfa
 `rounded-xl`. Two different languages for the same object. One has to be chosen before
 implementing, or the app will have two kinds of tooltip.
 
-**b. The account icon's colour.** Figma paints it purple (`purple/500`) across all four types.
-`AccountCardView` paints it grey (`text-muted-foreground`). I left the token with the purple you
-drew, but one of the two is out of date.
+**b. ~~The account icon's colour.~~ RESOLVED 2026-08-24.** Neither purple nor grey: it is an
+`AccountAvatar` carrying the account's own hue, which is what `25-account-color.md` §2 always
+said and what `AccountCardView` already rendered. `AccountSummaryCard`'s fixed
+`account-summary-card/icon/foreground` is retired and has no consumer left.
 
 **c. `Bank Account` hides "Intereses" and still shows the rate.** The variant hides the secondary
 metric and its meta line still says `3.5% a.a. · ≈ COP 0,00/mes`. `Savings` shows both. It may be
@@ -203,3 +205,37 @@ Until they exist, the account page cannot be implemented in full no matter how r
 
 Where the route lives, how it is navigated to, and whether `CuentasView` keeps the card grid or
 becomes an index. All of that is product and architecture.
+
+---
+
+## 10. The flow as shipped (2026-08-24)
+
+Both screens compose the same three pieces, in this order:
+
+    breadcrumb  ·  AccountSummaryCard  ·  LedgerContainer
+
+`Desktop · 2 · Cuenta (detalle)` (`397:359`) and `Mobile · 2 · Cuenta (detalle)` (`397:16540`),
+page `Page - Accounts` (`396:16108`).
+
+| Piece | Figma | What it owns |
+|---|---|---|
+| `AccountSummaryCard` | `379:12631` · 8 | identity, the headline figures, the chart and the range strip |
+| `AccountChart` | `379:12672` · 4 | the series. Lost its fixed "Últimos 30 días" label |
+| `chart-range` | `938:2` · 1 | the date range, as a variable-length strip of `Segment` |
+| `LedgerContainer` | `930:2` · 1 | the card and a `Rows` slot. **No header** |
+| `ledger-itemrow` | `857:332` · 12 | one movement, plus `State=Opening` for the starting balance |
+| `LedgerEntryIcon` | `849:23160` · 7 | the entry mark, including `Type=opening` |
+| `AccountAvatar` | `817:23064` · 24 | the account's colour, and the only thing that carries it |
+
+**Three things this flow decided by removing something**, which is the part worth keeping:
+
+1. **The ledger has no header.** Four of its six items repeated the card above it; of the other
+   two, the movement count was noise and Entradas/Salidas summed the whole history while sitting
+   under a chart labelled "last 30 days".
+2. **The card has no colour banner.** `25-account-color.md` §2 forbids it in as many words, and
+   the banner had been contradicting that doc for three days.
+3. **The type badge is text, not a pill.** Once the avatar drew the type glyph, the outlined chip
+   was a border around a single word.
+
+Each removal was found by putting the thing on the real screen, never by reading the component in
+its own `doc:` frame — which is `§A6c`, three times in two days.

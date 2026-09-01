@@ -2,16 +2,19 @@
 
 Última actualización: **2026-08-24**. Trabajo en vuelo al cierre de sesión.
 
-**`unpushed: 5f12f601` + el commit que trae este handoff** — Diseño no
-puede pushear. `credential-osxkeychain` es un binario de macOS que no existe en la VM de Linux
-donde corro; `git fetch` funciona (lectura anónima), `git push` no puede autenticar. Dev barre.
+**`unpushed: 68525898` · `3a3c181b` · `5f76774e` · `2f0c1390` + el commit que trae este
+handoff** — Diseño no puede pushear. `credential-osxkeychain` es un binario de macOS que no
+existe en la VM de Linux donde corro; `git fetch` funciona (lectura anónima), `git push` no puede
+autenticar. Dev barre. Verificado con `git merge-base --is-ancestor`, no supuesto.
 
-`b7cc2b55` y `57dd0adf` los barrió Dev mientras escribía esto. Verificado con
-`git merge-base --is-ancestor`, no supuesto.
+**La página de cuenta se cerró y se entregó** el 24 con `TASK-2026-08-24e`, una sola nota que
+reemplaza las cinco del día (archivadas en `docs/inbox/dev/done/`). Tres se contradecían entre sí
+porque el diseño cambió tres veces la misma tarde; mandar las cinco habría sido mandar el ruido y
+no la decisión. Especificación en `design-system/docs/10-account-page.md` §10.
 
-**Dev está trabajando en el árbol ahora mismo** (`src/components/views/CuentasView.tsx` +
-`check-tmp*.mjs`, `shot-*.png`), implementando el restack de `ledger-itemrow`. Nada de eso está
-en mis commits: sólo añadí `design-system/` y `docs/`.
+Dos cosas siguen abiertas ahí y **ninguna es de diseño**: dónde vive la vista de detalle (no hay
+router, pero `CuentasView` ya tiene `selectedId`) y cuál de los dos idiomas de tooltip gana —
+Figma dibuja burbuja invertida, `TrendChart.tsx:269` usa `--popover`.
 
 ## Cómo le respondo a Alfredo (2026-08-21)
 
