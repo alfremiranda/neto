@@ -9,6 +9,7 @@ import { COP, USD, fmtDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { IconButton } from '@/components/ui/icon-button'
+import { Badge } from '@/components/ui/Badge'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty'
 import type { Account } from '@/types'
 import type { LedgerEntry } from '@/lib/calc'
@@ -85,35 +86,43 @@ function LedgerRow({ entry, account, accounts }: { entry: LedgerEntry; account: 
 
   return (
     <>
-      <div className={cn('flex items-center gap-3 min-h-[62px] py-1.5 border-b border-[var(--border)] last:border-0', entry.scheduled && 'opacity-60')}>
+      {/* Mobile restacks into three lines — amounts, description, metadata — because at
+          the account page's 346px a single row cannot hold a description, a date, the
+          104 amount column, the mark and an action without truncating something.
+          Stacking gives the text the full width. Desktop keeps one line, where the
+          amount column stays pinned to 104 so a leading "+" never shifts it between
+          neighbouring rows: a ledger is read down its right edge.
+          Flex wrapping happens after ordering, so `order` drives both layouts. */}
+      <div className={cn('flex flex-wrap sm:flex-nowrap items-center gap-x-3 gap-y-1 min-h-[62px] py-1.5 border-b border-[var(--border)] last:border-0', entry.scheduled && 'opacity-60')}>
         {/* Icon bubble */}
-        <div className={cn('w-8 h-8 rounded-full flex items-center justify-center shrink-0', entry.scheduled ? 'bg-muted' : bg)}>
+        <div className={cn('order-1 w-8 h-8 rounded-full flex items-center justify-center shrink-0', entry.scheduled ? 'bg-muted' : bg)}>
           {entry.scheduled ? <Clock size={16} className="text-muted-foreground" /> : <Icon size={16} className={color} />}
         </div>
 
-        {/* Description + date */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5 min-w-0">
-            <span className="ts-body-base-emphasis truncate">{desc}</span>
-            {entry.scheduled && (
-              <span className="shrink-0 ts-label-badge text-[var(--color-tax-txt)] bg-[var(--color-tax)]/10 px-1.5 py-0.5 rounded-full">
-                Programado
-              </span>
-            )}
-          </div>
-          <div className="ts-body-small text-muted-foreground">{fmtDate(entry.date)} · {fmtMonth(entry.monthKey)}</div>
-        </div>
-
         {/* Amount + running balance */}
-        <div className="w-[104px] text-right shrink-0">
+        <div className="order-2 sm:order-3 ml-auto sm:ml-0 sm:w-[104px] text-right shrink-0">
           <div className={cn('ts-amount-base', isCredit ? 'text-[var(--color-provision)]' : 'text-foreground')}>
             {isCredit ? '+' : ''}{fmt(entry.convertedAmount)}
           </div>
           <div className="ts-amount-micro text-muted-foreground">{fmt(runningBalance)}</div>
         </div>
 
+        {/* Description + metadata.
+            The badge sits on the metadata line, not beside the description. It used to
+            sit alongside, which forced a width cap on the description so the badge could
+            never be squeezed — and a cap authored for one width truncates at another.
+            Description alone, filling and truncating with nothing pinned; badge and date
+            below as chips that hug their content, so it adapts to any width. */}
+        <div className="order-4 sm:order-2 w-full sm:w-auto sm:flex-1 min-w-0">
+          <div className="ts-body-base-emphasis truncate">{desc}</div>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="ts-body-small text-muted-foreground">{fmtDate(entry.date)} · {fmtMonth(entry.monthKey)}</span>
+            {entry.scheduled && <Badge tone="warning">Programado</Badge>}
+          </div>
+        </div>
+
         {/* Desktop actions */}
-        <div className="hidden sm:flex items-center gap-1 shrink-0">
+        <div className="order-3 sm:order-4 hidden sm:flex items-center gap-1 shrink-0">
           <IconButton variant="ghost" size="lg" onClick={handleEdit} aria-label="Editar">
             <Pencil size={12} />
           </IconButton>
@@ -139,16 +148,17 @@ function LedgerRow({ entry, account, accounts }: { entry: LedgerEntry; account: 
           )}
         </div>
 
-        {/* Mobile action */}
-        <Button
+        {/* Mobile action — 44px (WCAG 2.5.5 touch target), matching the sibling rows.
+            Desktop stays at 36, where there is a pointer. */}
+        <IconButton
           variant="ghost"
-          size="icon-sm"
-          className="sm:hidden shrink-0"
+          size="xl"
+          className="order-3 sm:order-4 sm:hidden shrink-0"
           onClick={() => setSheetOpen(true)}
           aria-label="Opciones"
         >
-          <MoreVertical size={16} />
-        </Button>
+          <MoreVertical size={20} />
+        </IconButton>
       </div>
 
       <RowActionsSheet
