@@ -342,6 +342,16 @@ Still open:
   once in a summary card above and once in the borrowed title. Closes **A3/A4** of phase 1.5's
   block A.
 
+  It shipped with a header and lost it the same day, which is `§A6c` a second time. Four of the
+  header's six items already sat in the card above. Of the two that did not, Alfredo cut both:
+  the movement count was noise on a list you can see, and **Entradas/Salidas summed the entire
+  ledger while sitting under a chart labelled "Últimos 30 días"** — two time scales on one
+  screen, neither of them saying so. That one is a defect in the CODE too (`CuentasView.tsx`
+  sums every month and labels nothing), not just in the mock.
+
+  With the header gone both of its axes had nothing left to switch, so a four-variant set
+  became one component.
+
 These come **after** Phase 1 on purpose. New components mint new tokens — Alfredo said as much —
 and minting them under the old naming means renaming them twice.
 

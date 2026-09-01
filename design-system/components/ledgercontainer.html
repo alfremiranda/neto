@@ -1,4 +1,4 @@
-<!-- @dsCard group="Blocks" name="LedgerContainer" subtitle="Rows · Show Opening Balance · Device · Balance" -->
+<!-- @dsCard group="Blocks" name="LedgerContainer" subtitle="Rows" -->
 <!DOCTYPE html>
 <html lang="es" data-theme="light">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -34,22 +34,21 @@ h1{margin:0 0 4px;font-weight:800;font-size:24px;line-height:32px;letter-spacing
   <h1>LedgerContainer</h1>
   <p class="crumb">Containers — Neto design system</p>
   <div class="spec">
-    <div class="axes"><div class="axis"><span class="k">Rows</span><span class="v">slot</span></div><div class="axis"><span class="k">Show Opening Balance</span><span class="v">slot</span></div><div class="axis"><span class="k">Device</span><span class="v">Desktop · Mobile</span></div><div class="axis"><span class="k">Balance</span><span class="v">Deuda · Saldo</span></div><div class="count">4 variantes · 1040 × 1944</div></div>
-    <div class="desc">The ledger card of an account page: who the account is, what it is worth now, and every movement in date order.
+    <div class="axes"><div class="axis"><span class="k">Rows</span><span class="v">slot</span></div><div class="count">1 variantes · 976 × 390</div></div>
+    <div class="desc">The ledger card of an account page: every movement, in date order, and nothing else.
 
-IT EXISTS BECAUSE THE PAGE WAS BORROWING IncomeContainer, which is the Ingresos tab of the Mes view. That component opens with an icon and a title (“Ingresos del mes”) and closes with a converted gross total — two things a ledger has neither of. An account page needs none of it: the account IS the title, and the number that matters is the running balance, not a monthly sum. Borrowing it also meant the header could not carry the account, the movement count or a credit card’s cut and payment days, so the page put them in a second card above and said the account’s name twice.
+IT EXISTS BECAUSE THE PAGE WAS BORROWING IncomeContainer, which is the Ingresos tab of the Mes view. That component opens with an icon and the title “Ingresos del mes” and closes with a converted monthly gross — two things a ledger has neither of. The account IS the title, and the number that matters is the running balance, not a monthly sum.
 
-Four things the ledger needs that the Ingresos tab does not:
-· the account’s identity and an edit affordance IN the header;
-· Entradas and Salidas as a pair, so the balance below them is checkable rather than asserted;
-· an opening-balance strip, because a running balance is meaningless without the number it started from;
-· rows separated by a RULE, not by a gap — a ledger is a table, and gaps between rows read as separate cards.
+IT HAS NO HEADER, and losing it is the point. The first build gave it one, and putting it on the real screen showed that four of its six items already sat in the AccountSummaryCard above: the account name, the edit affordance, “16% usado · Corte 4 · Pago 20”, and the current debt. Of the two that did not repeat, Alfredo cut both on 2026-08-24 and was right about each:
 
-Balance is a VARIANT, not a text override, and that is the whole reason it is an axis. A credit card’s headline is a debt: it reads “Deuda actual” and paints fg/expense. Everything else reads “Saldo actual” in fg/default. A colour cannot be carried by overriding a string, so the two have to be different variants.
+· the movement count was noise on a list you can see;
+· Entradas and Salidas summed the ENTIRE ledger, every month of it, and sat directly under a chart labelled “Últimos 30 días”. Two different time scales on one screen, neither of them saying so. A figure whose period is invisible is worse than no figure, because it invites a comparison that does not hold.
 
-Device=Mobile hides the Entradas/Salidas pair and lets the header stack, which is what the code does (hidden sm:flex). The figures do not disappear on a phone, they move into the movements themselves.
+With the header gone BOTH AXES LOST THEIR REASON. Balance=Deuda|Saldo existed to switch the headline label and its colour; Device existed to hide the Entradas/Salidas pair on a phone. Neither has anything left to switch, so this is one component and not a set of four. A variant that changes nothing is a variant nobody maintains. Device now lives entirely in the rows, where it belongs.
 
-Rows arrive through the Rows SLOT, which prefers ledger-itemrow and accepts nothing else. Each row draws its own bottom rule and the LAST one is switched off by hand: CSS has last:border-0 and Figma has no last-child selector, so that one override is the price and it must be re-applied whenever the number of rows changes.
+The opening balance is no longer a strip above the list: it is a ledger-itemrow in State=Opening, the LAST row, because the ledger runs newest first. That is what makes the card one table instead of a table with a lid — it takes the same rules, the same left rail and the same right edge as the movements it explains.
+
+Rows arrive through the Rows SLOT, which prefers ledger-itemrow and accepts nothing else. Each row draws its own bottom rule and the last one is switched off by hand: CSS has last:border-0 and Figma has no last-child selector, so that override must be re-applied whenever the number of rows changes.
 
 The sample figures reconcile, on purpose: 1.541.300 opening + 543.200 out − 800.000 in = 1.284.500, and the scheduled entry does not move the balance. Sample content that does not add up cannot be used to review anything.</div>
   </div>
