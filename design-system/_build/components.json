@@ -334,6 +334,20 @@
  },
  {
   "g": "Containers",
+  "n": "LedgerContainer",
+  "v": 4,
+  "p": [
+   "Rows",
+   "Show Opening Balance",
+   "Device=Desktop|Mobile",
+   "Balance=Deuda|Saldo"
+  ],
+  "w": 1040,
+  "h": 1944,
+  "d": "The ledger card of an account page: who the account is, what it is worth now, and every movement in date order.\n\nIT EXISTS BECAUSE THE PAGE WAS BORROWING IncomeContainer, which is the Ingresos tab of the Mes view. That component opens with an icon and a title (“Ingresos del mes”) and closes with a converted gross total — two things a ledger has neither of. An account page needs none of it: the account IS the title, and the number that matters is the running balance, not a monthly sum. Borrowing it also meant the header could not carry the account, the movement count or a credit card’s cut and payment days, so the page put them in a second card above and said the account’s name twice.\n\nFour things the ledger needs that the Ingresos tab does not:\n· the account’s identity and an edit affordance IN the header;\n· Entradas and Salidas as a pair, so the balance below them is checkable rather than asserted;\n· an opening-balance strip, because a running balance is meaningless without the number it started from;\n· rows separated by a RULE, not by a gap — a ledger is a table, and gaps between rows read as separate cards.\n\nBalance is a VARIANT, not a text override, and that is the whole reason it is an axis. A credit card’s headline is a debt: it reads “Deuda actual” and paints fg/expense. Everything else reads “Saldo actual” in fg/default. A colour cannot be carried by overriding a string, so the two have to be different variants.\n\nDevice=Mobile hides the Entradas/Salidas pair and lets the header stack, which is what the code does (hidden sm:flex). The figures do not disappear on a phone, they move into the movements themselves.\n\nRows arrive through the Rows SLOT, which prefers ledger-itemrow and accepts nothing else. Each row draws its own bottom rule and the LAST one is switched off by hand: CSS has last:border-0 and Figma has no last-child selector, so that one override is the price and it must be re-applied whenever the number of rows changes.\n\nThe sample figures reconcile, on purpose: 1.541.300 opening + 543.200 out − 800.000 in = 1.284.500, and the scheduled entry does not move the balance. Sample content that does not add up cannot be used to review anything."
+ },
+ {
+  "g": "Containers",
   "n": "ProvisionContainer",
   "v": 1,
   "p": [],

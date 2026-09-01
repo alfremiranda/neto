@@ -335,7 +335,12 @@ Still open:
 
 - the three annual charts — 748 lines of hand-built SVG with no Figma counterpart;
 - the per-category distribution bar (`EgresosCard.tsx:67`), which is NOT `DistribucionCard`;
-- a transactions container to hold the rows.
+- ~~a transactions container to hold the rows~~ — **`LedgerContainer`, 2026-08-24.** Both account
+  screens were borrowing `IncomeContainer`, the Ingresos tab of the Mes view: it opens with an
+  icon and the title “Ingresos del mes” and closes with a converted monthly gross, and a ledger
+  has neither. Because its header could not carry the account, the page named the account twice —
+  once in a summary card above and once in the borrowed title. Closes **A3/A4** of phase 1.5's
+  block A.
 
 These come **after** Phase 1 on purpose. New components mint new tokens — Alfredo said as much —
 and minting them under the old naming means renaming them twice.
