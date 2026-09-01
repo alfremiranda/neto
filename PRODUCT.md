@@ -107,6 +107,21 @@ Cuatro tipos, cada uno con su semántica:
 - **FSS (Fondo de Solidaridad)** se inyecta automáticamente cuando el IBC ≥ 4 SMMLV, con su tabla de rangos y referencia legal (Ley 100 de 1993, art. 25).
 - **Calendario de pago de SS**: tabla de los 15 rangos de últimos dígitos de cédula/NIT con las **fechas hábiles calculadas** del mes de pago.
 
+**Causación vs. pago.** Las obligaciones se **causan** en el mes que las genera y se **pagan**
+en otro: la SS de julio se paga en agosto (mes vencido), la retención se paga a la DIAN año
+vencido. Al registrar ese pago se marca **"Liquida una obligación"** con el período que cubre.
+Un pago marcado **sale de la cuenta pero no cuenta como Gasto** — ya está contado como
+obligación del mes que la causó; sin la marca se sumaba dos veces y subestimaba el neto libre.
+Aparece en el movimiento de la cuenta, no en la lista de Gastos.
+
+Las dos cifras se conservan a propósito: la causada es la estimación con la que se reserva, y
+la pagada es el hecho — casi nunca coinciden, porque la PILA redondea y el IBC se ajusta.
+
+**Reserva de retención.** Una transferencia hacia una cuenta de ahorro puede marcarse como
+**reserva para retención** del año. El monto reservado se cuenta de esas transferencias
+marcadas, no del saldo de la cuenta: si hay ahorro personal en la misma cuenta, el saldo diría
+que estás cubierto cuando no lo estás.
+
 ### 4.7 Provisiones
 Primas (8.33%), Cesantías (8.33%) y Vacaciones (4.17%) sobre el ingreso bruto con provisiones activadas. Son configurables y se pueden agregar provisiones propias.
 
@@ -227,7 +242,8 @@ Primas       = 8.33% × base
 Cesantías    = 8.33% × base
 Vacaciones   = 4.17% × base
 
-Gastos       = Σ gastos, excluyendo ahorros y los de fecha futura
+Gastos       = Σ gastos, excluyendo ahorros, liquidaciones de obligaciones
+               y los de fecha futura
                (mismo criterio en las cifras mensuales y anuales)
 Neto libre   = bruto − obligaciones − provisiones − gastos
 ```

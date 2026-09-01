@@ -352,7 +352,10 @@ function EgresosCardContent() {
   }, [confirmId])
 
   const month    = useMonthData()
-  const egresos  = month.egresos || []
+  // Obligation settlements are deliberately absent: paying July's SS is not an August
+  // expense, and a row that sits in Gastos without adding to the total reads as a bug.
+  // The movement is still visible where the money actually moved — the account ledger.
+  const egresos  = (month.egresos || []).filter(e => !e.settles)
   const accounts = getAccounts()
 
   // Categories that have at least one egreso this month

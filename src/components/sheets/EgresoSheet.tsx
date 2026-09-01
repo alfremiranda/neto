@@ -10,10 +10,15 @@ import { DELETED_ACCOUNT_LABEL } from '@/lib/accountLabel'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useSettingsStore } from '@/store/settingsStore'
+import { pendingSS } from '@/lib/obligations'
+import { MONTH_NAMES } from '@/data/deductions'
+import type { Settles } from '@/types'
 import { DatePicker } from '@/components/ui/DatePicker'
 
 export function EgresoSheet() {
-  const { addEgreso, updateEgreso, removeEgreso, getCurrentMonth, getAccounts } = useFinanceStore()
+  const { addEgreso, updateEgreso, removeEgreso, getCurrentMonth, getAccounts, db, curKey, getSMMLV } = useFinanceStore()
+  const deductions = useSettingsStore(st => st.deductions)
   const { closeSheet, showToast, editingEgresoId, setEditingEgreso, activeSheet } = useUIStore()
 
   const isEditing = editingEgresoId !== null
@@ -25,6 +30,7 @@ export function EgresoSheet() {
   const [date, setDate]           = useState(localToday())
   const [recurring, setRecurring] = useState(false)
   const [account, setAccount]     = useState('')
+  const [settles, setSettles]     = useState<Settles | undefined>(undefined)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
 
   const decimals = currency === 'USD' ? 2 : 0
@@ -41,12 +47,14 @@ export function EgresoSheet() {
         setDate(e.date || '')
         setRecurring(e.recurring ?? false)
         setAccount(e.account ?? '')
+        setSettles(e.settles)
         amt.setValue(e.amount)
       }
     } else {
       setDesc('')
       setCategory('vivienda')
       setCurrency('COP')
+      setSettles(undefined)
       setDate(localToday())
       setRecurring(false)
       setAccount('')
@@ -67,7 +75,7 @@ export function EgresoSheet() {
   function handleSubmit() {
     if (!desc.trim()) { showToast('Escribe una descripción'); return }
     if (!amt.numericValue && !isEditing) { showToast('Ingresa el valor'); return }
-    const payload = { desc: desc.trim(), category, amount: amt.numericValue, currency, date, recurring, account: account || undefined }
+    const payload = { desc: desc.trim(), category, amount: amt.numericValue, currency, date, recurring, account: account || undefined, settles }
     if (isEditing) {
       updateEgreso(editingEgresoId!, payload)
       showToast('Egreso actualizado')
@@ -79,6 +87,32 @@ export function EgresoSheet() {
     setEditingEgreso(null)
     closeSheet()
   }
+
+  // What this payment could be settling: every SS month already due and unpaid, plus
+  // this year's retención. An egreso being edited keeps its own mark selectable even
+  // though paying it removed it from the pending list — otherwise re-saving would
+  // silently drop the link (same reason the account select keeps an orphan entry).
+  const settlesOptions = (() => {
+    const opts = pendingSS(db, deductions, getSMMLV, curKey).map(p => {
+      const [py, pm] = p.period.split('-').map(Number)
+      return { value: `ss:${p.period}`, label: `Seguridad social · ${MONTH_NAMES[pm - 1]} ${py}` }
+    })
+    const year = curKey.split('-')[0]
+    opts.push({ value: `retencion:${year}`, label: `Retención en la fuente · ${year}` })
+
+    const current = settles && `${settles.kind}:${settles.period}`
+    if (current && !opts.some(o => o.value === current)) {
+      const [k, period] = current.split(':')
+      const [py, pm] = period.split('-').map(Number)
+      opts.unshift({
+        value: current,
+        label: k === 'ss'
+          ? `Seguridad social · ${MONTH_NAMES[pm - 1]} ${py}`
+          : `Retención en la fuente · ${period}`,
+      })
+    }
+    return opts
+  })()
 
   return (
     <SheetBase
@@ -197,6 +231,40 @@ export function EgresoSheet() {
                 ))}
             </SelectContent>
           </Select>
+        </div>
+
+        {/* Settles an obligation.
+            SS and retención are already counted the month they accrue, so paying them is
+            not a new expense — it discharges a liability. Marking it here keeps the money
+            leaving the account while stopping it from being added to the month a second
+            time. See the Settles doc in types. */}
+        <div>
+          <label htmlFor="eg-settles" className="field-label ts-label-base">
+            Liquida una obligación <span className="ts-detail-large text-muted-foreground">(opcional)</span>
+          </label>
+          <Select
+            value={settles ? `${settles.kind}:${settles.period}` : '_none'}
+            onValueChange={v => {
+              if (v === '_none') { setSettles(undefined); return }
+              const [kind, period] = v.split(':')
+              setSettles({ kind: kind as Settles['kind'], period })
+            }}
+          >
+            <SelectTrigger id="eg-settles" className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="_none">No — es un gasto del mes</SelectItem>
+              {settlesOptions.map(o => (
+                <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {settles && (
+            <p className="ts-body-small text-muted-foreground mt-1.5">
+              Sale de la cuenta, pero no se suma a los gastos del mes — ya está contada como obligación.
+            </p>
+          )}
         </div>
 
         {/* Recurring toggle */}

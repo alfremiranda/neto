@@ -1,3 +1,25 @@
+/* ─── Obligations: accrual vs. cash ──────────────────────────
+ * SS and retención are ACCRUED as formulas on a month's income, and PAID later —
+ * SS one month in arrears (July's SS is paid in August), retención once a year out
+ * of a reserve. Both facts matter and they differ: the accrual is the estimate you
+ * reserve against, the payment is what actually left the account (PILA rounds, the
+ * IBC gets adjusted). The bug was adding them together — a payment registered as a
+ * plain Gasto landed in the month's total on top of that month's own accrual.
+ *
+ * `settles` marks a movement as discharging an obligation already counted, so it
+ * debits the account but never counts as an expense — same reasoning that already
+ * excludes `category === 'ahorro'` in settledEgresos.
+ */
+export type ObligationKind = 'ss' | 'retencion'
+
+export interface Settles {
+  kind: ObligationKind
+  /** Period being settled: 'YYYY-MM' for SS (monthly, in arrears), 'YYYY' for
+   *  retención (annual). Recording WHICH period a payment covers is what makes
+   *  "mes vencido" a fact the app knows instead of one the user remembers. */
+  period: string
+}
+
 export interface Income {
   id: number
   desc: string
@@ -20,6 +42,7 @@ export interface Egreso {
   recurring?: boolean
   confirmed?: boolean  // false = seeded from prev month, needs amount verification
   account?: string  // account ID this egreso debits (optional)
+  settles?: Settles  // discharges an already-accrued obligation → debits the account, never counts as a Gasto
   updatedAt?: number  // ms of last local edit — per-entry LWW for cross-device merge
 }
 
@@ -33,6 +56,11 @@ export interface Transfer {
   toCurrency: 'USD' | 'COP'
   trm: number | null
   toAmount: number
+  // Setting money aside toward a future obligation is NOT settling it — the DIAN
+  // hasn't been paid — so it gets its own field. Marking the transfer (rather than
+  // reading the destination account's balance) is what keeps the reserve figure
+  // honest when personal savings share that account.
+  reserves?: Settles
   updatedAt?: number  // ms of last local edit — per-entry LWW for cross-device merge
 }
 

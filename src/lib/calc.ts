@@ -51,13 +51,18 @@ export function calcFSS(ibc: number, smmlv: number): { amount: number; pct: numb
 /**
  * The egresos that actually count toward totals:
  *  - savings ('ahorro') are reallocations to your own accounts, not expenses;
+ *  - obligation settlements (`settles`) discharge a liability the month already
+ *    counted as a deduction — paying July's SS in August is not an August expense,
+ *    and adding it to one was double-counting SS in every steady-state month;
  *  - future-dated ("programado") ones don't count until their date arrives.
- * The cutoff defaults to today so monthly and annual figures never diverge —
- * every aggregation must go through here.
+ * All three still move the account balance; buildLedger and computeAccountBalance
+ * deliberately don't filter here. The cutoff defaults to today so monthly and
+ * annual figures never diverge — every aggregation must go through here.
  */
 export function settledEgresos(egresos: Egreso[] = [], cutoffDate: string = localToday()): Egreso[] {
   return (egresos || [])
     .filter(e => e.category !== 'ahorro')
+    .filter(e => !e.settles)
     .filter(e => !e.date || e.date <= cutoffDate)
 }
 

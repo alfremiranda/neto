@@ -12,7 +12,8 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { DatePicker } from '@/components/ui/DatePicker'
 import { cn } from '@/lib/utils'
-import type { Account } from '@/types'
+import { Switch } from '@/components/ui/switch'
+import type { Account, Settles } from '@/types'
 
 // ─── Balance preview row ──────────────────────────────────────────────────────
 
@@ -68,9 +69,12 @@ export function TransferSheet() {
   const [trmDisplay,  setTrmDisplay]  = useState('')
   const [trmManual,   setTrmManual]   = useState(false)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
+  const [reserves, setReserves] = useState<Settles | undefined>(undefined)
 
   const from = accounts.find(a => a.id === fromId)
   const to   = accounts.find(a => a.id === toId)
+  // The year the reserve counts toward: the one the money was set aside in.
+  const reserveYear = (date || localToday()).slice(0, 4)
   const isCross = !!(from && to && from.currency !== to.currency)
 
   const amt         = useMoneyInput({ decimals: from?.currency === 'USD' ? 2 : 0 })
@@ -114,6 +118,7 @@ export function TransferSheet() {
           ? t.trm.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
           : month.trm.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
         setTrmManual(true)
+        setReserves(t.reserves)
         return
       }
     }
@@ -191,6 +196,7 @@ export function TransferSheet() {
       toCurrency:   to.currency,
       trm,
       toAmount,
+      reserves,
     }
 
     if (isEditing && editingTransferId != null) {
@@ -375,6 +381,26 @@ export function TransferSheet() {
         {getResultLabel() && (
           <div className="ts-body-base text-muted-foreground bg-muted rounded-xl px-3 py-2">
             {getResultLabel()}
+          </div>
+        )}
+
+        {/* Reserve toward retención.
+            Only offered when the money lands in a savings account, because that is the
+            only place a reserve makes sense. Marking the transfer — rather than reading
+            the destination balance — is what keeps the figure honest when personal
+            savings share the account. */}
+        {to?.type === 'savings' && (
+          <div className="flex items-center justify-between py-1">
+            <div>
+              <div className="ts-body-base-emphasis">Reserva para retención</div>
+              <div className="ts-body-small text-muted-foreground">
+                Cuenta para la retención de {reserveYear} · no es un pago a la DIAN
+              </div>
+            </div>
+            <Switch
+              checked={!!reserves}
+              onCheckedChange={on => setReserves(on ? { kind: 'retencion', period: reserveYear } : undefined)}
+            />
           </div>
         )}
 
