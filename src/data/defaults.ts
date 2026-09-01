@@ -96,3 +96,13 @@ export const DEFAULTS = {
   retencion: 0.20,
   primas: 0.0833,
 } as const
+
+// The canonical Spanish name for each account type. Shared so the card and the edit
+// sheet cannot drift apart — the sheet had the only copy, and a card that invents its
+// own wording teaches two names for one thing.
+export const ACCOUNT_TYPE_LABEL: Record<string, string> = {
+  account: 'Cuenta',
+  cash:    'Efectivo',
+  credit:  'Crédito',
+  savings: 'Ahorro',
+}

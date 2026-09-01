@@ -6,6 +6,7 @@ import { computeAccountBalance, creditCardStats } from '@/lib/calc'
 import { COP, fmtDate } from '@/lib/format'
 import { CurrencyBadge } from '@/components/ui/Badge'
 import { AccountAvatar } from '@/components/ui/AccountAvatar'
+import { ACCOUNT_TYPE_LABEL } from '@/data/defaults'
 import { cn } from '@/lib/utils'
 import type { Account } from '@/types'
 
@@ -58,8 +59,14 @@ export function AccountCardView({ account, size = 'lg', selected = false, onClic
   const amountStr    = !hasConfig ? null : isCredit ? fmt(cc!.available) : fmt(balance)
 
   // Meta line parts after the currency badge (pipe-separated)
+  // The account TYPE reads here as text. It used to live only in the avatar's glyph,
+  // which is aria-hidden — so a screen reader was told nothing at all about what kind of
+  // account this is. Savings keeps its more specific kind (CDT, Inversión) instead of
+  // the generic "Ahorro", which would otherwise print twice.
   const metaParts: string[] = []
-  if (isSavings) metaParts.push(KIND_LABEL[account.savingsKind ?? 'cuenta'])
+  metaParts.push(isSavings
+    ? KIND_LABEL[account.savingsKind ?? 'cuenta']
+    : ACCOUNT_TYPE_LABEL[account.type ?? 'account'])
   if (!isCash && account.number) metaParts.push(account.number)
 
   function openEdit() { setEditingAccount(account.id); openSheet('account-edit') }

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, ShieldCheck, Pencil, Plus, Landmark, MoveRight, Trash2, Clock, MoreVertical } from 'lucide-react'
+import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, ShieldCheck, Pencil, Plus, Landmark, MoveRight, Trash2, Clock, MoreVertical, Wallet } from 'lucide-react'
 import { RowActionsSheet } from '@/components/ui/RowActionsSheet'
 import { AccountCardView } from '@/components/cards/AccountCardView'
 import { useFinanceStore } from '@/store/financeStore'
@@ -34,16 +34,28 @@ const ENTRY_ICONS = {
   // graphic object, so WCAG 1.4.11 asks for 3:1 — this one was effectively invisible.
   // --color-tax-txt is amber/700: 4.84:1. Dark was already fine at 10.39 and does not move.
   ss:           { Icon: ShieldCheck,    color: 'text-[var(--color-tax-txt)]',   bg: 'bg-[var(--color-tax-bg)]'         },
+  opening:      { Icon: Wallet,         color: 'text-muted-foreground',   bg: 'bg-muted'                 },
 }
 
-function LedgerRow({ entry, account, accounts }: { entry: LedgerEntry; account: Account; accounts: Account[] }) {
+/**
+ * `opening` renders the account's starting balance as the ledger's last row rather than
+ * as a strip above the list. It reuses this component instead of a lookalike so the
+ * responsive shape — badge on the metadata line, the mobile restack, the 44px target —
+ * cannot drift between the two: that shape took Design three passes to settle.
+ *
+ * It carries no date and no running balance, because in the opening the amount IS the
+ * balance. Its actions differ too: the starting balance is a field on the Account
+ * (`startingBalance`), not an entry, so editing means opening the account sheet and
+ * there is nothing for a delete to point at. See the note to Design.
+ */
+function LedgerRow({ entry, account, accounts, opening }: { entry: LedgerEntry; account: Account; accounts: Account[]; opening?: boolean }) {
   const { removeIncome, removeEgreso, removeTransfer } = useFinanceStore()
-  const { openSheet, setEditingIncome, setEditingEgreso, setEditingTransfer } = useUIStore()
+  const { openSheet, setEditingIncome, setEditingEgreso, setEditingTransfer, setEditingAccount } = useUIStore()
   const [pendingDelete, setPendingDelete] = useState(false)
   const [sheetOpen, setSheetOpen] = useState(false)
 
   const fmt = (n: number) => account.currency === 'USD' ? USD(n) : COP(n)
-  const { Icon, color, bg } = ENTRY_ICONS[entry.type]
+  const { Icon, color, bg } = ENTRY_ICONS[opening ? 'opening' : entry.type]
   // Credit vs debit by entry TYPE, not amount sign — a scheduled egreso has a
   // 0-balance impact but is still an expense, so it must not read as a "+" credit.
   const isCredit = entry.type === 'income' || entry.type === 'transfer_in'
@@ -64,6 +76,9 @@ function LedgerRow({ entry, account, accounts }: { entry: LedgerEntry; account: 
   const numericId = Number(entry.id.split('-').at(-1))
 
   function handleEdit() {
+    if (opening) {
+      setEditingAccount(account.id); openSheet('account-edit'); return
+    }
     if (entry.type === 'income') {
       setEditingIncome(numericId); openSheet('income')
     } else if (entry.type === 'egreso') {
@@ -101,10 +116,10 @@ function LedgerRow({ entry, account, accounts }: { entry: LedgerEntry; account: 
 
         {/* Amount + running balance */}
         <div className="order-2 sm:order-3 ml-auto sm:ml-0 sm:w-[104px] text-right shrink-0">
-          <div className={cn('ts-amount-base', isCredit ? 'text-[var(--color-provision)]' : 'text-foreground')}>
-            {isCredit ? '+' : ''}{fmt(entry.convertedAmount)}
+          <div className={cn('ts-amount-base', !opening && isCredit ? 'text-[var(--color-provision)]' : 'text-foreground')}>
+            {!opening && isCredit ? '+' : ''}{fmt(entry.convertedAmount)}
           </div>
-          <div className="ts-amount-micro text-muted-foreground">{fmt(runningBalance)}</div>
+          {!opening && <div className="ts-amount-micro text-muted-foreground">{fmt(runningBalance)}</div>}
         </div>
 
         {/* Description + metadata.
@@ -115,18 +130,20 @@ function LedgerRow({ entry, account, accounts }: { entry: LedgerEntry; account: 
             below as chips that hug their content, so it adapts to any width. */}
         <div className="order-4 sm:order-2 w-full sm:w-auto sm:flex-1 min-w-0">
           <div className="ts-body-base-emphasis truncate">{desc}</div>
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="ts-body-small text-muted-foreground">{fmtDate(entry.date)} · {fmtMonth(entry.monthKey)}</span>
-            {entry.scheduled && <Badge tone="warning">Programado</Badge>}
-          </div>
+          {!opening && (
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="ts-body-small text-muted-foreground">{fmtDate(entry.date)} · {fmtMonth(entry.monthKey)}</span>
+              {entry.scheduled && <Badge tone="warning">Programado</Badge>}
+            </div>
+          )}
         </div>
 
         {/* Desktop actions */}
         <div className="order-3 sm:order-4 hidden sm:flex items-center gap-1 shrink-0">
-          <IconButton variant="ghost" size="lg" onClick={handleEdit} aria-label="Editar">
+          <IconButton variant="ghost" size="lg" onClick={handleEdit} aria-label={opening ? 'Editar saldo inicial' : 'Editar'}>
             <Pencil size={12} />
           </IconButton>
-          {pendingDelete ? (
+          {opening ? null : pendingDelete ? (
             <Button
               variant="destructive"
               size="sm"
@@ -167,7 +184,7 @@ function LedgerRow({ entry, account, accounts }: { entry: LedgerEntry; account: 
         title={desc ?? '—'}
         subtitle={`${fmtDate(entry.date)} · ${fmtMonth(entry.monthKey)}`}
         onEdit={handleEdit}
-        onDelete={handleDeleteDirect}
+        onDelete={opening ? undefined : handleDeleteDirect}
       />
     </>
   )
@@ -197,6 +214,7 @@ export function CuentasView() {
   // Show newest first
   const ledgerDesc = [...ledger].reverse()
 
+
   const currentBalance = selectedAccount
     ? computeAccountBalance(selectedAccount.id, selectedAccount, db, latestKey)
     : 0
@@ -225,6 +243,25 @@ export function CuentasView() {
   const totalCredits = ledger.filter(e => !e.scheduled && e.convertedAmount > 0).reduce((s, e) => s + e.convertedAmount, 0)
   const totalDebits  = ledger.filter(e => !e.scheduled && e.convertedAmount < 0).reduce((s, e) => s + e.convertedAmount, 0)
   const selIsCredit  = selectedAccount?.type === 'credit'
+
+  // A synthetic entry, not a real one: the opening balance is a field on the Account, so
+  // it never enters buildLedger — putting it there would double-count it against the very
+  // running balance it seeds. It exists only to render.
+  const openingEntry: LedgerEntry | null = selectedAccount?.startingBalance != null
+    ? {
+        id: 'opening',
+        date: '',
+        monthKey: '',
+        type: 'egreso',   // unused: `opening` overrides the mark, the sign and the actions
+        desc: selIsCredit ? 'Deuda inicial' : 'Saldo inicial',
+        amount: selectedAccount.startingBalance,
+        currency: selectedAccount.currency,
+        convertedAmount: selIsCredit
+          ? Math.max(-selectedAccount.startingBalance, 0)
+          : selectedAccount.startingBalance,
+        balance: selectedAccount.startingBalance,
+      }
+    : null
 
   return (
     <div className="space-y-5">
@@ -319,16 +356,6 @@ export function CuentasView() {
             </div>
           </div>
 
-          {/* Starting balance row */}
-          {selectedAccount.startingBalance != null && (
-            <div className="px-4 py-2 flex items-center justify-between bg-muted/50 border-b border-[var(--border)]">
-              <span className="ts-body-small text-muted-foreground">{selIsCredit ? 'Deuda inicial' : 'Saldo inicial'}</span>
-              <span className="ts-amount-small">
-                {fmt(selIsCredit ? Math.max(-selectedAccount.startingBalance, 0) : selectedAccount.startingBalance)}
-              </span>
-            </div>
-          )}
-
           {/* Transactions */}
           <div className="px-4">
             {ledgerDesc.length === 0 ? (
@@ -351,6 +378,19 @@ export function CuentasView() {
               ledgerDesc.map(entry => (
                 <LedgerRow key={entry.id} entry={entry} account={selectedAccount} accounts={accounts} />
               ))
+            )}
+            {/* The opening balance closes the list, oldest-last like everything above it.
+                It used to sit as a tinted strip between the header and the movements,
+                which read as a section label rather than as the first thing the account
+                did. */}
+            {openingEntry && (
+              <LedgerRow
+                key="opening"
+                entry={openingEntry}
+                account={selectedAccount}
+                accounts={accounts}
+                opening
+              />
             )}
           </div>
         </div>

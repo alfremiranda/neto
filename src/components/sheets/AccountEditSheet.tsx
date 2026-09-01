@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { DatePicker } from '@/components/ui/DatePicker'
 import { Switch } from '@/components/ui/switch'
+import { ACCOUNT_TYPE_LABEL } from '@/data/defaults'
 import type { Account } from '@/types'
 
 type AccountType = 'account' | 'cash' | 'credit' | 'savings'
@@ -25,10 +26,10 @@ const SAVINGS_KINDS: Array<{ value: SavingsKind; label: string }> = [
 ]
 
 const TYPE_OPTIONS: Array<{ value: AccountType; label: string; icon: typeof Landmark }> = [
-  { value: 'account', label: 'Cuenta',   icon: Landmark },
-  { value: 'cash',    label: 'Efectivo', icon: Wallet },
-  { value: 'credit',  label: 'Crédito',  icon: CreditCard },
-  { value: 'savings', label: 'Ahorro',   icon: PiggyBank },
+  { value: 'account', label: ACCOUNT_TYPE_LABEL.account, icon: Landmark },
+  { value: 'cash',    label: ACCOUNT_TYPE_LABEL.cash,    icon: Wallet },
+  { value: 'credit',  label: ACCOUNT_TYPE_LABEL.credit,  icon: CreditCard },
+  { value: 'savings', label: ACCOUNT_TYPE_LABEL.savings, icon: PiggyBank },
 ]
 
 // Clamp a day-of-month string to 1–31, or '' if empty/invalid

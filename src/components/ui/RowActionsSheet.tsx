@@ -16,7 +16,10 @@ interface RowActionsSheetProps {
   title: string
   subtitle?: string
   onEdit: () => void
-  onDelete: () => void
+  /** Omit when the row has nothing to delete — the account's opening balance is a field
+   *  on the Account, not an entry, so there is no asiento for a delete to point at. The
+   *  action is then hidden rather than shown as a no-op. */
+  onDelete?: () => void
   extraActions?: ExtraAction[]
 }
 
@@ -38,7 +41,7 @@ export function RowActionsSheet({
   function handleDelete() {
     if (!confirming) { setConfirming(true); return }
     close()
-    onDelete()
+    onDelete?.()
   }
 
   return (
@@ -97,6 +100,7 @@ export function RowActionsSheet({
               Editar
             </Button>
 
+            {onDelete && (
             <Button
               variant="ghost"
               onClick={handleDelete}
@@ -110,6 +114,7 @@ export function RowActionsSheet({
               <Trash2 size={18} className="shrink-0" />
               {confirming ? 'Tocar para confirmar eliminación' : 'Eliminar'}
             </Button>
+            )}
           </div>
 
           {/* Cancel */}
