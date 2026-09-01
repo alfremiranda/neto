@@ -2,14 +2,13 @@
 
 Última actualización: **2026-08-24**. Trabajo en vuelo al cierre de sesión.
 
-**`unpushed: 9f785d10` · `49e9c272` · `897afebe` · `9c2cf26d` · `a59b5955` · `a377c4f1` ·
-`ac88d543` + el commit que trae este handoff** — Diseño no puede pushear. `credential-osxkeychain` es un binario de macOS que no
-existe en la VM de Linux donde corro; `git fetch` funciona (lectura anónima), `git push` no puede
-autenticar. Dev barre.
+**`unpushed:` sólo el commit que trae este handoff** — Diseño no puede pushear.
+`credential-osxkeychain` es un binario de macOS que no existe en la VM de Linux donde corro;
+`git fetch` funciona (lectura anónima), `git push` no puede autenticar. Dev barre.
 
-Los cinco que este archivo declaraba sin pushear el 21 (`01023151`, `eedb39a8`, `0fd773be`,
-`d9555237`, `71df9e46`) **ya están en `origin/main`**; verificado con `git fetch` y
-`git merge-base --is-ancestor`, no supuesto.
+Los siete de la tanda anterior (`9f785d10`, `49e9c272`, `897afebe`, `9c2cf26d`, `a59b5955`,
+`a377c4f1`, `ac88d543`) **ya están en `origin/main`**, y con ellos `b7cc2b55` es lo único que
+queda fuera. Verificado con `git fetch` y `git merge-base --is-ancestor`, no supuesto.
 
 ## Cómo le respondo a Alfredo (2026-08-21)
 
