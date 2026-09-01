@@ -27,8 +27,37 @@ with the account-type glyph in `account/<hue>/accent`. Cards, rows and amounts s
 
 That boundary is what makes twelve hues safe. Neto already spends colour on meaning — cyan is
 brand and net, red is expense and danger, emerald is provision, amber is tax. An identity colour
-that only ever appears inside a 40px circle never shares a surface with a number, so it cannot be
+that only ever appears inside a small circle never shares a surface with a number, so it cannot be
 mistaken for one.
+
+### The rule had to be enforced before it was true (2026-08-24)
+
+This section was written on 08-21 and `AccountCard` went on breaking it for three days, because
+nobody re-read the card against it. The card carried a **full-width accent banner directly above
+the amount** — the exact arrangement the paragraph above forbids — and its own description said,
+in bold, *do not "fix" it*. That description was written on 08-17, four days before this doc. Two
+written decisions, both confident, pointing opposite ways, and no check that could see it: a
+contradiction between two prose documents is invisible to `C1`–`C8`.
+
+Alfredo settled it on 08-24 and the doc won. The banner is gone; `AccountCard` and
+`AccountSummaryCard` both open with an `AccountAvatar`, which is the only carrier. `AccountCard`
+also dropped the type badge's leading icon, because the avatar already draws that glyph.
+
+**`AccountAvatar` gained a `size` axis** — SM (24) and LG (40) — because both new consumers sit
+in a header, not a hero. MD (32) is in the code's `cva` and is deliberately not minted: nothing
+uses it.
+
+### Figma cannot inherit a colour, and that costs something here
+
+The code sets `--account-accent` on the avatar's span and the glyph inherits it. Figma has no
+such thing: the accent is bound on the glyph's **vector**, three instance levels down, and each
+account type resolves to a *different* vector. Switching `Account Type` on an instance therefore
+lands on a glyph still carrying the icon library's own `fg/subtle`, and the account colour
+vanishes — silently, because nothing is unbound and every check stays green.
+
+So in Figma, whoever changes an instance's account type must re-bind that glyph to
+`account/<hue>/accent`. In code this cannot happen. It is a property of the tool, not of the
+system, and the alternative — making type a variant axis — is the 48 variants §3 already refused.
 
 ## 3. Twelve, and what twelve costs
 

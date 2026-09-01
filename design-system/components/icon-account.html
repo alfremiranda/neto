@@ -1,4 +1,4 @@
-<!-- @dsCard group="Components · Icons & Avatar" name="Icon Account" subtitle="Account Type" -->
+<!-- @dsCard group="Components · Icons & Avatar" name="Icon Account" subtitle="Account Type · size" -->
 <!DOCTYPE html>
 <html lang="es" data-theme="light">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -34,8 +34,10 @@ h1{margin:0 0 4px;font-weight:800;font-size:24px;line-height:32px;letter-spacing
   <h1>Icon Account</h1>
   <p class="crumb">Icons &amp; Avatar — Neto design system</p>
   <div class="spec">
-    <div class="axes"><div class="axis"><span class="k">Account Type</span><span class="v">Bank Account · Cash · Credit Card · Savings</span></div><div class="count">4 variantes · 60 × 176</div></div>
-    <div class="desc">Account-type glyph. One variant per account type, so the icon can never disagree with the account type it sits next to.</div>
+    <div class="axes"><div class="axis"><span class="k">Account Type</span><span class="v">Bank Account · Cash · Credit Card · Savings</span></div><div class="axis"><span class="k">size</span><span class="v">S · XS</span></div><div class="count">8 variantes · 60 × 176</div></div>
+    <div class="desc">Account-type glyph. One variant per account type — Bank Account, Cash, Credit Card, Savings — so the icon can never disagree with the account type it sits next to.
+
+size is S (16) and XS (12). XS was added 2026-08-24 for AccountAvatar’s SM. It is a real master per type, not a resize: the first attempt set size=XS as an OVERRIDE on the nested Icon inside the avatar, which pinned that Icon’s whole property set, so switching Account Type afterwards fell back to the Glyph property’s default and every non-default type drew a plus sign. A size that changes geometry belongs in a master, never in an override two levels up.</div>
   </div>
   <div class="modes">
     <div><span class="lbl">Light</span><div data-theme="light" style="border-radius:var(--radius-lg)"><div class="stage"><div class="row"><span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)"><span style="display:inline-block;width:14px;height:14px;border:1.5px solid var(--foreground-default);border-radius:3px"></span> Bank</span><span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)"><span style="display:inline-block;width:14px;height:14px;border:1.5px solid var(--foreground-default);border-radius:3px"></span> Cash</span><span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)"><span style="display:inline-block;width:14px;height:14px;border:1.5px solid var(--foreground-default);border-radius:3px"></span> Credit</span><span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)"><span style="display:inline-block;width:14px;height:14px;border:1.5px solid var(--foreground-default);border-radius:3px"></span> Savings</span></div></div></div></div>

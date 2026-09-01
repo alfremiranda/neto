@@ -1,4 +1,4 @@
-<!-- @dsCard group="Components · Icons & Avatar" name="AccountAvatar" subtitle="Color" -->
+<!-- @dsCard group="Components · Icons & Avatar" name="AccountAvatar" subtitle="Color · size" -->
 <!DOCTYPE html>
 <html lang="es" data-theme="light">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -34,18 +34,24 @@ h1{margin:0 0 4px;font-weight:800;font-size:24px;line-height:32px;letter-spacing
   <h1>AccountAvatar</h1>
   <p class="crumb">Icons &amp; Avatar — Neto design system</p>
   <div class="spec">
-    <div class="axes"><div class="axis"><span class="k">Color</span><span class="v">orange · amber · lime · green · emerald · teal · sky · blue · indigo · purple · pink · rose</span></div><div class="count">12 variantes · 764 × 88</div></div>
-    <div class="desc">An account’s identity mark: the tinted circle in account/{hue}/surface with the account-type glyph in account/{hue}/accent. This is the pairing the colour picker chooses, and the only place the surface token is used.
+    <div class="axes"><div class="axis"><span class="k">Color</span><span class="v">purple · sky · emerald · lime · amber · pink · blue · green · indigo · orange · rose · teal</span></div><div class="axis"><span class="k">size</span><span class="v">LG · SM</span></div><div class="count">24 variantes · 704 × 144</div></div>
+    <div class="desc">An account’s identity mark: the tinted circle in account/{hue}/surface with the account-type glyph in account/{hue}/accent. This is the pairing the colour picker is choosing, and the only place the surface token is used.
 
-The account TYPE stays a nested Icon Account swap rather than a variant axis. Twelve colours times four types would be 48 variants for two decisions that belong to different people: the colour is the user’s, the type is the account’s.
+Two axes. Colour is twelve. size is SM (24) and LG (40) — SM because both consumers needed it, AccountCard’s header and AccountSummaryCard’s. MD (32) exists in the code’s cva and is deliberately NOT minted here: nothing uses it yet, and a variant with no consumer is a variant nobody maintains.
 
-Glyph contrast verified against its own tint in both modes — a filled glyph is a graphic object (WCAG 1.4.11), the rule the favourite star was got wrong on.
+The account TYPE stays a nested swap (Icon Account: Bank Account · Cash · Credit Card · Savings) rather than a variant axis. Twelve colours times four types would be 48 variants for two independent decisions — colour is the user’s, type is the account’s.
 
-Ordered by hue angle: orange 21° · amber 32 · lime 86 · green 142 · emerald 161 · teal 175 · sky 200 · blue 221 · indigo 243 · purple 271 · pink 333 · rose 347. The neighbours are the pairs that measure closest, which is what lets someone see they are two colours.</div>
+THE COST OF THAT NESTING, found 2026-08-24 and worth knowing before you change a type. The accent is bound on the glyph’s VECTOR, three instance levels down, and each account type resolves to a DIFFERENT vector. So switching Account Type on an instance lands on a glyph that still carries the icon library’s own fg/subtle, and the account colour silently disappears. Figma has no inheritance; the code does — it sets --account-accent on the span and the glyph inherits it — which is why this is a Figma-only trap. Whoever switches the type on an instance must re-bind that glyph’s fill to account/{hue}/accent. Every instance in the file is bound correctly today.
+
+Glyph contrast is verified against its own tint in both modes: Light floor 3.07:1, Dark floor 8.02:1. A filled glyph is a graphic object, so 1.4.11 applies — the rule the favourite star was got wrong on.
+
+The twelve are ordered by HUE ANGLE, measured from each accent’s Light value: orange 21° · amber 32 · lime 86 · green 142 · emerald 161 · teal 175 · sky 200 · blue 221 · indigo 243 · purple 271 · pink 333 · rose 347. Read as a ramp it lands almost back where it started, which is what a wheel does.
+
+The order is not decoration. Neighbours are the pairs that measure closest — orange/amber at 11°, emerald/teal at 14 — and putting them side by side is what lets someone SEE they are two, instead of meeting one of them six positions later and reading it as the same colour twice. The CHILD order in the set is that ramp. Figma’s properties panel is not: it keeps its own option order (purple first, today), it has done so since before the size axis was added, and reordering the children does not re-derive it. The description used to claim the panel was sorted too. It never was.</div>
   </div>
   <div class="modes">
-    <div><span class="lbl">Light</span><div data-theme="light" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición de 764×88px — la fuente visual es Figma.</div></div></div></div>
-    <div><span class="lbl">Dark</span><div data-theme="dark" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición de 764×88px — la fuente visual es Figma.</div></div></div></div>
+    <div><span class="lbl">Light</span><div data-theme="light" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición de 704×144px — la fuente visual es Figma.</div></div></div></div>
+    <div><span class="lbl">Dark</span><div data-theme="dark" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición de 704×144px — la fuente visual es Figma.</div></div></div></div>
   </div>
 </main>
 </body></html>
