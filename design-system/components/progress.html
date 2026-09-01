@@ -1,0 +1,67 @@
+<!-- @dsCard group="Components · Feedback" name="Progress" subtitle="Tone" -->
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Neto · Progress</title>
+<link href="https://fonts.googleapis.com/css2?family=Rethink+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font-family:'Rethink Sans',ui-sans-serif,system-ui,sans-serif;background:var(--surface-wrap-default);
+ color:var(--foreground-default);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.page{max-width:1000px;margin:0 auto;padding:40px 28px 64px}
+h1{margin:0 0 4px;font-weight:800;font-size:24px;line-height:32px;letter-spacing:.5px}
+.crumb{margin:0 0 32px;font-size:11px;line-height:17px;color:var(--foreground-subtle)}
+.spec{display:flex;gap:32px;align-items:flex-start;flex-wrap:wrap;margin-bottom:28px}
+.axes{flex:0 0 200px}
+.axis{margin-bottom:8px}
+.axis .k{display:block;font-weight:600;font-size:10px;line-height:15px;letter-spacing:.5px;text-transform:uppercase;color:var(--foreground-subtle)}
+.axis .v{display:block;font-size:10px;line-height:15px;color:var(--foreground-default)}
+.count{font-size:10px;line-height:15px;color:var(--foreground-placeholder);margin-top:10px}
+.desc{flex:1 1 420px;min-width:280px;font-size:14px;line-height:21px;white-space:pre-line}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:820px){.modes{grid-template-columns:1fr}}
+.lbl{display:block;font-weight:600;font-size:10px;line-height:15px;letter-spacing:.5px;text-transform:uppercase;
+ color:var(--foreground-subtle);margin-bottom:6px}
+.stage{background:var(--surface-wrap-subtle);border-radius:var(--radius-lg);padding:20px;
+ display:flex;flex-direction:column;gap:14px;align-items:flex-start;min-height:90px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.note{font-size:10px;color:var(--foreground-placeholder)}
+</style>
+</head>
+<body>
+<main class="page">
+  <h1>Progress</h1>
+  <p class="crumb">Feedback — Neto design system</p>
+  <div class="spec">
+    <div class="axes"><div class="axis"><span class="k">Tone</span><span class="v">Provision · Expense</span></div><div class="count">2 variantes · 288 × 88</div></div>
+    <div class="desc">A bar that says how far along something is. Track in bg/neutral-subtle, fill in the tone, 8 high, both ends fully rounded.
+
+It exists because two unrelated surfaces needed it and neither had it. A credit card’s utilisation is computed in calc.ts and printed as bare text — “16% usado” — with nothing to see; and the retención reserve needs caused-against-reserved with the gap as the headline. Two consumers that share nothing but the shape is the definition of a system piece rather than a one-off (Rule 11).
+
+IT IS NOT DistribucionCard. That is a breakdown — four fixed segments of one whole, always the same four, and its job is composition. This is one quantity against one limit. They look alike and mean different things, which is exactly why they are two components and not a variant axis.
+
+TWO TONES, AND ONLY TWO, because there are two consumers:
+· Provision — progress toward something you are building up. The reserve.
+· Expense — a limit being consumed. Credit utilisation.
+
+Neutral, Warning and Danger are deliberately NOT minted. Nothing asks for them yet, and a threshold (“turn red past 80%”) is a product rule this component should not own — the consumer picks the tone, the bar draws it.
+
+WARNING WOULD NOT WORK AS DRAWN, and this is worth knowing before anyone adds it. bg/tax is amber/400 and measures 1.52:1 against the track in Light. A bar carries its meaning by its boundary, so 1.4.11 applies and asks for 3:1. That is the third place today amber/400 has come up short — the ss glyph and the account dot were the other two. A warning tone has to come from a darker amber rung, not from bg/tax.
+
+Measured fill-against-track, Light · Dark: Provision 3.44 · 7.61. Expense 3.44 · 5.29. Both clear 3:1 in both modes, and Light is the tight one.
+
+IT NEVER APPEARS WITHOUT ITS NUMBER. Length and colour are the only things the bar carries, so on its own it fails 1.4.1 and is unreadable to anyone who cannot compare two lengths precisely. Both consumers already print the figure — “16% usado”, the gap in pesos — and that is a requirement, not a coincidence.
+
+THE VALUE IS SET WITH layoutGrow, NOT BY RESIZING, and that is forced by Figma rather than chosen. Inside an instance a child’s WIDTH cannot be overridden — `resize` runs, returns no error and changes nothing, the same silent refusal `maxWidth` gives. `layoutGrow` is overridable, so the bar is two children that split the track: `fill` at the percentage and `remainder` at what is left. Set both — 16 and 84 — and the bar reads 16%.
+
+AT 100% THE REMAINDER IS HIDDEN, not set to zero. A layoutGrow of 0 does not collapse a child — Figma falls back to its last width, so a “full” bar drew at 63%. Hiding it is the only thing that empties it. Same for 0%: hide `fill`.
+
+It is not a variant axis because a percentage is continuous; 101 variants is not a component. And the track clips, so anything past 100% draws as full: if a reserve can exceed what it covers, the bar cannot say so and the number has to.</div>
+  </div>
+  <div class="modes">
+    <div><span class="lbl">Light</span><div data-theme="light" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición de 288×88px — la fuente visual es Figma.</div></div></div></div>
+    <div><span class="lbl">Dark</span><div data-theme="dark" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición de 288×88px — la fuente visual es Figma.</div></div></div></div>
+  </div>
+</main>
+</body></html>
