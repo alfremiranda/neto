@@ -46,6 +46,26 @@ The pencil opens the account sheet. A trash that silently means "clear a field" 
 control someone hits once and regrets; the sheet already offers the same edit with its label
 visible. `RowActionsSheet.onDelete` is now optional and hides the action rather than no-op it.
 
+## UPDATE — `2.3` (identity half) and `2.1` are in
+
+Q2 is resolved by building, not by asking. `AccountSummaryCard` exists in code now with its
+identity and figures; the ledger header is gone in the same change.
+
+Two calls inside it worth your eye:
+
+- **The detail line became discrete metrics.** The header carried one run-on string
+  (`≈ $37,92/mes · 3.5% a.a.`, `12% usado · Corte 19 · Pago 5`). Your rename gives the anatomy
+  as `metrics / metric` — pairs — so it is pairs: Deuda actual · Cupo disponible · Usado ·
+  Corte · Pago for a card, Saldo actual · Rendimiento · Tasa · Vence for the rest. A string
+  cannot align across a row or be read out as label+value.
+- **The divider appears with the chart, not before it.** A separator with nothing on its far
+  side is a line, not a division. It arrives when `2.4` does; the card takes the chart as a
+  slot and is ready for it.
+
+Still not built, and waiting on you and on Alfredo: `AccountChart` and `chart-range` (§5's
+tooltip decision — Figma draws `surface/inverse`, `TrendChart.tsx:269` draws `--popover` — and
+the `1S`/`7D`, `YTD`/`Año` copy).
+
 ## Done in this pass
 
 - `2.5` type as text (see Q1).

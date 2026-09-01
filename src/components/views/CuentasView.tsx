@@ -2,9 +2,10 @@ import { useState } from 'react'
 import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, ShieldCheck, Pencil, Plus, Landmark, MoveRight, Trash2, Clock, MoreVertical, Wallet } from 'lucide-react'
 import { RowActionsSheet } from '@/components/ui/RowActionsSheet'
 import { AccountCardView } from '@/components/cards/AccountCardView'
+import { AccountSummaryCard } from '@/components/cards/AccountSummaryCard'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
-import { buildLedger, computeAccountBalance, creditCardStats } from '@/lib/calc'
+import { buildLedger } from '@/lib/calc'
 import { COP, USD, fmtDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -203,10 +204,6 @@ export function CuentasView() {
 
   const selectedAccount = accounts.find(a => a.id === selectedId)
 
-  // Most recent month key in the db (for "current" balance)
-  const allKeys = Object.keys(db).filter(k => k !== '_settings').sort()
-  const latestKey = allKeys[allKeys.length - 1] ?? ''
-
   const ledger = selectedAccount
     ? buildLedger(selectedAccount.id, selectedAccount, db)
     : []
@@ -215,33 +212,6 @@ export function CuentasView() {
   const ledgerDesc = [...ledger].reverse()
 
 
-  const currentBalance = selectedAccount
-    ? computeAccountBalance(selectedAccount.id, selectedAccount, db, latestKey)
-    : 0
-
-  const fmt = (n: number) => selectedAccount?.currency === 'USD' ? USD(n) : COP(n)
-
-  // Type-specific detail shown in the ledger header (moved off the mini cards).
-  const acctDetail: string | null = (() => {
-    const a = selectedAccount
-    if (!a) return null
-    if (a.type === 'credit' && a.creditLimit != null) {
-      const s = creditCardStats(a, currentBalance)
-      const parts = [`−${fmt(s.debt)} deuda`, `${Math.round(s.utilization * 100)}% usado`]
-      if (a.cutoffDay) parts.push(`Corte ${a.cutoffDay}`)
-      if (a.dueDay)    parts.push(`Pago ${a.dueDay}`)
-      return parts.join(' · ')
-    }
-    if (a.rate > 0 && a.type !== 'cash') {
-      const monthly = currentBalance * (a.rate / 100) / 12
-      const detail = `≈ ${fmt(monthly)}/mes · ${a.rate}% ${a.type === 'savings' ? 'E.A.' : 'a.a.'}`
-      return a.type === 'savings' && a.maturityDate ? `${detail} · Vence ${fmtDate(a.maturityDate)}` : detail
-    }
-    return null
-  })()
-  // Exclude scheduled (not-yet-settled) entries so Entradas/Salidas reconcile with Saldo actual.
-  const totalCredits = ledger.filter(e => !e.scheduled && e.convertedAmount > 0).reduce((s, e) => s + e.convertedAmount, 0)
-  const totalDebits  = ledger.filter(e => !e.scheduled && e.convertedAmount < 0).reduce((s, e) => s + e.convertedAmount, 0)
   const selIsCredit  = selectedAccount?.type === 'credit'
 
   // A synthetic entry, not a real one: the opening balance is a field on the Account, so
@@ -311,51 +281,17 @@ export function CuentasView() {
       </div>
 
 
-      {/* Ledger */}
+      {/* Account page: the summary card carries identity, the edit action and the headline
+          figures; the container below is the movements and nothing else. */}
+      {selectedAccount && <AccountSummaryCard account={selectedAccount} />}
+
+      {/* LedgerContainer — no header. Four of the six things its header showed are in the
+          card above; the movement count was noise over a list you can see, and
+          Entradas/Salidas summed the WHOLE history (buildLedger walks every month) while
+          sitting under a chart labelled "últimos 30 días" — two time scales, neither
+          written down. When they return they bring their period with them. */}
       {selectedAccount && (
         <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] overflow-hidden">
-          {/* Header */}
-          <div className="px-4 py-3 border-b border-[var(--border)] flex flex-wrap items-center gap-3">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1">
-                <span className="ts-body-base-emphasis truncate">{selectedAccount.label}</span>
-                <IconButton
-                  variant="ghost"
-                  size="md"
-                  className="shrink-0"
-                  onClick={() => { setEditingAccount(selectedAccount.id); openSheet('account-edit') }}
-                  aria-label="Editar cuenta"
-                >
-                  <Pencil size={12} />
-                </IconButton>
-              </div>
-              <div className="ts-body-small text-muted-foreground">
-                {ledger.length} movimiento{ledger.length !== 1 ? 's' : ''}
-              </div>
-              {acctDetail && (
-                <div className="text-[11px] text-muted-foreground tabular-nums mt-0.5">{acctDetail}</div>
-              )}
-            </div>
-            {/* Stats — hidden on very small screens, visible on sm+ */}
-            <div className="hidden sm:flex items-center gap-4 text-right">
-              <div>
-                <div className="text-[10px] text-muted-foreground">Entradas</div>
-                <div className="ts-amount-base text-[var(--color-provision)]">+{fmt(totalCredits)}</div>
-              </div>
-              <div>
-                <div className="text-[10px] text-muted-foreground">Salidas</div>
-                <div className="ts-amount-base">{fmt(totalDebits)}</div>
-              </div>
-            </div>
-            {/* Saldo — the Movimiento action lives in the page header above */}
-            <div className="text-right shrink-0">
-              <div className="text-[10px] text-muted-foreground">{selIsCredit ? 'Deuda actual' : 'Saldo actual'}</div>
-              <div className={cn('ts-amount-base', selIsCredit && 'text-[var(--color-expense-txt)]')}>
-                {fmt(selIsCredit ? Math.max(-currentBalance, 0) : currentBalance)}
-              </div>
-            </div>
-          </div>
-
           {/* Transactions */}
           <div className="px-4">
             {ledgerDesc.length === 0 ? (
