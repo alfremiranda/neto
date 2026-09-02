@@ -54,5 +54,29 @@ mismo valor, dos fuentes, y el día que una se mueva la otra la sigue sin que na
 `popover` 288 · `separator` 1px sobre border/default · `switch` 36×20/16 · `metriccard` sobre
 bg/subtle · `icon-button` SM 24 · MD 28 · LG 36 · XL 44 con el icono escalando 12/12/16/20.
 
+## 4. `ui/sheet` no lo consume la app
+
+`sheet.html` describe "el panel en el que se abre todo formulario". Pero en código
+`components/ui/sheet.tsx` **no lo importa nadie salvo `ui/sidebar.tsx`** — el panel real de los
+formularios es `SheetBase`, que envuelve `vaul` y no ese primitivo. Es shadcn que llegó con la
+plantilla y se quedó.
+
+No lo borro, porque puede que la rama móvil de `ui/sidebar` sí lo use en algún ancho. Pero si el
+componente que documentas como "el panel de los formularios" es el nuestro, la descripción está
+apuntando al archivo equivocado.
+
+## Segundo lote de stories
+
+`AccountBadge` · `SectionCard` · `MetricCard` · `Tooltip` · `Select` · `Popover` ·
+`RowActionsSheet` · `Toast` · `SheetBase` · `DatePicker`. Con eso quedan **todos** los
+componentes de `components/ui` con story, menos `ui/sheet`, `ui/sidebar` y `ui/drawer`, que son
+infraestructura sin superficie propia (`drawer` es el motor de `SheetBase`, `sidebar` el shell
+que `layout/Sidebar` compone).
+
+Cada una lleva sus criterios de aceptación como documentación de la propia story, y en varios
+casos una historia dedicada al caso que rompe: el valor largo que trunca en `Select`, el sheet
+con trabajo sin guardar que ya no se descarta con un gesto, el `Progress` a 0%, el readout de
+una fila que no debe llevar ancho mínimo.
+
 POINTER: design-system/components/{skeleton,switch,toast,metriccard,popover,separator}.html;
 src/components/ui/*.stories.tsx (los ocho nuevos).
