@@ -101,8 +101,8 @@ export const DEFAULTS = {
 // sheet cannot drift apart — the sheet had the only copy, and a card that invents its
 // own wording teaches two names for one thing.
 export const ACCOUNT_TYPE_LABEL: Record<string, string> = {
-  account: 'Cuenta',
+  account: 'Cta. Bancaria',
   cash:    'Efectivo',
-  credit:  'Crédito',
-  savings: 'Ahorro',
+  credit:  'Tarjeta de Crédito',
+  savings: 'Ahorros',
 }

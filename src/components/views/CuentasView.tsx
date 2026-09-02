@@ -110,21 +110,25 @@ function LedgerRow({ entry, account, accounts, opening }: { entry: LedgerEntry; 
           amount column stays pinned to 104 so a leading "+" never shifts it between
           neighbouring rows: a ledger is read down its right edge.
           Flex wrapping happens after ordering, so `order` drives both layouts. */}
-      <div className={cn('flex items-center gap-3 min-h-[62px] py-1.5 border-b border-[var(--border)] last:border-0', entry.scheduled && 'opacity-60')}>
+      <div className={cn('flex items-center gap-2 min-h-[62px] px-3 py-2 border-b border-[var(--border)] last:border-0', entry.scheduled && 'opacity-60')}>
         {/* Icon bubble — its own rail. Every line of content sits to its right, on both
             layouts; the stack is indented past the mark rather than starting under it. */}
         <div className={cn('w-8 h-8 rounded-full flex items-center justify-center shrink-0', entry.scheduled ? 'bg-muted' : bg)}>
           {entry.scheduled ? <Clock size={16} className="text-muted-foreground" /> : <Icon size={16} className={color} />}
         </div>
 
-        <div className="flex-1 min-w-0 flex flex-wrap sm:flex-nowrap sm:items-center gap-x-3">
+        <div className="flex-1 min-w-0 flex flex-wrap sm:flex-nowrap sm:items-center gap-x-2">
 
         {/* Amount + running balance.
             Mobile puts the two SIDE BY SIDE at the head of the stack, left-aligned right
-            after the mark. Desktop stacks them in a column pinned to 104 and right
-            aligned, so a leading "+" never shifts it between neighbouring rows — a ledger
-            is read down its right edge, and on mobile there is no right edge to read down. */}
-        <div className="order-1 sm:order-2 flex items-baseline gap-2 sm:block sm:w-[104px] sm:text-right shrink-0">
+            after the mark. Desktop stacks them in a column that HUGS its content, right
+            aligned.
+            It was pinned to 104 to stop a leading "+" shifting the column between rows.
+            That was never measured and it is wrong: with right alignment the "+" extends
+            LEFTWARD, so the right edge never moves — and the pin had a cost it could not
+            pay, since "-USD 12.534,00" measures 116 at Amount/Base and wrapped to two
+            lines inside 104, giving a USD account a different row height from a COP one. */}
+        <div className="order-1 sm:order-2 flex items-baseline gap-2 sm:block sm:text-right shrink-0">
           <span className={cn('block ts-amount-base', !opening && isCredit ? 'text-[var(--color-provision)]' : 'text-foreground')}>
             {!opening && isCredit ? '+' : ''}{fmt(entry.convertedAmount)}
           </span>
@@ -138,17 +142,19 @@ function LedgerRow({ entry, account, accounts, opening }: { entry: LedgerEntry; 
             Description alone, filling and truncating with nothing pinned; badge and date
             below as chips that hug their content, so it adapts to any width. */}
         <div className="order-3 sm:order-1 w-full sm:w-auto sm:flex-1 min-w-0">
-          <div className="ts-body-base-emphasis truncate">{desc}</div>
+          <div className="ts-body-base-emphasis truncate mb-0.5">{desc}</div>
+          {/* Chips before the date, which is how the rest of the row family orders it
+              (outcome-itemrow puts its chips first). */}
           {!opening && (
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="ts-body-small text-muted-foreground">{fmtDate(entry.date)} · {fmtMonth(entry.monthKey)}</span>
               {entry.scheduled && <Badge tone="warning">Programado</Badge>}
+              <span className="ts-body-small text-muted-foreground">{fmtDate(entry.date)} · {fmtMonth(entry.monthKey)}</span>
             </div>
           )}
         </div>
 
         {/* Desktop actions */}
-        <div className="order-2 sm:order-3 hidden sm:flex items-center gap-1 shrink-0">
+        <div className="order-2 sm:order-3 hidden sm:flex items-center gap-2 shrink-0">
           <IconButton variant="ghost" size="lg" onClick={handleEdit} aria-label={opening ? 'Editar saldo inicial' : 'Editar'}>
             <Pencil size={12} />
           </IconButton>
@@ -322,6 +328,7 @@ export function CuentaView() {
   return (
     <div className="space-y-4">
       <Breadcrumb
+        showHomeIcon
         items={[
           { label: 'Cuentas', onClick: () => setView('cuentas') },
           { label: account.label },
@@ -335,7 +342,7 @@ export function CuentaView() {
           Entradas/Salidas summed the WHOLE history while sitting under a chart of the
           last thirty days — two time scales, neither of them written down. */}
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] overflow-hidden">
-        <div className="px-4">
+        <div className="px-1">
           {ledgerDesc.length === 0 && !openingEntry ? (
             <Empty className="border-0 py-6">
               <EmptyHeader>

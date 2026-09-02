@@ -39,7 +39,7 @@ export function Breadcrumb({ items, showHomeIcon }: { items: Crumb[]; showHomeIc
             {isCurrent ? (
               <span
                 aria-current="page"
-                className="ts-body-small truncate"
+                className="ts-body-small-emphasis truncate"
                 style={{
                   color: 'var(--breadcrumb-current-foreground)',
                   padding: 'var(--breadcrumb-item-padding-y) var(--breadcrumb-item-padding-x)',

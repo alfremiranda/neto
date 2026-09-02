@@ -10,7 +10,6 @@ import { ACCOUNT_TYPE_LABEL } from '@/data/defaults'
 import { cn } from '@/lib/utils'
 import type { Account } from '@/types'
 
-const KIND_LABEL: Record<string, string> = { cuenta: 'Cta Ahorros', cdt: 'CDT', inversion: 'Inversión' }
 
 function daysUntil(dateStr: string): number {
   const target = new Date(dateStr + 'T00:00:00')
@@ -64,9 +63,9 @@ export function AccountCardView({ account, size = 'lg', selected = false, onClic
   // account this is. Savings keeps its more specific kind (CDT, Inversión) instead of
   // the generic "Ahorro", which would otherwise print twice.
   const metaParts: string[] = []
-  metaParts.push(isSavings
-    ? KIND_LABEL[account.savingsKind ?? 'cuenta']
-    : ACCOUNT_TYPE_LABEL[account.type ?? 'account'])
+  // The TYPE, for every kind — the card says what class of account this is, and the more
+  // specific savings kind (CDT, Inversión) is a field of the account's own page.
+  metaParts.push(ACCOUNT_TYPE_LABEL[account.type ?? 'account'])
   if (!isCash && account.number) metaParts.push(account.number)
 
   function openEdit() { setEditingAccount(account.id); openSheet('account-edit') }
