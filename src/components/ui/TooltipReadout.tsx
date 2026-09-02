@@ -44,7 +44,7 @@ export function ReadoutRow({ label, value, tone, divider, dim }: ReadoutRowData)
   return (
     <div
       className={cn(
-        'flex items-baseline gap-3',
+        'flex items-baseline gap-4',
         // The boundary belongs to the row that OPENS the group, drawn above it. Modelled
         // as a fake `{separator: true}` item it was an entry with no label and no value
         // sitting in a list of label/value pairs.
@@ -66,9 +66,14 @@ export function ReadoutRow({ label, value, tone, divider, dim }: ReadoutRowData)
   )
 }
 
+/**
+ * No fixed minimum width: it padded a one-row readout — "Saldo" and its amount pushed to
+ * opposite ends of a width nothing had asked for. Multi-row readouts still line up,
+ * because the widest row sizes the box and the narrower rows' flex-1 fills to it.
+ */
 export function TooltipReadout({ title, rows }: { title?: string; rows: ReadoutRowData[] }) {
   return (
-    <div className="min-w-[168px]">
+    <div>
       {title && <div className="ts-body-small-emphasis mb-2">{title}</div>}
       <div className="space-y-0.5">
         {rows.map((r, i) => <ReadoutRow key={`${r.label}-${i}`} {...r} />)}
