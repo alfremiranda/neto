@@ -53,8 +53,8 @@ instead of `rose/500/0`. Invisible — alpha 0 — until somebody raises that op
 **The X axis repeated a date.** It read `1/7 · 25/7 · 10/7 · 15/7 · 20/7 · 25/7 · Hoy`. The second
 tick should have been `5/7`.
 
-**`Property 1 = Default | Variant2`.** Now `Series = Single | Dual`, which is what the property
-means: one series or two.
+**`Property 1 = Default | Variant2`.** Renamed to `Series = Single | Dual`, which is what the
+property meant: one series or two. **Deleted 2026-09-02** — see §11.
 
 **79 layers with generic names** (`Frame 3`, `Group 1`, `Details`, `Vector`, `Container`). Renamed
 to the real anatomy: `header / legend / plot / series-balance / series-debt / area / line / marker
@@ -176,7 +176,7 @@ existing convention beats a better invented one.
 
 | Set | Before | Now |
 |---|---|---|
-| `AccountChart` | `Series` (2) | `Series` × `Device` (4) |
+| `AccountChart` | `Series` (2) | `Series` × `Device` (4) → `Device` (2) since 2026-09-02, §11 |
 | `AccountSummaryCard` | `Type` (4) | `Type` × `Device` (8) |
 
 **AccountChart · Device=Mobile — 348 × 180.** 348 = 380 of card minus 16 of padding on each side.
@@ -296,3 +296,29 @@ Figma now matches: header is `avatar · name · star`, meta is `currency | type 
 name is Body/Small-Emphasis clamped to one line with an ellipsis. All twelve variants are 120px
 tall instead of 130/120. The name **does** truncate at 220px — that is the shipped behaviour, and
 the sample name is long on purpose (`§A3.8`).
+
+## 11. `Series=Dual` deleted (2026-09-02)
+
+Dev asked the question that killed it: **what number does the second series plot?** The
+description named the picture — *"adds the debt series beneath it"* — and never the quantity, and
+three of us had read past that for two weeks.
+
+The legend answered it: **`Cupo · Deuda`**. And `cupo = límite − deuda` against a limit that does
+not move over time, so the second area is the first one reflected — two shapes carrying one
+number. A chart that draws the same figure twice looks like twice the information and is not.
+
+The rationale that justified the variant is already served without it. A credit card's balance is
+≤ 0, so `Single` plotted as-is *is* the debt growing downward, and the series takes the debt hue —
+which is what `AccountChart.tsx` already shipped.
+
+Measured before deleting, against every member and not the first one (`§A3.7`): **four instances
+in the file, all four inside this component's own documentation, none on a screen.** Alfredo made
+the call. `AccountChart` is `Device` only, 4 variants → 2.
+
+If a real second quantity ever exists — payments made, a limit that actually changes — the axis
+comes back, with the number named in the description rather than the picture.
+
+**The general form, and it is not about charts:** a variant is a question the component can be
+asked. `Dual` was an answer nobody had a question for, and it survived because its description
+described how it *looked*. A description that says what a thing looks like cannot be checked. One
+that names the quantity can be, and Dev checked it in one sentence.

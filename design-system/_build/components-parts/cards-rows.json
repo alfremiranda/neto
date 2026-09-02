@@ -25,14 +25,13 @@
  {
   "g": "Cards",
   "n": "AccountChart",
-  "v": 4,
+  "v": 2,
   "p": [
-   "Series=Single|Dual",
    "Device=Desktop|Mobile"
   ],
   "w": 1084,
-  "h": 490,
-  "d": "Balance over time for one account. Series=Single is the balance area alone; Series=Dual adds the debt series beneath it, for credit cards where what is owed grows downward.\n\nBoth series carry a gradient that fades to fully transparent — account-chart/series/*/fill-to is the same hue at 0 alpha, not white — so the fill never turns milky over a dark canvas.\n\nThe marker line is account-chart/marker/line: slate on light, white at 70% on dark, because one fixed grey disappears against one of the two.\n\n2026-09-01 · the static “Últimos 30 días” label was removed from the header. The range is now stated by chart-range, the strip of pills under the chart, and the axis already prints the dates. A fixed label would have contradicted both the moment anyone picked a different range — and a label that can contradict the control next to it is worse than no label."
+  "h": 250,
+  "d": "Balance over time for one account. Device is the only axis.\n\nA credit card's balance is already ≤ 0, so plotting it as-is draws what is owed growing downward, and the series takes the debt hue. That is the whole of it — there is no second series.\n\n2026-09-02 · Series=Single|Dual was DELETED. Dual's legend read \"Cupo · Deuda\", and cupo is limit − debt against a limit that does not move, so the second area was the first one mirrored: two shapes, one number. Measured before removing it: four instances in the file, all four inside this component's own documentation, none on a screen. Dev asked what number Dual plotted, which was the right question — the description named the picture and never the quantity. If a real second quantity ever exists, the axis comes back with a reason attached.\n\nBoth series carry a gradient that fades to fully transparent — account-chart/series/*/fill-to is the same hue at 0 alpha, not white — so the fill never turns milky over a dark canvas.\n\nThe marker line is account-chart/marker/line: slate on light, white at 70% on dark, because one fixed grey disappears against one of the two.\n\n2026-09-01 · the static \"Últimos 30 días\" label was removed from the header. The range is now stated by chart-range, the strip of pills under the chart, and the axis already prints the dates. A fixed label would have contradicted both the moment anyone picked a different range — and a label that can contradict the control next to it is worse than no label."
  },
  {
   "g": "Cards",
