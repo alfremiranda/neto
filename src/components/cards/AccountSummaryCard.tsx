@@ -2,14 +2,14 @@ import { useState } from 'react'
 import { Pencil } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
-import { buildLedger, computeAccountBalance, creditCardStats } from '@/lib/calc'
+import { computeAccountBalance, creditCardStats } from '@/lib/calc'
 import { COP, USD, fmtDate } from '@/lib/format'
 import { AccountAvatar } from '@/components/ui/AccountAvatar'
 import { CurrencyBadge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { ACCOUNT_TYPE_LABEL } from '@/data/defaults'
-import { AccountChart } from '@/components/cards/AccountChart'
+import { AccountChart, hasChartSpan } from '@/components/cards/AccountChart'
 import { ChartRange } from '@/components/ui/ChartRange'
 import { Progress } from '@/components/ui/Progress'
 import { availableRanges, type RangeId } from '@/lib/chartRange'
@@ -51,11 +51,11 @@ export function AccountSummaryCard({ account, chart }: { account: Account; chart
   const active = range && ranges.some(r => r.id === range) ? range : ranges[ranges.length - 1]?.id
   const from   = ranges.find(r => r.id === active)?.start
 
-  // Whether there is a chart at all: movements on at least two distinct days. Asked here
-  // as well as inside AccountChart so the divider does not survive an empty chart.
-  const hasChart = !!chart || new Set(
-    buildLedger(account.id, account, db).map(e => e.date),
-  ).size >= 2
+  // Asked through the chart's OWN function, not a second reading of the data. Counting
+  // ledger-entry dates here was stricter than the series the chart actually builds —
+  // that series also carries the opening balance and the carry-to-today — so an account
+  // with a single movement had a drawable chart and a card that refused to mount it.
+  const hasChart = !!chart || hasChartSpan(account, db, from)
 
   const allKeys   = Object.keys(db).filter(k => k !== '_settings').sort()
   const latestKey = allKeys[allKeys.length - 1] ?? ''

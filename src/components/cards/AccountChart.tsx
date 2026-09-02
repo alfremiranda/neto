@@ -4,13 +4,76 @@ import { buildLedger } from '@/lib/calc'
 import { localToday } from '@/lib/format'
 import { useFinanceStore } from '@/store/financeStore'
 import { useTheme } from '@/hooks/useTheme'
-import type { Account } from '@/types'
+import type { Account, FinanceDB } from '@/types'
 
 function cssVar(v: string) {
   return getComputedStyle(document.documentElement).getPropertyValue(v).trim()
 }
 
 interface Point { date: Date; value: number }
+
+/**
+ * The balance series for an account, one point per DAY carrying that day's closing
+ * balance.
+ *
+ * Exported because the card that mounts the chart has to answer the same question — is
+ * there a chart at all — and asking it a second way is how the two disagree. It did:
+ * the card counted ledger-entry dates while the series also carries the opening balance
+ * and the carry-to-today, so an account with one movement had a drawable two-day series
+ * and a card that refused to mount it.
+ */
+export function accountSeries(account: Account, db: FinanceDB, from?: string): Point[] {
+  const entries = buildLedger(account.id, account, db)
+  if (entries.length === 0) return []
+
+  // No range picked — or none offerable, which is the common case for a young account:
+  // show everything. The chart is not conditional on the strip; only the strip is
+  // conditional on the data.
+  const start = from ?? entries[0].date
+
+  // The balance the account carried INTO the window: the last entry before it, or the
+  // opening balance. Without it a range that starts mid-history begins at zero and the
+  // chart tells a story the account never lived.
+  const before = entries.filter(e => e.date < start)
+  const opening = before.length > 0
+    ? before[before.length - 1].balance
+    : (account.startingBalance ?? 0)
+
+  // One point per DAY, carrying that day's CLOSING balance. Plotting every entry puts
+  // several points on the same instant, which draws as a vertical drop at that date —
+  // the balance did not fall through a range of values, it ended the day at one.
+  //
+  // And nothing past today: a scheduled movement does not move the balance, so
+  // including its date stretched a flat line into the future as if the account had
+  // simply gone quiet.
+  const today = localToday()
+  const byDay = new Map<string, number>()
+  for (const e of entries) {
+    if (e.date < start || e.date > today) continue
+    byDay.set(e.date, e.balance)      // entries are chronological, so the last wins
+  }
+
+  const pts: Point[] = [{ date: new Date(`${start}T00:00:00`), value: opening }]
+  for (const [date, value] of [...byDay].sort(([a], [b]) => a.localeCompare(b))) {
+    pts.push({ date: new Date(`${date}T00:00:00`), value })
+  }
+  // Carry the last balance to today so the line reaches the right edge instead of
+  // stopping at whenever the account last moved.
+  const lastDay = pts[pts.length - 1]
+  if (lastDay.date < new Date(`${today}T00:00:00`)) {
+    pts.push({ date: new Date(`${today}T00:00:00`), value: lastDay.value })
+  }
+  return pts
+}
+
+/**
+ * At least two DISTINCT days: the balance has to have moved through time, not just
+ * through amounts. A vertical spike over a single instant is not a chart of anything —
+ * it only looks like one, which is worse than an absence.
+ */
+export function hasChartSpan(account: Account, db: FinanceDB, from?: string): boolean {
+  return new Set(accountSeries(account, db, from).map(p => p.date.getTime())).size >= 2
+}
 
 /**
  * Balance over time for one account.
@@ -45,52 +108,8 @@ export function AccountChart({ account, from, onSelect }: {
   // owed growing downward, which is what the Dual series is for. Dual proper — a second
   // quantity beside it — is not built: Design names it visually but never says which
   // number it is, and guessing at a figure on a debt chart is not a thing to guess at.
-  const points = useMemo<Point[]>(() => {
-    const entries = buildLedger(account.id, account, db)
-    if (entries.length === 0) return []
+  const points = useMemo(() => accountSeries(account, db, from), [account, db, from])
 
-    // No range picked — or none offerable, which is the common case for a young account:
-    // show everything. The chart is not conditional on the strip; only the strip is
-    // conditional on the data.
-    const start = from ?? entries[0].date
-
-    // The balance the account carried INTO the window: the last entry before it, or the
-    // opening balance. Without it a range that starts mid-history begins at zero and the
-    // chart tells a story the account never lived.
-    const before = entries.filter(e => e.date < start)
-    const opening = before.length > 0
-      ? before[before.length - 1].balance
-      : (account.startingBalance ?? 0)
-
-    // One point per DAY, carrying that day's CLOSING balance. Plotting every entry puts
-    // several points on the same instant, which draws as a vertical drop at that date —
-    // the balance did not fall through a range of values, it ended the day at one.
-    //
-    // And nothing past today: a scheduled movement does not move the balance, so
-    // including its date stretched a flat line into the future as if the account had
-    // simply gone quiet.
-    const today = localToday()
-    const byDay = new Map<string, number>()
-    for (const e of entries) {
-      if (e.date < start || e.date > today) continue
-      byDay.set(e.date, e.balance)      // entries are chronological, so the last wins
-    }
-
-    const pts: Point[] = [{ date: new Date(`${start}T00:00:00`), value: opening }]
-    for (const [date, value] of [...byDay].sort(([a], [b]) => a.localeCompare(b))) {
-      pts.push({ date: new Date(`${date}T00:00:00`), value })
-    }
-    // Carry the last balance to today so the line reaches the right edge instead of
-    // stopping at whenever the account last moved.
-    const lastDay = pts[pts.length - 1]
-    if (lastDay.date < new Date(`${today}T00:00:00`)) {
-      pts.push({ date: new Date(`${today}T00:00:00`), value: lastDay.value })
-    }
-    return pts
-  }, [account, db, from])
-
-  // At least two DISTINCT days: the balance has to have moved through time, not just
-  // through amounts.
   const hasSpan = useMemo(
     () => new Set(points.map(p => p.date.getTime())).size >= 2,
     [points],
