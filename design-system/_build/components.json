@@ -874,7 +874,7 @@
   ],
   "w": 920,
   "h": 344,
-  "d": "Mobile action menu for a list row.\n\nDeleting takes two taps and the sheet stays open between them: the first tap turns the row red and rewrites it to “Tocar para confirmar eliminación”. There is no modal — the confirmation happens in place, so the user never loses sight of which entry they are deleting.\n\nDesktop uses inline row actions instead; this component does not appear there."
+  "d": "Mobile action menu for a list row. State = Default | Confirming.\n\nEvery row is a Button at Size=XL, and the variant carries the consequence: Editar is Outline · Neutral, Eliminar is Outline · Danger, and Cancelar is Ghost · Neutral in its own group under a rule. Deleting escalates in place — Confirming turns Eliminar into Filled · Danger and rewrites it to “Tocar para confirmar eliminación”. Outline → filled is the whole confirmation: same button, same position, more weight.\n\nThere is no modal, and the sheet stays open between the two taps, so the user never loses sight of which entry they are deleting.\n\nProminence tracks consequence here, which is deliberate and has a cost worth knowing: the destructive action is the most visible thing in the sheet in both states and the way out is the quietest. That is the right order for a menu the user opened on purpose. It is the wrong order for one they opened by accident, and this sheet is reachable by a mis-tap on a row — if that turns out to bite, the fix is to give Cancelar an outline, not to quieten Eliminar.\n\nDelete is optional. A row with nothing to delete — an account's opening balance is a field on the account, not an entry — hides the action rather than showing it as a no-op.\n\nDesktop uses inline row actions instead; this component does not appear there."
  },
  {
   "g": "Overlays",
@@ -882,12 +882,13 @@
   "v": 4,
   "p": [
    "Content",
+   "Footer content",
    "Device=Mobile|Desktop",
    "Footer=True|False"
   ],
   "w": 936,
   "h": 936,
-  "d": "The panel every form opens in. Device × Footer, plus a Content instance-swap slot.\n\nMobile slides up from the bottom with a drag handle and rounds its top corners. Desktop slides in from the right and rounds only the left side. Different patterns, not a reflow — that is why Device is a variant and not a breakpoint.\n\nThe scrim behind it is bg/scrim and is not part of this component. On mobile the sheet is clamped to the visual viewport so the keyboard never covers the fields.\n\nContent was added 2026-08-21. Before it, the body held a text node and an instance cannot have children added or removed, so every flow that needed a real form had to detach the sheet."
+  "d": "The panel every form opens in. Device × Footer.\n\nMobile slides up from the bottom with a drag handle and rounds its top corners. Desktop slides in from the right and rounds only the left side. Different patterns, not a reflow — that is why Device is a variant and not a breakpoint.\n\nThe scrim behind it is bg/scrim, not part of this component. On mobile the sheet is clamped to the visual viewport so the keyboard never covers the fields.\n\nThe sheet owns the chrome and nothing else: handle, header, close, and the footer's frame. What fills it comes from two openings. Content is an instance-swap — SheetContent is its default and exists only because an instance-swap needs a component as one; AccountEditForm is the first real occupant. Footer content is a slot, added by Alfredo 2026-09-02, so the actions at the bottom stop being drawn into the component.\n\nFooter and Footer content are two questions, not one: the variant says WHETHER there is a footer, the slot says WHAT is in it. The slot was called \"footer\" for a few hours and renamed on 2026-09-02, because two properties that differ only in case are two properties nobody can tell apart out loud.\n\nContent was added 2026-08-21. Before it, the body held a text node and an instance cannot have children added or removed, so every flow that needed a real form had to detach the sheet."
  },
  {
   "g": "Overlays",

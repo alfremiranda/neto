@@ -1,4 +1,4 @@
-<!-- @dsCard group="Components · Overlays" name="Sheet" subtitle="Content · Device · Footer" -->
+<!-- @dsCard group="Components · Overlays" name="Sheet" subtitle="Content · Footer content · Device · Footer" -->
 <!DOCTYPE html>
 <html lang="es" data-theme="light">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -34,12 +34,16 @@ h1{margin:0 0 4px;font-weight:800;font-size:24px;line-height:32px;letter-spacing
   <h1>Sheet</h1>
   <p class="crumb">Overlays — Neto design system</p>
   <div class="spec">
-    <div class="axes"><div class="axis"><span class="k">Content</span><span class="v">slot</span></div><div class="axis"><span class="k">Device</span><span class="v">Mobile · Desktop</span></div><div class="axis"><span class="k">Footer</span><span class="v">True · False</span></div><div class="count">4 variantes</div></div>
-    <div class="desc">The panel every form opens in. Device × Footer, plus a Content instance-swap slot.
+    <div class="axes"><div class="axis"><span class="k">Content</span><span class="v">slot</span></div><div class="axis"><span class="k">Footer content</span><span class="v">slot</span></div><div class="axis"><span class="k">Device</span><span class="v">Mobile · Desktop</span></div><div class="axis"><span class="k">Footer</span><span class="v">True · False</span></div><div class="count">4 variantes</div></div>
+    <div class="desc">The panel every form opens in. Device × Footer.
 
 Mobile slides up from the bottom with a drag handle and rounds its top corners. Desktop slides in from the right and rounds only the left side. Different patterns, not a reflow — that is why Device is a variant and not a breakpoint.
 
-The scrim behind it is bg/scrim and is not part of this component. On mobile the sheet is clamped to the visual viewport so the keyboard never covers the fields.
+The scrim behind it is bg/scrim, not part of this component. On mobile the sheet is clamped to the visual viewport so the keyboard never covers the fields.
+
+The sheet owns the chrome and nothing else: handle, header, close, and the footer&#x27;s frame. What fills it comes from two openings. Content is an instance-swap — SheetContent is its default and exists only because an instance-swap needs a component as one; AccountEditForm is the first real occupant. Footer content is a slot, added by Alfredo 2026-09-02, so the actions at the bottom stop being drawn into the component.
+
+Footer and Footer content are two questions, not one: the variant says WHETHER there is a footer, the slot says WHAT is in it. The slot was called &quot;footer&quot; for a few hours and renamed on 2026-09-02, because two properties that differ only in case are two properties nobody can tell apart out loud.
 
 Content was added 2026-08-21. Before it, the body held a text node and an instance cannot have children added or removed, so every flow that needed a real form had to detach the sheet.</div>
   </div>
