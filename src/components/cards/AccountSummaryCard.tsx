@@ -43,6 +43,10 @@ export function AccountSummaryCard({ account, chart }: { account: Account; chart
   // Default to the widest window the account can actually offer: opening on the shortest
   // would show a near-empty chart for an account with years of history.
   const [range, setRange] = useState<RangeId | null>(null)
+  // The chart's selected point. It is read out in the metrics rather than only in a
+  // floating bubble: there is no hover on touch, so a tooltip-only readout tells a phone
+  // nothing. Hover and tap do the same thing — move this — and the card says it.
+  const [picked, setPicked] = useState<{ date: string; value: number } | null>(null)
   const active = range && ranges.some(r => r.id === range) ? range : ranges[ranges.length - 1]?.id
   const from   = ranges.find(r => r.id === active)?.start
 
@@ -73,7 +77,9 @@ export function AccountSummaryCard({ account, chart }: { account: Account; chart
   const metrics: { label: string; value: string; tone?: 'debt' | 'yield' }[] = []
   if (isCredit) {
     const s = creditCardStats(account, balance)
-    metrics.push({ label: 'Deuda actual', value: fmt(s.debt), tone: 'debt' })
+    metrics.push(picked
+      ? { label: fmtDate(picked.date), value: fmt(Math.max(-picked.value, 0)), tone: 'debt' }
+      : { label: 'Deuda actual', value: fmt(s.debt), tone: 'debt' })
     if (account.creditLimit != null) {
       metrics.push({ label: 'Cupo disponible', value: fmt(s.available) })
       metrics.push({ label: 'Usado', value: `${Math.round(s.utilization * 100)}%` })
@@ -81,7 +87,9 @@ export function AccountSummaryCard({ account, chart }: { account: Account; chart
     if (account.cutoffDay) metrics.push({ label: 'Corte', value: `Día ${account.cutoffDay}` })
     if (account.dueDay)    metrics.push({ label: 'Pago', value: `Día ${account.dueDay}` })
   } else {
-    metrics.push({ label: 'Saldo actual', value: fmt(balance) })
+    metrics.push(picked
+      ? { label: fmtDate(picked.date), value: fmt(picked.value) }
+      : { label: 'Saldo actual', value: fmt(balance) })
     if (account.rate > 0 && !isCash) {
       metrics.push({ label: 'Rendimiento', value: `≈ ${fmt(balance * (account.rate / 100) / 12)}/mes`, tone: 'yield' })
       metrics.push({ label: 'Tasa', value: `${account.rate}% ${isSavings ? 'E.A.' : 'a.a.'}` })
@@ -148,7 +156,7 @@ export function AccountSummaryCard({ account, chart }: { account: Account; chart
       {hasChart && (
         <>
           <Separator />
-          {chart ?? <AccountChart account={account} from={from} />}
+          {chart ?? <AccountChart account={account} from={from} onSelect={setPicked} />}
           <ChartRange ranges={ranges} value={active as RangeId} onChange={setRange} />
         </>
       )}

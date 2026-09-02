@@ -25,7 +25,15 @@ interface Point { date: Date; value: number }
  * hover. Drawing one now would be inventing an answer to all three. The series, the axis
  * and the range are useful without it, so they ship first.
  */
-export function AccountChart({ account, from }: { account: Account; from?: string }) {
+export function AccountChart({ account, from, onSelect }: {
+  account: Account
+  from?: string
+  /** The point under the cursor (desktop) or the finger (mobile), or null on release.
+   *  Hover and tap do the SAME thing — move the selection — and the card reads it out.
+   *  A floating bubble is desktop sugar on top of a readout that is always visible;
+   *  there is no hover on touch, so it cannot be the only place the figures live. */
+  onSelect?: (p: { date: string; value: number } | null) => void
+}) {
   const db = useFinanceStore(s => s.db)
   const { theme } = useTheme()
   const dark = theme === 'dark'
@@ -155,7 +163,44 @@ export function AccountChart({ account, from }: { account: Account; from?: strin
       .call(ax => ax.selectAll('text')
         .attr('fill', cssVar('--account-chart-axis-foreground'))
         .attr('font-size', '10px'))
-  }, [points, hasSpan, dark, containerW, account.type])
+
+    // Selection. Pointer events, not mouse events: the chart has to answer a finger too,
+    // and pointerdown/pointermove cover both devices through one API.
+    const marker = g.append('line')
+      .attr('y1', 0).attr('y2', h)
+      .attr('stroke', cssVar('--account-chart-marker-line'))
+      .attr('stroke-width', 1)
+      .attr('opacity', 0)
+
+    const nearest = (px: number): Point => {
+      const t = x.invert(px).getTime()
+      return points.reduce((best, p) =>
+        Math.abs(p.date.getTime() - t) < Math.abs(best.date.getTime() - t) ? p : best)
+    }
+
+    const move = (event: PointerEvent) => {
+      const [px] = d3.pointer(event, g.node())
+      const p = nearest(Math.max(0, Math.min(w, px)))
+      marker.attr('x1', x(p.date)).attr('x2', x(p.date)).attr('opacity', 1)
+      onSelect?.({ date: p.date.toISOString().slice(0, 10), value: p.value })
+    }
+
+    svg
+      .style('touch-action', 'pan-y')   // let the page still scroll under a vertical drag
+      .on('pointerdown', move)
+      .on('pointermove', function (event: PointerEvent) {
+        if (event.pointerType === 'mouse' || event.buttons > 0) move(event)
+      })
+      // Only a MOUSE clears on release. On touch the tap IS the selection and the card's
+      // metrics are the only place those figures appear — clearing on pointerup would
+      // show the value for as long as the finger was down and then take it away, which
+      // is the same as not answering at all.
+      .on('pointerup pointerleave pointercancel', function (event: PointerEvent) {
+        if (event.pointerType !== 'mouse') return
+        marker.attr('opacity', 0)
+        onSelect?.(null)
+      })
+  }, [points, hasSpan, dark, containerW, account.type, onSelect])
 
   useEffect(() => {
     if (!containerRef.current) return

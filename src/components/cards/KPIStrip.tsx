@@ -8,9 +8,10 @@ import { COP, USD, localToday } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { Card } from '@/components/ui/card'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+import { TooltipReadout, type ReadoutRowData } from '@/components/ui/TooltipReadout'
 import { EGRESO_CATEGORIAS } from '@/data/defaults'
 
-type DetailLine = { label: string; value: string; dim?: boolean; separator?: boolean }
+type DetailLine = ReadoutRowData
 
 interface KPICardProps {
   label: string
@@ -23,20 +24,7 @@ interface KPICardProps {
 }
 
 function KPITooltipContent({ lines }: { lines: DetailLine[] }) {
-  return (
-    <div className="space-y-0.5">
-      {lines.map((line, i) =>
-        line.separator ? (
-          <div key={i} className="border-t border-white/20 my-1.5" />
-        ) : (
-          <div key={i} className={cn('flex items-baseline justify-between gap-3', line.dim && 'opacity-50')}>
-            <span className="ts-detail-large text-background/60 truncate">{line.label}</span>
-            <span className="ts-amount-small shrink-0">{line.value}</span>
-          </div>
-        )
-      )}
-    </div>
-  )
+  return <TooltipReadout rows={lines} />
 }
 
 function KPICard({ label, value, sub, accentToken, accent, detail, onClick }: KPICardProps) {
@@ -144,23 +132,23 @@ export function KPIStrip({ onNavigate }: { onNavigate?: (tab: string) => void } 
 
   const obligDetail: DetailLine[] = [
     ...res.ssItems.map(i => ({ label: `${i.label} (${i.pct}%)`, value: COP(i.amount) })),
-    ...(res.ssItems.length > 0 && retencionItems.length > 0
-      ? [{ label: '', value: '', separator: true } as DetailLine]
-      : []),
-    ...retencionItems.map(i => ({ label: `Retención en la fuente (${i.pct}%)`, value: COP(i.amount) })),
+    ...retencionItems.map((i, idx) => ({
+      label: `Retención en la fuente (${i.pct}%)`,
+      value: COP(i.amount),
+      // The group boundary is a property of the row that OPENS the group, so only the
+      // first one carries it — and only when there is something above to divide from.
+      divider: idx === 0 && res.ssItems.length > 0,
+    })),
   ]
 
+  const shownProv = provItems.filter(i => i.applies && i.amount > 0)
+  const shownVol  = res.volItems.filter(i => i.applies && i.amount > 0)
   const provDetail: DetailLine[] = [
-    ...provItems.filter(i => i.applies && i.amount > 0).map(i => ({
+    ...shownProv.map(i => ({ label: i.label, value: COP(i.amount) })),
+    ...shownVol.map((i, idx) => ({
       label: i.label,
       value: COP(i.amount),
-    })),
-    ...(provItems.filter(i => i.applies && i.amount > 0).length > 0 && res.volItems.filter(i => i.applies && i.amount > 0).length > 0
-      ? [{ label: '', value: '', separator: true } as DetailLine]
-      : []),
-    ...res.volItems.filter(i => i.applies && i.amount > 0).map(i => ({
-      label: i.label,
-      value: COP(i.amount),
+      divider: idx === 0 && shownProv.length > 0,
     })),
   ]
 
@@ -185,8 +173,7 @@ export function KPIStrip({ onNavigate }: { onNavigate?: (tab: string) => void } 
     ...(showObligaciones && obligTotal > 0 ? [{ label: '− Oblig. tributarias', value: COP(obligTotal) }] : []),
     ...(showProvisiones && provTotal > 0  ? [{ label: '− Provisiones',        value: COP(provTotal) }] : []),
     { label: '− Gastos',              value: COP(gast) },
-    { label: '', value: '', separator: true },
-    { label: 'Neto libre',            value: COP(Math.max(res.netoLibre, 0)) },
+    { label: 'Neto libre',            value: COP(Math.max(res.netoLibre, 0)), divider: true },
     ...(res.netoLibre < 0
       ? [{ label: 'Tomado de tu saldo', value: COP(-res.netoLibre) }]
       : []),

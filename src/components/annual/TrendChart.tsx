@@ -9,10 +9,17 @@ import { MONTHS, DEFAULTS } from '@/data/defaults'
 import { useTheme } from '@/hooks/useTheme'
 import { deductionGroupFlags } from '@/hooks/useDeductionGroups'
 import { SectionCard } from '@/components/ui/SectionCard'
+import { TOOLTIP_SURFACE } from '@/components/ui/tooltip'
+import { TooltipReadout, type SwatchTone } from '@/components/ui/TooltipReadout'
+import { cn } from '@/lib/utils'
 
 const M = 1_000_000
 
 const SERIES_KEYS = ['oblig', 'prov', 'egres', 'neto'] as const
+
+const SERIES_TONE: Record<'oblig' | 'prov' | 'egres' | 'neto', SwatchTone> = {
+  oblig: 'tax', prov: 'provision', egres: 'expense', neto: 'net',
+}
 type SeriesKey = typeof SERIES_KEYS[number]
 
 interface BarDatum {
@@ -28,7 +35,7 @@ interface Tooltip {
   x: number
   y: number
   label: string
-  values: { label: string; value: number; color: string }[]
+  values: { label: string; value: number; tone: SwatchTone }[]
 }
 
 function get(v: string) {
@@ -222,10 +229,13 @@ export function TrendChart() {
           x: event.clientX - containerRect.left,
           y: event.clientY - containerRect.top,
           label: d.data.label,
-          values: series.map((s, i) => ({
+          values: series.map(s => ({
             label: s.label,
             value: (d.data[s.key] as number) * M,
-            color: colorVars[i],
+            // By meaning, not by the chart's own token: readout/swatch/* is a separate
+            // rung chosen to clear 3:1 on the inverted surface, where the chart's
+            // colours do not (tax measures 1.44 there).
+            tone: SERIES_TONE[s.key],
           })),
         })
         d3.select(this.parentElement).raise()
@@ -266,7 +276,7 @@ export function TrendChart() {
         <svg ref={svgRef} className="w-full block" />
         {tooltip && (
           <div
-            className="absolute z-10 pointer-events-none rounded-xl border border-[var(--border)] bg-[var(--popover)] shadow-lg px-3 py-2.5 text-[11px] min-w-[160px]"
+            className={cn('absolute z-10 pointer-events-none shadow-lg', TOOLTIP_SURFACE)}
             style={{
               left: tooltip.x + 14,
               top:  tooltip.y - 110,
@@ -275,18 +285,10 @@ export function TrendChart() {
                 : 'none',
             }}
           >
-            <div className="ts-body-small-emphasis text-[var(--popover-foreground)] mb-2">
-              {tooltip.label}
-            </div>
-            {tooltip.values.map(v => (
-              <div key={v.label} className="flex items-center gap-1.5 py-[1px]">
-                <span className="w-2 h-2 rounded-[3px] shrink-0" style={{ background: v.color }} />
-                <span className="text-[var(--muted-foreground)] flex-1">{v.label}</span>
-                <span className="ts-amount-small text-[var(--popover-foreground)] pl-3">
-                  {COP(v.value)}
-                </span>
-              </div>
-            ))}
+            <TooltipReadout
+              title={tooltip.label}
+              rows={tooltip.values.map(v => ({ label: v.label, value: COP(v.value), tone: v.tone }))}
+            />
           </div>
         )}
       </div>
