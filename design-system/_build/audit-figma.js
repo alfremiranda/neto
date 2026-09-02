@@ -328,6 +328,27 @@ async function auditPage(pageId) {
     }
   };
 
+  // ── C9 · el titulo de un `doc:` fijado a lo ancho ─────────────────────────
+  // Un `doc:` se nombra por el componente que documenta, y ese nombre cambia. Si
+  // el titulo esta en FIXED, Figma lo dejo clavado al ancho exacto del nombre del
+  // dia en que se escribio: el nombre siguiente envuelve y la segunda linea se
+  // corta, en silencio, porque el alto del nodo no crece con ella.
+  //
+  // Encontrado por Alfredo el 2026-09-02 en `doc: Tooltip` — 65px para un texto
+  // que necesita 73. Al medirlo eran 17 de 79, y las 17 estaban clavadas ~10% mas
+  // estrechas de lo que el texto pedia y a 64px de alto: las 17 ya estaban
+  // cortando su segunda linea. Ninguna se veia rota hasta que el nombre crecio.
+  //
+  // La regla es estrecha a proposito: solo el titulo de un `doc:`. Un parrafo que
+  // envuelve a proposito es otra cosa y no se toca.
+  const c9 = (nd) => {
+    if (nd.type !== 'FRAME' || !/^doc: /.test(nd.name)) return;
+    const t = nd.children.find(c => c.type === 'TEXT');
+    if (!t) return;
+    if (t.layoutSizingHorizontal === 'FIXED')
+      add('C9_titulo_de_doc_en_ancho_fijo', nd.name, Math.round(t.width) + 'px');
+  };
+
   for (const n of page.findAll(() => true)) {
     const path = n.name;
     const ajeno = esMarcaAjena(n);
@@ -343,6 +364,7 @@ async function auditPage(pageId) {
     if (!ajeno && !esSet && unbound(n.strokes)) add('C1b_stroke_sin_variable', path, n.type);
     if (!ajeno) c5(n);
     c7(n);
+    c9(n);
 
     // C8 — un numero de layout escrito a mano. Las instancias quedan fuera: su geometria
     // la decide el componente, no la pantalla que lo usa.

@@ -139,8 +139,8 @@
    "Content",
    "Side=Top|Right|Bottom|Left"
   ],
-  "w": 1187,
-  "h": 96,
+  "w": 620,
+  "h": 127,
   "d": "Short explanation on hover or focus. Side = where it sits relative to the trigger, which is also where the arrow points.\n\nInverts against the page — bg/inverse with fg/on-inverse — so it reads as an overlay and never as part of the content underneath.\n\nContent is an instance-swap, the same shape Sheet uses, added 2026-09-02. The bubble owns the surface, the arrow, the inversion and the 320 cap; what goes inside it is swappable. TooltipText is the default sentence, TooltipReadout is the data readout a chart needs. Forking the bubble to carry a table would have put the inversion in two places.\n\nDesktop only: there is no hover on touch. Anything a mobile user needs to know must be visible without one — for a chart that means the selected point's figures belong in the card's own metrics, not only in this bubble."
  },
  {

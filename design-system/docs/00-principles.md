@@ -176,6 +176,7 @@ through there.
 | `C3` component without a description | knowledge living only in someone's head |
 | `C4` generic layer name | structure that is illegible to whoever arrives next |
 | `C8` layout number without a variable | a gap, padding, radius or border width typed by hand, drifting off the scale one screen at a time |
+| `C9` `doc:` heading pinned to a fixed width | a documentation title clipped by the next rename, silently, because the node's height does not grow with the wrap |
 
 ## A5b. C5, C6 and C7 — what calibrating them cost (2026-08-22)
 
@@ -263,6 +264,31 @@ it exists for.
 
 The cheaper half of the lesson: **read the sibling before building.** All three answers were
 one `get_metadata` call away in a component shipped weeks ago.
+
+### A6d. The scaffolding is not exempt from the system (2026-09-02)
+
+Alfredo found `doc: Tooltip`'s heading clipped: pinned at 65px for a word that needs 73. Measured
+across the file it was **17 of 79**, and all seventeen shared a signature — pinned roughly 10%
+narrower than their own text and 64px tall, which is two line-heights. **Every one of them had
+been clipping its second line since the day it was written.** None of them looked broken, because
+the name that was clipping was the name they had been sized around.
+
+Two things this says.
+
+**A `doc:` frame is chrome for C8's purposes and system material for everything else.** The
+auditor already excludes doc chrome from the layout-number check, because a documentation page's
+padding is page layout and not a spacing decision. That exclusion is right and it quietly taught
+me the wrong general lesson: that the frames are outside the system. They are not. They are what
+Dev and Alfredo actually read.
+
+**A title is named after something that changes.** Any node whose content is a name — a heading, a
+label, a legend — must hug or fill, never sit at a fixed width, because the width was measured
+against one particular string and nothing re-measures it when the string changes. This is the same
+shape as `24-token-sync.md` §1: *a function cannot go stale and a table can.* A hugging title is a
+function of its text; a pinned one is a table with a single row.
+
+Now `C9`. It is deliberately narrow — only the title of a `doc:` frame — because a paragraph that
+wraps on purpose is a different thing and should not be dragged in.
 
 ## A7. The three-piece shape
 
