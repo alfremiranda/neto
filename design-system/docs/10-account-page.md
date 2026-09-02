@@ -114,10 +114,48 @@ I checked the repo before writing this:
 
 ## 5. Three open decisions
 
-**a. The tooltip.** Figma draws it as an inverted bubble (`surface/inverse`, dark background in
-light mode). `TrendChart` in the code draws it with `--popover`: same-tone surface, border, shadow,
-`rounded-xl`. Two different languages for the same object. One has to be chosen before
-implementing, or the app will have two kinds of tooltip.
+**a. ~~The tooltip.~~ RESOLVED 2026-09-02.** It was never a tie. Five call sites already use
+`ui/tooltip.tsx`, which renders `bg-foreground` + `text-background` — the inverted bubble Figma
+draws. `TrendChart.tsx:269` is the only one that hand-rolls `--popover`, and `--popover` is the
+**Popover** component's language: an anchored panel, 288px, desktop-only. `TrendChart` is the
+outlier and migrates.
+
+Three things the choice made me settle, none of which were in the original framing:
+
+1. **A data readout is not a short explanation, but it is not a different bubble either.** Only
+   the CONTENT differs — the surface, the arrow, the inversion and the cap are the same object.
+   So `Tooltip` gained a `Content` instance-swap, the same shape `Sheet` uses, with `TooltipText`
+   as the default sentence and `TooltipReadout` as the readout. Forking the bubble would have put
+   the inversion in two places. `ReadoutRow` carries one line; its `Divider` draws the hairline
+   ABOVE the row, so a group boundary belongs to the row that opens the group instead of being a
+   blank item slipped between two rows, which is what `KPITooltipContent` does today.
+
+2. **The chips cannot follow the mode.** `bg/inverse` is slate/900 in Light and white in Dark, so
+   a swatch that took the current mode's series colour would be painted on the surface it was NOT
+   chosen against. Measured against `bg/inverse`, every category colour fails 3:1 in Dark —
+   `tax` 1.44, `provision` 1.92, `income` 1.80, `net` 2.43, `expense` 2.77 — and `income` also
+   fails in Light at 2.66. `readout/swatch/*` is therefore a single rung per series that clears
+   3:1 on BOTH surfaces (amber/700 5.02·3.56 · red/500 3.76·4.74 · cyan/600 3.68·4.85 ·
+   emerald/600 3.77·4.74 · blue/500 3.68·4.85 · rose/600 4.70·3.80). Same value in both modes, on
+   purpose. The chart's own line keeps its mode pair: it sits on the card, not on the tooltip —
+   one job per token.
+
+   `tax` is the fourth amber/400 contrast failure in two days (ss glyph 1.61, account dot 2.91,
+   Progress fill 1.52, and now 1.44). It is a rung problem, not four site problems.
+
+3. **Mobile gets the readout, and not as a tooltip.** Dev is right that `TrendChart` binds
+   `mousemove`/`mouseleave` only, so on a phone the chart is interactive and the figures never
+   appear. `tooltip.html` already forbids that. The answer is not a touch tooltip: the selected
+   point's figures belong in `AccountSummaryCard`'s own `metrics`, which already exist and already
+   lead with "Saldo actual". Hover on desktop and tap on mobile both do the same thing — move the
+   selection — and the card reads it out. This is how the stock apps in Alfredo's `chart-range`
+   reference behave. The floating bubble becomes desktop sugar on top of a readout that is always
+   visible.
+
+The inverse surface also gained the two roles it was missing, because both were being hand-rolled:
+`fg/on-inverse-subtle` (the label column, 9.1:1 Light / 4.76:1 Dark) and `border/on-inverse` (the
+hairline, decorative, no minimum). `KPITooltipContent`'s hardcoded `white/20` would have drawn a
+white line on the white Dark surface.
 
 **b. ~~The account icon's colour.~~ RESOLVED 2026-09-01.** Neither purple nor grey: it is an
 `AccountAvatar` carrying the account's own hue, which is what `25-account-color.md` §2 always
@@ -239,3 +277,22 @@ page `Page - Accounts` (`396:16108`).
 
 Each removal was found by putting the thing on the real screen, never by reading the component in
 its own `doc:` frame — which is `§A6c`, three times in two days.
+
+### Corrected 2026-09-02 — where the type text goes
+
+This section, `AccountCard`'s description and `TASK-…e §2.5` all said the type sat **junto al
+avatar**, in the header, with the name on a line of its own below. Dev built it on the **meta
+line** and asked, because the generated `accountcard.html` preview showed it there too — my prose
+and my own generated preview had been disagreeing since the badge came out.
+
+Dev's placement wins, for a reason neither of us had written down: **the name is the account's
+identity and the type is a classifier.** A header that leads with the classifier and pushes the
+identity to a second line has the hierarchy backwards, and on the meta line the type stands beside
+the two classifiers it belongs with — currency and number. Dev's own reasons (the savings KIND
+already lives there; a fourth header item truncates the name on a 390 viewport; the type had been
+accessible only through an `aria-hidden` glyph) all hold as well.
+
+Figma now matches: header is `avatar · name · star`, meta is `currency | type | number`, and the
+name is Body/Small-Emphasis clamped to one line with an ellipsis. All twelve variants are 120px
+tall instead of 130/120. The name **does** truncate at 220px — that is the shipped behaviour, and
+the sample name is long on purpose (`§A3.8`).

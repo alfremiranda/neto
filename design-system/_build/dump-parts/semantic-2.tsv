@@ -125,3 +125,5 @@ elevation/overlay/ambient/offset-y	FLOAT	24	24	scale/24	scale/24
 elevation/overlay/key/blur	FLOAT	12	12	scale/12	scale/12
 elevation/overlay/key/spread	FLOAT	-4	-4	scale/-4	scale/-4
 elevation/overlay/key/offset-y	FLOAT	8	8	scale/8	scale/8
+fg/on-inverse-subtle	COLOR	rgba(255,255,255,0.7)	#64748b	color/white/70	color/slate/500
+border/on-inverse	COLOR	rgba(255,255,255,0.2)	rgba(0,0,0,0.2)	color/white/20	color/black/20

@@ -1,212 +1,212 @@
 [
-  {
-    "g": "Cards",
-    "n": "AccountCard",
-    "v": 12,
-    "p": [
-      "Show Account Number",
-      "Show Favorite",
-      "Type=Bank Account|Credit Card|Savings|Cash",
-      "State=Default|Selected|Hover"
-    ],
-    "w": 1000,
-    "h": 516,
-    "d": "Account card. Type × State.\n\nEach type shows different data, which is why this is one set and not four components: Bank Account adds the estimated monthly yield, Credit Card shows limit, debt, % used and the cut/payment dates, Savings shows the CDT maturity countdown, Cash has neither number nor rate.\n\nThe account type is locked after creation — to reclassify, the account must be recreated. The card never needs to handle a type change.\n\nTHE ACCOUNT COLOUR IS THE AVATAR, AND NOTHING ELSE. 2026-09-01: the full-width AccountBanner was removed. It was the card’s only colour and it sat directly above the amount, which is what docs/25-account-color.md §2 forbids in as many words — “cards, rows and amounts stay neutral… an identity colour that only ever appears inside a small circle never shares a surface with a number, so it cannot be mistaken for one.” That boundary is the whole reason twelve hues are safe in an app where cyan already means net, red means expense and amber means tax. The banner also contradicted the code, which has never drawn one.\n\nSo the header now opens with an AccountAvatar (size=SM), which is the sanctioned carrier, paired with the account type as PLAIN TEXT in fg/account — a neutral slate, not the account’s hue.\n\nThat pairing arrived in two steps. Design first dropped the AccountTypeBadge’s leading icon, because the avatar already draws the type glyph and two identical icons side by side stated the same fact twice. Alfredo then removed the badge altogether on 2026-09-01: once the icon was gone, the outlined pill was a container around a word, and a chip that contains only its own label is a border pretending to be information. AccountTypeBadge now has NO consumer anywhere in the file.\n\nThe type still reads as TEXT, which is the form that survives colour blindness and a screen reader — the glyph in the avatar is decorative and announced by nothing. Measured at 11px Medium: 6.92:1 on the default surface, 6.30:1 on selected, 10.99:1 Dark. Small text needs 4.5:1.\n\nBEFORE 2026-09-01 this description said the banner must not be “fixed”. It was written on 08-17, four days before the colour system, and the two decisions had been contradicting each other since. Alfredo settled it on 08-24: the doc wins.\n\naccount/purple/accent is the canvas default on the master, not a decision — each account stores its own hue. The palette is twelve account/{hue}/accent + /surface pairs and the picker is AccountColorPicker. Colour lives on the account record; the design system never names an account."
-  },
-  {
-    "g": "Cards",
-    "n": "AccountCard (legacy)",
-    "v": 1,
-    "p": [],
-    "w": 180,
-    "h": 102,
-    "d": "DEPRECATED — superseded by the AccountCard set above. 180×102, no variants, and it duplicated the name of the set, which made both unusable from the asset panel.\n\nRemap any remaining instances to the set, then delete."
-  },
-  {
-    "g": "Cards",
-    "n": "AccountChart",
-    "v": 4,
-    "p": [
-      "Series=Single|Dual",
-      "Device=Desktop|Mobile"
-    ],
-    "w": 1084,
-    "h": 490,
-    "d": "Balance over time for one account. Series=Single is the balance area alone; Series=Dual adds the debt series beneath it, for credit cards where what is owed grows downward.\n\nBoth series carry a gradient that fades to fully transparent — account-chart/series/*/fill-to is the same hue at 0 alpha, not white — so the fill never turns milky over a dark canvas.\n\nThe marker line is account-chart/marker/line: slate on light, white at 70% on dark, because one fixed grey disappears against one of the two.\n\n2026-09-01 · the static “Últimos 30 días” label was removed from the header. The range is now stated by chart-range, the strip of pills under the chart, and the axis already prints the dates. A fixed label would have contradicted both the moment anyone picked a different range — and a label that can contradict the control next to it is worse than no label."
-  },
-  {
-    "g": "Cards",
-    "n": "AccountSummaryCard",
-    "v": 8,
-    "p": [
-      "Title",
-      "Type=Credit Card|Savings|Bank Account|Cash",
-      "Device=Desktop|Mobile"
-    ],
-    "w": 1156,
-    "h": 1695,
-    "d": "The header card of an account page: name, type and the headline balance. Type follows the account kinds (Bank Account · Cash · Credit Card · Savings) and Device switches the desktop and mobile layouts.\n\n2026-09-01: the OPEN item is closed. The icon was a bare Icon Account painted with account-summary-card/icon/foreground — a fixed purple that could not follow the account. It is now an AccountAvatar (size=SM), the same carrier the account card and the colour picker use, so the account page shows the colour its owner chose. account-summary-card/icon/foreground has no consumer left."
-  },
-  {
-    "g": "Cards",
-    "n": "Card",
-    "v": 2,
-    "p": [
-      "Footer=False|True"
-    ],
-    "w": 712,
-    "h": 218,
-    "d": "The generic surface everything else sits on. Footer = True/False.\n\nSlots: header (title + description), content, footer. The footer carries a top border and is the only part that is optional.\n\nThis is the base of AccountCard, SavingsCard and SectionCard — if the card chrome changes, it changes here."
-  },
-  {
-    "g": "Cards",
-    "n": "DistribucionCard",
-    "v": 1,
-    "p": [],
-    "w": 420,
-    "h": 70,
-    "d": "Where the gross income of the month went, as one bar. Not a chart component — it always shows the same four segments in the same order: Obligaciones · Provisiones · Gastos · Neto libre.\n\nSegments come from chart/categorical/*, so a segment can never drift from the KPI card it corresponds to. Hovering one dims the rest to 40% and reveals its amount on the right.\n\nSegments with a zero amount are not rendered, so the bar can have between one and four."
-  },
-  {
-    "g": "Cards",
-    "n": "KPI-Card",
-    "v": 1,
-    "p": [],
-    "w": 194,
-    "h": 105,
-    "d": "Dashboard KPI tile: label, figure, secondary line. The figure is Amount/Hero — it was bound to Heading/Section, a heading style on money, which the typography spec forbids (§3: money always takes an Amount/* style). The strip’s five figures are the ones a user opens the app to read."
-  },
-  {
-    "g": "Cards",
-    "n": "MetricCard",
-    "v": 2,
-    "p": [
-      "Sub=False|True"
-    ],
-    "w": 432,
-    "h": 140,
-    "d": "A single figure with its label. Sub = True/False.\n\nSits on bg/subtle, not on a card — it is meant to be embedded inside another card, not to stand alone. That is what separates it from KPI-Card, which is a control you can click.\n\nThe figure uses Amount/Large; the label Detail/Large."
-  },
-  {
-    "g": "Cards",
-    "n": "SavingsCard",
-    "v": 18,
-    "p": [
-      "Show Maturity",
-      "Show Yield",
-      "Show Account Number",
-      "Type=Cuenta|CDT|Inversión",
-      "State=Default|Selected|Hover",
-      "Size=Medium|Small"
-    ],
-    "w": 756,
-    "h": 1146,
-    "d": "Savings account card. Type × State × Size.\n\nOnly savings-type accounts appear in the Ahorros view. CDT variants show a maturity countdown — Show Maturity is live on Type=CDT and controls three nodes; it was nearly deleted on 2026-08-20 by a scan that sampled only the first variant of the set.\n\nKnown inconsistency: the variant values are still Spanish (Cuenta | CDT | Inversión) while every other set in the file is English. Worth normalising when this set is next touched."
-  },
-  {
-    "g": "Cards",
-    "n": "SectionCard",
-    "v": 2,
-    "p": [
-      "Action=False|True"
-    ],
-    "w": 792,
-    "h": 136,
-    "d": "THE most used container in the product — 10 files import it. Action = True/False.\n\nA Card with an icon + title header and an optional action on the right. The title uses Heading/Group, which is the most common header in the app precisely because of this component.\n\nEvery list section in the Mes view is one of these: Ingresos, Gastos, Movimientos, Tributarias, Provisiones."
-  },
-  {
-    "g": "Rows",
-    "n": "chart-legend",
-    "v": 1,
-    "p": [],
-    "w": 100,
-    "h": 20,
-    "d": "Legend entry for the annual donut and the 8-month trend bars.\n\nColour comes from chart/categorical/1–5, which alias the KPI tokens — so a legend swatch can never drift from the KPI it labels."
-  },
-  {
-    "g": "Rows",
-    "n": "income-itemrow",
-    "v": 4,
-    "p": [
-      "Device=Desktop|Mobile",
-      "State=Default|Confirming|Pressed"
-    ],
-    "w": 630,
-    "h": 404,
-    "d": "Income row. State=Pressed is the mobile tap feedback (the row is a button on mobile, a static line on desktop); State=Confirming is the desktop inline delete confirmation, where the danger icon button is replaced by a filled danger button reading “¿Eliminar?”.\n\nThe account chip is AccountBadge, not a generic Badge: it carries the account’s colour dot."
-  },
-  {
-    "g": "Rows",
-    "n": "outcome-itemrow",
-    "v": 8,
-    "p": [
-      "Monthly",
-      "Device=Desktop|Mobile",
-      "Schedule=True|False",
-      "State=Default|Confirming|Pressed"
-    ],
-    "w": 643,
-    "h": 836,
-    "d": "Expense row. State=Pressed is the mobile tap feedback; State=Confirming is the desktop inline delete confirmation, where the danger icon button is replaced by a filled danger button reading “¿Eliminar?”. Schedule marks a scheduled expense; Monthly is a boolean on top of it.\n\nThe account chip is AccountBadge, not a generic Badge. In code it was a generic one until 2026-08-22, which is why the colour dot was missing from every expense row."
-  },
-  {
-    "g": "Rows",
-    "n": "savings-itemrow",
-    "v": 2,
-    "p": [
-      "Show Hint",
-      "Device=Desktop|Mobile"
-    ],
-    "w": 441,
-    "h": 200,
-    "d": "Contribution to a savings account.\n\nNot an expense: it does not reduce neto libre. Getting this wrong double-counted savings until the v5 migration fixed it."
-  },
-  {
-    "g": "Rows",
-    "n": "ss-itemrow/ss",
-    "v": 1,
-    "p": [],
-    "w": 223,
-    "h": 53,
-    "d": "Social-security line: salud, pensión, ARL.\n\nNaming: the slash creates a phantom “ss-itemrow” group in the layer tree containing a single “ss”. Rename to ss-itemrow."
-  },
-  {
-    "g": "Rows",
-    "n": "transfer-itemrow",
-    "v": 3,
-    "p": [
-      "Device=Desktop|Mobile",
-      "State=Default|Pressed"
-    ],
-    "w": 630,
-    "h": 263,
-    "d": "Transfer row. State=Pressed is the mobile tap feedback (the row is a button on mobile, a static line on desktop). No Confirming state: unlike income and outcome rows, the transfer row has no inline delete confirmation in code."
-  },
-  {
-    "g": "Rows",
-    "n": "obligation-itemrow",
-    "v": 2,
-    "p": [
-      "Show Badge",
-      "Show USD",
-      "Show Divider",
-      "State=Default|Dimmed"
-    ],
-    "w": 560,
-    "h": 174,
-    "d": "Obligations row — the line inside ObligacionesCard. Modelled from ItemRow in code: label, an optional percentage badge, and a right-aligned amount column of 104px with an optional USD line under it. State=Dimmed is the 35% opacity the code applies to obligations that do not apply this month. Show divider off is the last row of the list."
-  },
-  {
-    "g": "Rows",
-    "n": "ledger-itemrow",
-    "v": 12,
-    "p": [
-      "Device=Desktop|Mobile",
-      "Flow=Debit|Credit",
-      "State=Default|Scheduled|Confirming|Opening"
-    ],
-    "w": 651,
-    "h": 1046,
-    "d": "One entry in an account’s ledger. The five sibling rows each show one KIND of thing in its own view; this one shows whatever the account did, in date order, so a single row has to carry an income, an expense, both legs of a transfer and a social-security payment.\n\nThat is why the leading mark is a nested LedgerEntryIcon swap and not an axis. Six entry types times the axes below would be sixty variants for a fact the entry already carries.\n\nThree axes, and the matrix is deliberately sparse:\n· Device — Desktop edits and deletes in place; Mobile opens RowActionsSheet behind one button.\n· Flow — Credit prints the sign and paints the amount fg/provision; Debit leaves it fg/default. This is the one thing the siblings never needed, because each of them only ever moves money one way.\n· State — Default, Scheduled, Confirming, Opening. Confirming is Desktop only: it is the inline delete confirmation, and Mobile confirms inside the sheet. There is no Pressed, which the siblings do have, because this row has no pressed styling in code — the mobile tap opens the sheet and nothing else happens.\n\nScheduled is a state of the ENTRY, not of the row: the whole row drops to 60%, the mark becomes the clock whatever the type underneath, and the “Programado” badge appears on the metadata line.\n\nTHE BADGE SITS ON THE METADATA LINE, not beside the description, and that is the row family’s answer rather than a preference. The first build put it next to the description and capped the description with maxWidth so the badge could never be squeezed. That cap cannot survive: maxWidth is one of the few properties Figma refuses to override per instance, so a cap authored for a 603 row still truncated at 942, where the account page actually uses it. outcome-itemrow had already solved it — description alone on its line, FILL, truncating, no cap; badges and date below as chips that hug. It adapts to any width because nothing is pinned.\n\nState=Opening is the account’s STARTING balance, and it is a row rather than the strip it used to be above the list. That is the whole change: as a strip it had its own background and its own edges and read as a lid on the table; as a row it takes the same rules, the same left rail and the same right edge as the movements it explains, so the card is one table. It sits LAST, because the ledger runs newest first.\n\nIt carries the same mark and the same trailing actions as every other row — Alfredo’s call on 2026-09-01, and the right one. The first build replaced both with blank spacers on the reasoning that a starting balance is not a movement, which kept the columns aligned but made the row read as a footer that had lost its furniture. Giving it a mark of its own (LedgerEntryIcon Type=opening: a wallet on the neutral tint) says what it is instead of saying what it is missing, and keeping the actions means the whole column behaves the same way down the card.\n\nIt still carries no date and no running balance: at the opening, the amount IS the balance.\n\nOPEN for Dev — “eliminar” has no target here. A starting balance is a FIELD on the account (Account.startingBalance), not a ledger entry, so the pencil should open the account edit sheet and the bin has nothing to delete; clearing it means setting the field to null, which is an edit. Either the bin goes on this row or it means “borrar el saldo inicial”, and that is a product decision, not a design one.\n\nFlow is INERT on Opening and it is minted only at Flow=Debit. A starting balance has no direction. The alternative was two identical variants to keep the matrix square, which is a variant nobody maintains.\n\nMobile RESTACKS into three lines — amounts, description, metadata — and again the family got there first. At the account page’s 346 the single-line desktop shape has to fit a description, a date, an amount column, the mark and an action: it cannot, and something has to truncate. Stacking gives the text the full width instead. Desktop keeps one line.\n\nMobile’s action is Icon Button Size=XL (44), not LG. 44 is the 2.5.5 touch target and it is what the sibling rows use on Mobile. Desktop stays LG (36), where there is a pointer.\n\nOn Desktop the amount block HUGS its content and its children are right-aligned. It was pinned to 104 until 2026-09-01 on my reasoning that a leading “+” would otherwise shift the column between neighbouring rows. That reasoning was wrong and I never measured it: with right alignment the “+” extends LEFTWARD, so the right edge never moves. Measured after Alfredo changed it — every Default, Scheduled and Opening row lands its right edge at the same x, and the pin was solving a problem the alignment already solved.\n\nThe pin also had a cost it could not pay: `-USD 12.534,00` at Amount/Base measures 116 and wrapped to two lines inside 104, so a USD account got a different row height from a COP one. Hugging fixes that for free, at any currency and any string length. On Mobile the amounts move into the stack and none of this applies.\n\nCLOSED 2026-09-01 — the six differences this row opened against the code are all implemented (`a082dbfa`, `03173232`): the mobile restack, the 44px mobile target, Body/Base-Emphasis, Amount/Micro, the LG desktop actions and the badge on the metadata line. Dev flagged three of them as stale here; it was six. Verified in the source, not taken on trust.\n\nOne difference is left and it is small: the metadata line orders it [date][badge], the family and this component order it [badge][date] — outcome-itemrow puts its chips before the date. Not worth a ticket on its own; fold it into the next thing that touches the row."
-  }
+ {
+  "g": "Cards",
+  "n": "AccountCard",
+  "v": 12,
+  "p": [
+   "Show Account Number",
+   "Show Favorite",
+   "Type=Bank Account|Credit Card|Savings|Cash",
+   "State=Default|Selected|Hover"
+  ],
+  "w": 1000,
+  "h": 456,
+  "d": "Account card. Type × State.\n\nEach type shows different data, which is why this is one set and not four components: Bank Account adds the estimated monthly yield, Credit Card shows limit, debt, % used and the cut/payment dates, Savings shows the CDT maturity countdown, Cash has neither number nor rate.\n\nThe account type is locked after creation — to reclassify, the account must be recreated. The card never needs to handle a type change.\n\nTHE ACCOUNT COLOUR IS THE AVATAR, AND NOTHING ELSE. 2026-09-01: the full-width AccountBanner was removed. It was the card’s only colour and it sat directly above the amount, which is what docs/25-account-color.md §2 forbids in as many words — “cards, rows and amounts stay neutral… an identity colour that only ever appears inside a small circle never shares a surface with a number, so it cannot be mistaken for one.” That boundary is the whole reason twelve hues are safe in an app where cyan already means net, red means expense and amber means tax. The banner also contradicted the code, which has never drawn one.\n\nSo the header now opens with an AccountAvatar (size=SM), which is the sanctioned carrier, followed by the account NAME and the favourite star. The account type is PLAIN TEXT in fg/account — a neutral slate, not the account’s hue — and it sits on the META line, between the currency badge and the number.\n\nCORRECTED 2026-09-02. Until today this description, docs/10-account-page.md §10 and the handoff all said the type sat “junto al avatar” in the header, with the name on a line of its own below. Dev built it on the meta line instead and asked. Dev is right, for a reason neither of us wrote down: the name is the account’s identity and the type is a classifier, so a header that leads with the classifier and demotes the identity to the second line has the hierarchy backwards. On the meta line the type also joins the other two classifiers it belongs with — currency and number — and the header stops competing for width.\n\nThe name is Body/Small-Emphasis, one line, ellipsis. It truncates: “Bancolombia Ahorros” does not fit beside a 24px avatar and a star inside a 220px card. That is the shipped behaviour, not an oversight, and the sample content is long on purpose so the card is authored against the case that actually happens.\n\nThat pairing arrived in two steps. Design first dropped the AccountTypeBadge’s leading icon, because the avatar already draws the type glyph and two identical icons side by side stated the same fact twice. Alfredo then removed the badge altogether on 2026-09-01: once the icon was gone, the outlined pill was a container around a word, and a chip that contains only its own label is a border pretending to be information. AccountTypeBadge now has NO consumer anywhere in the file.\n\nThe type still reads as TEXT, which is the form that survives colour blindness and a screen reader — the glyph in the avatar is decorative and announced by nothing. Measured at 11px Medium: 6.92:1 on the default surface, 6.30:1 on selected, 10.99:1 Dark. Small text needs 4.5:1.\n\nBEFORE 2026-09-01 this description said the banner must not be “fixed”. It was written on 08-17, four days before the colour system, and the two decisions had been contradicting each other since. Alfredo settled it on 08-24: the doc wins.\n\naccount/purple/accent is the canvas default on the master, not a decision — each account stores its own hue. The palette is twelve account/{hue}/accent + /surface pairs and the picker is AccountColorPicker. Colour lives on the account record; the design system never names an account."
+ },
+ {
+  "g": "Cards",
+  "n": "AccountCard (legacy)",
+  "v": 1,
+  "p": [],
+  "w": 180,
+  "h": 102,
+  "d": "DEPRECATED — superseded by the AccountCard set above. 180×102, no variants, and it duplicated the name of the set, which made both unusable from the asset panel.\n\nRemap any remaining instances to the set, then delete."
+ },
+ {
+  "g": "Cards",
+  "n": "AccountChart",
+  "v": 4,
+  "p": [
+   "Series=Single|Dual",
+   "Device=Desktop|Mobile"
+  ],
+  "w": 1084,
+  "h": 490,
+  "d": "Balance over time for one account. Series=Single is the balance area alone; Series=Dual adds the debt series beneath it, for credit cards where what is owed grows downward.\n\nBoth series carry a gradient that fades to fully transparent — account-chart/series/*/fill-to is the same hue at 0 alpha, not white — so the fill never turns milky over a dark canvas.\n\nThe marker line is account-chart/marker/line: slate on light, white at 70% on dark, because one fixed grey disappears against one of the two.\n\n2026-09-01 · the static “Últimos 30 días” label was removed from the header. The range is now stated by chart-range, the strip of pills under the chart, and the axis already prints the dates. A fixed label would have contradicted both the moment anyone picked a different range — and a label that can contradict the control next to it is worse than no label."
+ },
+ {
+  "g": "Cards",
+  "n": "AccountSummaryCard",
+  "v": 8,
+  "p": [
+   "Title",
+   "Type=Credit Card|Savings|Bank Account|Cash",
+   "Device=Desktop|Mobile"
+  ],
+  "w": 1156,
+  "h": 1695,
+  "d": "The header card of an account page: name, type and the headline balance. Type follows the account kinds (Bank Account · Cash · Credit Card · Savings) and Device switches the desktop and mobile layouts.\n\n2026-09-01: the OPEN item is closed. The icon was a bare Icon Account painted with account-summary-card/icon/foreground — a fixed purple that could not follow the account. It is now an AccountAvatar (size=SM), the same carrier the account card and the colour picker use, so the account page shows the colour its owner chose. account-summary-card/icon/foreground has no consumer left."
+ },
+ {
+  "g": "Cards",
+  "n": "Card",
+  "v": 2,
+  "p": [
+   "Footer=False|True"
+  ],
+  "w": 712,
+  "h": 218,
+  "d": "The generic surface everything else sits on. Footer = True/False.\n\nSlots: header (title + description), content, footer. The footer carries a top border and is the only part that is optional.\n\nThis is the base of AccountCard, SavingsCard and SectionCard — if the card chrome changes, it changes here."
+ },
+ {
+  "g": "Cards",
+  "n": "DistribucionCard",
+  "v": 1,
+  "p": [],
+  "w": 420,
+  "h": 70,
+  "d": "Where the gross income of the month went, as one bar. Not a chart component — it always shows the same four segments in the same order: Obligaciones · Provisiones · Gastos · Neto libre.\n\nSegments come from chart/categorical/*, so a segment can never drift from the KPI card it corresponds to. Hovering one dims the rest to 40% and reveals its amount on the right.\n\nSegments with a zero amount are not rendered, so the bar can have between one and four."
+ },
+ {
+  "g": "Cards",
+  "n": "KPI-Card",
+  "v": 1,
+  "p": [],
+  "w": 194,
+  "h": 105,
+  "d": "Dashboard KPI tile: label, figure, secondary line. The figure is Amount/Hero — it was bound to Heading/Section, a heading style on money, which the typography spec forbids (§3: money always takes an Amount/* style). The strip’s five figures are the ones a user opens the app to read."
+ },
+ {
+  "g": "Cards",
+  "n": "MetricCard",
+  "v": 2,
+  "p": [
+   "Sub=False|True"
+  ],
+  "w": 432,
+  "h": 140,
+  "d": "A single figure with its label. Sub = True/False.\n\nSits on bg/subtle, not on a card — it is meant to be embedded inside another card, not to stand alone. That is what separates it from KPI-Card, which is a control you can click.\n\nThe figure uses Amount/Large; the label Detail/Large."
+ },
+ {
+  "g": "Cards",
+  "n": "SavingsCard",
+  "v": 18,
+  "p": [
+   "Show Maturity",
+   "Show Yield",
+   "Show Account Number",
+   "Type=Cuenta|CDT|Inversión",
+   "State=Default|Selected|Hover",
+   "Size=Medium|Small"
+  ],
+  "w": 756,
+  "h": 1146,
+  "d": "Savings account card. Type × State × Size.\n\nOnly savings-type accounts appear in the Ahorros view. CDT variants show a maturity countdown — Show Maturity is live on Type=CDT and controls three nodes; it was nearly deleted on 2026-08-20 by a scan that sampled only the first variant of the set.\n\nKnown inconsistency: the variant values are still Spanish (Cuenta | CDT | Inversión) while every other set in the file is English. Worth normalising when this set is next touched."
+ },
+ {
+  "g": "Cards",
+  "n": "SectionCard",
+  "v": 2,
+  "p": [
+   "Action=False|True"
+  ],
+  "w": 792,
+  "h": 136,
+  "d": "THE most used container in the product — 10 files import it. Action = True/False.\n\nA Card with an icon + title header and an optional action on the right. The title uses Heading/Group, which is the most common header in the app precisely because of this component.\n\nEvery list section in the Mes view is one of these: Ingresos, Gastos, Movimientos, Tributarias, Provisiones."
+ },
+ {
+  "g": "Rows",
+  "n": "chart-legend",
+  "v": 1,
+  "p": [],
+  "w": 100,
+  "h": 20,
+  "d": "Legend entry for the annual donut and the 8-month trend bars.\n\nColour comes from chart/categorical/1–5, which alias the KPI tokens — so a legend swatch can never drift from the KPI it labels."
+ },
+ {
+  "g": "Rows",
+  "n": "income-itemrow",
+  "v": 4,
+  "p": [
+   "Device=Desktop|Mobile",
+   "State=Default|Confirming|Pressed"
+  ],
+  "w": 630,
+  "h": 404,
+  "d": "Income row. State=Pressed is the mobile tap feedback (the row is a button on mobile, a static line on desktop); State=Confirming is the desktop inline delete confirmation, where the danger icon button is replaced by a filled danger button reading “¿Eliminar?”.\n\nThe account chip is AccountBadge, not a generic Badge: it carries the account’s colour dot."
+ },
+ {
+  "g": "Rows",
+  "n": "outcome-itemrow",
+  "v": 8,
+  "p": [
+   "Monthly",
+   "Device=Desktop|Mobile",
+   "Schedule=True|False",
+   "State=Default|Confirming|Pressed"
+  ],
+  "w": 643,
+  "h": 836,
+  "d": "Expense row. State=Pressed is the mobile tap feedback; State=Confirming is the desktop inline delete confirmation, where the danger icon button is replaced by a filled danger button reading “¿Eliminar?”. Schedule marks a scheduled expense; Monthly is a boolean on top of it.\n\nThe account chip is AccountBadge, not a generic Badge. In code it was a generic one until 2026-08-22, which is why the colour dot was missing from every expense row."
+ },
+ {
+  "g": "Rows",
+  "n": "savings-itemrow",
+  "v": 2,
+  "p": [
+   "Show Hint",
+   "Device=Desktop|Mobile"
+  ],
+  "w": 441,
+  "h": 200,
+  "d": "Contribution to a savings account.\n\nNot an expense: it does not reduce neto libre. Getting this wrong double-counted savings until the v5 migration fixed it."
+ },
+ {
+  "g": "Rows",
+  "n": "ss-itemrow/ss",
+  "v": 1,
+  "p": [],
+  "w": 223,
+  "h": 53,
+  "d": "Social-security line: salud, pensión, ARL.\n\nNaming: the slash creates a phantom “ss-itemrow” group in the layer tree containing a single “ss”. Rename to ss-itemrow."
+ },
+ {
+  "g": "Rows",
+  "n": "transfer-itemrow",
+  "v": 3,
+  "p": [
+   "Device=Desktop|Mobile",
+   "State=Default|Pressed"
+  ],
+  "w": 630,
+  "h": 263,
+  "d": "Transfer row. State=Pressed is the mobile tap feedback (the row is a button on mobile, a static line on desktop). No Confirming state: unlike income and outcome rows, the transfer row has no inline delete confirmation in code."
+ },
+ {
+  "g": "Rows",
+  "n": "obligation-itemrow",
+  "v": 2,
+  "p": [
+   "Show Badge",
+   "Show USD",
+   "Show Divider",
+   "State=Default|Dimmed"
+  ],
+  "w": 560,
+  "h": 174,
+  "d": "Obligations row — the line inside ObligacionesCard. Modelled from ItemRow in code: label, an optional percentage badge, and a right-aligned amount column of 104px with an optional USD line under it. State=Dimmed is the 35% opacity the code applies to obligations that do not apply this month. Show divider off is the last row of the list."
+ },
+ {
+  "g": "Rows",
+  "n": "ledger-itemrow",
+  "v": 12,
+  "p": [
+   "Device=Desktop|Mobile",
+   "Flow=Debit|Credit",
+   "State=Default|Scheduled|Confirming|Opening"
+  ],
+  "w": 651,
+  "h": 1046,
+  "d": "One entry in an account’s ledger. The five sibling rows each show one KIND of thing in its own view; this one shows whatever the account did, in date order, so a single row has to carry an income, an expense, both legs of a transfer and a social-security payment.\n\nThat is why the leading mark is a nested LedgerEntryIcon swap and not an axis. Six entry types times the axes below would be sixty variants for a fact the entry already carries.\n\nThree axes, and the matrix is deliberately sparse:\n· Device — Desktop edits and deletes in place; Mobile opens RowActionsSheet behind one button.\n· Flow — Credit prints the sign and paints the amount fg/provision; Debit leaves it fg/default. This is the one thing the siblings never needed, because each of them only ever moves money one way.\n· State — Default, Scheduled, Confirming, Opening. Confirming is Desktop only: it is the inline delete confirmation, and Mobile confirms inside the sheet. There is no Pressed, which the siblings do have, because this row has no pressed styling in code — the mobile tap opens the sheet and nothing else happens.\n\nScheduled is a state of the ENTRY, not of the row: the whole row drops to 60%, the mark becomes the clock whatever the type underneath, and the “Programado” badge appears on the metadata line.\n\nTHE BADGE SITS ON THE METADATA LINE, not beside the description, and that is the row family’s answer rather than a preference. The first build put it next to the description and capped the description with maxWidth so the badge could never be squeezed. That cap cannot survive: maxWidth is one of the few properties Figma refuses to override per instance, so a cap authored for a 603 row still truncated at 942, where the account page actually uses it. outcome-itemrow had already solved it — description alone on its line, FILL, truncating, no cap; badges and date below as chips that hug. It adapts to any width because nothing is pinned.\n\nState=Opening is the account’s STARTING balance, and it is a row rather than the strip it used to be above the list. That is the whole change: as a strip it had its own background and its own edges and read as a lid on the table; as a row it takes the same rules, the same left rail and the same right edge as the movements it explains, so the card is one table. It sits LAST, because the ledger runs newest first.\n\nIt carries the same mark and the same trailing actions as every other row — Alfredo’s call on 2026-09-01, and the right one. The first build replaced both with blank spacers on the reasoning that a starting balance is not a movement, which kept the columns aligned but made the row read as a footer that had lost its furniture. Giving it a mark of its own (LedgerEntryIcon Type=opening: a wallet on the neutral tint) says what it is instead of saying what it is missing, and keeping the actions means the whole column behaves the same way down the card.\n\nIt still carries no date and no running balance: at the opening, the amount IS the balance.\n\nOPEN for Dev — “eliminar” has no target here. A starting balance is a FIELD on the account (Account.startingBalance), not a ledger entry, so the pencil should open the account edit sheet and the bin has nothing to delete; clearing it means setting the field to null, which is an edit. Either the bin goes on this row or it means “borrar el saldo inicial”, and that is a product decision, not a design one.\n\nFlow is INERT on Opening and it is minted only at Flow=Debit. A starting balance has no direction. The alternative was two identical variants to keep the matrix square, which is a variant nobody maintains.\n\nMobile RESTACKS into three lines — amounts, description, metadata — and again the family got there first. At the account page’s 346 the single-line desktop shape has to fit a description, a date, an amount column, the mark and an action: it cannot, and something has to truncate. Stacking gives the text the full width instead. Desktop keeps one line.\n\nMobile’s action is Icon Button Size=XL (44), not LG. 44 is the 2.5.5 touch target and it is what the sibling rows use on Mobile. Desktop stays LG (36), where there is a pointer.\n\nOn Desktop the amount block HUGS its content and its children are right-aligned. It was pinned to 104 until 2026-09-01 on my reasoning that a leading “+” would otherwise shift the column between neighbouring rows. That reasoning was wrong and I never measured it: with right alignment the “+” extends LEFTWARD, so the right edge never moves. Measured after Alfredo changed it — every Default, Scheduled and Opening row lands its right edge at the same x, and the pin was solving a problem the alignment already solved.\n\nThe pin also had a cost it could not pay: `-USD 12.534,00` at Amount/Base measures 116 and wrapped to two lines inside 104, so a USD account got a different row height from a COP one. Hugging fixes that for free, at any currency and any string length. On Mobile the amounts move into the stack and none of this applies.\n\nCLOSED 2026-09-01 — the six differences this row opened against the code are all implemented (`a082dbfa`, `03173232`): the mobile restack, the 44px mobile target, Body/Base-Emphasis, Amount/Micro, the LG desktop actions and the badge on the metadata line. Dev flagged three of them as stale here; it was six. Verified in the source, not taken on trust.\n\nOne difference is left and it is small: the metadata line orders it [date][badge], the family and this component order it [badge][date] — outcome-itemrow puts its chips before the date. Not worth a ticket on its own; fold it into the next thing that touches the row."
+ }
 ]

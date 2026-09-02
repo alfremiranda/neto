@@ -204,8 +204,8 @@
    "State=Default|Selected|Hover"
   ],
   "w": 1000,
-  "h": 516,
-  "d": "Account card. Type × State.\n\nEach type shows different data, which is why this is one set and not four components: Bank Account adds the estimated monthly yield, Credit Card shows limit, debt, % used and the cut/payment dates, Savings shows the CDT maturity countdown, Cash has neither number nor rate.\n\nThe account type is locked after creation — to reclassify, the account must be recreated. The card never needs to handle a type change.\n\nTHE ACCOUNT COLOUR IS THE AVATAR, AND NOTHING ELSE. 2026-09-01: the full-width AccountBanner was removed. It was the card’s only colour and it sat directly above the amount, which is what docs/25-account-color.md §2 forbids in as many words — “cards, rows and amounts stay neutral… an identity colour that only ever appears inside a small circle never shares a surface with a number, so it cannot be mistaken for one.” That boundary is the whole reason twelve hues are safe in an app where cyan already means net, red means expense and amber means tax. The banner also contradicted the code, which has never drawn one.\n\nSo the header now opens with an AccountAvatar (size=SM), which is the sanctioned carrier, paired with the account type as PLAIN TEXT in fg/account — a neutral slate, not the account’s hue.\n\nThat pairing arrived in two steps. Design first dropped the AccountTypeBadge’s leading icon, because the avatar already draws the type glyph and two identical icons side by side stated the same fact twice. Alfredo then removed the badge altogether on 2026-09-01: once the icon was gone, the outlined pill was a container around a word, and a chip that contains only its own label is a border pretending to be information. AccountTypeBadge now has NO consumer anywhere in the file.\n\nThe type still reads as TEXT, which is the form that survives colour blindness and a screen reader — the glyph in the avatar is decorative and announced by nothing. Measured at 11px Medium: 6.92:1 on the default surface, 6.30:1 on selected, 10.99:1 Dark. Small text needs 4.5:1.\n\nBEFORE 2026-09-01 this description said the banner must not be “fixed”. It was written on 08-17, four days before the colour system, and the two decisions had been contradicting each other since. Alfredo settled it on 08-24: the doc wins.\n\naccount/purple/accent is the canvas default on the master, not a decision — each account stores its own hue. The palette is twelve account/{hue}/accent + /surface pairs and the picker is AccountColorPicker. Colour lives on the account record; the design system never names an account."
+  "h": 456,
+  "d": "Account card. Type × State.\n\nEach type shows different data, which is why this is one set and not four components: Bank Account adds the estimated monthly yield, Credit Card shows limit, debt, % used and the cut/payment dates, Savings shows the CDT maturity countdown, Cash has neither number nor rate.\n\nThe account type is locked after creation — to reclassify, the account must be recreated. The card never needs to handle a type change.\n\nTHE ACCOUNT COLOUR IS THE AVATAR, AND NOTHING ELSE. 2026-09-01: the full-width AccountBanner was removed. It was the card’s only colour and it sat directly above the amount, which is what docs/25-account-color.md §2 forbids in as many words — “cards, rows and amounts stay neutral… an identity colour that only ever appears inside a small circle never shares a surface with a number, so it cannot be mistaken for one.” That boundary is the whole reason twelve hues are safe in an app where cyan already means net, red means expense and amber means tax. The banner also contradicted the code, which has never drawn one.\n\nSo the header now opens with an AccountAvatar (size=SM), which is the sanctioned carrier, followed by the account NAME and the favourite star. The account type is PLAIN TEXT in fg/account — a neutral slate, not the account’s hue — and it sits on the META line, between the currency badge and the number.\n\nCORRECTED 2026-09-02. Until today this description, docs/10-account-page.md §10 and the handoff all said the type sat “junto al avatar” in the header, with the name on a line of its own below. Dev built it on the meta line instead and asked. Dev is right, for a reason neither of us wrote down: the name is the account’s identity and the type is a classifier, so a header that leads with the classifier and demotes the identity to the second line has the hierarchy backwards. On the meta line the type also joins the other two classifiers it belongs with — currency and number — and the header stops competing for width.\n\nThe name is Body/Small-Emphasis, one line, ellipsis. It truncates: “Bancolombia Ahorros” does not fit beside a 24px avatar and a star inside a 220px card. That is the shipped behaviour, not an oversight, and the sample content is long on purpose so the card is authored against the case that actually happens.\n\nThat pairing arrived in two steps. Design first dropped the AccountTypeBadge’s leading icon, because the avatar already draws the type glyph and two identical icons side by side stated the same fact twice. Alfredo then removed the badge altogether on 2026-09-01: once the icon was gone, the outlined pill was a container around a word, and a chip that contains only its own label is a border pretending to be information. AccountTypeBadge now has NO consumer anywhere in the file.\n\nThe type still reads as TEXT, which is the form that survives colour blindness and a screen reader — the glyph in the avatar is decorative and announced by nothing. Measured at 11px Medium: 6.92:1 on the default surface, 6.30:1 on selected, 10.99:1 Dark. Small text needs 4.5:1.\n\nBEFORE 2026-09-01 this description said the banner must not be “fixed”. It was written on 08-17, four days before the colour system, and the two decisions had been contradicting each other since. Alfredo settled it on 08-24: the doc wins.\n\naccount/purple/accent is the canvas default on the master, not a decision — each account stores its own hue. The palette is twelve account/{hue}/accent + /surface pairs and the picker is AccountColorPicker. Colour lives on the account record; the design system never names an account."
  },
  {
   "g": "Cards",
@@ -852,6 +852,21 @@
  },
  {
   "g": "Overlays",
+  "n": "ReadoutRow",
+  "v": 4,
+  "p": [
+   "Label",
+   "Amount",
+   "Swatch",
+   "Divider=False|True",
+   "State=Default|Dim"
+  ],
+  "w": 264,
+  "h": 208,
+  "d": "One line of a data readout: chip, label, figure. It only ever appears inside TooltipReadout, on bg/inverse.\n\nDivider draws the hairline ABOVE the row, so a group boundary belongs to the row that opens the group instead of being a blank item slipped between two rows. Dim is the muted state for a line that is present but not in play.\n\nSwatch hides the chip for a line that names no series — a total, a note.\n\nThe chip is readout/swatch/*, deliberately the same value in Light and Dark: the surface under it flips, so a colour that followed the mode would land on the surface it was not chosen against. Measured on the Dark surface, every category colour fails 3:1 that way (1.44 to 2.77)."
+ },
+ {
+  "g": "Overlays",
   "n": "RowActionsSheet",
   "v": 2,
   "p": [
@@ -888,11 +903,36 @@
   "n": "Tooltip",
   "v": 4,
   "p": [
+   "Content",
    "Side=Top|Right|Bottom|Left"
   ],
-  "w": 1051,
-  "h": 116,
-  "d": "Short explanation on hover or focus. Side = where it sits relative to the trigger, which is also where the arrow points.\n\nInverts against the page — bg/inverse with fg/on-inverse — so it reads as an overlay and never as part of the content underneath.\n\nDesktop only: there is no hover on touch. Anything a mobile user needs to know must be visible without one."
+  "w": 1187,
+  "h": 96,
+  "d": "Short explanation on hover or focus. Side = where it sits relative to the trigger, which is also where the arrow points.\n\nInverts against the page — bg/inverse with fg/on-inverse — so it reads as an overlay and never as part of the content underneath.\n\nContent is an instance-swap, the same shape Sheet uses, added 2026-09-02. The bubble owns the surface, the arrow, the inversion and the 320 cap; what goes inside it is swappable. TooltipText is the default sentence, TooltipReadout is the data readout a chart needs. Forking the bubble to carry a table would have put the inversion in two places.\n\nDesktop only: there is no hover on touch. Anything a mobile user needs to know must be visible without one — for a chart that means the selected point's figures belong in the card's own metrics, not only in this bubble."
+ },
+ {
+  "g": "Overlays",
+  "n": "TooltipReadout",
+  "v": 1,
+  "p": [
+   "Title",
+   "Show title",
+   "Rows"
+  ],
+  "w": 184,
+  "h": 92,
+  "d": "A data readout: a titled list of series, each one a colour chip, a label and a figure. It goes inside Tooltip · Content when the tooltip is reading data rather than explaining something.\n\nIt is a separate component and not a Tooltip variant because only the content differs — the surface, the arrow, the inversion and the cap are the same object, and forking them would have put the inversion in two places.\n\nRows is a slot that takes ReadoutRow. Title is the point being read: a date on a chart, the metric name on a KPI.\n\nThe chips do not use the chart's own series colours. Those are chosen against the card; this sits on bg/inverse, which is the opposite surface. See readout/swatch/*."
+ },
+ {
+  "g": "Overlays",
+  "n": "TooltipText",
+  "v": 1,
+  "p": [
+   "Text"
+  ],
+  "w": 239,
+  "h": 20,
+  "d": "The default occupant of Tooltip · Content: one short sentence, Body/Small on fg/on-inverse.\n\nIt exists because an instance-swap property needs a component as its default and a bare text node cannot be one — the same reason SheetContent exists."
  },
  {
   "g": "Rows",

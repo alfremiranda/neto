@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-08-22",
+  "exportedAt": "2026-09-02",
   "file": "Document",
   "fileKey": "Q2R72oH6MYxYr1VKAe5nOx",
   "exportedFrom": "Document",
@@ -1075,6 +1075,16 @@
           "elevation/overlay/key/offset-y",
           8,
           8
+        ],
+        [
+          "fg/on-inverse-subtle",
+          "rgba(255,255,255,0.7)",
+          "#64748b"
+        ],
+        [
+          "border/on-inverse",
+          "rgba(255,255,255,0.2)",
+          "rgba(0,0,0,0.2)"
         ]
       ]
     },
@@ -1975,6 +1985,41 @@
           "action-chip/disabled/foreground",
           "#334155",
           "#cbd5e1"
+        ],
+        [
+          "readout/swatch/tax",
+          "#b45309",
+          "#b45309"
+        ],
+        [
+          "readout/swatch/expense",
+          "#ef4444",
+          "#ef4444"
+        ],
+        [
+          "readout/swatch/net",
+          "#0891b2",
+          "#0891b2"
+        ],
+        [
+          "readout/swatch/provision",
+          "#059669",
+          "#059669"
+        ],
+        [
+          "readout/swatch/income",
+          "#3b82f6",
+          "#3b82f6"
+        ],
+        [
+          "readout/swatch/balance",
+          "#0891b2",
+          "#0891b2"
+        ],
+        [
+          "readout/swatch/debt",
+          "#e11d48",
+          "#e11d48"
         ]
       ]
     }
@@ -4685,6 +4730,32 @@
       }
     },
     {
+      "collection": "Semantic",
+      "name": "fg/on-inverse-subtle",
+      "type": "COLOR",
+      "values": {
+        "Light": "rgba(255,255,255,0.7)",
+        "Dark": "#64748b"
+      },
+      "aliases": {
+        "Light": "color/white/70",
+        "Dark": "color/slate/500"
+      }
+    },
+    {
+      "collection": "Semantic",
+      "name": "border/on-inverse",
+      "type": "COLOR",
+      "values": {
+        "Light": "rgba(255,255,255,0.2)",
+        "Dark": "rgba(0,0,0,0.2)"
+      },
+      "aliases": {
+        "Light": "color/white/20",
+        "Dark": "color/black/20"
+      }
+    },
+    {
       "collection": "Typography",
       "name": "font-family",
       "type": "STRING",
@@ -7337,6 +7408,97 @@
       "aliases": {
         "Light": "fg/subtle",
         "Dark": "fg/subtle"
+      }
+    },
+    {
+      "collection": "Component",
+      "name": "readout/swatch/tax",
+      "type": "COLOR",
+      "values": {
+        "Light": "#b45309",
+        "Dark": "#b45309"
+      },
+      "aliases": {
+        "Light": "color/amber/700",
+        "Dark": "color/amber/700"
+      }
+    },
+    {
+      "collection": "Component",
+      "name": "readout/swatch/expense",
+      "type": "COLOR",
+      "values": {
+        "Light": "#ef4444",
+        "Dark": "#ef4444"
+      },
+      "aliases": {
+        "Light": "color/red/500",
+        "Dark": "color/red/500"
+      }
+    },
+    {
+      "collection": "Component",
+      "name": "readout/swatch/net",
+      "type": "COLOR",
+      "values": {
+        "Light": "#0891b2",
+        "Dark": "#0891b2"
+      },
+      "aliases": {
+        "Light": "color/cyan/600",
+        "Dark": "color/cyan/600"
+      }
+    },
+    {
+      "collection": "Component",
+      "name": "readout/swatch/provision",
+      "type": "COLOR",
+      "values": {
+        "Light": "#059669",
+        "Dark": "#059669"
+      },
+      "aliases": {
+        "Light": "color/emerald/600",
+        "Dark": "color/emerald/600"
+      }
+    },
+    {
+      "collection": "Component",
+      "name": "readout/swatch/income",
+      "type": "COLOR",
+      "values": {
+        "Light": "#3b82f6",
+        "Dark": "#3b82f6"
+      },
+      "aliases": {
+        "Light": "color/blue/500",
+        "Dark": "color/blue/500"
+      }
+    },
+    {
+      "collection": "Component",
+      "name": "readout/swatch/balance",
+      "type": "COLOR",
+      "values": {
+        "Light": "#0891b2",
+        "Dark": "#0891b2"
+      },
+      "aliases": {
+        "Light": "color/cyan/600",
+        "Dark": "color/cyan/600"
+      }
+    },
+    {
+      "collection": "Component",
+      "name": "readout/swatch/debt",
+      "type": "COLOR",
+      "values": {
+        "Light": "#e11d48",
+        "Dark": "#e11d48"
+      },
+      "aliases": {
+        "Light": "color/rose/600",
+        "Dark": "color/rose/600"
       }
     },
     {

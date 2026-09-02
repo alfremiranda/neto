@@ -87,3 +87,10 @@ action-chip/hover/border	COLOR	#64748b	#475569	color/slate/500	color/slate/600
 action-chip/hover/foreground	COLOR	#1e293b	#f1f5f9	fg/on-subtle	fg/on-subtle
 action-chip/disabled/border	COLOR	#cbd5e1	#475569	color/slate/300	color/slate/600
 action-chip/disabled/foreground	COLOR	#334155	#cbd5e1	fg/subtle	fg/subtle
+readout/swatch/tax	COLOR	#b45309	#b45309	color/amber/700	color/amber/700
+readout/swatch/expense	COLOR	#ef4444	#ef4444	color/red/500	color/red/500
+readout/swatch/net	COLOR	#0891b2	#0891b2	color/cyan/600	color/cyan/600
+readout/swatch/provision	COLOR	#059669	#059669	color/emerald/600	color/emerald/600
+readout/swatch/income	COLOR	#3b82f6	#3b82f6	color/blue/500	color/blue/500
+readout/swatch/balance	COLOR	#0891b2	#0891b2	color/cyan/600	color/cyan/600
+readout/swatch/debt	COLOR	#e11d48	#e11d48	color/rose/600	color/rose/600
