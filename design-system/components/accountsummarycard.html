@@ -51,7 +51,17 @@ THE META IS ONE NODE PER FIELD, NOT ONE STRING. Alfredo, 2026-09-02: the metadat
   kind              Account.savingsKind     savings
   maturity          Account.maturityDate    savings, and only when the kind is a CDT
 
-Separators are Separator instances, not characters, so an absent field takes its separator with it instead of leaving a stranded middot. A field with no value hides; it does not render empty.
+THE META HAS TWO GROUPS, and which group a field belongs to is decided by one question: does it name a DATE the user has to act on?
+
+  facts     the plain run — currency, number, and the standing figures: utilization, kind, rate, yield
+  schedule  a chip: radius/16 on bg/surface, 1px account-summary-card/meta-chip/border, a calendar-days
+            icon at size=S, then the dated fields — cutoff and due on a card, maturity on a CDT
+
+Alfredo drew the chip on Credit Card, 2026-09-02, and it carries to the other types by the same question. Savings has one dated field and gets a chip with maturity in it. Bank Account and Cash have none, so they have no chip and the facts run alone — an empty chip is not a quieter chip, it is a border round nothing.
+
+The chip earns its outline: Corte 4 · Pago 20 are the only two things on this card that are a deadline rather than a description, and putting a boundary round them is what says so without a word. The icon repeats it for anyone who does not read the boundary as meaning.
+
+Separators are Separator instances, not characters, so an absent field takes its separator with it instead of leaving a stranded middot. A field with no value hides; it does not render empty. The separator between the two groups belongs to facts, so a type with no chip has no trailing rule.
 
 THREE OF THESE ARE NEW and were missing from the card entirely, not just unsplit: currency — this app holds COP and USD and the card showed neither, so every figure on it was an amount without a unit. It is a CurrencyBadge instance and not a word, on Alfredo’s call: AccountCard already opens its meta with that badge, and the two cards describe the same account, so the currency has to look the same in both places. CurrencyBadge exists for exactly this — “used wherever an amount could be misread as the wrong currency”; kind — the savings vehicle, which the code already puts in its meta line and Figma did not have; maturity — a CDT&#x27;s due date, which appeared nowhere on the account&#x27;s own page.
 

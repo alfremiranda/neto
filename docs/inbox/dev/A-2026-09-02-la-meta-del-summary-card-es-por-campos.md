@@ -38,3 +38,38 @@ separada por campos, buena parte de lo que yo había intentado meter en métrica
 él quería que viviera, así que puede que la respuesta sea que tus cinco pares sobran. **Espera.**
 
 POINTER: Figma `1021:29975` (`account-meta`); design-system/components/accountsummarycard.html.
+
+---
+
+## Actualización — la meta tiene DOS grupos
+
+Alfredo agrupó la meta y el estilo aplica a todos los tipos. La pregunta que decide en qué grupo
+va un campo es una sola: **¿nombra una FECHA sobre la que hay que actuar?**
+
+    facts     el renglón plano — currency, número, y las cifras estables:
+              utilization · kind · rate · yield
+    schedule  un chip: radius/16 sobre bg/surface, borde 1px
+              account-summary-card/meta-chip/border, icono calendar-days size=S,
+              y dentro los campos con fecha
+
+Por tipo:
+
+| Tipo | facts | schedule |
+|---|---|---|
+| Credit Card | currency · número · utilization | **Corte 4 · Pago 20** |
+| Savings | currency · número · kind · rate · yield | **Vence 14 mar 2027** |
+| Bank Account | currency · número · rate · yield | — |
+| Cash | currency | — |
+
+**Bank Account y Cash no llevan chip.** Un chip vacío no es un chip más callado, es un borde
+alrededor de nada.
+
+El separador entre grupos pertenece a `facts`, así que un tipo sin chip no arrastra un filete
+suelto al final.
+
+**Token nuevo: `--account-summary-card-meta-chip-border`.** Mismos valores que tenía (slate/300 /
+slate/600); el chip estaba pintado con `action-chip/default/border`, que es de otro componente. No
+se veía mal — el problema es que tocar `action-chip` habría movido este chip sin que ninguno de los
+dos lados lo viera.
+
+Corregí además una muestra mía: la tasa de Savings decía `3,5% a.a.` y es `E.A.`.

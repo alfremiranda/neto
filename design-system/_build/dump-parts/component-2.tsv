@@ -95,3 +95,4 @@ readout/swatch/income	COLOR	#3b82f6	#3b82f6	color/blue/500	color/blue/500
 readout/swatch/balance	COLOR	#0891b2	#0891b2	color/cyan/600	color/cyan/600
 readout/swatch/debt	COLOR	#e11d48	#e11d48	color/rose/600	color/rose/600
 progress/track	COLOR	#e2e8f0	#334155	color/slate/200	color/slate/700
+account-summary-card/meta-chip/border	COLOR	#cbd5e1	#475569	color/slate/300	color/slate/600

@@ -2025,6 +2025,11 @@
           "progress/track",
           "#e2e8f0",
           "#334155"
+        ],
+        [
+          "account-summary-card/meta-chip/border",
+          "#cbd5e1",
+          "#475569"
         ]
       ]
     }
@@ -7517,6 +7522,19 @@
       "aliases": {
         "Light": "color/slate/200",
         "Dark": "color/slate/700"
+      }
+    },
+    {
+      "collection": "Component",
+      "name": "account-summary-card/meta-chip/border",
+      "type": "COLOR",
+      "values": {
+        "Light": "#cbd5e1",
+        "Dark": "#475569"
+      },
+      "aliases": {
+        "Light": "color/slate/300",
+        "Dark": "color/slate/600"
       }
     },
     {
