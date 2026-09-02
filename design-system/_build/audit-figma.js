@@ -393,6 +393,32 @@ async function auditPage(pageId) {
       add('C10_descripcion_divergente', nd.name, 'spec ≠ description');
   };
 
+  // ── C11 · una entidad HTML dentro de una descripcion ──────────────────────
+  // `use_figma` ESCAPA al ESCRIBIR: un apostrofo recto se guarda como &#39;, una
+  // comilla como &quot;, y `<` como &lt;. Nadie los teclea; aparecen solos y se
+  // leen como basura en Figma, en el `.html` generado y en Dev Mode.
+  //
+  // Limpiarlos DESPUES NO FUNCIONA: la escritura que limpia vuelve a escapar. Se
+  // comprobo el 2026-09-02 sobre 22 nodos — dos pasadas de limpieza, las mismas 14
+  // entidades de vuelta. La unica salida es no teclear el caracter: la puntuacion
+  // tipografica (’ “ ” —) pasa intacta, la recta no.
+  //
+  // Por eso el chequeo vive aqui y no hay un "arreglador": lo que hay que cazar es
+  // el momento en que alguien escribe una descripcion con comillas rectas.
+  const C11_ENT = /&(amp|#39|#x27|apos|quot|lt|gt|#34|nbsp);/;
+  const c11 = (nd) => {
+    if (nd.type === 'COMPONENT_SET' || (nd.type === 'COMPONENT' && nd.parent.type !== 'COMPONENT_SET')) {
+      if (C11_ENT.test(nd.description || ''))
+        add('C11_entidad_html_en_descripcion', nd.name, (nd.description.match(C11_ENT) || [])[0]);
+    }
+    if (nd.type === 'FRAME' && /^doc: /.test(nd.name)) {
+      const spec = nd.children.find(c => c.name === 'spec');
+      const t = spec && spec.children[1];
+      if (t && C11_ENT.test(t.characters))
+        add('C11_entidad_html_en_descripcion', nd.name + ' (spec)', (t.characters.match(C11_ENT) || [])[0]);
+    }
+  };
+
   for (const n of page.findAll(() => true)) {
     const path = n.name;
     const ajeno = esMarcaAjena(n);
@@ -410,6 +436,7 @@ async function auditPage(pageId) {
     c7(n);
     c9(n);
     c10(n);
+    c11(n);
 
     // C8 — un numero de layout escrito a mano. Las instancias quedan fuera: su geometria
     // la decide el componente, no la pantalla que lo usa.

@@ -190,6 +190,7 @@ through there.
 | `C8` layout number without a variable | a gap, padding, radius or border width typed by hand, drifting off the scale one screen at a time |
 | `C9` `doc:` heading pinned to a fixed width | a documentation title clipped by the next rename, silently, because the node's height does not grow with the wrap |
 | `C10` `doc:` spec vs its component | documentation that describes a component the file no longer contains — a false variant count, or prose that stopped matching the thing |
+| `C11` HTML entity in a description | `&#39;` and `&quot;` where an apostrophe or a quote was typed — the write path escapes them, so the prose ships as garbage in Figma, in the generated `.html` and in Dev Mode |
 
 ## A5b. C5, C6 and C7 — what calibrating them cost (2026-08-22)
 
@@ -326,6 +327,25 @@ longer exists. The `doc:` frames are fixed because a frame can be re-derived fro
 the same session. The registry is NOT fixed, and it must not be bulk-overwritten: in thirty-two
 places the registry holds the better paragraph, and generating over it would destroy real writing.
 It needs a one-time merge, then generation. See `20-roadmap.md`.
+
+### A6f. Cleaning up after a bad write is not a fix if the write is what breaks it (2026-09-02)
+
+Descriptions written through `use_figma` come back with their straight apostrophes as `&#39;`,
+their quotes as `&quot;` and `<` as `&lt;`. **The escaping happens on write.** So the obvious
+remedy — a pass that unescapes every description in the file — does nothing: measured that day, two
+full cleaning passes over 22 nodes, and the same 14 entities were back each time, because the write
+that cleaned them re-escaped them.
+
+The fix is not to clean the output. It is to stop producing it: **typographic punctuation
+(’ “ ” —) passes through untouched, straight quotes and angle brackets do not.** Author
+descriptions with the curly forms and the problem cannot occur.
+
+The shape is worth naming on its own, because it is not about Figma. **When a defect reappears
+after you fix it, the thing you fixed is not the thing that causes it.** Twice I ran a cleaner and
+twice I reported it fixed without re-reading; the third read is what found that the cleaner was the
+source. `C11` catches the entity, but the rule that prevents it is the punctuation, and a checker
+that flags what a fixer cannot fix is only useful if the fixer is retired at the same time — which
+is why there is no entity-fixer in the build.
 
 ## A7. The three-piece shape
 

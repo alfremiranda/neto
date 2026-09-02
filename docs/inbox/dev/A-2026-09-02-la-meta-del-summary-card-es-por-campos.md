@@ -3,7 +3,7 @@
 Alfredo la separó: **un nodo por campo**, y cada nodo se llama como el campo del `Account`. Ya no
 hay que parsear una cadena ni adivinar qué trozo es qué.
 
-    currency          Account.currency        todos los tipos
+    currency          Account.currency        todos los tipos — instancia de CurrencyBadge, no texto
     account-number    Account.number          todos menos cash, que no tiene
     utilization       debt / creditLimit      credit
     cutoff            Account.cutoffDay       credit
@@ -20,7 +20,9 @@ que tengas que construir la cadena a mano.
 ## Tres campos son NUEVOS, no solo estaban sin separar
 
 - **`currency`** — la app maneja COP y USD y esta tarjeta no mostraba ninguna de las dos. Todas sus
-  cifras eran cantidades sin unidad.
+  cifras eran cantidades sin unidad. **Es una instancia de `CurrencyBadge`, no una palabra**, por
+  decisión de Alfredo: `AccountCard` ya abre su meta con ese badge y las dos tarjetas describen la
+  misma cuenta, así que la moneda tiene que verse igual en las dos.
 - **`kind`** — el vehículo de ahorro (Cuenta · CDT · Inversión). Tu código ya lo pone en su meta
   (`KIND_LABEL`); Figma no lo tenía.
 - **`maturity`** — el vencimiento de un CDT. No aparecía en ninguna parte de la página de la cuenta.
