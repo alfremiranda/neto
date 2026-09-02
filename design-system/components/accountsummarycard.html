@@ -65,7 +65,9 @@ Separators are Separator instances, not characters, so an absent field takes its
 
 THREE OF THESE ARE NEW and were missing from the card entirely, not just unsplit: currency — this app holds COP and USD and the card showed neither, so every figure on it was an amount without a unit. It is a CurrencyBadge instance and not a word, on Alfredo’s call: AccountCard already opens its meta with that badge, and the two cards describe the same account, so the currency has to look the same in both places. CurrencyBadge exists for exactly this — “used wherever an amount could be misread as the wrong currency”; kind — the savings vehicle, which the code already puts in its meta line and Figma did not have; maturity — a CDT&#x27;s due date, which appeared nowhere on the account&#x27;s own page.
 
-On Mobile the meta WRAPS. Savings carries six fields and they do not fit 380 on one line.
+THE META ROW WRAPS WHEN IT HAS TO, and that is per variant rather than per Device — Alfredo set it on 2026-09-02. Savings on Desktop wraps because six facts plus the chip do not fit 640; Credit Card on Mobile does not, because three facts plus the chip fit 380. What drops to the second line is the chip, whole: a schedule chip that had to be squeezed or clipped would be worse than one on its own line.
+
+In code this is ONE declaration, not four: flex-wrap on the meta row, always. CSS wraps only when the content overflows, so the four behaviours Figma has to draw one variant at a time fall out of a single rule. Do not port the per-variant flag.
 
 Each type shows different data, which is why the metrics are a list built per type rather than a fixed set of slots: a cash account has no rate to report and a credit card&#x27;s headline figure is a debt, not a balance.</div>
   </div>
