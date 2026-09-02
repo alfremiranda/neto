@@ -62,10 +62,12 @@ export function AccountCardView({ account, size = 'lg', selected = false, onClic
   // which is aria-hidden — so a screen reader was told nothing at all about what kind of
   // account this is. Savings keeps its more specific kind (CDT, Inversión) instead of
   // the generic "Ahorro", which would otherwise print twice.
+  // The type is NOT printed here any more — Alfredo hid it in Figma on 2026-09-02, so the
+  // meta is currency and number. It still has to be READABLE though: the type's only other
+  // carrier is the avatar's glyph, which is aria-hidden, so without the sr-only line below
+  // a screen reader is told nothing about what kind of account this is. That was the whole
+  // point of surfacing it in the first place, and it survives the visual change.
   const metaParts: string[] = []
-  // The TYPE, for every kind — the card says what class of account this is, and the more
-  // specific savings kind (CDT, Inversión) is a field of the account's own page.
-  metaParts.push(ACCOUNT_TYPE_LABEL[account.type ?? 'account'])
   if (!isCash && account.number) metaParts.push(account.number)
 
   function openEdit() { setEditingAccount(account.id); openSheet('account-edit') }
@@ -88,7 +90,10 @@ export function AccountCardView({ account, size = 'lg', selected = false, onClic
       {/* Header: icon · name · favorite (gap 6) */}
       <div className="flex items-center gap-1.5 w-full">
         <AccountAvatar account={account} size="sm" />
-        <span className="flex-1 min-w-0 ts-body-small-emphasis text-muted-foreground truncate">{account.label}</span>
+        <span className="flex-1 min-w-0 ts-body-small-emphasis text-muted-foreground truncate">
+          {account.label}
+          <span className="sr-only"> · {ACCOUNT_TYPE_LABEL[account.type ?? 'account']}</span>
+        </span>
         <button
           type="button"
           onClick={e => { e.stopPropagation(); toggleAccountFavorite(account.id) }}

@@ -255,9 +255,12 @@ export function CuentasView() {
             </EmptyContent>
           </Empty>
         ) : (
-          <div className="flex gap-3 overflow-x-auto overscroll-x-contain scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0 sm:overflow-visible sm:grid sm:grid-cols-3 lg:grid-cols-4">
+          // A GRID on mobile too, not a horizontal slider. A slider hides how many
+          // accounts there are behind an edge and puts the last ones a swipe away; two
+          // columns show them all at 390, and the list is short by nature.
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {sortedAccounts.map(a => (
-              <div key={a.id} className="grid shrink-0 w-[46%] min-w-[150px] [&>*]:min-w-0 sm:w-auto sm:min-w-0">
+              <div key={a.id} className="grid min-w-0 [&>*]:min-w-0">
                 {/* No `selected`: on the index a card is a way IN, not a choice you are
                     holding. Nothing on this screen depends on which one is highlighted. */}
                 <AccountCardView account={a} size="sm" onClick={() => openAccount(a.id)} />

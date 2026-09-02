@@ -18,6 +18,69 @@ export interface Crumb {
  * The house icon lives in the first crumb only, and is off by default: only the root
  * carries it.
  */
+
+/**
+ * One crumb.
+ *
+ * `Link` is navigable. `Current` is the current page: it carries `aria-current`, does not
+ * react to the pointer and takes no focus, which is why it only has a default state.
+ *
+ * The 4px horizontal padding is not decoration — it is the box the focus ring is drawn
+ * in. Take it away and the ring cuts through the letters.
+ */
+function BreadcrumbItem({ label, onClick, current, showIcon }: {
+  label: string
+  onClick?: () => void
+  current?: boolean
+  showIcon?: boolean
+}) {
+  const icon = showIcon ? (
+    <House
+      aria-hidden
+      className="shrink-0"
+      style={{ width: 'var(--breadcrumb-icon-size)', height: 'var(--breadcrumb-icon-size)' }}
+    />
+  ) : null
+
+  const box: React.CSSProperties = {
+    gap: 'var(--breadcrumb-item-gap)',
+    padding: 'var(--breadcrumb-item-padding-y) var(--breadcrumb-item-padding-x)',
+    borderRadius: 'var(--breadcrumb-item-radius)',
+  }
+
+  if (current) {
+    return (
+      <span
+        aria-current="page"
+        className="ts-body-small-emphasis truncate inline-flex items-center"
+        style={{ ...box, color: 'var(--breadcrumb-current-foreground)' }}
+      >
+        {icon}
+        {label}
+      </span>
+    )
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'ts-body-small truncate inline-flex items-center transition-colors',
+        'text-[var(--breadcrumb-item-foreground)]',
+        'hover:underline hover:text-[var(--breadcrumb-item-foreground-hover)]',
+        'hover:bg-[var(--breadcrumb-item-background-hover)]',
+        'focus-visible:outline-none focus-visible:ring-[length:var(--breadcrumb-focus-ring-width)]',
+        'focus-visible:ring-[var(--breadcrumb-focus-ring)]',
+      )}
+      style={box}
+    >
+      {icon}
+      {label}
+    </button>
+  )
+}
+
 export function Breadcrumb({ items, showHomeIcon }: { items: Crumb[]; showHomeIcon?: boolean }) {
   return (
     <nav aria-label="Ruta" className="flex items-center min-w-0" style={{ gap: 'var(--breadcrumb-gap)', height: 'var(--breadcrumb-height)' }}>
@@ -37,42 +100,9 @@ export function Breadcrumb({ items, showHomeIcon }: { items: Crumb[]; showHomeIc
               />
             )}
             {isCurrent ? (
-              <span
-                aria-current="page"
-                className="ts-body-small-emphasis truncate"
-                style={{
-                  color: 'var(--breadcrumb-current-foreground)',
-                  padding: 'var(--breadcrumb-item-padding-y) var(--breadcrumb-item-padding-x)',
-                }}
-              >
-                {c.label}
-              </span>
+              <BreadcrumbItem label={c.label} current showIcon={i === 0 && showHomeIcon} />
             ) : (
-              <button
-                type="button"
-                onClick={c.onClick}
-                className={cn(
-                  'ts-body-small truncate inline-flex items-center transition-colors',
-                  'hover:underline focus-visible:outline-none',
-                )}
-                style={{
-                  gap: 'var(--breadcrumb-item-gap)',
-                  color: 'var(--breadcrumb-item-foreground)',
-                  // The 4px padding is not decoration: it is the box the focus ring is
-                  // drawn in. Without it the ring cuts through the letters.
-                  padding: 'var(--breadcrumb-item-padding-y) var(--breadcrumb-item-padding-x)',
-                  borderRadius: 'var(--breadcrumb-item-radius)',
-                }}
-              >
-                {i === 0 && showHomeIcon && (
-                  <House
-                    aria-hidden
-                    className="shrink-0"
-                    style={{ width: 'var(--breadcrumb-icon-size)', height: 'var(--breadcrumb-icon-size)' }}
-                  />
-                )}
-                {c.label}
-              </button>
+              <BreadcrumbItem label={c.label} onClick={c.onClick} showIcon={i === 0 && showHomeIcon} />
             )}
           </span>
         )
