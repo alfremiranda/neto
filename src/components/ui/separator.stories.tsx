@@ -6,13 +6,14 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 /**
- * ## Criterios de aceptación
+ * ## Acceptance criteria
  *
- * - **Una regla de 1px sobre `border/default`**, en las dos orientaciones.
- * - **Solo separa pares dentro de UN contenedor.** Entre contenedores el espacio hace el
- *   trabajo; una regla ahí se lee como un borde que falló.
- * - **La vertical se estira con su fila** (`self-stretch`), no lleva alto fijo.
- * - Es decorativa: no anuncia nada a un lector de pantalla.
+ * - **A 1px rule on `border/default`**, in both orientations.
+ * - **It only separates peers inside ONE container.** Between containers the gap does the
+ *   work; a rule there reads as a border that failed.
+ * - **The vertical one stretches with its row** (`self-stretch`); it carries no fixed
+ *   height.
+ * - It is decorative: it announces nothing to a screen reader.
  */
 export const Orientations: Story = {
   render: () => (

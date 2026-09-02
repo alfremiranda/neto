@@ -18,20 +18,20 @@ const Row = ({ label, value, tone, note }: {
 )
 
 /**
- * ## Criterios de aceptación
+ * ## Acceptance criteria
  *
- * - **Dos tonos, y solo dos.** `provision` para algo que se acumula (la reserva);
- *   `expense` para un límite que se consume (el cupo). No hay neutral, warning ni danger:
- *   un umbral ("rojo pasado el 80%") es una regla de producto que esta pieza no debe
- *   poseer — el consumidor elige el tono y la barra lo dibuja.
- * - **Nunca aparece sin su número.** Largo y color es todo lo que carga, así que sola
- *   incumple 1.4.1 y no dice nada a quien no puede comparar dos longitudes con el ojo.
- *   Por eso `label` es obligatorio y los dos consumidores imprimen la cifra al lado.
- * - **El track se distingue de la superficie.** Usa `--progress-track` y no
- *   `bg/neutral-subtle`, que es el MISMO valor que `bg/surface` en claro: sobre una card
- *   la barra desaparecía, y a 0% no quedaba nada que ver.
- * - **El valor se recorta a 0–1.** Un consumidor que se pase dibuja una barra llena, no
- *   una rota.
+ * - **Two tones, and only two.** `provision` for something being built up (the reserve);
+ *   `expense` for a limit being consumed (the credit line). No neutral, warning or danger:
+ *   a threshold ("turn red past 80%") is a product rule this piece must not own — the
+ *   consumer picks the tone and the bar draws it.
+ * - **It never appears without its number.** Length and colour are all it carries, so on
+ *   its own it fails 1.4.1 and says nothing to anyone who cannot compare two lengths by
+ *   eye. That is why `label` is required and both consumers print the figure beside it.
+ * - **The track is distinguishable from the surface.** It uses `--progress-track`, not
+ *   `bg/neutral-subtle`, which is the SAME value as `bg/surface` in light: on a card the
+ *   bar disappeared, and at 0% there was nothing left to see at all.
+ * - **The value is clamped to 0–1.** A consumer that overshoots draws a full bar, not a
+ *   broken one.
  */
 export const Tones: Story = {
   render: () => (
@@ -43,8 +43,8 @@ export const Tones: Story = {
 }
 
 /**
- * Los extremos. **0% es el caso que importa**: sin relleno, el track ES toda la barra, y
- * si no se distingue de la card no hay nada en pantalla. Por encima de 1 se recorta.
+ * The edges. **0% is the case that matters**: with no fill, the track IS the whole bar, and
+ * if it cannot be told from the card there is nothing on screen. Past 1 it clamps.
  */
 export const Edges: Story = {
   render: () => (

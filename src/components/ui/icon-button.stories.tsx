@@ -15,24 +15,24 @@ const SIZES = [
 ] as const
 
 /**
- * ## Criterios de aceptación
+ * ## Acceptance criteria
  *
- * - **Los mismos cuatro ejes que `Button`**: variante, severidad, tamaño y estado. Las
- *   severidades no son variantes aparte: `*-danger` es la misma variante con consecuencia.
- * - **Toda instancia necesita un nombre accesible.** El icono solo no es un nombre —
- *   `aria-label` es obligatorio en cada llamada.
- * - **Las acciones de fila están SIEMPRE visibles.** Esconderlas tras hover
- *   (`opacity-0 group-hover`) es un antipatrón aquí: en táctil no hay hover.
- * - **XL (44) es el objetivo táctil de WCAG 2.5.5** y es el que usan las filas en móvil.
- *   LG (36) es para escritorio, donde hay puntero.
- * - El icono escala con el tamaño (12 · 12 · 16 · 20); un icono a 17px es un bug, no una
- *   elección.
+ * - **The same four axes as `Button`**: variant, severity, size and state. Severity is not
+ *   a separate variant: `*-danger` is the same variant carrying a consequence.
+ * - **Every instance needs an accessible name.** The icon alone is not a name —
+ *   `aria-label` is required at each call site.
+ * - **Row actions are ALWAYS visible.** Hiding them behind hover (`opacity-0 group-hover`)
+ *   is an anti-pattern here: there is no hover on touch.
+ * - **XL (44) is the WCAG 2.5.5 touch target** and is what rows use on mobile. LG (36) is
+ *   for desktop, where there is a pointer.
+ * - The icon scales with the box (12 · 12 · 16 · 20); an icon at 17px is a bug, not a
+ *   choice.
  */
 export const VariantsAndSizes: Story = {
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <div>
-        <span className="ts-label-micro uppercase text-muted-foreground/70">Variantes (LG)</span>
+        <span className="ts-label-micro uppercase text-muted-foreground/70">Variants (LG)</span>
         <div className="mt-2 flex flex-wrap items-center gap-2">
           {VARIANTS.map(v => (
             <IconButton key={v} variant={v} size="lg" aria-label={v}>
@@ -42,7 +42,7 @@ export const VariantsAndSizes: Story = {
         </div>
       </div>
       <div>
-        <span className="ts-label-micro uppercase text-muted-foreground/70">Tamaños — el icono escala con la caja</span>
+        <span className="ts-label-micro uppercase text-muted-foreground/70">Sizes — the icon scales with the box</span>
         <div className="mt-2 flex items-end gap-3">
           {SIZES.map(s => (
             <div key={s.size} className="flex flex-col items-center gap-1">
@@ -53,7 +53,7 @@ export const VariantsAndSizes: Story = {
         </div>
       </div>
       <div>
-        <span className="ts-label-micro uppercase text-muted-foreground/70">Deshabilitado</span>
+        <span className="ts-label-micro uppercase text-muted-foreground/70">Disabled</span>
         <div className="mt-2 flex items-center gap-2">
           {(['filled', 'outline', 'ghost'] as const).map(v => (
             <IconButton key={v} variant={v} size="lg" disabled aria-label={`${v} deshabilitado`}><Pencil /></IconButton>
@@ -65,8 +65,8 @@ export const VariantsAndSizes: Story = {
 }
 
 /**
- * En una fila: escritorio edita y borra en sitio a **LG (36)**; móvil abre el sheet detrás
- * de un solo botón a **XL (44)**, el objetivo táctil.
+ * In a row: desktop edits and deletes in place at **LG (36)**; mobile opens the sheet behind
+ * a single button at **XL (44)**, the touch target.
  */
 export const InARow: Story = {
   render: () => (

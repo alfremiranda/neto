@@ -7,15 +7,15 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 /**
- * ## Criterios de aceptación
+ * ## Acceptance criteria
  *
- * - **Cuatro estados**: apagado, encendido, y cada uno deshabilitado.
- * - **Pista 36×20, pulgar 16.**
- * - **La pista apagada es un alpha** (negro 20% en claro, blanco 30% en oscuro) para que
- *   se lea sobre cualquier superficie — un gris sólido desaparece sobre una card gris.
- * - Es para un ajuste booleano que se aplica al instante. Si hace falta confirmar, no es
- *   un switch.
- * - Necesita etiqueta: el control solo no dice qué se está encendiendo.
+ * - **Four states**: off, on, and each of them disabled.
+ * - **Track 36×20, thumb 16.**
+ * - **The off track is an alpha** (black 20% light, white 30% dark) so it reads on any
+ *   surface — a solid grey disappears on a grey card.
+ * - It is for a boolean setting that applies immediately. If it needs confirming, it is not
+ *   a switch.
+ * - It needs a label: the control alone does not say what is being turned on.
  */
 export const States: Story = {
   render: () => {
@@ -39,7 +39,7 @@ export const States: Story = {
   },
 }
 
-/** Cómo aparece de verdad: con su etiqueta y la explicación de lo que cambia. */
+/** How it actually appears: with its label and an explanation of what changes. */
 export const InAForm: Story = {
   render: () => {
     const [on, setOn] = useState(true)

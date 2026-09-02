@@ -8,19 +8,19 @@ type Story = StoryObj<typeof meta>
 const noop = () => {}
 
 /**
- * ## Criterios de aceptación
+ * ## Acceptance criteria
  *
- * - **Niveles 2, 3 y 4.** Más de cuatro no se soporta: una ruta más profunda colapsa sus
- *   segmentos intermedios ANTES de llegar aquí — este componente no trunca solo, porque
- *   decidir qué se cae es conocimiento del que llama.
- * - **El último crumb es la página actual y NO es un enlace.** Lleva `aria-current="page"`,
- *   va en `Body/Small-Emphasis` (500) y no toma foco ni reacciona al puntero. Por eso solo
- *   tiene estado por defecto.
- * - **Los enlaces van en `Body/Small`** (400) sobre `breadcrumb/item/foreground`.
- * - **El icono de casa vive en el primer crumb** y se enciende con `showHomeIcon`. Está
- *   apagado por defecto porque solo la raíz lo lleva.
- * - **El padding horizontal de 4px no es decoración: es la caja del anillo de foco.**
- *   Quitarlo hace que el anillo corte las letras.
+ * - **Levels 2, 3 and 4.** More than four is not supported: a deeper path collapses its
+ *   middle segments BEFORE reaching here — this component does not truncate on its own,
+ *   because deciding what to drop is the caller's knowledge.
+ * - **The last crumb is the current page and is NOT a link.** It carries
+ *   `aria-current="page"`, uses `Body/Small-Emphasis` (500) and takes no focus and no
+ *   pointer. That is why it only has a default state.
+ * - **Links use `Body/Small`** (400) on `breadcrumb/item/foreground`.
+ * - **The house icon lives in the first crumb** and is turned on with `showHomeIcon`. It is
+ *   off by default because only the root carries it.
+ * - **The 4px horizontal padding is not decoration: it is the focus ring's box.** Removing
+ *   it makes the ring cut through the letters.
  */
 export const Levels: Story = {
   render: () => (
@@ -38,12 +38,12 @@ export const Levels: Story = {
 }
 
 /**
- * Los estados del enlace. **Hover** toma su propio fondo y foreground más el subrayado;
- * **foco** dibuja el anillo de 2px sobre el padding que existe para alojarlo. El crumb
- * actual no tiene ninguno de los dos: no es un control.
+ * The link's states. **Hover** takes its own background and foreground plus the underline;
+ * **focus** draws the 2px ring over the padding that exists to house it. The current crumb
+ * has neither: it is not a control.
  *
- * (Hover y foco se ven interactuando — Storybook no los puede congelar sin pintarlos a
- * mano, y un estado pintado a mano deja de ser el estado.)
+ * (Hover and focus are seen by interacting — Storybook cannot freeze them without painting
+ * them by hand, and a hand-painted state stops being the state.)
  */
 export const States: Story = {
   render: () => (
@@ -58,14 +58,14 @@ export const States: Story = {
   ),
 }
 
-/** Sin la casa: una ruta que no arranca en la raíz. */
+/** Without the house: a path that does not start at the root. */
 export const WithoutHome: Story = {
   render: () => (
     <Breadcrumb items={[{ label: 'Cuentas', onClick: noop }, { label: 'ARQ (Observer Hub)' }]} />
   ),
 }
 
-/** Una etiqueta larga trunca en su crumb sin empujar a los demás fuera. */
+/** A long label truncates inside its own crumb without pushing the others out. */
 export const LongLabel: Story = {
   render: () => (
     <div style={{ maxWidth: 320 }}>

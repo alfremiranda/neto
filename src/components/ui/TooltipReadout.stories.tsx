@@ -12,20 +12,20 @@ const Bubble = ({ children }: { children: React.ReactNode }) => (
 )
 
 /**
- * ## Criterios de aceptación
+ * ## Acceptance criteria
  *
- * - **Es CONTENIDO, no otra burbuja.** La superficie, la flecha, la inversión y el tope de
- *   320 los posee `Tooltip`; esto solo va dentro. Bifurcar la burbuja habría dejado la
- *   inversión definida en dos sitios.
- * - **Los chips usan `readout/swatch/*`, no el color de la serie.** `bg/inverse` es
- *   slate/900 en claro y BLANCO en oscuro, así que un chip que siguiera el modo se pintaría
- *   contra la superficie para la que NO fue elegido: las cinco series fallan 3:1 en oscuro
- *   (tax en 1.44). Cada swatch tiene un solo valor, idéntico en ambos modos.
- * - **El divisor pertenece a la fila que ABRE el grupo**, dibujado encima de ella. No
- *   existe un ítem falso `{separator: true}` en la lista de pares.
- * - **No lleva ancho mínimo.** Un readout de una fila se ajusta a su contenido; los de
- *   varias filas se alinean porque la fila más ancha define la caja.
- * - El título es opcional; las filas no.
+ * - **It is CONTENT, not a second bubble.** The surface, the arrow, the inversion and the
+ *   320 cap belong to `Tooltip`; this only goes inside. Forking the bubble would have put
+ *   the inversion in two places.
+ * - **The chips use `readout/swatch/*`, not the series colour.** `bg/inverse` is slate/900
+ *   in light and WHITE in dark, so a chip following the mode would be painted against the
+ *   surface it was NOT chosen for: all five series fail 3:1 in dark (tax at 1.44). Each
+ *   swatch is one value, identical in both modes.
+ * - **The divider belongs to the row that OPENS the group**, drawn above it. There is no
+ *   fake `{separator: true}` item sitting in a list of pairs.
+ * - **It carries no minimum width.** A one-row readout hugs its content; multi-row ones
+ *   line up because the widest row sizes the box.
+ * - The title is optional; the rows are not.
  */
 export const OneRow: Story = {
   render: () => (
@@ -35,7 +35,7 @@ export const OneRow: Story = {
   ),
 }
 
-/** Varias series: la fila más ancha define la caja y las demás se alinean con ella. */
+/** Several series: the widest row sizes the box and the rest line up with it. */
 export const Series: Story = {
   render: () => (
     <Bubble>
@@ -53,8 +53,8 @@ export const Series: Story = {
 }
 
 /**
- * El límite de grupo va en la fila que lo abre. Aquí "Neto libre" abre el resultado, y la
- * regla se dibuja encima de ella — no hay una entrada sin etiqueta ni valor en medio.
+ * The group boundary sits on the row that opens it. Here "Neto libre" opens the result, and
+ * the rule is drawn above it — there is no label-less, value-less entry in the middle.
  */
 export const GroupBoundary: Story = {
   render: () => (
@@ -72,7 +72,7 @@ export const GroupBoundary: Story = {
   ),
 }
 
-/** Sin chip y con una fila atenuada — el readout no obliga a que toda fila sea una serie. */
+/** No chip, and one dimmed row — the readout does not force every row to be a series. */
 export const PlainAndDim: Story = {
   render: () => (
     <Bubble>

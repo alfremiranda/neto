@@ -8,18 +8,18 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 /**
- * ## Criterios de aceptación
+ * ## Acceptance criteria
  *
- * - **Es el menú de acciones de una fila EN MÓVIL.** En escritorio la fila edita y borra en
- *   sitio; aquí las dos viven detrás de un botón, porque a 390 no caben.
- * - **Dos estados: por defecto y confirmando.** La confirmación es la misma pieza subiendo
- *   de peso —outline → filled— en la misma posición. No es un estado nuevo ni un diálogo
- *   aparte: mover el botón haría que el segundo toque cayera donde antes no había nada.
- * - **Cada fila es un `Button` a `Size=XL`** (44), el objetivo táctil de WCAG 2.5.5.
- * - **`onDelete` es opcional y su ausencia OCULTA la acción**, no la deja como un no-op. El
- *   saldo inicial de una cuenta es un campo del registro, no un asiento: no hay nada a lo
- *   que un borrado pueda apuntar.
- * - El título dice sobre qué fila se está actuando; sin él el menú es anónimo.
+ * - **It is a row's action menu ON MOBILE.** On desktop the row edits and deletes in place;
+ *   here both live behind one button, because at 390 they do not fit.
+ * - **Two states: default and confirming.** The confirmation is the same piece stepping up
+ *   in weight — outline → filled — in the same position. It is not a new state or a
+ *   separate dialog: moving the button would make the second tap land where nothing was.
+ * - **Every row is a `Button` at `Size=XL`** (44), the WCAG 2.5.5 touch target.
+ * - **`onDelete` is optional and its absence HIDES the action** rather than leaving it as a
+ *   no-op. An account's opening balance is a field on the record, not an entry: there is
+ *   nothing for a delete to point at.
+ * - The title says which row is being acted on; without it the menu is anonymous.
  */
 export const Default: Story = {
   render: () => {
@@ -41,8 +41,8 @@ export const Default: Story = {
 }
 
 /**
- * Sin borrado: la acción no aparece. Es el caso del saldo inicial — el lápiz abre la hoja de
- * la cuenta y la papelera no tendría a qué apuntar.
+ * No delete: the action is absent. This is the opening-balance case — the pencil opens the
+ * account sheet and the bin would have nothing to point at.
  */
 export const WithoutDelete: Story = {
   render: () => {

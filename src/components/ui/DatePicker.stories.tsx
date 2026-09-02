@@ -7,16 +7,16 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 /**
- * ## Criterios de aceptación
+ * ## Acceptance criteria
  *
- * - **No tiene contraparte en Figma y eso es correcto**: Diseño lo retiró del archivo, así
- *   que aquí manda el código. Lo que sí es del sistema es el `calendar` que abre dentro.
- * - **El disparador muestra la fecha en prosa** ("1 de septiembre 2026"), no un formato
- *   ISO: el campo lo lee una persona, no una máquina.
- * - **El valor que emite sí es ISO** (`YYYY-MM-DD`), que es lo que guarda el modelo.
- * - **Comparte la altura de `Input` y `Select`** para alinearse en una fila de formulario.
- * - Es un `button`, no un `input[type=date]`: el nativo abre calendarios distintos en cada
- *   plataforma y ninguno respeta los tokens.
+ * - **It has no Figma counterpart, and that is correct**: Design retired it from the file,
+ *   so the code is the authority here. What IS from the system is the `calendar` it opens.
+ * - **The trigger shows the date in prose** ("1 de septiembre 2026"), not an ISO format: a
+ *   person reads this field, not a machine.
+ * - **The value it emits IS ISO** (`YYYY-MM-DD`), which is what the model stores.
+ * - **It shares the height of `Input` and `Select`** so it lines up in a form row.
+ * - It is a `button`, not an `input[type=date]`: the native one opens a different calendar
+ *   on every platform and none of them honour the tokens.
  */
 export const Basic: Story = {
   render: () => {
@@ -31,7 +31,7 @@ export const Basic: Story = {
   },
 }
 
-/** Vacío — sin fecha elegida todavía. */
+/** Empty — no date chosen yet. */
 export const NoValue: Story = {
   render: () => {
     const [d, setD] = useState('')

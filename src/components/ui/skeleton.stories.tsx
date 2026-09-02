@@ -6,13 +6,16 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 /**
- * ## Criterios de aceptación
+ * ## Acceptance criteria
  *
- * - **Usa `bg/disabled`**, el mismo token que un control deshabilitado, porque los dos
- *   significan "está aquí pero todavía no se puede usar".
- * - **Toma la forma de lo que viene**, nunca un spinner genérico: si lo que carga es una
- *   fila con avatar y dos líneas, el placeholder es eso.
- * - No anuncia nada por sí mismo; el estado de carga lo comunica el contenedor.
+ * - **It takes the shape of what is coming**, never a generic spinner: if what is loading
+ *   is a row with an avatar and two lines, the placeholder is that.
+ * - It announces nothing on its own; the container communicates the loading state.
+ *
+ * **Open with Design (Q-2026-09-02):** the component specifies `bg/disabled`, which is
+ * `#f1f5f9` — the same value as `bg/surface`, every card in the app. Built to spec and
+ * measured, the placeholder vanished on any card, so the code stays on `bg-muted`: not the
+ * right token, but the only visible one.
  */
 export const ShapeOfWhatIsComing: Story = {
   render: () => (

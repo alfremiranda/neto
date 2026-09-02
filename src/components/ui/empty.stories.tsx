@@ -8,14 +8,14 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 /**
- * ## Criterios de aceptación
+ * ## Acceptance criteria
  *
- * - **Dos medias**: con icono o sin ninguna.
- * - **El borde punteado es deliberado**: dice "este contenedor es real pero no tiene
- *   nada dentro", que es distinto de un borde sólido, el cual se leería como una card.
- * - **Título y descripción son obligatorios**; la acción es opcional y solo va cuando hay
- *   algo que el usuario pueda hacer ahora mismo para llenarlo.
- * - Va DENTRO del contenedor que está vacío, no en su lugar: la lista sigue existiendo.
+ * - **Two medias**: with an icon, or none.
+ * - **The dashed border is deliberate**: it says "this container is real but has nothing in
+ *   it", which is different from a solid border, and a solid one would read as a card.
+ * - **Title and description are required**; the action is optional and only belongs when
+ *   there is something the user can do right now to fill it.
+ * - It goes INSIDE the container that is empty, not in its place: the list still exists.
  */
 export const WithIcon: Story = {
   render: () => (
@@ -34,7 +34,7 @@ export const WithIcon: Story = {
   ),
 }
 
-/** Sin acción: no hay nada que el usuario pueda hacer aquí, solo explicar por qué está vacío. */
+/** No action: there is nothing the user can do here, only an explanation of why it is empty. */
 export const WithoutAction: Story = {
   render: () => (
     <div style={{ maxWidth: 460 }}>
@@ -51,7 +51,7 @@ export const WithoutAction: Story = {
   ),
 }
 
-/** Embebido: `border-0` cuando ya vive dentro de una card que tiene sus propios bordes. */
+/** Embedded: `border-0` once it lives inside a card that already has its own edges. */
 export const InsideACard: Story = {
   render: () => (
     <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4" style={{ maxWidth: 460 }}>

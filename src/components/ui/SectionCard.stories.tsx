@@ -19,17 +19,16 @@ const Rows = () => (
 )
 
 /**
- * ## Criterios de aceptación
+ * ## Acceptance criteria
  *
- * - **El contenedor más usado del producto** — diez archivos lo importan. Cualquier cambio
- *   aquí se nota en toda la app, y por eso no acepta variantes de conveniencia.
- * - **Un eje: `Action` sí o no.** Cabecera con icono + título, y a la derecha una acción
- *   opcional.
- * - **El título usa el estilo de encabezado de sección**, no un tamaño elegido a mano.
- * - **La acción es una sola cosa**, alineada a la derecha: un total, un botón, un control.
- *   Dos acciones compitiendo ahí convierten la cabecera en una barra de herramientas.
- * - El contenido va tal cual; la card no impone padding interno a sus hijos más allá del
- *   suyo.
+ * - **The most used container in the product** — ten files import it. Any change here shows
+ *   up across the whole app, which is why it takes no convenience variants.
+ * - **One axis: `Action` or no action.** An icon + title header, with an optional action on
+ *   the right.
+ * - **The title uses the section heading style**, not a hand-picked size.
+ * - **The action is ONE thing**, right-aligned: a total, a button, a control. Two actions
+ *   competing there turn the header into a toolbar.
+ * - Content goes in as-is; the card imposes no inner padding on its children beyond its own.
  */
 export const WithAndWithoutAction: Story = {
   render: () => (
@@ -64,7 +63,7 @@ export const WithAndWithoutAction: Story = {
   ),
 }
 
-/** Un título largo no empuja la acción fuera: la cabecera reparte, no desborda. */
+/** A long title does not push the action out: the header shares the space, it does not overflow. */
 export const LongTitle: Story = {
   render: () => (
     <div style={{ maxWidth: 380 }}>

@@ -7,16 +7,17 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 /**
- * ## Criterios de aceptación
+ * ## Acceptance criteria
  *
- * - **288px de ancho.** No es un panel elástico: si el contenido pide más, es otra cosa.
- * - **Solo escritorio.** En móvil el mismo contenido se abre en un `Sheet`, porque un
- *   popover cerca del borde inferior de un teléfono acaba tapado por el teclado o por la
- *   navegación.
- * - **No es un `Tooltip`.** Aquel se invierte y explica; éste es una superficie de contenido
- *   anclada, con el fondo del popover y su propio borde. Confundirlos deja la app con dos
- *   idiomas para el mismo objeto — pasó, y `TrendChart` era el que hablaba el otro.
- * - Se abre por clic, no por hover, y su contenido puede recibir foco.
+ * - **288px wide.** It is not an elastic panel: if the content asks for more, it is
+ *   something else.
+ * - **Desktop only.** On mobile the same content opens in a `Sheet`, because a popover near
+ *   the bottom of a phone ends up covered by the keyboard or by the navigation.
+ * - **It is not a `Tooltip`.** That one inverts and explains; this is an anchored content
+ *   surface with the popover background and its own border. Confusing them leaves the app
+ *   with two languages for one object — it happened, and `TrendChart` was the one speaking
+ *   the other.
+ * - It opens on click, not on hover, and its content can take focus.
  */
 export const Anchored: Story = {
   render: () => (
@@ -41,7 +42,7 @@ export const Anchored: Story = {
   ),
 }
 
-/** Con controles dentro — a diferencia de un tooltip, aquí el contenido recibe foco. */
+/** With controls inside — unlike a tooltip, the content here takes focus. */
 export const WithControls: Story = {
   render: () => (
     <div className="py-6 flex justify-center">

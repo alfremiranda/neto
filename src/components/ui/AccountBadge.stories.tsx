@@ -8,19 +8,19 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 /**
- * ## Criterios de aceptación
+ * ## Acceptance criteria
  *
- * - **Dice QUÉ cuenta**, no qué clase de cuenta. Lo segundo era trabajo de
- *   `AccountTypeBadge`: responden preguntas distintas y pueden aparecer juntos.
- * - **El color viene del registro de la cuenta, no de un `tone` en el call site.** En un
- *   `Badge` genérico el color es decorativo; aquí identifica, así que no se elige al
- *   pintar.
- * - **El punto es lo único coloreado.** El chip se queda en `bg/account`. Doce tonos son
- *   seguros justamente porque cada uno vive confinado en una marca pequeña que nunca
- *   comparte superficie con un número.
- * - **El nombre viaja siempre al lado** (WCAG 1.4.1): el color no puede ser el único
- *   portador de cuál cuenta es.
- * - Sin variantes: no hay ejes que elegir, solo la cuenta.
+ * - **It says WHICH account**, not what kind of account. That was `AccountTypeBadge`'s job:
+ *   they answer different questions and can appear together.
+ * - **The colour comes from the account record, not from a `tone` at the call site.** On a
+ *   generic `Badge` colour is decorative; here it identifies, so it is not chosen at paint
+ *   time.
+ * - **The dot is the only coloured part.** The chip stays on `bg/account`. Twelve hues are
+ *   safe precisely because each one is confined to a small mark that never shares a surface
+ *   with a number.
+ * - **The name always travels beside it** (WCAG 1.4.1): colour cannot be the only carrier
+ *   of which account this is.
+ * - No variants: there are no axes to pick, only the account.
  */
 export const Accounts: Story = {
   render: () => (
@@ -36,7 +36,7 @@ export const Accounts: Story = {
   ),
 }
 
-/** Los doce tonos. El punto cambia; el chip nunca. */
+/** The twelve hues. The dot changes; the chip never does. */
 export const EveryHue: Story = {
   render: () => (
     <div className="flex flex-wrap items-center gap-2" style={{ maxWidth: 520 }}>
@@ -48,8 +48,8 @@ export const EveryHue: Story = {
 }
 
 /**
- * Junto al `Badge` genérico, que es de lo que se distingue: aquel colorea por tono elegido
- * en el call site, éste por identidad de la cuenta.
+ * Beside the generic `Badge`, which is what it is distinguished from: that one colours by a
+ * tone chosen at the call site, this one by the account's identity.
  */
 export const AgainstGenericBadge: Story = {
   render: () => (

@@ -10,19 +10,19 @@ type Story = StoryObj<typeof meta>
 const SIDES = ['top', 'right', 'bottom', 'left'] as const
 
 /**
- * ## Criterios de aceptación
+ * ## Acceptance criteria
  *
- * - **Se invierte contra la página** — `bg/inverse` con `fg/on-inverse` — para que se lea
- *   como capa y nunca como parte del contenido de abajo.
- * - **`Side` es dónde se sitúa respecto al disparador, y también hacia dónde apunta la
- *   flecha.** Las dos cosas son el mismo hecho.
- * - **Tope de 320.** Si el contenido no cabe en 320, no es un tooltip.
- * - **`Content` es intercambiable**: la frase corta por defecto, o un `TooltipReadout` para
- *   datos. La burbuja posee la superficie, la flecha, la inversión y el tope; lo de dentro
- *   cambia. Bifurcar la burbuja habría dejado la inversión definida en dos sitios.
- * - **Solo escritorio: en táctil no hay hover.** Lo que un usuario móvil necesite saber
- *   tiene que verse sin él — para una gráfica eso significa que las cifras del punto
- *   seleccionado van también a los metrics de la card, no solo a esta burbuja.
+ * - **It inverts against the page** — `bg/inverse` with `fg/on-inverse` — so it reads as an
+ *   overlay and never as part of the content underneath.
+ * - **`Side` is where it sits relative to the trigger, and also where the arrow points.**
+ *   Those are the same fact.
+ * - **Capped at 320.** If the content does not fit in 320, it is not a tooltip.
+ * - **`Content` is swappable**: the short sentence by default, or a `TooltipReadout` for
+ *   data. The bubble owns the surface, the arrow, the inversion and the cap; what goes
+ *   inside changes. Forking the bubble would have put the inversion in two places.
+ * - **Desktop only: there is no hover on touch.** Anything a mobile user needs to know must
+ *   be visible without it — for a chart that means the selected point's figures go to the
+ *   card's metrics too, not only into this bubble.
  */
 export const Sides: Story = {
   render: () => (
@@ -41,7 +41,7 @@ export const Sides: Story = {
   ),
 }
 
-/** Sobre un icono, que es el caso más común: el disparador no tiene texto propio. */
+/** On an icon, the most common case: the trigger has no text of its own. */
 export const OnAnIcon: Story = {
   render: () => (
     <TooltipProvider>
@@ -61,7 +61,7 @@ export const OnAnIcon: Story = {
   ),
 }
 
-/** El tope de 320: un texto largo envuelve, no estira la burbuja. */
+/** The 320 cap: a long text wraps rather than stretching the bubble. */
 export const MaxWidth: Story = {
   render: () => (
     <TooltipProvider>

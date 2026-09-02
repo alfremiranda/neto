@@ -41,26 +41,27 @@ function Demo({ dirty, label }: { dirty?: boolean; label: string }) {
 }
 
 /**
- * ## Criterios de aceptación
+ * ## Acceptance criteria
  *
- * - **Es el panel en el que se abre todo formulario.** En móvil sube desde abajo con su
- *   asa y redondea arriba; en escritorio entra desde la derecha y redondea a la izquierda.
- * - **El pie es opcional**, y cuando existe se queda fijo: el botón principal no se va
- *   scrolleando con el contenido.
- * - **Con trabajo sin guardar (`dirty`) solo cierra su botón de cerrar.** Ni deslizar, ni
- *   tocar fuera, ni Escape. Esto no es una preferencia: en móvil el arrastre no está
- *   confinado al asa, así que tocar un select y resbalar el dedo descartaba el sheet y
- *   tiraba todo lo escrito. Un gesto a un píxel de un toque normal no puede destruir
- *   trabajo.
- * - **Vacío sí se descarta deslizando**, porque no hay nada que perder.
- * - **Se ajusta al teclado en iOS PWA**, donde `dvh`/`vh` mienten: la altura sale de
- *   `screen.height` y del `visualViewport`.
+ * - **It is the panel every form opens in.** On mobile it rises from the bottom with its
+ *   handle and rounds its top corners; on desktop it slides in from the right and rounds
+ *   its left ones.
+ * - **The footer is optional**, and when it exists it stays put: the primary button does
+ *   not scroll away with the content.
+ * - **With unsaved work (`dirty`) only its close button closes it.** No swipe, no outside
+ *   tap, no Escape. This is not a preference: on mobile the drag is not confined to the
+ *   handle, so tapping a select and letting the finger slide dismissed the sheet and threw
+ *   away everything typed. A gesture one pixel away from an ordinary tap cannot be allowed
+ *   to destroy work.
+ * - **An empty sheet DOES swipe away**, because there is nothing to lose.
+ * - **It adapts to the keyboard on iOS PWA**, where `dvh`/`vh` lie: the height comes from
+ *   `screen.height` and from `visualViewport`.
  */
 export const Empty: Story = {
   render: () => <Demo dirty={false} label="Abrir vacío" />,
 }
 
-/** Con contenido escrito: el gesto ya no lo puede cerrar. Escribe algo y prueba a tocar fuera. */
+/** With content typed: the gesture can no longer close it. Type something, then tap outside. */
 export const WithUnsavedWork: Story = {
   render: () => <Demo label="Abrir y escribir" />,
 }

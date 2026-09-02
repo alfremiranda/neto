@@ -43,13 +43,19 @@ function Strip({ label, dates }: { label: string; dates: string[] }) {
 }
 
 /**
- * The strip's length is DATA, not design. A range appears only once the account has a
- * movement older than that range's start — otherwise the pill would draw the same line
- * as the shorter one beside it, and a control that cannot change what you see is not a
- * choice.
+ * ## Acceptance criteria
  *
- * The last pill of each strip is the one that shows EVERYTHING; the ones that would sit
- * behind it are dropped, because they would each redraw the same line.
+ * - **The strip's length is DATA, not design.** A range appears only once the account has a
+ *   movement that reaches past where the shorter range beside it stopped — otherwise the
+ *   pill draws the same line as its neighbour, and a control that cannot change what you
+ *   see is not a choice.
+ * - **The last pill is the one that shows EVERYTHING.** The ranges that would sit behind it
+ *   are dropped, because each would redraw the same line.
+ * - **Below a month a movement has to be placeable on a DAY.** `date` is optional on an
+ *   income, so an account carrying an undated one has no daily series and must not be
+ *   offered 1D or 1S.
+ * - **Fewer than two pills renders nothing.** One option is not a choice.
+ * - It composes `Segment`, so "selected" means here what it means in every other control.
  */
 export const LengthIsData: Story = {
   render: () => (
@@ -62,11 +68,7 @@ export const LengthIsData: Story = {
   ),
 }
 
-/**
- * Below a month a movement has to be placeable on a DAY. `date` is optional on an income,
- * so an account carrying an undated one has no daily series at all and must not be
- * offered 1D or 1S — the pills would draw a fiction.
- */
+/** An undated income removes the daily series, so 1D and 1S are not offered at all. */
 export const NoDailySeries: Story = {
   render: () => {
     const db = dbWith(['2024-03-10', TODAY])

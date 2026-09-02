@@ -15,16 +15,16 @@ const OPTIONS = [
 ]
 
 /**
- * ## Criterios de aceptación
+ * ## Acceptance criteria
  *
- * - **Comparte ejes y alturas con `Input` a propósito**, para que los dos se alineen en una
- *   misma fila. Si uno cambia de alto, cambian los dos.
- * - **La altura sale del prop `size` o de `data-size="none"`, NUNCA de una clase `h-*`.**
- *   Una `h-*` pierde contra la especificidad del atributo de datos y no hace nada, en
- *   silencio — que es la peor manera de no funcionar.
- * - **El valor llena el ancho restante y trunca con elipsis; los iconos se ajustan y nunca
- *   encogen.** Un valor más largo que el campo no puede ensancharlo.
- * - Con `placeholder` el texto va en `fg/placeholder`, distinto de un valor real.
+ * - **It shares axes and heights with `Input` on purpose**, so the two line up in the same
+ *   row. If one changes height, both do.
+ * - **Height comes from the `size` prop or from `data-size="none"`, NEVER from an `h-*`
+ *   class.** An `h-*` loses to the data attribute's specificity and does nothing, silently
+ *   — which is the worst way to not work.
+ * - **The value fills the remaining width and truncates with an ellipsis; the icons hug and
+ *   never shrink.** A value longer than the field must not widen it.
+ * - With a `placeholder` the text uses `fg/placeholder`, distinct from a real value.
  */
 export const AlignsWithInput: Story = {
   render: () => {
@@ -49,7 +49,7 @@ export const AlignsWithInput: Story = {
   },
 }
 
-/** Sin valor: el placeholder se distingue de un valor real. */
+/** No value: the placeholder is distinguishable from a real one. */
 export const Placeholder: Story = {
   render: () => (
     <div style={{ maxWidth: 260 }}>
@@ -64,8 +64,8 @@ export const Placeholder: Story = {
 }
 
 /**
- * **El caso que rompe**: un valor más largo que el campo trunca con elipsis y el campo no
- * se ensancha. El icono no encoge.
+ * **The case that breaks it**: a value longer than the field truncates with an ellipsis and
+ * the field does not widen. The icon does not shrink.
  */
 export const LongValueTruncates: Story = {
   render: () => (
@@ -85,7 +85,7 @@ export const LongValueTruncates: Story = {
   ),
 }
 
-/** Deshabilitado y con tamaño `sm`, que es el que comparte con `Input` en barras de filtro. */
+/** Disabled, and at `sm`, which is the size it shares with `Input` in filter bars. */
 export const SizesAndDisabled: Story = {
   render: () => (
     <div className="flex items-end gap-3" style={{ maxWidth: 460 }}>

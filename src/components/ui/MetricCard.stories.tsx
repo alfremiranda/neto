@@ -6,16 +6,16 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 /**
- * ## Criterios de aceptación
+ * ## Acceptance criteria
  *
- * - **Una cifra con su etiqueta.** Un eje: con `sub` o sin él.
- * - **Vive sobre `bg/subtle`, y va EMBEBIDA dentro de otra card** — no se sostiene sola.
- *   Eso es lo que la separa de `SectionCard`: aquella es el contenedor, ésta es una celda
- *   dentro de él.
- * - **La etiqueta va arriba y la cifra debajo**, no al revés: se lee "qué es" antes que
- *   "cuánto".
- * - `sub` es contexto de la cifra (su equivalente en otra moneda, su porcentaje), nunca
- *   una segunda cifra independiente.
+ * - **One figure with its label.** One axis: with `sub` or without.
+ * - **It sits on `bg/subtle` and is EMBEDDED inside another card** — it does not stand
+ *   alone. That is what separates it from `SectionCard`: that one is the container, this is
+ *   a cell inside it.
+ * - **The label goes above and the figure below**, not the other way round: you read "what
+ *   it is" before "how much".
+ * - `sub` is context for the figure (its equivalent in another currency, its percentage),
+ *   never a second independent figure.
  */
 export const WithAndWithoutSub: Story = {
   render: () => (
@@ -31,7 +31,7 @@ export const WithAndWithoutSub: Story = {
   ),
 }
 
-/** Sola, fuera de una card, para dejar ver por qué no se sostiene: su fondo se pierde. */
+/** Alone, outside a card, to show why it does not stand up: its background is lost. */
 export const StandingAlone: Story = {
   render: () => (
     <div style={{ maxWidth: 260 }}>
