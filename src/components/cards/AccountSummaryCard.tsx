@@ -1,13 +1,18 @@
+import { useState } from 'react'
 import { Pencil } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
-import { computeAccountBalance, creditCardStats } from '@/lib/calc'
+import { buildLedger, computeAccountBalance, creditCardStats } from '@/lib/calc'
 import { COP, USD, fmtDate } from '@/lib/format'
 import { AccountAvatar } from '@/components/ui/AccountAvatar'
 import { CurrencyBadge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { ACCOUNT_TYPE_LABEL } from '@/data/defaults'
+import { AccountChart } from '@/components/cards/AccountChart'
+import { ChartRange } from '@/components/ui/ChartRange'
+import { availableRanges, type RangeId } from '@/lib/chartRange'
+import { localToday } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { Account } from '@/types'
 import type { ReactNode } from 'react'
@@ -34,6 +39,18 @@ const KIND_LABEL: Record<string, string> = { cuenta: 'Cta Ahorros', cdt: 'CDT', 
 export function AccountSummaryCard({ account, chart }: { account: Account; chart?: ReactNode }) {
   const db = useFinanceStore(s => s.db)
   const { openSheet, setEditingAccount } = useUIStore()
+  const ranges = availableRanges(account, db, localToday())
+  // Default to the widest window the account can actually offer: opening on the shortest
+  // would show a near-empty chart for an account with years of history.
+  const [range, setRange] = useState<RangeId | null>(null)
+  const active = range && ranges.some(r => r.id === range) ? range : ranges[ranges.length - 1]?.id
+  const from   = ranges.find(r => r.id === active)?.start
+
+  // Whether there is a chart at all: movements on at least two distinct days. Asked here
+  // as well as inside AccountChart so the divider does not survive an empty chart.
+  const hasChart = !!chart || new Set(
+    buildLedger(account.id, account, db).map(e => e.date),
+  ).size >= 2
 
   const allKeys   = Object.keys(db).filter(k => k !== '_settings').sort()
   const latestKey = allKeys[allKeys.length - 1] ?? ''
@@ -124,10 +141,15 @@ export function AccountSummaryCard({ account, chart }: { account: Account; chart
 
       {/* divider · chart — the divider only exists to separate something, so it appears
           with the chart and not before it (TASK-2026-08-24e §2.3/2.4). */}
-      {chart && (
+      {/* divider · chart · range.
+          A separator only exists to separate something: it appears with the chart, and
+          the chart itself is absent until the account has movements on more than one
+          day. The strip renders itself away when the account cannot offer two windows. */}
+      {hasChart && (
         <>
           <Separator />
-          {chart}
+          {chart ?? <AccountChart account={account} from={from} />}
+          <ChartRange ranges={ranges} value={active as RangeId} onChange={setRange} />
         </>
       )}
     </div>

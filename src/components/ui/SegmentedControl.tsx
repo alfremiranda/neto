@@ -17,6 +17,44 @@ import { cn } from '@/lib/utils'
  * fixed matrix. In code the count is just how many options were passed, so there
  * is nothing to model.
  */
+
+/**
+ * One segment. Exported because a segment on its own is not a control — it is composed
+ * BY controls, and there are two of them: SegmentedControl fills a track with equal
+ * columns, chart-range hugs a variable-length strip. Sharing the button keeps "selected"
+ * meaning the same thing in both, which is the whole reason the DS models it this way.
+ */
+export function Segment({ selected, label, icon, onClick, role = 'radio' }: {
+  selected: boolean
+  label: string
+  icon?: React.ReactNode
+  onClick: () => void
+  role?: 'radio' | 'tab'
+}) {
+  return (
+    <button
+      type="button"
+      role={role}
+      {...(role === 'radio' ? { 'aria-checked': selected } : { 'aria-selected': selected })}
+      onClick={onClick}
+      className={cn(
+        'flex items-center justify-center gap-2 px-3 py-2.5 rounded-full ts-control-sm',
+        'cursor-pointer transition-colors duration-fast ease-move whitespace-nowrap',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]',
+        // The border is always drawn, transparent when unselected: without it
+        // the segment gains 1px on selection and every sibling shifts.
+        'border',
+        selected
+          ? 'bg-[var(--bg-brand-alpha-20)] border-[var(--border-brand-alpha-50)] text-[var(--fg-on-subtle)]'
+          : 'border-transparent text-[var(--fg-subtle)] hover:text-[var(--foreground)]',
+      )}
+    >
+      {icon}
+      {label}
+    </button>
+  )
+}
+
 export function SegmentedControl<T extends string>({ options, value, onChange, ariaLabel, className }: {
   options: ReadonlyArray<{ value: T; label: string; icon?: React.ReactNode }>
   value: T
@@ -43,27 +81,13 @@ export function SegmentedControl<T extends string>({ options, value, onChange, a
       {options.map(o => {
         const selected = o.value === value
         return (
-          <button
+          <Segment
             key={o.value}
-            type="button"
-            role="radio"
-            aria-checked={selected}
+            selected={selected}
+            label={o.label}
+            icon={o.icon}
             onClick={() => onChange(o.value)}
-            className={cn(
-              'flex items-center justify-center gap-2 px-3 py-2.5 rounded-full ts-control-sm',
-              'cursor-pointer transition-colors duration-fast ease-move whitespace-nowrap',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]',
-              // The border is always drawn, transparent when unselected: without it
-              // the segment gains 1px on selection and every sibling shifts.
-              'border',
-              selected
-                ? 'bg-[var(--bg-brand-alpha-20)] border-[var(--border-brand-alpha-50)] text-[var(--fg-on-subtle)]'
-                : 'border-transparent text-[var(--fg-subtle)] hover:text-[var(--foreground)]',
-            )}
-          >
-            {o.icon}
-            {o.label}
-          </button>
+          />
         )
       })}
     </div>
