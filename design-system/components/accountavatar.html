@@ -34,7 +34,7 @@ h1{margin:0 0 4px;font-weight:800;font-size:24px;line-height:32px;letter-spacing
   <h1>AccountAvatar</h1>
   <p class="crumb">Icons &amp; Avatar — Neto design system</p>
   <div class="spec">
-    <div class="axes"><div class="axis"><span class="k">Color</span><span class="v">purple · sky · emerald · lime · amber · pink · blue · green · indigo · orange · rose · teal</span></div><div class="axis"><span class="k">size</span><span class="v">LG · SM</span></div><div class="count">24 variantes · 704 × 144</div></div>
+    <div class="axes"><div class="axis"><span class="k">Color</span><span class="v">purple · sky · emerald · lime · amber · pink · blue · green · indigo · orange · rose · teal</span></div><div class="axis"><span class="k">size</span><span class="v">LG · SM</span></div><div class="count">24 variantes</div></div>
     <div class="desc">An account’s identity mark: the tinted circle in account/{hue}/surface with the account-type glyph in account/{hue}/accent. This is the pairing the colour picker is choosing, and the only place the surface token is used.
 
 Two axes. Colour is twelve. size is SM (24) and LG (40) — SM because both consumers needed it, AccountCard’s header and AccountSummaryCard’s. MD (32) exists in the code’s cva and is deliberately NOT minted here: nothing uses it yet, and a variant with no consumer is a variant nobody maintains.
@@ -50,8 +50,8 @@ The twelve are ordered by HUE ANGLE, measured from each accent’s Light value: 
 The order is not decoration. Neighbours are the pairs that measure closest — orange/amber at 11°, emerald/teal at 14 — and putting them side by side is what lets someone SEE they are two, instead of meeting one of them six positions later and reading it as the same colour twice. The CHILD order in the set is that ramp. Figma’s properties panel is not: it keeps its own option order (purple first, today), it has done so since before the size axis was added, and reordering the children does not re-derive it. The description used to claim the panel was sorted too. It never was.</div>
   </div>
   <div class="modes">
-    <div><span class="lbl">Light</span><div data-theme="light" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición de 704×144px — la fuente visual es Figma.</div></div></div></div>
-    <div><span class="lbl">Dark</span><div data-theme="dark" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición de 704×144px — la fuente visual es Figma.</div></div></div></div>
+    <div><span class="lbl">Light</span><div data-theme="light" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición — la fuente visual es Figma.</div></div></div></div>
+    <div><span class="lbl">Dark</span><div data-theme="dark" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición — la fuente visual es Figma.</div></div></div></div>
   </div>
 </main>
 </body></html>

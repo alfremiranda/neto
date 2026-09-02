@@ -34,7 +34,7 @@ h1{margin:0 0 4px;font-weight:800;font-size:24px;line-height:32px;letter-spacing
   <h1>Field</h1>
   <p class="crumb">Forms — Neto design system</p>
   <div class="spec">
-    <div class="axes"><div class="axis"><span class="k">Label</span><span class="v">slot</span></div><div class="axis"><span class="k">Message</span><span class="v">slot</span></div><div class="axis"><span class="k">Control</span><span class="v">slot</span></div><div class="axis"><span class="k">State</span><span class="v">Default · Error · Hint</span></div><div class="count">3 variantes · 1000 × 146</div></div>
+    <div class="axes"><div class="axis"><span class="k">Label</span><span class="v">slot</span></div><div class="axis"><span class="k">Message</span><span class="v">slot</span></div><div class="axis"><span class="k">Control</span><span class="v">slot</span></div><div class="axis"><span class="k">State</span><span class="v">Default · Error · Hint</span></div><div class="count">3 variantes</div></div>
     <div class="desc">A form field: the label, the control, and the message. Built 2026-08-20 because the system had four form components and four different answers about labels — Input, Select and DatePicker had none at all and were letting the placeholder do the job, at 2.56:1 contrast and gone as soon as the user types.
 
 The control is an INSTANCE SWAP: swap in Input, Select or anything else — including an Input configured as a date or money field, which is what replaced DatePicker and MoneyInput. The field’s own visual state (focus, disabled) belongs to the control; this wrapper only knows whether the message is a hint or an error.
@@ -42,8 +42,8 @@ The control is an INSTANCE SWAP: swap in Input, Select or anything else — incl
 The control slot HUGS. It was FIXED at 40px — the height of an Input — which silently clipped anything taller the moment one was swapped in: AccountColorPicker lost its second row and the drawer looked like it had six colours. An instance-swap slot cannot carry the height of its default occupant.</div>
   </div>
   <div class="modes">
-    <div><span class="lbl">Light</span><div data-theme="light" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición de 1000×146px — la fuente visual es Figma.</div></div></div></div>
-    <div><span class="lbl">Dark</span><div data-theme="dark" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición de 1000×146px — la fuente visual es Figma.</div></div></div></div>
+    <div><span class="lbl">Light</span><div data-theme="light" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición — la fuente visual es Figma.</div></div></div></div>
+    <div><span class="lbl">Dark</span><div data-theme="dark" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición — la fuente visual es Figma.</div></div></div></div>
   </div>
 </main>
 </body></html>

@@ -34,18 +34,18 @@ h1{margin:0 0 4px;font-weight:800;font-size:24px;line-height:32px;letter-spacing
   <h1>TooltipReadout</h1>
   <p class="crumb">Overlays — Neto design system</p>
   <div class="spec">
-    <div class="axes"><div class="axis"><span class="k">Title</span><span class="v">slot</span></div><div class="axis"><span class="k">Show title</span><span class="v">slot</span></div><div class="axis"><span class="k">Rows</span><span class="v">slot</span></div><div class="count">1 variantes · 184 × 92</div></div>
-    <div class="desc">A data readout: a titled list of series, each one a colour chip, a label and a figure. It goes inside Tooltip · Content when the tooltip is reading data rather than explaining something.
+    <div class="axes"><div class="axis"><span class="k">Title</span><span class="v">slot</span></div><div class="axis"><span class="k">Show title</span><span class="v">slot</span></div><div class="axis"><span class="k">Rows</span><span class="v">slot</span></div><div class="count">1 variantes</div></div>
+    <div class="desc">A data readout: a titled list of series, each one a colour chip, a label and a figure. It goes inside Tooltip · Content.
 
-It is a separate component and not a Tooltip variant because only the content differs — the surface, the arrow, the inversion and the cap are the same object, and forking them would have put the inversion in two places.
+It is a separate component and not a Tooltip variant because only the CONTENT differs — the surface, the arrow, the inversion and the cap are the same object. Splitting it that way keeps the inversion defined once.
 
-Rows is a slot that takes ReadoutRow. Title is the point being read: a date on a chart, the metric name on a KPI.
+Rows is a slot that takes ReadoutRow. Title is the point being read — a date on a chart, the metric&#x27;s name on a KPI.
 
 The chips do not use the chart&#x27;s own series colours. Those are chosen against the card; this sits on bg/inverse, which is the opposite surface. See readout/swatch/*.</div>
   </div>
   <div class="modes">
-    <div><span class="lbl">Light</span><div data-theme="light" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición de 184×92px — la fuente visual es Figma.</div></div></div></div>
-    <div><span class="lbl">Dark</span><div data-theme="dark" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición de 184×92px — la fuente visual es Figma.</div></div></div></div>
+    <div><span class="lbl">Light</span><div data-theme="light" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición — la fuente visual es Figma.</div></div></div></div>
+    <div><span class="lbl">Dark</span><div data-theme="dark" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición — la fuente visual es Figma.</div></div></div></div>
   </div>
 </main>
 </body></html>

@@ -153,8 +153,20 @@ So done means all four, in the same session that creates it:
    `Components · Forms` claimed 10 components and 79 variants when the measured truth was 12 and 93,
    and it was wrong *before* the component that triggered the check was added.
 
+**And CHANGING a component is the same threshold as creating one.** Amended 2026-09-02.
+Alfredo: *"cuando actualices un componente revisa siempre la documentación, seguramente requiera
+actualizarse también."* Measured that day: **64 of 79 `doc:` frames disagreed with the component
+they document** — the most common defect in the file, and one that is invisible, because the
+frame's prose and the component's description are two copies of the same thing and an edit only
+ever touches one.
+
+5. **The `doc:` frame is re-derived, not left alone.** Its `spec` carries the axes, the variant
+   count and the description; all three come from the component and none of them is typed twice.
+   `C10` checks it.
+
 The cost of skipping this is not tidiness. A component that exists but cannot be found gets built a
-second time by the next person, and then there are two.
+second time by the next person, and then there are two. A component whose documentation is stale is
+worse: it is found, and it is believed.
 
 ## A5. What each check prevents
 
@@ -177,6 +189,7 @@ through there.
 | `C4` generic layer name | structure that is illegible to whoever arrives next |
 | `C8` layout number without a variable | a gap, padding, radius or border width typed by hand, drifting off the scale one screen at a time |
 | `C9` `doc:` heading pinned to a fixed width | a documentation title clipped by the next rename, silently, because the node's height does not grow with the wrap |
+| `C10` `doc:` spec vs its component | documentation that describes a component the file no longer contains — a false variant count, or prose that stopped matching the thing |
 
 ## A5b. C5, C6 and C7 — what calibrating them cost (2026-08-22)
 
@@ -289,6 +302,30 @@ function of its text; a pinned one is a table with a single row.
 
 Now `C9`. It is deliberately narrow — only the title of a `doc:` frame — because a paragraph that
 wraps on purpose is a different thing and should not be dragged in.
+
+### A6e. Two copies of one paragraph will diverge, and neither will look wrong (2026-09-02)
+
+The prose that describes a component exists in three places: the Figma component's `description`,
+the `spec` text of its `doc:` frame, and the `d` field of the repo registry that generates
+`components/*.html`. Only the first is the source. The other two were being typed.
+
+Measured the day Alfredo asked about it:
+
+- **`doc:` frame vs component — 64 of 79 disagreed.** Fixed by deriving the frame from the
+  component and adding `C10`. 40 of those 64 drifted on one line alone, a pixel size of the variant
+  grid, which measures how the previews happen to be arranged and not the component; it was deleted
+  from the spec and from `build.py` the same day.
+- **Registry vs component — 39 of 89 disagree, and in BOTH directions.** Seven are the registry
+  deliberately trimming a trailing axis sentence the HTML already renders. The other thirty-two are
+  real divergence: `Spinner` has four paragraphs in the registry and one in Figma; `Tooltip` had my
+  own writing from the same morning, typed twice, already different by lunchtime.
+
+The lesson is not "be careful". It is that **anything typed twice is one edit away from lying, and
+the second copy never looks wrong** — it reads perfectly, it just describes a component that no
+longer exists. The `doc:` frames are fixed because a frame can be re-derived from the component in
+the same session. The registry is NOT fixed, and it must not be bulk-overwritten: in thirty-two
+places the registry holds the better paragraph, and generating over it would destroy real writing.
+It needs a one-time merge, then generation. See `20-roadmap.md`.
 
 ## A7. The three-piece shape
 

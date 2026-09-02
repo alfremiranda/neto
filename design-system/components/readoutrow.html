@@ -34,18 +34,18 @@ h1{margin:0 0 4px;font-weight:800;font-size:24px;line-height:32px;letter-spacing
   <h1>ReadoutRow</h1>
   <p class="crumb">Overlays — Neto design system</p>
   <div class="spec">
-    <div class="axes"><div class="axis"><span class="k">Label</span><span class="v">slot</span></div><div class="axis"><span class="k">Amount</span><span class="v">slot</span></div><div class="axis"><span class="k">Swatch</span><span class="v">slot</span></div><div class="axis"><span class="k">Divider</span><span class="v">False · True</span></div><div class="axis"><span class="k">State</span><span class="v">Default · Dim</span></div><div class="count">4 variantes · 264 × 208</div></div>
-    <div class="desc">One line of a data readout: chip, label, figure. It only ever appears inside TooltipReadout, on bg/inverse.
+    <div class="axes"><div class="axis"><span class="k">Label</span><span class="v">slot</span></div><div class="axis"><span class="k">Amount</span><span class="v">slot</span></div><div class="axis"><span class="k">Swatch</span><span class="v">slot</span></div><div class="axis"><span class="k">Divider</span><span class="v">False · True</span></div><div class="axis"><span class="k">State</span><span class="v">Default · Dim</span></div><div class="count">4 variantes</div></div>
+    <div class="desc">One line of a data readout: chip, label, figure.
 
-Divider draws the hairline ABOVE the row, so a group boundary belongs to the row that opens the group instead of being a blank item slipped between two rows. Dim is the muted state for a line that is present but not in play.
+Divider draws the hairline ABOVE the row, so grouping is a property of the row that starts a group rather than a fake blank item between two rows. Dim is the muted state for a line that is present but not in play.
 
 Swatch hides the chip for a line that names no series — a total, a note.
 
-The chip is readout/swatch/*, deliberately the same value in Light and Dark: the surface under it flips, so a colour that followed the mode would land on the surface it was not chosen against. Measured on the Dark surface, every category colour fails 3:1 that way (1.44 to 2.77).</div>
+The chip is readout/swatch/*, which is deliberately the same value in Light and Dark: the surface underneath it flips, so a mode-following colour would land on the surface it was not chosen against.</div>
   </div>
   <div class="modes">
-    <div><span class="lbl">Light</span><div data-theme="light" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición de 264×208px — la fuente visual es Figma.</div></div></div></div>
-    <div><span class="lbl">Dark</span><div data-theme="dark" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición de 264×208px — la fuente visual es Figma.</div></div></div></div>
+    <div><span class="lbl">Light</span><div data-theme="light" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición — la fuente visual es Figma.</div></div></div></div>
+    <div><span class="lbl">Dark</span><div data-theme="dark" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición — la fuente visual es Figma.</div></div></div></div>
   </div>
 </main>
 </body></html>

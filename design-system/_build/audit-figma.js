@@ -113,7 +113,12 @@ const OUT_OF_SCOPE = /^(_docs-kit|Screens · Neto \(WIP\))/;
 // frame that describes a token is not a design decision about spacing.
 // Decided 2026-08-20 after the layout sweep left ~350 of these as permanent
 // false positives.
-const DOC_CHROME = /^(section:|grid$|chip$|default$|doc:|_docs)/;
+// `topic:` is the sibling of `doc:` and the distinction is load-bearing, not cosmetic:
+// a `doc: X` documents the component named X and C10 holds it to that component; a
+// `topic: X` documents a SUBJECT and may hold several components or none. Before the
+// split, AccountColor — which documents a swatch and a picker together — read as a
+// permanently drifted `doc:`. It was not drifted; it was a different kind of page.
+const DOC_CHROME = /^(section:|grid$|chip$|default$|doc:|topic:|_docs)/;
 
 // Figma draws its own dashed frame around a variant set and gives it a 5px
 // corner. 55 of them, 222 corners, none of them ours.
@@ -349,6 +354,45 @@ async function auditPage(pageId) {
       add('C9_titulo_de_doc_en_ancho_fijo', nd.name, Math.round(t.width) + 'px');
   };
 
+  // ── C10 · el spec de un `doc:` contra el componente que documenta ─────────
+  // Alfredo, 2026-09-02: "cuando actualices un componente revisa siempre la
+  // documentacion". Al medirlo, 64 de 79 specs estaban desactualizados. Es el
+  // fallo mas comun del archivo y no se ve nunca, porque la prosa del frame y la
+  // descripcion del componente son dos copias de lo mismo y solo una se edita.
+  //
+  // Que se compara, y que NO:
+  //   - el numero de variantes    -> es la API del componente; una cifra falsa aqui
+  //                                  hace que Dev implemente ejes que no existen
+  //   - la descripcion            -> debe ser LA MISMA cadena que la del componente
+  //   - un tamaño en px           -> PROHIBIDO. 40 de los 64 hallazgos eran solo esa
+  //                                  linea: mide como quedaron colocadas las
+  //                                  previews en Figma, no el componente, y cambia
+  //                                  cada vez que alguien mueve una. Se quito del
+  //                                  spec y de build.py el mismo dia.
+  //
+  // Un `topic:` no entra: documenta un asunto, no un componente.
+  const c10 = (nd) => {
+    if (nd.type !== 'FRAME' || !/^doc: /.test(nd.name)) return;
+    const nombre = nd.name.replace(/^doc: /, '');
+    const spec = nd.children.find(c => c.name === 'spec');
+    if (!spec) { add('C10_doc_sin_spec', nd.name, '—'); return; }
+    const esComp = n => n.type === 'COMPONENT_SET' || (n.type === 'COMPONENT' && n.parent.type !== 'COMPONENT_SET');
+    const comp = nd.findOne(n => esComp(n) && n.name === nombre)
+              || page.findOne(n => esComp(n) && n.name === nombre);
+    if (!comp) { add('C10_doc_sin_componente', nd.name, nombre); return; }
+    const ejes = (spec.children[0] && spec.children[0].characters) || '';
+    const prosa = (spec.children[1] && spec.children[1].characters) || '';
+    const nvar = comp.type === 'COMPONENT_SET' ? comp.children.length : 1;
+    const m = ejes.match(/(\d+) variants/);
+    if (nvar > 1 && (!m || +m[1] !== nvar))
+      add('C10_conteo_de_variantes_falso', nd.name, (m ? m[1] : 'sin conteo') + ' ≠ ' + nvar);
+    if (/\d+\s*×\s*\d+/.test(ejes))
+      add('C10_spec_con_medida_en_px', nd.name, ejes.match(/\d+\s*×\s*\d+/)[0]);
+    const norm = t => String(t || '').replace(/\s+/g, ' ').trim();
+    if (norm(prosa) !== norm(comp.description))
+      add('C10_descripcion_divergente', nd.name, 'spec ≠ description');
+  };
+
   for (const n of page.findAll(() => true)) {
     const path = n.name;
     const ajeno = esMarcaAjena(n);
@@ -365,6 +409,7 @@ async function auditPage(pageId) {
     if (!ajeno) c5(n);
     c7(n);
     c9(n);
+    c10(n);
 
     // C8 — un numero de layout escrito a mano. Las instancias quedan fuera: su geometria
     // la decide el componente, no la pantalla que lo usa.

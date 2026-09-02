@@ -34,12 +34,11 @@ h1{margin:0 0 4px;font-weight:800;font-size:24px;line-height:32px;letter-spacing
   <h1>Tooltip</h1>
   <p class="crumb">Overlays — Neto design system</p>
   <div class="spec">
-    <div class="axes"><div class="axis"><span class="k">Content</span><span class="v">slot</span></div><div class="axis"><span class="k">Side</span><span class="v">Top · Right · Bottom · Left</span></div><div class="count">4 variantes · 620 × 127</div></div>
+    <div class="axes"><div class="axis"><span class="k">Content</span><span class="v">slot</span></div><div class="axis"><span class="k">Side</span><span class="v">Top · Right · Bottom · Left</span></div><div class="count">4 variantes</div></div>
     <div class="desc">Short explanation on hover or focus. Side = where it sits relative to the trigger, which is also where the arrow points.
-
 Inverts against the page — bg/inverse with fg/on-inverse — so it reads as an overlay and never as part of the content underneath.
 
-Content is an instance-swap, the same shape Sheet uses, added 2026-09-02. The bubble owns the surface, the arrow, the inversion and the 320 cap; what goes inside it is swappable. TooltipText is the default sentence, TooltipReadout is the data readout a chart needs. Forking the bubble to carry a table would have put the inversion in two places.
+Content is an INSTANCE_SWAP, the same shape Sheet uses. The bubble owns the surface, the arrow, the cap at 320 and the inversion; what goes inside it is swappable. TooltipText is the default sentence. TooltipReadout is the data readout a chart needs. Forking the bubble to carry a table would have duplicated the inversion in two places.
 
 Desktop only: there is no hover on touch. Anything a mobile user needs to know must be visible without one — for a chart that means the selected point&#x27;s figures belong in the card&#x27;s own metrics, not only in this bubble.</div>
   </div>

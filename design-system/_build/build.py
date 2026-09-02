@@ -571,11 +571,11 @@ def mock(n, c):
                 f'<div style="{ts("Amount/Large")}color:var(--foreground-on-card);margin-top:8px">$ 12.450.900</div>'
                 f'<div style="{ts("Detail/Base")}color:var(--foreground-subtle)">Cuenta de ahorros · 4,5% E.A.</div></div>')
     return (f'<div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);'
-            f'{ts("Body/Small")}color:var(--foreground-subtle)">Composición de {c["w"]}×{c["h"]}px — la fuente visual es Figma.</div>')
+            f'{ts("Body/Small")}color:var(--foreground-subtle)">Composición — la fuente visual es Figma.</div>')
 
 def axes(c):
     if not c["p"]:
-        return f'<div class="axis"><span class="k">Sin variantes</span><span class="v">{c["w"]} × {c["h"]}</span></div>'
+        return '<div class="axis"><span class="k">Sin variantes</span><span class="v">—</span></div>'
     # A property is only an AXIS when it has options. Text, boolean and instance-swap
     # properties have none — they are slots, not variants — and the registry now records them
     # as a bare name. Splitting on "=" unconditionally crashed on the first one that arrived.
@@ -589,7 +589,11 @@ def axes(c):
             rows.append(f'<div class="axis"><span class="k">{html.escape(prop)}</span>'
                         f'<span class="v">slot</span></div>')
     out = rows
-    out.append(f'<div class="count">{c["v"]} variantes · {c["w"]} × {c["h"]}</div>')
+    # NO measurements here. A pixel size of a variant GRID describes how the previews happen
+    # to be laid out in Figma, not the component — it changes when anyone nudges a preview and
+    # it tells the reader nothing they cannot see. Measured 2026-09-02: of 64 drifted `doc:`
+    # specs, 40 drifted on this line alone. The count of variants is the API and stays.
+    out.append(f'<div class="count">{c["v"]} variantes</div>')
     return "".join(out)
 
 PAGE_CSS = """

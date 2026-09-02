@@ -377,6 +377,29 @@ findings:
 Three times now, placing the rule correctly has retired more findings than chasing the findings
 one at a time.
 
+**5.1b · The registry description stops being a second author. OPEN.** Added 2026-09-02, after
+Alfredo asked why a component's documentation was not updated with the component.
+
+The prose lived in three places — the Figma component `description`, the `spec` of its `doc:`
+frame, and the `d` field of `_build/components-parts/*.json` that generates `components/*.html`.
+The first two are now one thing: the frame is re-derived from the component and `C10` holds it
+there, 79 checked, 0 findings. **The third is still typed by hand and 39 of 89 entries disagree
+with Figma, in both directions.**
+
+Both directions is the whole difficulty, and it is why this is a task and not a one-liner:
+
+- 7 are the registry deliberately dropping a trailing axis sentence that the HTML already renders
+  as its own block. That is an improvement, and generating would put the duplication back.
+- 32 are real divergence, and in most of them **the registry holds the better paragraph** —
+  `Spinner` has four there and one in Figma, `breadcrumb` and `AccountColorSwatch` likewise.
+
+So the order is: **merge first, generate second.** Walk the 39, push the better text INTO Figma,
+then make `d` a generated field and delete it from the hand-edited parts. Bulk-overwriting from
+Figma today would destroy real writing — which is exactly the trap `13-rename-map.md` describes,
+a mechanism that looks like a sync and is actually a deletion.
+
+Until it is generated, `A4.5` is the rule doing the work by hand, and it will keep drifting.
+
 **5.2 · The coherence log becomes the review.** Numbers with dates, not opinions with adjectives.
 
 **5.3 · Say who decides what.** Technical governance is mechanical: the validator decides.
