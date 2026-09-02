@@ -183,11 +183,27 @@ export function AccountChart({ account, from, onSelect }: {
       .attr('d', line)
 
     // X axis — dates, no domain line. The range strip says which window this is.
-    const ticks = Math.max(2, Math.min(5, points.length))
+    // Ticks on whole DAYS, capped at one per distinct day in the window. Asking for a
+    // fixed count over a two-day domain made d3 place three and the formatter printed
+    // "31/08" twice — an axis that repeats a date is telling you the series has a shape
+    // it does not have.
+    const fmtTick = d3.timeFormat('%d/%m')
+    const days = new Set(points.map(p => fmtTick(p.date))).size
+    const ticks = Math.max(2, Math.min(5, days))
     g.append('g')
       .attr('transform', `translate(0,${h})`)
       .call(d3.axisBottom(x).ticks(ticks).tickSize(0).tickPadding(8)
-        .tickFormat(d => d3.timeFormat('%d/%m')(d as Date)))
+        .tickFormat(d => fmtTick(d as Date)))
+      .call(ax => {
+        // d3 can still land two ticks inside one day on a short domain; drop the repeat
+        // rather than draw it.
+        const seen = new Set<string>()
+        ax.selectAll<SVGTextElement, unknown>('text').each(function () {
+          const label = this.textContent ?? ''
+          if (seen.has(label)) this.remove()
+          else seen.add(label)
+        })
+      })
       .call(ax => ax.select('.domain').remove())
       .call(ax => ax.selectAll('text')
         .attr('fill', cssVar('--account-chart-axis-foreground'))

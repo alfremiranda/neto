@@ -109,18 +109,25 @@ function LedgerRow({ entry, account, accounts, opening }: { entry: LedgerEntry; 
           amount column stays pinned to 104 so a leading "+" never shifts it between
           neighbouring rows: a ledger is read down its right edge.
           Flex wrapping happens after ordering, so `order` drives both layouts. */}
-      <div className={cn('flex flex-wrap sm:flex-nowrap items-center gap-x-3 gap-y-1 min-h-[62px] py-1.5 border-b border-[var(--border)] last:border-0', entry.scheduled && 'opacity-60')}>
-        {/* Icon bubble */}
-        <div className={cn('order-1 w-8 h-8 rounded-full flex items-center justify-center shrink-0', entry.scheduled ? 'bg-muted' : bg)}>
+      <div className={cn('flex items-center gap-3 min-h-[62px] py-1.5 border-b border-[var(--border)] last:border-0', entry.scheduled && 'opacity-60')}>
+        {/* Icon bubble — its own rail. Every line of content sits to its right, on both
+            layouts; the stack is indented past the mark rather than starting under it. */}
+        <div className={cn('w-8 h-8 rounded-full flex items-center justify-center shrink-0', entry.scheduled ? 'bg-muted' : bg)}>
           {entry.scheduled ? <Clock size={16} className="text-muted-foreground" /> : <Icon size={16} className={color} />}
         </div>
 
-        {/* Amount + running balance */}
-        <div className="order-2 sm:order-3 ml-auto sm:ml-0 sm:w-[104px] text-right shrink-0">
-          <div className={cn('ts-amount-base', !opening && isCredit ? 'text-[var(--color-provision)]' : 'text-foreground')}>
+        <div className="flex-1 min-w-0 flex flex-wrap sm:flex-nowrap sm:items-center gap-x-3">
+
+        {/* Amount + running balance.
+            Mobile puts the two SIDE BY SIDE at the head of the stack, left-aligned right
+            after the mark. Desktop stacks them in a column pinned to 104 and right
+            aligned, so a leading "+" never shifts it between neighbouring rows — a ledger
+            is read down its right edge, and on mobile there is no right edge to read down. */}
+        <div className="order-1 sm:order-2 flex items-baseline gap-2 sm:block sm:w-[104px] sm:text-right shrink-0">
+          <span className={cn('block ts-amount-base', !opening && isCredit ? 'text-[var(--color-provision)]' : 'text-foreground')}>
             {!opening && isCredit ? '+' : ''}{fmt(entry.convertedAmount)}
-          </div>
-          {!opening && <div className="ts-amount-micro text-muted-foreground">{fmt(runningBalance)}</div>}
+          </span>
+          {!opening && <span className="block ts-amount-micro text-muted-foreground">{fmt(runningBalance)}</span>}
         </div>
 
         {/* Description + metadata.
@@ -129,7 +136,7 @@ function LedgerRow({ entry, account, accounts, opening }: { entry: LedgerEntry; 
             never be squeezed — and a cap authored for one width truncates at another.
             Description alone, filling and truncating with nothing pinned; badge and date
             below as chips that hug their content, so it adapts to any width. */}
-        <div className="order-4 sm:order-2 w-full sm:w-auto sm:flex-1 min-w-0">
+        <div className="order-3 sm:order-1 w-full sm:w-auto sm:flex-1 min-w-0">
           <div className="ts-body-base-emphasis truncate">{desc}</div>
           {!opening && (
             <div className="flex items-center gap-1.5 flex-wrap">
@@ -140,7 +147,7 @@ function LedgerRow({ entry, account, accounts, opening }: { entry: LedgerEntry; 
         </div>
 
         {/* Desktop actions */}
-        <div className="order-3 sm:order-4 hidden sm:flex items-center gap-1 shrink-0">
+        <div className="order-2 sm:order-3 hidden sm:flex items-center gap-1 shrink-0">
           <IconButton variant="ghost" size="lg" onClick={handleEdit} aria-label={opening ? 'Editar saldo inicial' : 'Editar'}>
             <Pencil size={12} />
           </IconButton>
@@ -171,12 +178,14 @@ function LedgerRow({ entry, account, accounts, opening }: { entry: LedgerEntry; 
         <IconButton
           variant="ghost"
           size="xl"
-          className="order-3 sm:order-4 sm:hidden shrink-0"
+          className="order-2 sm:order-3 ml-auto sm:ml-0 sm:hidden shrink-0"
           onClick={() => setSheetOpen(true)}
           aria-label="Opciones"
         >
           <MoreVertical size={20} />
         </IconButton>
+
+        </div>
       </div>
 
       <RowActionsSheet

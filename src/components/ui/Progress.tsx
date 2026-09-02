@@ -40,13 +40,7 @@ export function Progress({ value, tone, label, className }: {
       aria-valuemax={100}
       aria-valuenow={Math.round(pct)}
       aria-label={label}
-      // INTERIM, flagged to Design: `bg/neutral-subtle` (#f1f5f9) is the SAME value as
-      // `bg/surface` in light, which is every card in this app — so the track is invisible
-      // on the two surfaces that consume it, and at 0% the whole bar disappears. The spec
-      // measured fill-against-track and never track-against-card. The hairline uses
-      // `border/subtle`, whose job is exactly a boundary on a surface, so nothing is
-      // minted; remove it the moment Design settles the track.
-      className={cn('h-2 w-full rounded-full bg-[var(--bg-neutral-subtle)] border border-[var(--border-subtle)] overflow-hidden', className)}
+      className={cn('h-2 w-full rounded-full bg-[var(--progress-track)] overflow-hidden', className)}
     >
       <div
         className={cn(
