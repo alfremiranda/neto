@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, ShieldCheck, Pencil, Plus, Landmark, MoveRight, Trash2, Clock, MoreVertical, Wallet } from 'lucide-react'
+import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, ShieldCheck, Pencil, Plus, Landmark, Trash2, Clock, MoreVertical, Wallet } from 'lucide-react'
 import { RowActionsSheet } from '@/components/ui/RowActionsSheet'
 import { AccountCardView } from '@/components/cards/AccountCardView'
+import { Breadcrumb } from '@/components/ui/Breadcrumb'
 import { AccountSummaryCard } from '@/components/cards/AccountSummaryCard'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
@@ -202,49 +203,23 @@ function LedgerRow({ entry, account, accounts, opening }: { entry: LedgerEntry; 
 
 // ─── View ─────────────────────────────────────────────────────────────────────
 
+/**
+ * The accounts INDEX: the header and the grid, and nothing else.
+ *
+ * It used to carry the summary card and the ledger of whichever account was selected,
+ * all on one screen. It does not any more — picking an account opens its own page. With
+ * seven accounts the grid takes two rows at 412, which pushed the summary card below the
+ * fold on a phone; splitting is what puts the chart back on the first screen.
+ */
 export function CuentasView() {
-  const { db, getAccounts } = useFinanceStore()
-  const { openSheet, setEditingAccount } = useUIStore()
+  const { getAccounts } = useFinanceStore()
+  const { openSheet, setEditingAccount, openAccount } = useUIStore()
   const accounts = getAccounts()
   // Favorites first, preserving the configured order otherwise.
   const sortedAccounts = [...accounts].sort((a, b) => Number(!!b.favorite) - Number(!!a.favorite))
 
-  const [selectedId, setSelectedId] = useState<string>(sortedAccounts[0]?.id ?? '')
-
-  const selectedAccount = accounts.find(a => a.id === selectedId)
-
-  const ledger = selectedAccount
-    ? buildLedger(selectedAccount.id, selectedAccount, db)
-    : []
-
-  // Show newest first
-  const ledgerDesc = [...ledger].reverse()
-
-
-  const selIsCredit  = selectedAccount?.type === 'credit'
-
-  // A synthetic entry, not a real one: the opening balance is a field on the Account, so
-  // it never enters buildLedger — putting it there would double-count it against the very
-  // running balance it seeds. It exists only to render.
-  const openingEntry: LedgerEntry | null = selectedAccount?.startingBalance != null
-    ? {
-        id: 'opening',
-        date: '',
-        monthKey: '',
-        type: 'egreso',   // unused: `opening` overrides the mark, the sign and the actions
-        desc: selIsCredit ? 'Deuda inicial' : 'Saldo inicial',
-        amount: selectedAccount.startingBalance,
-        currency: selectedAccount.currency,
-        convertedAmount: selIsCredit
-          ? Math.max(-selectedAccount.startingBalance, 0)
-          : selectedAccount.startingBalance,
-        balance: selectedAccount.startingBalance,
-      }
-    : null
-
   return (
     <div className="space-y-5">
-      {/* Accounts header + grid */}
       <div>
         <div className="flex items-center justify-between mb-3">
           <h2 className="ts-heading-section">Cuentas</h2>
@@ -277,69 +252,113 @@ export function CuentasView() {
           <div className="flex gap-3 overflow-x-auto overscroll-x-contain scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0 sm:overflow-visible sm:grid sm:grid-cols-3 lg:grid-cols-4">
             {sortedAccounts.map(a => (
               <div key={a.id} className="grid shrink-0 w-[46%] min-w-[150px] [&>*]:min-w-0 sm:w-auto sm:min-w-0">
-                <AccountCardView
-                  account={a}
-                  size="sm"
-                  selected={selectedId === a.id}
-                  onClick={() => setSelectedId(a.id)}
-                />
+                {/* No `selected`: on the index a card is a way IN, not a choice you are
+                    holding. Nothing on this screen depends on which one is highlighted. */}
+                <AccountCardView account={a} size="sm" onClick={() => openAccount(a.id)} />
               </div>
             ))}
           </div>
         )}
       </div>
+    </div>
+  )
+}
 
+/**
+ * The detail of ONE account: breadcrumb, summary card (which owns the chart and the range
+ * strip), and the ledger. No accounts grid — you are already inside one.
+ */
+export function CuentaView() {
+  const { db, getAccounts } = useFinanceStore()
+  const { detailAccountId, setView } = useUIStore()
+  const accounts = getAccounts()
+  const account = accounts.find(a => a.id === detailAccountId)
 
-      {/* Account page: the summary card carries identity, the edit action and the headline
-          figures; the container below is the movements and nothing else. */}
-      {selectedAccount && <AccountSummaryCard account={selectedAccount} />}
+  // The account can vanish under this screen — deleted from its own edit sheet — so the
+  // view has to survive not finding it rather than assume the id is still good.
+  if (!account) {
+    return (
+      <div className="space-y-4">
+        <Breadcrumb items={[{ label: 'Cuentas', onClick: () => setView('cuentas') }, { label: '—' }]} />
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon"><Landmark size={14} /></EmptyMedia>
+            <EmptyTitle>Esta cuenta ya no existe</EmptyTitle>
+            <EmptyDescription>Vuelve a Cuentas para elegir otra</EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button size="sm" onClick={() => setView('cuentas')}>Ir a Cuentas</Button>
+          </EmptyContent>
+        </Empty>
+      </div>
+    )
+  }
 
-      {/* LedgerContainer — no header. Four of the six things its header showed are in the
-          card above; the movement count was noise over a list you can see, and
-          Entradas/Salidas summed the WHOLE history (buildLedger walks every month) while
-          sitting under a chart labelled "últimos 30 días" — two time scales, neither
-          written down. When they return they bring their period with them. */}
-      {selectedAccount && (
-        <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] overflow-hidden">
-          {/* Transactions */}
-          <div className="px-4">
-            {ledgerDesc.length === 0 ? (
-              <Empty className="border-0 py-6">
-                <EmptyHeader>
-                  <EmptyMedia variant="icon">
-                    {selectedAccount.startingBalance != null ? <MoveRight size={14} /> : <Landmark size={14} />}
-                  </EmptyMedia>
-                  <EmptyTitle>
-                    {selectedAccount.startingBalance != null ? 'Sin movimientos' : 'Cuenta sin configurar'}
-                  </EmptyTitle>
-                  <EmptyDescription>
-                    {selectedAccount.startingBalance != null
-                      ? 'Los ingresos, gastos y transferencias vinculados a esta cuenta aparecerán aquí'
-                      : 'Configura el saldo inicial en la tarjeta de la cuenta para activar el historial'}
-                  </EmptyDescription>
-                </EmptyHeader>
-              </Empty>
-            ) : (
-              ledgerDesc.map(entry => (
-                <LedgerRow key={entry.id} entry={entry} account={selectedAccount} accounts={accounts} />
-              ))
-            )}
-            {/* The opening balance closes the list, oldest-last like everything above it.
-                It used to sit as a tinted strip between the header and the movements,
-                which read as a section label rather than as the first thing the account
-                did. */}
-            {openingEntry && (
-              <LedgerRow
-                key="opening"
-                entry={openingEntry}
-                account={selectedAccount}
-                accounts={accounts}
-                opening
-              />
-            )}
-          </div>
+  const ledger = buildLedger(account.id, account, db)
+  // Show newest first
+  const ledgerDesc = [...ledger].reverse()
+
+  const isCreditAcct = account.type === 'credit'
+
+  // A synthetic entry, not a real one: the opening balance is a field on the Account, so
+  // it never enters buildLedger — putting it there would double-count it against the very
+  // running balance it seeds. It exists only to render.
+  const openingEntry: LedgerEntry | null = account.startingBalance != null
+    ? {
+        id: 'opening',
+        date: '',
+        monthKey: '',
+        type: 'egreso',   // unused: `opening` overrides the mark, the sign and the actions
+        desc: isCreditAcct ? 'Deuda inicial' : 'Saldo inicial',
+        amount: account.startingBalance,
+        currency: account.currency,
+        convertedAmount: isCreditAcct
+          ? Math.max(-account.startingBalance, 0)
+          : account.startingBalance,
+        balance: account.startingBalance,
+      }
+    : null
+
+  return (
+    <div className="space-y-4">
+      <Breadcrumb
+        items={[
+          { label: 'Cuentas', onClick: () => setView('cuentas') },
+          { label: account.label },
+        ]}
+      />
+
+      <AccountSummaryCard account={account} />
+
+      {/* LedgerContainer — no header. Everything its header held is in the card above, or
+          gone on purpose: the movement count was noise over a list you can see, and
+          Entradas/Salidas summed the WHOLE history while sitting under a chart of the
+          last thirty days — two time scales, neither of them written down. */}
+      <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] overflow-hidden">
+        <div className="px-4">
+          {ledgerDesc.length === 0 && !openingEntry ? (
+            <Empty className="border-0 py-6">
+              <EmptyHeader>
+                <EmptyMedia variant="icon"><Landmark size={14} /></EmptyMedia>
+                <EmptyTitle>Cuenta sin configurar</EmptyTitle>
+                <EmptyDescription>
+                  Configura el saldo inicial en la tarjeta de la cuenta para activar el historial
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          ) : (
+            <>
+              {ledgerDesc.map(entry => (
+                <LedgerRow key={entry.id} entry={entry} account={account} accounts={accounts} />
+              ))}
+              {/* The opening balance closes the list, oldest-last like everything above it. */}
+              {openingEntry && (
+                <LedgerRow key="opening" entry={openingEntry} account={account} accounts={accounts} opening />
+              )}
+            </>
+          )}
         </div>
-      )}
+      </div>
     </div>
   )
 }

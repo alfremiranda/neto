@@ -8,7 +8,7 @@ import { MonthNav } from '@/components/layout/MonthNav'
 import { DashboardView } from '@/components/views/DashboardView'
 import { ConfigView } from '@/components/views/ConfigView'
 import { ProfileView } from '@/components/views/ProfileView'
-import { CuentasView } from '@/components/views/CuentasView'
+import { CuentasView, CuentaView } from '@/components/views/CuentasView'
 import { AhorrosView } from '@/components/views/AhorrosView'
 import { Toast } from '@/components/ui/Toast'
 import { AccountEditSheet } from '@/components/sheets/AccountEditSheet'
@@ -190,6 +190,7 @@ export default function App() {
               <div className="max-w-5xl mx-auto w-full p-4 sm:p-5 lg:p-6 pb-4 sm:pb-5 lg:pb-6">
                 {view === 'dashboard' && <DashboardView />}
                 {view === 'cuentas'   && <CuentasView />}
+                {view === 'cuenta'    && <CuentaView />}
                 {view === 'ahorros'   && <AhorrosView />}
                 {view === 'config'    && <ConfigView />}
                 {view === 'profile'   && <ProfileView />}

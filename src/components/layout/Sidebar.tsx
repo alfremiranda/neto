@@ -1,6 +1,6 @@
 import { CalendarDays, LayoutDashboard, WalletCards, PiggyBank } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { useUIStore } from '@/store/uiStore'
+import { useUIStore, isSectionActive } from '@/store/uiStore'
 import {
   Sidebar,
   SidebarContent,
@@ -20,7 +20,7 @@ function NavButton({ id, label, Icon }: { id: ViewType; label: string; Icon: typ
   const { view, setView } = useUIStore()
   const { state } = useSidebar()
   const collapsed = state === 'collapsed'
-  const active = view === id
+  const active = isSectionActive(view, id)
 
   const btn = (
     <button
@@ -71,7 +71,7 @@ export function Sidebar_MobileNav() {
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       {NAV_ITEMS.map(({ id, mobileLabel, Icon }) => {
-        const active = view === id
+        const active = isSectionActive(view, id)
         return (
           <button
             key={id}

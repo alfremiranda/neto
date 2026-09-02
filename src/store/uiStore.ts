@@ -30,6 +30,8 @@ interface UIState {
   // Kept out of the ordinary "add expense" path — settling is a once-a-month action
   // and does not belong in the common flow.
   egresoPrefill: EgresoPrefill | null
+  /** Which account the 'cuenta' detail view is showing. */
+  detailAccountId: string | null
   sidebarCollapsed: boolean
 
   setView: (v: ViewType) => void
@@ -44,7 +46,20 @@ interface UIState {
   setEditingTransfer: (id: number | null) => void
   setNewAccountType: (t: 'savings' | null) => void
   openSettlement: (p: EgresoPrefill) => void
+  openAccount: (id: string) => void
   toggleSidebar: () => void
+}
+
+/**
+ * Whether a nav item is the section the user is in.
+ *
+ * The account detail is its own view but it is not its own destination — nobody navigates
+ * TO it from the nav, they arrive from the index. Without this, opening an account
+ * un-highlights Cuentas and the nav claims you are nowhere.
+ */
+export function isSectionActive(view: ViewType, id: ViewType): boolean {
+  if (view === id) return true
+  return id === 'cuentas' && view === 'cuenta'
 }
 
 let toastTimer: ReturnType<typeof setTimeout> | null = null
@@ -61,6 +76,7 @@ export const useUIStore = create<UIState>()(persist((set) => ({
   editingTransferId: null,
   newAccountType: null,
   egresoPrefill: null,
+  detailAccountId: null,
   sidebarCollapsed: false,
 
   setView: (view) => set(s => ({ prevView: s.view, view })),
@@ -93,8 +109,15 @@ export const useUIStore = create<UIState>()(persist((set) => ({
   setNewAccountType: (t) => set({ newAccountType: t }),
 
   openSettlement: (p) => set({ egresoPrefill: p, editingEgresoId: null, activeSheet: 'egreso' }),
+
+  openAccount: (id) => set(s => ({ detailAccountId: id, prevView: s.view, view: 'cuenta' })),
   toggleSidebar: () => set(s => ({ sidebarCollapsed: !s.sidebarCollapsed })),
 }), {
   name: 'neto-ui',
-  partialize: (s) => ({ view: s.view, sidebarCollapsed: s.sidebarCollapsed }),
+  // 'cuenta' is deliberately NOT persisted as itself: detailAccountId is session state,
+  // so a cold start would restore a detail screen with no account to show.
+  partialize: (s) => ({
+    view: s.view === 'cuenta' ? 'cuentas' : s.view,
+    sidebarCollapsed: s.sidebarCollapsed,
+  }),
 }))
