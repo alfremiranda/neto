@@ -35,9 +35,29 @@ h1{margin:0 0 4px;font-weight:800;font-size:24px;line-height:32px;letter-spacing
   <p class="crumb">Cards — Neto design system</p>
   <div class="spec">
     <div class="axes"><div class="axis"><span class="k">Title</span><span class="v">slot</span></div><div class="axis"><span class="k">Type</span><span class="v">Credit Card · Savings · Bank Account · Cash</span></div><div class="axis"><span class="k">Device</span><span class="v">Desktop · Mobile</span></div><div class="count">8 variantes</div></div>
-    <div class="desc">The header card of an account page: name, type and the headline balance. Type follows the account kinds (Bank Account · Cash · Credit Card · Savings) and Device switches the desktop and mobile layouts.
+    <div class="desc">The header of an account&#x27;s own page: identity, the metadata, the headline figures, and the chart. Type × Device.
 
-2026-09-01: the OPEN item is closed. The icon was a bare Icon Account painted with account-summary-card/icon/foreground — a fixed purple that could not follow the account. It is now an AccountAvatar (size=SM), the same carrier the account card and the colour picker use, so the account page shows the colour its owner chose. account-summary-card/icon/foreground has no consumer left.</div>
+It is NOT AccountCard. That one is the compact selectable tile in the grid — a control you press to choose an account. This is the detail of the account you are already inside, so it has no selected state and it carries the actions and figures the tile deliberately hides at size=&quot;sm&quot;.
+
+THE META IS ONE NODE PER FIELD, NOT ONE STRING. Alfredo, 2026-09-02: the metadata was already there but arrived as a single run of text, and it is separated now because that is how the data is handled. Each node is NAMED FOR ITS FIELD on the Account record, so the mapping is read off the layer name and never guessed:
+
+  currency          Account.currency        every type
+  account-number    Account.number          every type except cash, which has none
+  utilization       debt / creditLimit      credit
+  cutoff            Account.cutoffDay       credit
+  due               Account.dueDay          credit
+  rate              Account.rate            savings · bank
+  yield             derived from rate       savings · bank — a computed figure, not a stored field
+  kind              Account.savingsKind     savings
+  maturity          Account.maturityDate    savings, and only when the kind is a CDT
+
+Separators are Separator instances, not characters, so an absent field takes its separator with it instead of leaving a stranded middot. A field with no value hides; it does not render empty.
+
+THREE OF THESE ARE NEW and were missing from the card entirely, not just unsplit: currency — this app holds COP and USD and the card showed neither, so every figure on it was an amount without a unit; kind — the savings vehicle, which the code already puts in its meta line and Figma did not have; maturity — a CDT&#x27;s due date, which appeared nowhere on the account&#x27;s own page.
+
+On Mobile the meta WRAPS. Savings carries six fields and they do not fit 380 on one line.
+
+Each type shows different data, which is why the metrics are a list built per type rather than a fixed set of slots: a cash account has no rate to report and a credit card&#x27;s headline figure is a debt, not a balance.</div>
   </div>
   <div class="modes">
     <div><span class="lbl">Light</span><div data-theme="light" style="border-radius:var(--radius-lg)"><div class="stage"><div style="width:100%;padding:16px;border:1px dashed var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-sans);font-weight:400;font-size:14px;line-height:20px;letter-spacing:0.0px;color:var(--foreground-subtle)">Composición — la fuente visual es Figma.</div></div></div></div>
