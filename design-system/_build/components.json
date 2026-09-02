@@ -298,6 +298,22 @@
  },
  {
   "g": "Cards",
+  "n": "SavingsCard (legacy)",
+  "v": 18,
+  "p": [
+   "Show Maturity",
+   "Show Yield",
+   "Show Account Number",
+   "Type=Cuenta|CDT|Inversión",
+   "State=Default|Selected|Hover",
+   "Size=Medium|Small"
+  ],
+  "w": 756,
+  "h": 1146,
+  "d": "RETIRED 2026-09-02 — LEGACY. Do not build with it and do not extend it.\n\nAlfredo: the Savings page no longer exists. Every account lives on the accounts page now, whatever its type, and the card that represents one is AccountCard — including CDTs and savings accounts, which is what this component was for.\n\nIt stays in the file for the same reason AccountCard (legacy) does: something on a screen may still point at it, and deleting a component that a frame still instantiates replaces the frame's content with nothing and says why nowhere. It is renamed rather than removed so that anyone who lands on it knows before they copy it.\n\nWhat replaces what: SavingsCard → AccountCard with Type=Savings. The CDT-specific figures it carried — maturity, rate — are metrics on AccountSummaryCard on the account's own page, not on the tile."
+ },
+ {
+  "g": "Cards",
   "n": "SectionCard",
   "v": 2,
   "p": [

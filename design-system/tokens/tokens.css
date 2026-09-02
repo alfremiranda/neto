@@ -265,6 +265,7 @@
   --readout-swatch-income: #3b82f6;
   --readout-swatch-balance: #0891b2;
   --readout-swatch-debt: #e11d48;
+  --progress-track: #e2e8f0;
   --spacing-0: 0px;
   --spacing-2: 2px;
   --spacing-4: 4px;
@@ -802,6 +803,7 @@
   --readout-swatch-income: #3b82f6;
   --readout-swatch-balance: #0891b2;
   --readout-swatch-debt: #e11d48;
+  --progress-track: #334155;
 
 }
 

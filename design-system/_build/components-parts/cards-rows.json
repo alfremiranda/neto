@@ -88,7 +88,7 @@
  },
  {
   "g": "Cards",
-  "n": "SavingsCard",
+  "n": "SavingsCard (legacy)",
   "v": 18,
   "p": [
    "Show Maturity",
@@ -100,7 +100,7 @@
   ],
   "w": 756,
   "h": 1146,
-  "d": "Savings account card. Type × State × Size.\n\nOnly savings-type accounts appear in the Ahorros view. CDT variants show a maturity countdown — Show Maturity is live on Type=CDT and controls three nodes; it was nearly deleted on 2026-08-20 by a scan that sampled only the first variant of the set.\n\nKnown inconsistency: the variant values are still Spanish (Cuenta | CDT | Inversión) while every other set in the file is English. Worth normalising when this set is next touched."
+  "d": "RETIRED 2026-09-02 — LEGACY. Do not build with it and do not extend it.\n\nAlfredo: the Savings page no longer exists. Every account lives on the accounts page now, whatever its type, and the card that represents one is AccountCard — including CDTs and savings accounts, which is what this component was for.\n\nIt stays in the file for the same reason AccountCard (legacy) does: something on a screen may still point at it, and deleting a component that a frame still instantiates replaces the frame's content with nothing and says why nowhere. It is renamed rather than removed so that anyone who lands on it knows before they copy it.\n\nWhat replaces what: SavingsCard → AccountCard with Type=Savings. The CDT-specific figures it carried — maturity, rate — are metrics on AccountSummaryCard on the account's own page, not on the tile."
  },
  {
   "g": "Cards",
