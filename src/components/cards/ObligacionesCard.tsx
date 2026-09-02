@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Landmark, Info, ExternalLink, X } from 'lucide-react'
+import { Landmark, Info, ExternalLink, X, Clock } from 'lucide-react'
 import { Dialog as DialogPrimitive } from 'radix-ui'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useFinanceStore } from '@/store/financeStore'
@@ -11,8 +11,9 @@ import { cn } from '@/lib/utils'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { IconButton } from '@/components/ui/icon-button'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/Badge'
 import { useUIStore } from '@/store/uiStore'
-import { settledFor, retencionReserve } from '@/lib/obligations'
+import { settledFor, retencionReserve, pendingSS, type PendingObligation } from '@/lib/obligations'
 import type { Settles } from '@/types'
 
 const MONTH_LONG = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
@@ -235,13 +236,14 @@ function FSSRow({ amount, pct, trm, showUSD }: { amount: number; pct: number; tr
   )
 }
 
-function GroupBox({ label, children, action, trmNote, ibcRow }: { label: string; children: React.ReactNode; action?: React.ReactNode; trmNote?: string; ibcRow?: React.ReactNode }) {
+function GroupBox({ label, children, action, badge, trmNote, ibcRow }: { label: string; children: React.ReactNode; action?: React.ReactNode; badge?: React.ReactNode; trmNote?: string; ibcRow?: React.ReactNode }) {
   return (
     <div className="rounded-xl bg-muted overflow-hidden">
       <div className="px-3 pt-2 pb-0.5 flex items-center gap-4">
         <div className="flex items-center gap-1">
           <span className="ts-label-micro uppercase text-muted-foreground/70">{label}</span>
           {action}
+          {badge}
         </div>
         {trmNote && (
           <span className="ml-auto ts-amount-micro text-muted-foreground/50">{trmNote}</span>
@@ -266,34 +268,117 @@ function GroupBox({ label, children, action, trmNote, ibcRow }: { label: string;
  * category, currency, the period) and leaves the amount, date and paying account to
  * the user — the accrual is a reference, since the PILA rounds.
  */
+
+/**
+ * SS accrued in earlier months and still unpaid.
+ *
+ * It is a ROW, not a chip. The whole action-chip family means "narrow this list" — a chip
+ * selects, it does not act — and this carries money and an action.
+ *
+ * When there are several they stack inside ONE bordered block with a heading, oldest
+ * first. Three loose strips read as three alerts; one block with three rows reads as a
+ * debt in three parts, which is what it is.
+ *
+ * Why it exists at all: the payment action sits on the month you are looking at, but SS
+ * is paid in arrears, so paying July from August would otherwise mean navigating back a
+ * month. This is what makes "mes vencido" workable without the user holding it in memory.
+ */
+function OverdueBlock({ pending, trm, showUSD }: {
+  pending: PendingObligation[]; trm: number; showUSD: boolean
+}) {
+  const openSettlement = useUIStore(s => s.openSettlement)
+  if (pending.length === 0) return null
+
+  return (
+    <div className="rounded-xl border border-[var(--border-brand-alpha-50)] bg-[var(--color-tax-bg)] overflow-hidden">
+      <div className="px-3 pt-2 pb-0.5 flex items-center gap-1.5">
+        <Clock size={12} className="text-[var(--color-tax-txt)] shrink-0" />
+        <span className="ts-label-micro uppercase text-[var(--color-tax-txt)]">
+          {pending.length === 1 ? 'Pago pendiente' : `${pending.length} pagos pendientes`}
+        </span>
+      </div>
+      <div className="px-3">
+        {pending.map(p => {
+          const [py, pm] = p.period.split('-').map(Number)
+          const label = `Seguridad social · ${MONTH_LONG[pm - 1]} ${py}`
+          return (
+            <div
+              key={p.period}
+              className="flex items-center gap-2 py-2 border-b border-[var(--border)] last:border-0"
+            >
+              <div className="flex-1 min-w-0">
+                <div className="ts-body-base text-foreground truncate">{MONTH_LONG[pm - 1]} {py}</div>
+                {/* Present tense on purpose. The block lists the month that is due NOW
+                    alongside ones that were missed, and a past tense would tell the
+                    first of those it is late when it is merely payable. */}
+                <div className="ts-body-small text-muted-foreground">
+                  Se paga en {MONTH_LONG[Number(p.dueKey.split('-')[1]) - 1]}
+                </div>
+              </div>
+              <div className="w-[104px] shrink-0 flex flex-col items-end">
+                <span className="ts-amount-base">{COP(p.pending)}</span>
+                {showUSD && trm > 0 && (
+                  <span className="ts-amount-micro text-muted-foreground">{USD(p.pending / trm)}</span>
+                )}
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                className="shrink-0"
+                onClick={() => openSettlement({
+                  desc: label, category: 'impuestos', currency: 'COP',
+                  settles: { kind: 'ss', period: p.period }, accrued: p.pending,
+                })}
+              >
+                Pagar
+              </Button>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+/** A payment almost never equals the accrual to the peso — the PILA rounds. */
+export function isOutstanding(accrued: number, paid: number): boolean {
+  return accrued - paid > 1000
+}
+
+/**
+ * The obligation's settlement state, on the GROUP.
+ *
+ * `Pagado` is NEUTRAL, not success. `badge/success/*` resolves to the same green as
+ * `fg/provision`, so a green badge sitting beside money reads as an amount set aside
+ * rather than as a state. That green is already spent on one meaning in this app.
+ */
+function StateBadge({ accrued, paid }: { accrued: number; paid: number }) {
+  if (accrued <= 0) return null
+  return isOutstanding(accrued, paid)
+    ? <Badge tone="warning">Pendiente</Badge>
+    : <Badge tone="neutral">Pagado</Badge>
+}
+
 function SettleRow({ label, settles, accrued, paid }: {
   label: string; settles: Settles; accrued: number; paid: number
 }) {
   const openSettlement = useUIStore(s => s.openSettlement)
-  // A tolerance, not a nicety: a payment almost never equals the accrual to the peso.
-  const outstanding = accrued - paid > 1000
+  // Settled groups show no row at all: the header's badge already says so, and a row
+  // whose only content is "Al día" is a line of furniture.
+  if (!isOutstanding(accrued, paid)) return null
 
   return (
     <div className="flex items-center gap-2 py-2 border-t border-[var(--border)]">
-      {paid > 0 && (
-        <span className="flex-1 min-w-0 ts-body-small text-muted-foreground">
-          Pagado {COP(paid)}
-        </span>
-      )}
-      {outstanding ? (
-        <Button
-          size="sm"
-          variant="outline"
-          className={paid > 0 ? '' : 'w-full'}
-          onClick={() => openSettlement({
-            desc: label, category: 'impuestos', currency: 'COP', settles, accrued: accrued - paid,
-          })}
-        >
-          Registrar pago
-        </Button>
-      ) : (
-        paid > 0 && <span className="ts-body-small-emphasis text-muted-foreground">Al día</span>
-      )}
+      <Button
+        size="sm"
+        variant="outline"
+        className="w-full"
+        onClick={() => openSettlement({
+          desc: label, category: 'impuestos', currency: 'COP', settles, accrued: accrued - paid,
+        })}
+      >
+        Registrar pago
+      </Button>
     </div>
   )
 }
@@ -320,6 +405,10 @@ export function ObligacionesCard() {
   // The DIAN is paid once a year, so what's owed is the year's accrual — not this
   // month's slice, which is only the row above it.
   const retencionYearAccrued = retencionReserve(db, y, deductions, getSMMLV).accrued
+  // Earlier months, oldest first — a skipped month has to surface ABOVE the recent one.
+  const overdue = pendingSS(db, deductions, getSMMLV, curKey).filter(p => p.period !== curKey)
+  const ssPaid        = settledFor(db, 'ss', curKey)
+  const retencionPaid = settledFor(db, 'retencion', String(y))
   const totalOblig = res.ssTotal + retefuente.reduce((a, i) => a + i.amount, 0)
 
   // For USD transfer amounts: prefer live TRM (actionable), fall back to month TRM (accounting)
@@ -345,11 +434,16 @@ export function ObligacionesCard() {
     <SectionCard icon={Landmark} title="Obligaciones tributarias" action={totalAction}>
 
       <div className="space-y-2">
+
+        {/* Overdue first: the debt you can act on today, above the month's own accrual. */}
+        <OverdueBlock pending={overdue} trm={transferTRM} showUSD={showUSD} />
+
         {/* SS group */}
         {res.ssItems.length > 0 && (
           <GroupBox
             label="Seguridad Social"
             action={<SSScheduleDialog year={y} month={m} />}
+            badge={<StateBadge accrued={res.ssTotal} paid={ssPaid} />}
             trmNote={showUSD ? trmNote : undefined}
             ibcRow={
               <div className="border border-[var(--border)] rounded-xl px-2 py-1 flex items-center gap-1.5">
@@ -390,7 +484,7 @@ export function ObligacionesCard() {
               label={`Seguridad social · ${MONTH_LONG[m - 1]} ${y}`}
               settles={{ kind: 'ss', period: curKey }}
               accrued={res.ssTotal}
-              paid={settledFor(db, 'ss', curKey)}
+              paid={ssPaid}
             />
           </GroupBox>
         )}
@@ -399,6 +493,7 @@ export function ObligacionesCard() {
         {retefuente.length > 0 && (
           <GroupBox
             label="Retenciones"
+            badge={<StateBadge accrued={retencionYearAccrued} paid={retencionPaid} />}
             trmNote={showUSD ? trmNote : undefined}
           >
             {retefuente.map(item => (
@@ -417,7 +512,7 @@ export function ObligacionesCard() {
               label={`Retención en la fuente · ${y}`}
               settles={{ kind: 'retencion', period: String(y) }}
               accrued={retencionYearAccrued}
-              paid={settledFor(db, 'retencion', String(y))}
+              paid={retencionPaid}
             />
           </GroupBox>
         )}

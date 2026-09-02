@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { IconButton } from '@/components/ui/icon-button'
 import { SectionCard } from '@/components/ui/SectionCard'
+import { ReservaCard } from '@/components/cards/ReservaCard'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty'
 import { AccountCardView } from '@/components/cards/AccountCardView'
 
@@ -75,6 +76,12 @@ export function AhorrosView() {
           </Button>
         </div>
       </div>
+
+      {/* The reserve runs all year and exists whether or not a savings account has been
+          set up — a user with nothing put aside is precisely the one who needs to see the
+          gap, so it sits ABOVE the empty state rather than inside the branch that has
+          accounts. */}
+      <ReservaCard year={new Date().getFullYear()} />
 
       {savings.length === 0 ? (
         <Empty>

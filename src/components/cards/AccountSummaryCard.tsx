@@ -11,6 +11,7 @@ import { Separator } from '@/components/ui/separator'
 import { ACCOUNT_TYPE_LABEL } from '@/data/defaults'
 import { AccountChart } from '@/components/cards/AccountChart'
 import { ChartRange } from '@/components/ui/ChartRange'
+import { Progress } from '@/components/ui/Progress'
 import { availableRanges, type RangeId } from '@/lib/chartRange'
 import { localToday } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -149,6 +150,16 @@ export function AccountSummaryCard({ account, chart }: { account: Account; chart
 
       {/* divider · chart — the divider only exists to separate something, so it appears
           with the chart and not before it (TASK-2026-08-24e §2.3/2.4). */}
+      {/* Credit utilisation — the bar's other consumer. It was computed in calc.ts and
+          printed as bare text ("12% usado") with nothing to see. */}
+      {isCredit && account.creditLimit != null && (
+        <Progress
+          value={creditCardStats(account, balance).utilization}
+          tone="expense"
+          label={`${Math.round(creditCardStats(account, balance).utilization * 100)}% del cupo usado`}
+        />
+      )}
+
       {/* divider · chart · range.
           A separator only exists to separate something: it appears with the chart, and
           the chart itself is absent until the account has movements on more than one
