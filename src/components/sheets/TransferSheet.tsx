@@ -3,6 +3,7 @@ import { ArrowRight } from 'lucide-react'
 import { SheetBase } from '@/components/ui/SheetBase'
 import { MoneyInput } from '@/components/ui/MoneyInput'
 import { useMoneyInput } from '@/hooks/useMoneyInput'
+import { useFormDirty } from '@/hooks/useFormDirty'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { COP, USD, parseMoney, localToday } from '@/lib/format'
@@ -79,6 +80,10 @@ export function TransferSheet() {
 
   const amt         = useMoneyInput({ decimals: from?.currency === 'USD' ? 2 : 0 })
   const amtReceived = useMoneyInput({ decimals: to?.currency === 'USD' ? 2 : 0 })
+
+  // Unsaved work — see SheetBase's `dirty`. A stray drag over a control must not be able
+  // to throw away what has been typed.
+  const dirty = useFormDirty(activeSheet === 'transfer', { fromId, toId, date, reserves, amount: amt.numericValue, received: amtReceived.numericValue })
 
   // Month key for the selected date — used for balance preview
   const dateMK = date ? date.slice(0, 7) : curKey
@@ -212,6 +217,7 @@ export function TransferSheet() {
   return (
     <SheetBase
       id="transfer"
+      dirty={dirty}
       title={isEditing ? 'Editar movimiento' : 'Nuevo movimiento'}
       footer={
         <div className="space-y-4 sm:space-y-3">

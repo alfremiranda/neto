@@ -51,9 +51,19 @@ interface SheetBaseProps {
   title: ReactNode
   children: ReactNode
   footer?: ReactNode
+  /**
+   * The form has unsaved work. While true the sheet can only be closed by its own close
+   * button — no swipe, no overlay tap, no Escape.
+   *
+   * This exists because of a real loss, not a preference: on mobile the drag is not
+   * restricted to the handle, so tapping a Select and letting the finger slide dismissed
+   * the sheet and threw away everything typed so far. A gesture that is one pixel away
+   * from an ordinary tap must not be able to destroy work.
+   */
+  dirty?: boolean
 }
 
-export function SheetBase({ id, title, children, footer }: SheetBaseProps) {
+export function SheetBase({ id, title, children, footer, dirty }: SheetBaseProps) {
   const { activeSheet, closeSheet } = useUIStore()
   const open = activeSheet === id
   const isDesktop = useIsDesktop()
@@ -92,7 +102,10 @@ export function SheetBase({ id, title, children, footer }: SheetBaseProps) {
       onOpenChange={v => { if (!v) closeSheet() }}
       direction={direction}
       noBodyStyles
-      handleOnly={isDesktop}
+      dismissible={!dirty}
+      // With unsaved work the drag is confined to the handle as well, so the sheet still
+      // gives under the finger where it is meant to and nowhere else.
+      handleOnly={isDesktop || !!dirty}
     >
       <DrawerContent className={contentCls} style={contentStyle}>
         {/* Drag handle — mobile only; data-vaul-handle restricts drag to this element */}

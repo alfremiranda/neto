@@ -6,6 +6,7 @@ import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { EGRESO_CATEGORIAS } from '@/data/defaults'
 import { localToday, COP } from '@/lib/format'
+import { useFormDirty } from '@/hooks/useFormDirty'
 import { DELETED_ACCOUNT_LABEL } from '@/lib/accountLabel'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
@@ -32,6 +33,11 @@ export function EgresoSheet() {
 
   const decimals = currency === 'USD' ? 2 : 0
   const amt = useMoneyInput({ decimals })
+
+  // Unsaved work: what is on screen differs from what the sheet opened with.
+  const dirty = useFormDirty(activeSheet === 'egreso', {
+    desc, category, currency, date, recurring, account, settles, amount: amt.numericValue,
+  })
 
   useEffect(() => {
     if (activeSheet !== 'egreso') return
@@ -100,6 +106,7 @@ export function EgresoSheet() {
   return (
     <SheetBase
       id="egreso"
+      dirty={dirty}
       title={isEditing ? 'Editar gasto' : settles ? 'Registrar pago' : 'Agregar gasto'}
       footer={
         <div className="space-y-4 sm:space-y-3">

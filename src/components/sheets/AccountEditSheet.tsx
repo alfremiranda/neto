@@ -7,6 +7,7 @@ import { SegmentedControl } from '@/components/ui/SegmentedControl'
 import { accountColor, type AccountColor } from '@/lib/accountColor'
 import { MoneyInput } from '@/components/ui/MoneyInput'
 import { useMoneyInput } from '@/hooks/useMoneyInput'
+import { useFormDirty } from '@/hooks/useFormDirty'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { Button } from '@/components/ui/button'
@@ -71,6 +72,11 @@ export function AccountEditSheet() {
   const balanceAmt = useMoneyInput({ decimals })  // startingBalance for account/cash
   const limitAmt   = useMoneyInput({ decimals })  // credit limit (cupo)
   const debtAmt    = useMoneyInput({ decimals })  // current debt for credit
+
+  // Unsaved work — see SheetBase's `dirty`. A stray drag over a control must not be able
+  // to throw away what has been typed.
+  const dirty = useFormDirty(activeSheet === 'account-edit', { label, currency, type, number, rate, cutoffDay, dueDay, savingsKind, maturity, favorite, color,
+    balance: balanceAmt.numericValue, limit: limitAmt.numericValue, debt: debtAmt.numericValue })
 
   const isCash    = type === 'cash'
   const isCredit  = type === 'credit'
@@ -172,6 +178,7 @@ export function AccountEditSheet() {
   return (
     <SheetBase
       id="account-edit"
+      dirty={dirty}
       title={isEditing ? 'Editar' : 'Nueva cuenta'}
       footer={
         <div className="space-y-4 sm:space-y-3">

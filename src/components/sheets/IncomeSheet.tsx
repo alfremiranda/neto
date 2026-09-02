@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { SheetBase } from '@/components/ui/SheetBase'
 import { MoneyInput } from '@/components/ui/MoneyInput'
 import { useMoneyInput } from '@/hooks/useMoneyInput'
+import { useFormDirty } from '@/hooks/useFormDirty'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { localToday } from '@/lib/format'
@@ -12,7 +13,7 @@ import { DatePicker } from '@/components/ui/DatePicker'
 
 export function IncomeSheet() {
   const { addIncome, updateIncome, removeIncome, getCurrentMonth, getAccounts } = useFinanceStore()
-  const { closeSheet, showToast, editingIncomeId } = useUIStore()
+  const { closeSheet, showToast, editingIncomeId, activeSheet } = useUIStore()
 
   const isEdit = editingIncomeId !== null
   const month  = getCurrentMonth()
@@ -27,6 +28,10 @@ export function IncomeSheet() {
   const [confirmingDelete, setConfirmingDelete] = useState(false)
   const decimals = currency === 'USD' ? 2 : 0
   const amt = useMoneyInput({ decimals })
+
+  // Unsaved work — see SheetBase's `dirty`. A stray drag over a control must not be able
+  // to throw away what has been typed.
+  const dirty = useFormDirty(activeSheet === 'income', { desc, currency, account, tipo, date, applyProvisions, amount: amt.numericValue })
 
   const accounts = getAccounts()
 
@@ -78,6 +83,7 @@ export function IncomeSheet() {
   return (
     <SheetBase
       id="income"
+      dirty={dirty}
       title={isEdit ? 'Editar ingreso' : 'Registrar ingreso'}
       footer={
         <div className="space-y-4 sm:space-y-3">
