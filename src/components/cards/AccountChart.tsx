@@ -1,7 +1,10 @@
 import { useRef, useEffect, useState, useMemo } from 'react'
 import * as d3 from 'd3'
 import { buildLedger } from '@/lib/calc'
-import { localToday } from '@/lib/format'
+import { localToday, fmtDate, COP, USD } from '@/lib/format'
+import { TOOLTIP_SURFACE } from '@/components/ui/tooltip'
+import { TooltipReadout } from '@/components/ui/TooltipReadout'
+import { cn } from '@/lib/utils'
 import { useFinanceStore } from '@/store/financeStore'
 import { useTheme } from '@/hooks/useTheme'
 import type { Account, FinanceDB } from '@/types'
@@ -100,9 +103,16 @@ export function AccountChart({ account, from, onSelect }: {
   const db = useFinanceStore(s => s.db)
   const { theme } = useTheme()
   const dark = theme === 'dark'
+  const fmt = (n: number) => account.currency === 'USD' ? USD(n) : COP(n)
   const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerW, setContainerW] = useState(0)
+  // The floating readout. It follows the pointer whether that pointer is a mouse or a
+  // finger: Design's note called it desktop sugar, but their own mobile frame draws it,
+  // and it costs nothing on touch now that the marker already tracks a drag. The metrics
+  // still carry the figures too — the bubble is an addition, not the only answer, which
+  // was the whole point of that rule.
+  const [tip, setTip] = useState<{ x: number; y: number; date: string; value: number } | null>(null)
 
   // A credit card's balance is ≤ 0 (−debt), so plotting it as-is already draws what is
   // owed growing downward, which is what the Dual series is for. Dual proper — a second
@@ -201,7 +211,9 @@ export function AccountChart({ account, from, onSelect }: {
       const [px] = d3.pointer(event, g.node())
       const p = nearest(Math.max(0, Math.min(w, px)))
       marker.attr('x1', x(p.date)).attr('x2', x(p.date)).attr('opacity', 1)
-      onSelect?.({ date: p.date.toISOString().slice(0, 10), value: p.value })
+      const iso = p.date.toISOString().slice(0, 10)
+      onSelect?.({ date: iso, value: p.value })
+      setTip({ x: mg.left + x(p.date), y: mg.top + y(p.value), date: iso, value: p.value })
     }
 
     svg
@@ -218,6 +230,7 @@ export function AccountChart({ account, from, onSelect }: {
         if (event.pointerType !== 'mouse') return
         marker.attr('opacity', 0)
         onSelect?.(null)
+        setTip(null)
       })
   }, [points, hasSpan, dark, containerW, account.type, onSelect])
 
@@ -233,9 +246,34 @@ export function AccountChart({ account, from, onSelect }: {
   // looks like one, which is worse than an absence.
   if (!hasSpan) return null
 
+  const isDebt = account.type === 'credit'
+
   return (
-    <div ref={containerRef} className="w-full">
+    <div ref={containerRef} className="relative w-full">
       <svg ref={svgRef} className="w-full block" />
+      {tip && (
+        <div
+          className={cn('absolute z-10 pointer-events-none shadow-lg', TOOLTIP_SURFACE)}
+          style={{
+            left: tip.x,
+            top: Math.max(0, tip.y - 64),
+            // Flip past the midpoint so the bubble never runs off the right edge, and
+            // centre it on the marker otherwise.
+            transform: tip.x > (containerRef.current?.clientWidth ?? 320) * 0.6
+              ? 'translateX(calc(-100% - 12px))'
+              : 'translateX(-50%)',
+          }}
+        >
+          <TooltipReadout
+            title={fmtDate(tip.date)}
+            rows={[{
+              label: isDebt ? 'Deuda' : 'Saldo',
+              value: fmt(isDebt ? Math.max(-tip.value, 0) : tip.value),
+              tone: isDebt ? 'debt' : 'balance',
+            }]}
+          />
+        </div>
+      )}
     </div>
   )
 }
