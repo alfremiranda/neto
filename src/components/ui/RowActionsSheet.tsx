@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Dialog as DialogPrimitive } from 'radix-ui'
 import { Pencil, Trash2 } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
 interface ExtraAction {
@@ -82,7 +81,8 @@ export function RowActionsSheet({
             {extraActions?.map((a, i) => (
               <Button
                 key={i}
-                variant="ghost"
+                variant="outline"
+                size="xl"
                 onClick={() => { close(); a.onClick() }}
                 className="h-auto py-4 px-4 w-full justify-start gap-3 rounded-xl"
               >
@@ -91,25 +91,28 @@ export function RowActionsSheet({
               </Button>
             ))}
 
+            {/* Prominence follows consequence, which is why Cancelar and the actions read
+                inverted against what was here: Cancelar used to be the only outlined thing
+                and Eliminar the quietest. */}
             <Button
-              variant="ghost"
+              variant="outline"
+              size="xl"
               onClick={handleEdit}
               className="h-auto py-4 px-4 w-full justify-start gap-3 rounded-xl"
             >
-              <Pencil size={18} className="text-muted-foreground shrink-0" />
+              <Pencil size={18} className="shrink-0" />
               Editar
             </Button>
 
+            {/* Confirming is the same piece stepping up in weight — outline → filled, same
+                position, same place. Not a new state and not a separate dialog: moving the
+                button would make the second tap land where nothing was. */}
             {onDelete && (
             <Button
-              variant="ghost"
+              variant={confirming ? 'destructive' : 'outline-danger'}
+              size="xl"
               onClick={handleDelete}
-              className={cn(
-                'h-auto py-4 px-4 w-full justify-start gap-3 rounded-xl',
-                confirming
-                  ? 'bg-[var(--color-danger-bg)] text-[var(--color-danger)] hover:bg-[var(--color-danger-bg)] hover:text-[var(--color-danger)]'
-                  : 'text-muted-foreground hover:bg-[var(--color-danger-bg)] hover:text-[var(--color-danger)]',
-              )}
+              className="h-auto py-4 px-4 w-full justify-start gap-3 rounded-xl"
             >
               <Trash2 size={18} className="shrink-0" />
               {confirming ? 'Tocar para confirmar eliminación' : 'Eliminar'}
@@ -117,10 +120,12 @@ export function RowActionsSheet({
             )}
           </div>
 
-          {/* Cancel */}
-          <div className="px-3 pt-1">
+          {/* Cancel — the quietest thing here, and it gets its own rule above it so the
+              list of actions reads as closed before the way out. */}
+          <div className="px-3 pt-3 border-t border-[var(--border)]">
             <Button
-              variant="outline"
+              variant="ghost"
+              size="xl"
               onClick={close}
               className="h-auto py-4 w-full rounded-xl"
             >
