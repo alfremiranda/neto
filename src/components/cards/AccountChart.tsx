@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useRef } from 'react'
 import { scaleLinear, scaleTime } from 'd3-scale'
 import { axisBottom } from 'd3-axis'
 import { select, pointer } from 'd3-selection'
@@ -115,6 +115,9 @@ export function AccountChart({ account, from, onSelect }: {
   // still carry the figures too — the bubble is an addition, not the only answer, which
   // was the whole point of that rule.
   const [tip, setTip] = useState<{ x: number; y: number; date: string; value: number } | null>(null)
+  // Set by the draw effect, called by the dismissal effect: the marker only exists inside
+  // the d3 closure, so clearing has to go through a handle rather than duplicate the reset.
+  const clearRef = useRef<(() => void) | null>(null)
 
   // A credit card's balance is ≤ 0 (−debt), so plotting it as-is already draws what is
   // owed growing downward, which is what the Dual series is for. Dual proper — a second
@@ -225,6 +228,13 @@ export function AccountChart({ account, from, onSelect }: {
         Math.abs(p.date.getTime() - t) < Math.abs(best.date.getTime() - t) ? p : best)
     }
 
+    clearRef.current = () => {
+      marker.attr('opacity', 0)
+      onSelect?.(null)
+      setTip(null)
+    }
+    const clear = () => clearRef.current?.()
+
     const move = (event: PointerEvent) => {
       const [px] = pointer(event, g.node())
       const p = nearest(Math.max(0, Math.min(w, px)))
@@ -241,17 +251,38 @@ export function AccountChart({ account, from, onSelect }: {
         if (event.pointerType === 'mouse' || event.buttons > 0) move(event)
       })
       // Only a MOUSE clears on release. On touch the tap IS the selection and the card's
-      // metrics are the only place those figures appear — clearing on pointerup would
-      // show the value for as long as the finger was down and then take it away, which
-      // is the same as not answering at all.
+      // metrics are the only place those figures appear — clearing on pointerup would show
+      // the value for as long as the finger was down and then take it away, which is the
+      // same as not answering at all. A touch selection is dismissed by touching somewhere
+      // else instead; see the effect below.
       .on('pointerup pointerleave pointercancel', function (event: PointerEvent) {
         if (event.pointerType !== 'mouse') return
-        marker.attr('opacity', 0)
-        onSelect?.(null)
-        setTip(null)
+        clear()
       })
   }, [points, hasSpan, dark, containerW, account.type, onSelect])
 
+
+  /**
+   * A touch selection is dismissed by touching somewhere else.
+   *
+   * Keeping it after the finger lifts is what makes the figures readable at all on a phone
+   * — but without a way out it stops being a selection and becomes a mode the user cannot
+   * leave. Reported from use: the marker stayed put and no tap anywhere would clear it.
+   *
+   * Listens in the CAPTURE phase so it runs before the chart's own handler and cannot be
+   * swallowed by whatever was tapped, and ignores taps inside the chart, which are a new
+   * selection rather than a dismissal.
+   */
+  useEffect(() => {
+    if (!tip) return
+    const onDown = (e: PointerEvent) => {
+      if (e.pointerType === 'mouse') return
+      if (containerRef.current?.contains(e.target as Node)) return
+      clearRef.current?.()
+    }
+    document.addEventListener('pointerdown', onDown, true)
+    return () => document.removeEventListener('pointerdown', onDown, true)
+  }, [tip, containerRef])
 
   // Nothing to draw over: every movement lands on one day, so the time domain has no
   // width. A vertical spike over a single instant is not a chart of anything — it just
