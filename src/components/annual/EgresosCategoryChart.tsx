@@ -1,11 +1,15 @@
-import { useRef, useEffect, useState, useMemo } from 'react'
-import * as d3 from 'd3'
+import { useEffect, useState, useMemo } from 'react'
+import { scaleBand, scaleLinear } from 'd3-scale'
+import { axisBottom, axisLeft } from 'd3-axis'
+import { select } from 'd3-selection'
+import { max } from 'd3-array'
 import { ShoppingBag } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { MONTHS, DEFAULTS, EGRESO_CATEGORIAS } from '@/data/defaults'
 import { settledEgresos } from '@/lib/calc'
 import { COP } from '@/lib/format'
 import { useTheme } from '@/hooks/useTheme'
+import { cssVar, useChartRefs, useChartWidth } from '@/lib/chart'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
 
@@ -35,19 +39,14 @@ interface Tooltip {
   avg: number
 }
 
-function getCSSVar(v: string) {
-  return getComputedStyle(document.documentElement).getPropertyValue(v).trim()
-}
-
 export function EgresosCategoryChart({ year }: EgresosCategoryChartProps) {
   const { db, curKey, setCurKey } = useFinanceStore()
+  const { containerRef, svgRef } = useChartRefs()
+  const containerW = useChartWidth(containerRef)
   const { theme } = useTheme()
   const dark = theme === 'dark'
 
-  const svgRef       = useRef<SVGSVGElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [containerW, setContainerW] = useState(0)
-  const [tooltip, setTooltip]       = useState<Tooltip | null>(null)
+  const [tooltip, setTooltip] = useState<Tooltip | null>(null)
 
   const data = useMemo<Datum[]>(() =>
     MONTHS.map((name, idx) => {
@@ -85,12 +84,6 @@ export function EgresosCategoryChart({ year }: EgresosCategoryChartProps) {
       : 0
   }, [visibleData])
 
-  useEffect(() => {
-    if (!containerRef.current) return
-    const ro = new ResizeObserver(e => setContainerW(e[0].contentRect.width))
-    ro.observe(containerRef.current)
-    return () => ro.disconnect()
-  }, [])
 
   useEffect(() => {
     if (!svgRef.current || !containerRef.current || !hasData) return
@@ -101,33 +94,33 @@ export function EgresosCategoryChart({ year }: EgresosCategoryChartProps) {
     const w  = W - mg.left - mg.right
     const h  = H - mg.top - mg.bottom
 
-    const tickColor  = getCSSVar('--muted-foreground')
+    const tickColor  = cssVar('--muted-foreground')
     const gridColor  = dark ? 'oklch(1 0 0 / 8%)' : 'oklch(0 0 0 / 5%)'
     const hlColor    = dark ? 'oklch(1 0 0 / 5%)' : 'oklch(0 0 0 / 3%)'
     const emptyColor = dark ? 'oklch(1 0 0 / 6%)' : 'oklch(0 0 0 / 4%)'
     const avgColor   = dark ? 'oklch(1 0 0 / 30%)' : 'oklch(0 0 0 / 25%)'
 
-    const svg = d3.select(svgRef.current)
+    const svg = select(svgRef.current)
     svg.attr('width', W).attr('height', H)
     svg.selectAll('*').remove()
 
     const g = svg.append('g').attr('transform', `translate(${mg.left},${mg.top})`)
 
-    const maxVal = d3.max(visibleData, d => d.total) ?? 1
+    const maxVal = max(visibleData, d => d.total) ?? 1
 
-    const xScale = d3.scaleBand<string>()
+    const xScale = scaleBand<string>()
       .domain(visibleData.map(d => d.label))
       .range([0, w])
       .padding(0.28)
 
-    const yScale = d3.scaleLinear()
+    const yScale = scaleLinear()
       .domain([0, maxVal * 1.15])
       .range([h, 0])
       .nice()
 
     // Grid lines
     g.append('g')
-      .call(d3.axisLeft(yScale).tickSize(-w).ticks(4).tickFormat(() => ''))
+      .call(axisLeft(yScale).tickSize(-w).ticks(4).tickFormat(() => ''))
       .call(ax => ax.select('.domain').remove())
       .call(ax => ax.selectAll('.tick line')
         .attr('stroke', gridColor)
@@ -135,7 +128,7 @@ export function EgresosCategoryChart({ year }: EgresosCategoryChartProps) {
 
     // Y axis — divide by 1M for readable labels
     g.append('g')
-      .call(d3.axisLeft(yScale).ticks(4).tickFormat(v => {
+      .call(axisLeft(yScale).ticks(4).tickFormat(v => {
         const m = (v as number) / 1_000_000
         return `$${m.toLocaleString('es-CO', { maximumFractionDigits: 1 })}M`
       }))
@@ -146,7 +139,7 @@ export function EgresosCategoryChart({ year }: EgresosCategoryChartProps) {
     // X axis
     g.append('g')
       .attr('transform', `translate(0,${h})`)
-      .call(d3.axisBottom(xScale).tickSize(0))
+      .call(axisBottom(xScale).tickSize(0))
       .call(ax => ax.select('.domain').attr('stroke', gridColor))
       .call(ax => ax.selectAll('text').attr('fill', tickColor).attr('font-size', '10.5px').attr('dy', '1.2em'))
 

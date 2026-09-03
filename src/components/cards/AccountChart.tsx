@@ -1,17 +1,20 @@
-import { useRef, useEffect, useState, useMemo } from 'react'
-import * as d3 from 'd3'
+import { useEffect, useState, useMemo } from 'react'
+import { scaleLinear, scaleTime } from 'd3-scale'
+import { axisBottom } from 'd3-axis'
+import { select, pointer } from 'd3-selection'
+import { extent } from 'd3-array'
+// Aliased: the component already names its own generators `area` and `line`.
+import { area as d3Area, line as d3Line, curveMonotoneX } from 'd3-shape'
+import { timeFormat } from 'd3-time-format'
 import { buildLedger } from '@/lib/calc'
 import { localToday, fmtDate, COP, USD } from '@/lib/format'
+import { cssVar, useChartRefs, useChartWidth } from '@/lib/chart'
 import { TOOLTIP_SURFACE } from '@/components/ui/tooltip'
 import { TooltipReadout } from '@/components/ui/TooltipReadout'
 import { cn } from '@/lib/utils'
 import { useFinanceStore } from '@/store/financeStore'
 import { useTheme } from '@/hooks/useTheme'
 import type { Account, FinanceDB } from '@/types'
-
-function cssVar(v: string) {
-  return getComputedStyle(document.documentElement).getPropertyValue(v).trim()
-}
 
 interface Point { date: Date; value: number }
 
@@ -101,13 +104,12 @@ export function AccountChart({ account, from, onSelect }: {
   onSelect?: (p: { date: string; value: number } | null) => void
 }) {
   const db = useFinanceStore(s => s.db)
+  const { containerRef, svgRef } = useChartRefs()
+  const containerW = useChartWidth(containerRef)
   const { theme } = useTheme()
   const dark = theme === 'dark'
   const fmt = (n: number) => account.currency === 'USD' ? USD(n) : COP(n)
-  const svgRef = useRef<SVGSVGElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [containerW, setContainerW] = useState(0)
-  // The floating readout. It follows the pointer whether that pointer is a mouse or a
+      // The floating readout. It follows the pointer whether that pointer is a mouse or a
   // finger: Design's note called it desktop sugar, but their own mobile frame draws it,
   // and it costs nothing on touch now that the marker already tracks a drag. The metrics
   // still carry the figures too — the bubble is an addition, not the only answer, which
@@ -136,20 +138,20 @@ export function AccountChart({ account, from, onSelect }: {
     const w = W - mg.left - mg.right
     const h = H - mg.top - mg.bottom
 
-    const svg = d3.select(svgRef.current)
+    const svg = select(svgRef.current)
     svg.attr('width', W).attr('height', H)
     svg.selectAll('*').remove()
     const g = svg.append('g').attr('transform', `translate(${mg.left},${mg.top})`)
 
-    const x = d3.scaleTime()
-      .domain(d3.extent(points, p => p.date) as [Date, Date])
+    const x = scaleTime()
+      .domain(extent(points, p => p.date) as [Date, Date])
       .range([0, w])
 
     const vals = points.map(p => p.value)
     const lo = Math.min(...vals), hi = Math.max(...vals)
     // A flat series has no extent, so give it one rather than dividing by zero.
     const pad = (hi - lo) * 0.12 || Math.abs(hi || 1) * 0.12
-    const y = d3.scaleLinear().domain([lo - pad, hi + pad]).range([h, 0])
+    const y = scaleLinear().domain([lo - pad, hi + pad]).range([h, 0])
 
     const isDebt  = account.type === 'credit'
     const which   = isDebt ? 'debt' : 'balance'
@@ -165,16 +167,16 @@ export function AccountChart({ account, from, onSelect }: {
     grad.append('stop').attr('offset', '0%').attr('stop-color', fillFrom)
     grad.append('stop').attr('offset', '100%').attr('stop-color', fillTo)
 
-    const area = d3.area<Point>()
+    const area = d3Area<Point>()
       .x(p => x(p.date))
       .y0(h)
       .y1(p => y(p.value))
-      .curve(d3.curveMonotoneX)
+      .curve(curveMonotoneX)
 
-    const line = d3.line<Point>()
+    const line = d3Line<Point>()
       .x(p => x(p.date))
       .y(p => y(p.value))
-      .curve(d3.curveMonotoneX)
+      .curve(curveMonotoneX)
 
     g.append('path').datum(points).attr('fill', `url(#${gradId})`).attr('d', area)
     g.append('path').datum(points)
@@ -187,12 +189,12 @@ export function AccountChart({ account, from, onSelect }: {
     // fixed count over a two-day domain made d3 place three and the formatter printed
     // "31/08" twice — an axis that repeats a date is telling you the series has a shape
     // it does not have.
-    const fmtTick = d3.timeFormat('%d/%m')
+    const fmtTick = timeFormat('%d/%m')
     const days = new Set(points.map(p => fmtTick(p.date))).size
     const ticks = Math.max(2, Math.min(5, days))
     g.append('g')
       .attr('transform', `translate(0,${h})`)
-      .call(d3.axisBottom(x).ticks(ticks).tickSize(0).tickPadding(8)
+      .call(axisBottom(x).ticks(ticks).tickSize(0).tickPadding(8)
         .tickFormat(d => fmtTick(d as Date)))
       .call(ax => {
         // d3 can still land two ticks inside one day on a short domain; drop the repeat
@@ -224,7 +226,7 @@ export function AccountChart({ account, from, onSelect }: {
     }
 
     const move = (event: PointerEvent) => {
-      const [px] = d3.pointer(event, g.node())
+      const [px] = pointer(event, g.node())
       const p = nearest(Math.max(0, Math.min(w, px)))
       marker.attr('x1', x(p.date)).attr('x2', x(p.date)).attr('opacity', 1)
       const iso = p.date.toISOString().slice(0, 10)
@@ -250,12 +252,6 @@ export function AccountChart({ account, from, onSelect }: {
       })
   }, [points, hasSpan, dark, containerW, account.type, onSelect])
 
-  useEffect(() => {
-    if (!containerRef.current) return
-    const ro = new ResizeObserver(e => setContainerW(e[0].contentRect.width))
-    ro.observe(containerRef.current)
-    return () => ro.disconnect()
-  }, [])
 
   // Nothing to draw over: every movement lands on one day, so the time domain has no
   // width. A vertical spike over a single instant is not a chart of anything — it just

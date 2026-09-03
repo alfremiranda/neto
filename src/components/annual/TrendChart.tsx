@@ -1,5 +1,13 @@
-import { useRef, useEffect, useState, useMemo } from 'react'
-import * as d3 from 'd3'
+import { useEffect, useState, useMemo } from 'react'
+import { scaleBand, scaleLinear } from 'd3-scale'
+import { axisBottom, axisLeft } from 'd3-axis'
+import { select } from 'd3-selection'
+import { max } from 'd3-array'
+import { stack, type Series, type SeriesPoint } from 'd3-shape'
+import { easeCubicOut } from 'd3-ease'
+// Side-effect import: `.transition()` is a method d3-transition patches onto selections,
+// so it has to be loaded even though nothing here references it by name.
+import 'd3-transition'
 import { TrendingUp } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
@@ -9,6 +17,7 @@ import { MONTHS, DEFAULTS } from '@/data/defaults'
 import { useTheme } from '@/hooks/useTheme'
 import { deductionGroupFlags } from '@/hooks/useDeductionGroups'
 import { SectionCard } from '@/components/ui/SectionCard'
+import { cssVar, useChartRefs, useChartWidth } from '@/lib/chart'
 import { TOOLTIP_SURFACE } from '@/components/ui/tooltip'
 import { TooltipReadout, type SwatchTone } from '@/components/ui/TooltipReadout'
 import { cn } from '@/lib/utils'
@@ -38,18 +47,14 @@ interface Tooltip {
   values: { label: string; value: number; tone: SwatchTone }[]
 }
 
-function get(v: string) {
-  return getComputedStyle(document.documentElement).getPropertyValue(v).trim()
-}
-
 export function TrendChart() {
   const { db, curKey, getSMMLV, setCurKey } = useFinanceStore()
+  const { containerRef, svgRef } = useChartRefs()
+  const containerW = useChartWidth(containerRef)
   const deductions = useSettingsStore(s => s.deductions)
   const { theme } = useTheme()
   const dark = theme === 'dark'
-  const svgRef = useRef<SVGSVGElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [tooltip, setTooltip] = useState<Tooltip | null>(null)
+      const [tooltip, setTooltip] = useState<Tooltip | null>(null)
 
   // Derive colors from current month's calcAllDeductions — same source as DistribucionCard/KPIStrip
   const allSeries = useMemo(() => {
@@ -128,15 +133,6 @@ export function TrendChart() {
     [allSeries, showOblig, showProv],
   )
 
-  const [containerW, setContainerW] = useState(0)
-  useEffect(() => {
-    if (!containerRef.current) return
-    const ro = new ResizeObserver(entries => {
-      setContainerW(entries[0].contentRect.width)
-    })
-    ro.observe(containerRef.current)
-    return () => ro.disconnect()
-  }, [])
 
   useEffect(() => {
     if (!svgRef.current || !containerRef.current || !data.length) return
@@ -148,34 +144,34 @@ export function TrendChart() {
     const h = H - mg.top - mg.bottom
 
     const colorVars = series.map(s => `var(${s.token})`)
-    const tickColor = get('--muted-foreground')
+    const tickColor = cssVar('--muted-foreground')
     const gridColor = dark ? 'oklch(1 0 0 / 8%)' : 'oklch(0 0 0 / 5%)'
     const hlColor   = dark ? 'oklch(1 0 0 / 5%)' : 'oklch(0 0 0 / 3%)'
 
-    const svg = d3.select(svgRef.current)
+    const svg = select(svgRef.current)
     svg.attr('width', W).attr('height', H)
     svg.selectAll('*').remove()
 
     const g = svg.append('g').attr('transform', `translate(${mg.left},${mg.top})`)
 
     const keys: SeriesKey[] = series.map(s => s.key)
-    const stacked = d3.stack<BarDatum>().keys(keys)(data)
+    const stacked = stack<BarDatum>().keys(keys)(data)
 
-    const maxVal = d3.max(data, d => keys.reduce((sum, k) => sum + (d[k] as number), 0)) ?? 1
+    const maxVal = max(data, d => keys.reduce((sum, k) => sum + (d[k] as number), 0)) ?? 1
 
-    const xScale = d3.scaleBand<string>()
+    const xScale = scaleBand<string>()
       .domain(data.map(d => d.label))
       .range([0, w])
       .padding(0.32)
 
-    const yScale = d3.scaleLinear()
+    const yScale = scaleLinear()
       .domain([0, maxVal * 1.12])
       .range([h, 0])
       .nice()
 
     // Grid
     g.append('g')
-      .call(d3.axisLeft(yScale).tickSize(-w).ticks(4).tickFormat(() => ''))
+      .call(axisLeft(yScale).tickSize(-w).ticks(4).tickFormat(() => ''))
       .call(ax => ax.select('.domain').remove())
       .call(ax => ax.selectAll('.tick line')
         .attr('stroke', gridColor)
@@ -183,7 +179,7 @@ export function TrendChart() {
 
     // Y axis ticks
     g.append('g')
-      .call(d3.axisLeft(yScale).ticks(4).tickFormat(v => `$${(v as number).toLocaleString('es-CO', { maximumFractionDigits: 1 })}M`))
+      .call(axisLeft(yScale).ticks(4).tickFormat(v => `$${(v as number).toLocaleString('es-CO', { maximumFractionDigits: 1 })}M`))
       .call(ax => ax.select('.domain').remove())
       .call(ax => ax.selectAll('.tick line').remove())
       .call(ax => ax.selectAll('text').attr('fill', tickColor).attr('font-size', '10.5px'))
@@ -191,7 +187,7 @@ export function TrendChart() {
     // X axis
     g.append('g')
       .attr('transform', `translate(0,${h})`)
-      .call(d3.axisBottom(xScale).tickSize(0))
+      .call(axisBottom(xScale).tickSize(0))
       .call(ax => ax.select('.domain').attr('stroke', gridColor))
       .call(ax => ax.selectAll('text').attr('fill', tickColor).attr('font-size', '10.5px').attr('dy', '1.2em'))
 
@@ -208,13 +204,13 @@ export function TrendChart() {
     }
 
     // Stacked bar groups
-    const groups = g.selectAll<SVGGElement, d3.Series<BarDatum, string>>('.layer')
+    const groups = g.selectAll<SVGGElement, Series<BarDatum, string>>('.layer')
       .data(stacked)
       .join('g')
       .attr('class', 'layer')
       .style('fill', (_, i) => colorVars[i])
 
-    groups.selectAll<SVGRectElement, d3.SeriesPoint<BarDatum>>('rect')
+    groups.selectAll<SVGRectElement, SeriesPoint<BarDatum>>('rect')
       .data(d => d)
       .join('rect')
       .attr('x', d => xScale(d.data.label) ?? 0)
@@ -238,7 +234,7 @@ export function TrendChart() {
             tone: SERIES_TONE[s.key],
           })),
         })
-        d3.select(this.parentElement).raise()
+        select(this.parentElement).raise()
       })
       .on('mousemove', function(event: MouseEvent) {
         const containerRect = containerRef.current!.getBoundingClientRect()
@@ -250,7 +246,7 @@ export function TrendChart() {
       })
       .on('mouseleave', () => setTooltip(null))
       .on('click', (_: MouseEvent, d) => setCurKey(d.data.monthKey))
-      .transition().duration(450).ease(d3.easeCubicOut)
+      .transition().duration(450).ease(easeCubicOut)
       .attr('y', d => yScale(d[1]))
       .attr('height', d => Math.max(0, yScale(d[0]) - yScale(d[1])))
 
