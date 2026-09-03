@@ -141,7 +141,10 @@ export type FinanceDB = { _settings?: Settings } & Record<string, MonthData>
 // 'cuenta' is the detail of ONE account, a screen of its own rather than a panel under
 // the index. Which account it shows lives in uiStore.detailAccountId — there is no router
 // here, and a view plus an id is the whole of what a route would have carried.
-export type ViewType = 'mes' | 'dashboard' | 'cuentas' | 'cuenta' | 'ahorros' | 'config' | 'profile'
+// No 'ahorros': savings and CDTs are accounts like any other and live on the accounts
+// page. A separate page for one account type made the type the organising idea, when the
+// account is.
+export type ViewType = 'mes' | 'dashboard' | 'cuentas' | 'cuenta' | 'config' | 'profile'
 
 export type SheetId = 'income' | 'egreso' | 'transfer' | 'account-edit' | 'notifications' | null
 

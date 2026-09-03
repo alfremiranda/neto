@@ -114,10 +114,17 @@ export const useUIStore = create<UIState>()(persist((set) => ({
   toggleSidebar: () => set(s => ({ sidebarCollapsed: !s.sidebarCollapsed })),
 }), {
   name: 'neto-ui',
-  // 'cuenta' is deliberately NOT persisted as itself: detailAccountId is session state,
-  // so a cold start would restore a detail screen with no account to show.
+  // Two views never persist as themselves. 'cuenta' because detailAccountId is session
+  // state, so a cold start would restore a detail screen with no account to show. And a
+  // stored 'ahorros' from before that page was retired would restore a route that no
+  // longer renders anything — a blank main area for anyone whose last visit was there.
   partialize: (s) => ({
     view: s.view === 'cuenta' ? 'cuentas' : s.view,
     sidebarCollapsed: s.sidebarCollapsed,
   }),
+  merge: (persisted, current) => {
+    const p = persisted as Partial<UIState> | undefined
+    const view = p?.view === ('ahorros' as ViewType) ? 'cuentas' : p?.view
+    return { ...current, ...p, ...(view ? { view } : {}) }
+  },
 }))

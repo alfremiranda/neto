@@ -11,6 +11,7 @@ import { useSettingsStore } from '@/store/settingsStore'
 import { useAuthStore } from '@/store/authStore'
 import { useUIStore } from '@/store/uiStore'
 import { SectionCard } from '@/components/ui/SectionCard'
+import { ReservaCard } from '@/components/cards/ReservaCard'
 import { Button } from '@/components/ui/button'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -236,6 +237,12 @@ export function DashboardView() {
           <AnnualTable year={year} />
         </SectionCard>
       )}
+
+      {/* The retención reserve is a balance that runs all YEAR, so it belongs with the
+          annual figures rather than in a month. It used to sit in Ahorros; that page is
+          gone, and putting a yearly gap on the month view would have made it look like a
+          fact about September. */}
+      <ReservaCard year={year} />
 
       {hasTrendData && <TrendChart />}
       {hasYearEgresos && <EgresosBreakdown year={year} />}
