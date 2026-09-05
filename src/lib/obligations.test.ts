@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
-  nextMonthKey, accruedIn, shiftSettlesPeriod, frozenAccrual, settledFor, reservedFor, pendingSS, retencionReserve,
+  nextMonthKey, accruedIn, shiftSettlesPeriod, frozenAccrual, settlementsFor, settledFor, reservedFor, pendingSS, retencionReserve,
 } from '@/lib/obligations'
 import { calcGastos, calcAllDeductions, calcTotales, calcIBC, calcProvisionBase } from '@/lib/calc'
 import { DEFAULT_DEDUCTIONS } from '@/data/deductions'
@@ -276,5 +276,65 @@ describe('a paid period does not reopen when the TRM moves', () => {
     }
     expect(frozenAccrual(db, 'ss', '2026-07')).toBe(200)
     expect(frozenAccrual(db, 'ss', '2026-06')).toBeNull()
+  })
+})
+
+describe('settlementsFor — what was actually paid, and when', () => {
+  it('finds payments filed in a later month than the period they settle, oldest first', () => {
+    const db: FinanceDB = {
+      '2026-08': month({ egresos: [
+        egreso({ id: 2, amount: 900_000, date: '2026-08-20', account: 'Nequi',
+                 settles: { kind: 'ss', period: '2026-07' } }),
+        egreso({ id: 1, amount: 1_500_000, date: '2026-08-05', account: 'Bancolombia',
+                 settles: { kind: 'ss', period: '2026-07', ibc: 7_000_000 } }),
+      ] }),
+      '2026-09': month({ egresos: [
+        egreso({ id: 3, amount: 100_000, date: '2026-09-02',
+                 settles: { kind: 'ss', period: '2026-07' } }),
+      ] }),
+    }
+    const got = settlementsFor(db, 'ss', '2026-07')
+    // Two parts in August and a top-up in September: a total would read as one payment.
+    expect(got.map(p => p.id)).toEqual([1, 2, 3])
+    expect(got[0]).toMatchObject({ monthKey: '2026-08', account: 'Bancolombia', ibc: 7_000_000 })
+    expect(got.reduce((a, p) => a + p.amount, 0)).toBe(settledFor(db, 'ss', '2026-07'))
+  })
+
+  it('converts a USD payment at its filing month TRM but keeps the raw amount', () => {
+    const db: FinanceDB = {
+      '2026-08': month({ egresos: [egreso({
+        id: 1, amount: 500, currency: 'USD', settles: { kind: 'ss', period: '2026-07' },
+      })] }),
+    }
+    const [p] = settlementsFor(db, 'ss', '2026-07')
+    expect(p.amount).toBe(500 * TRM)
+    expect(p.rawAmount).toBe(500)
+    expect(p.currency).toBe('USD')
+  })
+
+  it('returns nothing for a period nobody paid', () => {
+    expect(settlementsFor({ '2026-08': month() }, 'ss', '2026-07')).toEqual([])
+  })
+})
+
+describe('paying in parts freezes the whole obligation, not the remainder', () => {
+  // The bug this guards: the second instalment saw a smaller remainder, and freezing THAT
+  // made the month read "paid 4.899.605 of 2.899.605" — the total measured against the
+  // last payment instead of against the debt.
+  const OWED = 4_899_605
+  const db: FinanceDB = {
+    '2026-08': month({ egresos: [
+      egreso({ id: 1, amount: 2_000_000, settles: { kind: 'ss', period: '2026-07', accrued: OWED } }),
+      egreso({ id: 2, amount: 2_899_605, settles: { kind: 'ss', period: '2026-07', accrued: OWED } }),
+    ] }),
+  }
+
+  it('reads back the full obligation whichever instalment is last', () => {
+    expect(frozenAccrual(db, 'ss', '2026-07')).toBe(OWED)
+  })
+
+  it('closes the period once the parts add up', () => {
+    expect(settledFor(db, 'ss', '2026-07')).toBe(OWED)
+    expect(pendingSS(db, DEFAULT_DEDUCTIONS, smmlvFn, '2026-08')).toEqual([])
   })
 })

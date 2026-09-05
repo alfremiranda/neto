@@ -84,7 +84,7 @@ export function EgresoSheet() {
       setCurrency(egresoPrefill.currency)
       // Freeze what the obligation stood at, so a later TRM or income correction cannot
       // reopen the period this payment closes.
-      setSettles({ ...egresoPrefill.settles, accrued: egresoPrefill.accrued })
+      setSettles({ ...egresoPrefill.settles, accrued: egresoPrefill.fullAccrued ?? egresoPrefill.accrued })
       setIbcMode('suggested')
       ibcAmt.setValue(egresoPrefill.suggestedIbc ?? 0)
       setDate(localToday())

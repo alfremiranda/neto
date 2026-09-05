@@ -343,7 +343,9 @@ function OverdueBlock({ pending, trm, showUSD }: {
                 className="shrink-0"
                 onClick={() => openSettlement({
                   desc: label, category: 'impuestos', currency: 'COP',
-                  settles: { kind: 'ss', period: p.period }, accrued: p.pending,
+                  settles: { kind: 'ss', period: p.period },
+                  accrued: p.pending,
+                  fullAccrued: p.accrued,
                   suggestedIbc: p.ibc,
                 })}
               >
@@ -404,6 +406,7 @@ function SettleRow({ label, settles, accrued, paid, suggestedIbc }: {
         onClick={() => openSettlement({
           desc: label, category: 'impuestos', currency: 'COP', settles,
           accrued: accrued - paid,
+          fullAccrued: accrued,
           suggestedIbc: settles.kind === 'ss' ? suggestedIbc : undefined,
         })}
       >

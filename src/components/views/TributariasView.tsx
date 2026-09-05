@@ -1,17 +1,19 @@
 import { useState } from 'react'
-import { Landmark, PiggyBank } from 'lucide-react'
+import { Landmark, PiggyBank, ChevronDown } from 'lucide-react'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useUIStore } from '@/store/uiStore'
-import { COP } from '@/lib/format'
+import { COP, USD, fmtDate } from '@/lib/format'
 import { MONTHS } from '@/data/defaults'
 import { ssByMonth, retencionByYear } from '@/lib/obligationsYear'
+import { settlementsFor } from '@/lib/obligations'
 import { isOutstanding } from '@/components/cards/ObligacionesCard'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Badge } from '@/components/ui/Badge'
 import { Progress } from '@/components/ui/Progress'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
+import { cn } from '@/lib/utils'
 
 /**
  * The tax obligations, read down a year instead of across a month.
@@ -24,12 +26,13 @@ import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/
 export function TributariasView() {
   const { db, getSMMLV, setCurKey } = useFinanceStore()
   const deductions = useSettingsStore(s => s.deductions)
-  const setView = useUIStore(s => s.setView)
+  const { setView, setEditingEgreso, openSheet } = useUIStore()
 
   const years = [...new Set(
     Object.keys(db).filter(k => k !== '_settings').map(k => k.slice(0, 4)),
   )].sort().reverse()
   const [year, setYear] = useState(years[0] ?? String(new Date().getFullYear()))
+  const [expanded, setExpanded] = useState<string | null>(null)
 
   const ss  = ssByMonth(db, Number(year), deductions, getSMMLV)
   const ret = retencionByYear(db, Number(year), deductions, getSMMLV)
@@ -40,6 +43,13 @@ export function TributariasView() {
   function openMonth(period: string) {
     setCurKey(period)
     setView('mes')
+  }
+
+  /** Open one payment for editing, in the month it was filed in. */
+  function openPayment(monthKey: string, id: number) {
+    setCurKey(monthKey)
+    setEditingEgreso(id)
+    openSheet('egreso')
   }
 
   return (
@@ -78,40 +88,86 @@ export function TributariasView() {
               const owed = r.frozen ?? r.suggested
               const open = r.due && isOutstanding(owed, r.paid)
               const monthName = MONTHS[Number(r.period.slice(5)) - 1]
+              const payments = settlementsFor(db, 'ss', r.period)
+              const isOpen = expanded === r.period
               return (
-                <button
-                  key={r.period}
-                  type="button"
-                  onClick={() => openMonth(r.period)}
-                  className="w-full text-left flex items-center gap-2 py-2 border-b border-[var(--border)] last:border-0 hover:bg-muted/50 rounded-lg px-1 transition-colors"
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="ts-body-base-emphasis">{monthName}</span>
-                      {!r.due
-                        ? <Badge tone="neutral">Aún no vence</Badge>
-                        : open
-                          ? <Badge tone="warning">Pendiente</Badge>
-                          : <Badge tone="neutral">Pagado</Badge>}
-                    </div>
-                    {/* The base is shown only when the payment declared a different one:
-                        saying "IBC $X" on every row would imply a choice was made where
-                        the suggestion was simply accepted. */}
-                    <div className="ts-body-small text-muted-foreground">
-                      {r.paidIbc != null
-                        ? `IBC facturado ${COP(r.paidIbc)}`
-                        : `IBC sugerido ${COP(r.suggestedIbc)}`}
-                    </div>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <div className="ts-amount-base">{COP(r.paid)}</div>
-                    {owed !== r.paid && (
-                      <div className="ts-amount-micro text-muted-foreground">
-                        {open ? `faltan ${COP(owed - r.paid)}` : `causado ${COP(owed)}`}
+                <div key={r.period} className="border-b border-[var(--border)] last:border-0">
+                  {/* The header discloses rather than navigating: the payments are the
+                      answer to "what did I pay", and sending the user to the month first
+                      made them hunt for it. The month is still one tap away, below. */}
+                  <button
+                    type="button"
+                    aria-expanded={isOpen}
+                    onClick={() => setExpanded(isOpen ? null : r.period)}
+                    className="w-full text-left flex items-center gap-2 py-2 px-1 rounded-lg hover:bg-muted/50 transition-colors"
+                  >
+                    <ChevronDown
+                      size={14}
+                      aria-hidden
+                      className={cn('shrink-0 text-muted-foreground transition-transform duration-fast',
+                        isOpen && 'rotate-180', payments.length === 0 && 'opacity-0')}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="ts-body-base-emphasis">{monthName}</span>
+                        {!r.due
+                          ? <Badge tone="neutral">Aún no vence</Badge>
+                          : open
+                            ? <Badge tone="warning">Pendiente</Badge>
+                            : <Badge tone="neutral">Pagado</Badge>}
                       </div>
-                    )}
-                  </div>
-                </button>
+                      {/* The base is shown only when the payment declared a different one:
+                          saying "IBC $X" on every row would imply a choice was made where
+                          the suggestion was simply accepted. */}
+                      <div className="ts-body-small text-muted-foreground">
+                        {r.paidIbc != null
+                          ? `IBC facturado ${COP(r.paidIbc)}`
+                          : `IBC sugerido ${COP(r.suggestedIbc)}`}
+                        {payments.length > 1 && ` · ${payments.length} pagos`}
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <div className="ts-amount-base">{COP(r.paid)}</div>
+                      {owed !== r.paid && (
+                        <div className="ts-amount-micro text-muted-foreground">
+                          {open ? `faltan ${COP(owed - r.paid)}` : `causado ${COP(owed)}`}
+                        </div>
+                      )}
+                    </div>
+                  </button>
+
+                  {isOpen && (
+                    <div className="pl-6 pr-1 pb-2 space-y-1">
+                      {payments.map(pay => (
+                        <button
+                          key={pay.id}
+                          type="button"
+                          onClick={() => openPayment(pay.monthKey, pay.id)}
+                          className="w-full text-left flex items-baseline gap-2 py-1.5 rounded-lg hover:bg-muted/50 px-1 transition-colors"
+                        >
+                          <div className="flex-1 min-w-0">
+                            <div className="ts-body-small truncate">{pay.desc}</div>
+                            <div className="ts-body-small text-muted-foreground">
+                              {fmtDate(pay.date)}
+                              {pay.account && ` · ${pay.account}`}
+                              {pay.ibc != null && ` · IBC ${COP(pay.ibc)}`}
+                            </div>
+                          </div>
+                          <span className="ts-amount-small shrink-0">
+                            {pay.currency === 'USD' ? USD(pay.rawAmount) : COP(pay.amount)}
+                          </span>
+                        </button>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => openMonth(r.period)}
+                        className="ts-body-small text-[var(--primary)] underline-offset-2 hover:underline px-1"
+                      >
+                        Ver {monthName} completo
+                      </button>
+                    </div>
+                  )}
+                </div>
               )
             })}
           </div>

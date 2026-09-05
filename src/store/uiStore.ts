@@ -7,10 +7,18 @@ export interface EgresoPrefill {
   category:  string
   currency:  'USD' | 'COP'
   settles:   Settles
-  /** The accrued figure, shown as a reference — NOT filled into the amount. The PILA
+  /** What is left to pay, shown as a reference — NOT filled into the amount. The PILA
    *  rounds and the IBC gets adjusted, so what is owed is a starting point, not the
    *  number that left the account. */
   accrued?:  number
+  /**
+   * The obligation's FULL value, which is what the payment freezes.
+   *
+   * Not the same as `accrued` once a period is paid in parts: the second payment sees a
+   * smaller remainder, and freezing that made the month read "paid 4.899.605 of 2.899.605"
+   * — the total measured against the last instalment instead of against the debt.
+   */
+  fullAccrued?: number
   /** The IBC the accrual was derived from, so the sheet can offer it as the suggestion
    *  and recompute if the user says a different base was invoiced. SS only. */
   suggestedIbc?: number

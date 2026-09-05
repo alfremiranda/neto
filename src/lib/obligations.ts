@@ -140,6 +140,54 @@ export function frozenAccrual(db: FinanceDB, kind: ObligationKind, period: strin
   return frozen
 }
 
+/** One movement that settled an obligation, with everything needed to show and reopen it. */
+export interface SettlementRecord {
+  id:       number
+  /** The month the payment is FILED in, which is not the period it settles. */
+  monthKey: string
+  date:     string
+  desc:     string
+  /** In COP, converted at the filing month's TRM when the movement was in USD. */
+  amount:   number
+  currency: 'USD' | 'COP'
+  rawAmount: number
+  account?: string
+  /** The IBC this payment declared, when it differed from the suggestion. */
+  ibc?:     number
+}
+
+/**
+ * The individual movements that settled a period, oldest first.
+ *
+ * The monthly total answers "am I up to date"; this answers "what did I actually pay, and
+ * when". A month paid in two parts reads as one number without it.
+ */
+export function settlementsFor(
+  db: FinanceDB, kind: ObligationKind, period: string,
+): SettlementRecord[] {
+  const out: SettlementRecord[] = []
+  for (const key of monthKeys(db)) {
+    const month = db[key] as MonthData
+    if (!month) continue
+    const trm = month.trm || DEFAULTS.trm
+    for (const e of month.egresos || []) {
+      if (e.settles?.kind !== kind || e.settles.period !== period) continue
+      out.push({
+        id: e.id,
+        monthKey: key,
+        date: e.date || `${key}-01`,
+        desc: e.desc,
+        amount: e.currency === 'USD' ? e.amount * trm : e.amount,
+        currency: e.currency,
+        rawAmount: e.amount,
+        account: e.account,
+        ibc: e.settles.ibc,
+      })
+    }
+  }
+  return out.sort((a, b) => a.date.localeCompare(b.date) || a.id - b.id)
+}
+
 export interface PendingObligation {
   kind:    ObligationKind
   period:  string   // the month that accrued it, 'YYYY-MM'
