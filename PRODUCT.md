@@ -112,6 +112,12 @@ ofrece **"Hay una versión nueva · Actualizar"**. La recarga ocurre solo cuando
 a propósito — una recarga automática competía con el callback de OAuth y rompía el login en
 móvil.
 
+**El pago de SS tiene su propio flujo.** No se registra como un gasto: tiene su hoja dedicada
+con un resumen de las tres cifras que importan —IBC usado, SS sobre esa base, y SS realmente
+pagada, con su diferencia— más la fecha y la cuenta que paga. Una vez registrado aparece en la
+tarjeta del mes como una **fila verde con check: "SS pagada"**, con su valor, fecha y cuenta.
+Tocarla la reabre para editar o eliminar.
+
 **El IBC es un SUGERIDO.** La app lo deriva del 40% de los ingresos por servicios (o del piso
 SMMLV), pero la base realmente facturada puede diferir — la TRM del día en que aterrizó el
 dinero, costos transaccionales y transfronterizos, una corrección en la planilla. Al registrar

@@ -1,19 +1,20 @@
 import { useState } from 'react'
-import { Landmark, Info, ExternalLink, X, Clock } from 'lucide-react'
+import { Landmark, Info, ExternalLink, X, Clock, Check } from 'lucide-react'
 import { Dialog as DialogPrimitive } from 'radix-ui'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useFinanceStore } from '@/store/financeStore'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useLiveTRM } from '@/hooks/useLiveTRM'
 import { calcTotales, calcIBC, calcGastos, calcAllDeductions, calcProvisionBase } from '@/lib/calc'
-import { COP, USD, localToday } from '@/lib/format'
+import { COP, USD, localToday, fmtDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { IconButton } from '@/components/ui/icon-button'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/Badge'
 import { useUIStore } from '@/store/uiStore'
-import { settledFor, retencionReserve, pendingSS, type PendingObligation } from '@/lib/obligations'
+import { settledFor, settlementsFor, retencionReserve, pendingSS,
+         type PendingObligation, type SettlementRecord } from '@/lib/obligations'
 import type { Settles, FinanceDB, MonthData } from '@/types'
 
 const MONTH_LONG = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
@@ -371,6 +372,49 @@ export function isOutstanding(accrued: number, paid: number): boolean {
  * `fg/provision`, so a green badge sitting beside money reads as an amount set aside
  * rather than as a state. That green is already spent on one meaning in this app.
  */
+/**
+ * A payment, as a row.
+ *
+ * The month showed only a "Pagado" badge, so a payment that had been recorded was a state
+ * with no object: nothing to look at, correct or remove without leaving for the account
+ * ledger — and only if an account had been chosen, which is optional. A row is the shape
+ * the rest of the app uses for a movement, and it opens the payment's own sheet.
+ *
+ * It reads in the provision green with a check: this is the one row in the card that says
+ * something is DONE, and every other figure around it is something still owed.
+ */
+function PaymentRow({ payment, period, suggestedIbc, suggestedSS }: {
+  payment: SettlementRecord
+  period: string
+  suggestedIbc: number
+  suggestedSS: number
+}) {
+  const openSSPayment = useUIStore(s => s.openSSPayment)
+  return (
+    <button
+      type="button"
+      onClick={() => openSSPayment({
+        period, suggestedIbc, suggestedSS,
+        editing: { id: payment.id, monthKey: payment.monthKey },
+      })}
+      className="w-full text-left flex items-center gap-2 py-2 border-t border-[var(--border)] rounded-lg px-1 hover:bg-muted/50 transition-colors"
+    >
+      <div className="w-8 h-8 rounded-full bg-[var(--color-provision-bg)] flex items-center justify-center shrink-0">
+        <Check size={16} className="text-[var(--color-provision)]" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="ts-body-base-emphasis text-[var(--color-provision)]">SS pagada</div>
+        <div className="ts-body-small text-muted-foreground truncate">
+          {fmtDate(payment.date)}
+          {payment.account && ` · ${payment.account}`}
+          {payment.ibc != null && ` · IBC ${COP(payment.ibc)}`}
+        </div>
+      </div>
+      <span className="ts-amount-base shrink-0 text-[var(--color-provision)]">{COP(payment.amount)}</span>
+    </button>
+  )
+}
+
 function StateBadge({ accrued, paid, onOpen }: {
   accrued: number; paid: number; onOpen?: () => void
 }) {
@@ -420,7 +464,7 @@ function SettleRow({ label, settles, accrued, paid, suggestedIbc }: {
 
 export function ObligacionesCard() {
   const { getCurrentMonth, getSMMLV, curKey, db, setCurKey } = useFinanceStore()
-  const { openSheet, setEditingEgreso } = useUIStore()
+  const { openSheet, setEditingEgreso, openSSPayment } = useUIStore()
   const deductions = useSettingsStore(s => s.deductions)
   const { trm: liveTRM } = useLiveTRM()
   const month = getCurrentMonth()
@@ -454,6 +498,7 @@ export function ObligacionesCard() {
   }
 
   const ssPaid        = settledFor(db, 'ss', curKey)
+  const ssPayments    = settlementsFor(db, 'ss', curKey)
   const retencionPaid = settledFor(db, 'retencion', String(y))
   const totalOblig = res.ssTotal + retefuente.reduce((a, i) => a + i.amount, 0)
 
@@ -526,13 +571,29 @@ export function ObligacionesCard() {
                 )}
               </div>
             </div>
-            <SettleRow
-              label={`Seguridad social · ${MONTH_LONG[m - 1]} ${y}`}
-              settles={{ kind: 'ss', period: curKey }}
-              accrued={res.ssTotal}
-              paid={ssPaid}
-              suggestedIbc={ibc}
-            />
+            {ssPayments.map(pay => (
+              <PaymentRow
+                key={pay.id}
+                payment={pay}
+                period={curKey}
+                suggestedIbc={ibc}
+                suggestedSS={res.ssTotal}
+              />
+            ))}
+            {isOutstanding(res.ssTotal, ssPaid) && (
+              <div className="flex items-center gap-2 py-2 border-t border-[var(--border)]">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => openSSPayment({
+                    period: curKey, suggestedIbc: ibc, suggestedSS: res.ssTotal,
+                  })}
+                >
+                  {ssPaid > 0 ? 'Registrar otro pago' : 'Registrar pago'}
+                </Button>
+              </div>
+            )}
           </GroupBox>
         )}
 

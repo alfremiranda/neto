@@ -169,7 +169,10 @@ export type FinanceDB = { _settings?: Settings } & Record<string, MonthData>
 // account is.
 export type ViewType = 'mes' | 'dashboard' | 'cuentas' | 'cuenta' | 'tributarias' | 'config' | 'profile'
 
-export type SheetId = 'income' | 'egreso' | 'transfer' | 'account-edit' | 'notifications' | null
+// 'ss-payment' is its own sheet rather than the gasto sheet wearing a hat. Paying social
+// security is a different act from spending: it settles a period, it is measured against a
+// base the user may have to correct, and what it closes matters more than its category.
+export type SheetId = 'income' | 'egreso' | 'transfer' | 'account-edit' | 'notifications' | 'ss-payment' | null
 
 export interface TRMCache {
   trm: number

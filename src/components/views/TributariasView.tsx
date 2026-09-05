@@ -26,7 +26,7 @@ import { cn } from '@/lib/utils'
 export function TributariasView() {
   const { db, getSMMLV, setCurKey } = useFinanceStore()
   const deductions = useSettingsStore(s => s.deductions)
-  const { setView, setEditingEgreso, openSheet } = useUIStore()
+  const { setView, openSSPayment } = useUIStore()
 
   const years = [...new Set(
     Object.keys(db).filter(k => k !== '_settings').map(k => k.slice(0, 4)),
@@ -45,11 +45,16 @@ export function TributariasView() {
     setView('mes')
   }
 
-  /** Open one payment for editing, in the month it was filed in. */
-  function openPayment(monthKey: string, id: number) {
-    setCurKey(monthKey)
-    setEditingEgreso(id)
-    openSheet('egreso')
+  /** Open one payment in its own sheet — the same one the month uses, so a payment is
+   *  edited the same way wherever it is reached from. */
+  function openPayment(row: { period: string; suggestedIbc: number; suggested: number },
+                       monthKey: string, id: number) {
+    openSSPayment({
+      period: row.period,
+      suggestedIbc: row.suggestedIbc,
+      suggestedSS: row.suggested,
+      editing: { id, monthKey },
+    })
   }
 
   return (
@@ -142,7 +147,7 @@ export function TributariasView() {
                         <button
                           key={pay.id}
                           type="button"
-                          onClick={() => openPayment(pay.monthKey, pay.id)}
+                          onClick={() => openPayment(r, pay.monthKey, pay.id)}
                           className="w-full text-left flex items-baseline gap-2 py-1.5 rounded-lg hover:bg-muted/50 px-1 transition-colors"
                         >
                           <div className="flex-1 min-w-0">

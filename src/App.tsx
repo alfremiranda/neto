@@ -9,6 +9,7 @@ import { DashboardView } from '@/components/views/DashboardView'
 import { ConfigView } from '@/components/views/ConfigView'
 import { ProfileView } from '@/components/views/ProfileView'
 import { UpdatePrompt } from '@/components/UpdatePrompt'
+import { SSPaymentSheet } from '@/components/sheets/SSPaymentSheet'
 import { CuentasView, CuentaView } from '@/components/views/CuentasView'
 import { TributariasView } from '@/components/views/TributariasView'
 import { Toast } from '@/components/ui/Toast'
@@ -206,6 +207,7 @@ export default function App() {
         {/* Global sheets */}
         <IncomeSheet />
         <EgresoSheet />
+        <SSPaymentSheet />
         <AccountEditSheet />
         <TransferSheet />
         <NotificationsSheet />

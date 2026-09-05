@@ -2,6 +2,17 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { SheetId, ViewType, Settles } from '@/types'
 
+export interface SSPaymentTarget {
+  /** 'YYYY-MM' — the month whose social security this settles. */
+  period:       string
+  /** The IBC the app derives for that period, offered as the suggestion. */
+  suggestedIbc: number
+  /** Social security on that suggested base. */
+  suggestedSS:  number
+  /** Present when editing: the movement's id and the month it is filed in. */
+  editing?: { id: number; monthKey: string }
+}
+
 export interface EgresoPrefill {
   desc:      string
   category:  string
@@ -48,6 +59,9 @@ interface UIState {
    * never takes over on its own — something has to tell it to — so this is what turns a
    * waiting worker into an offer the user can accept.
    */
+  /** What the SS payment sheet is working on: a new payment for a period, or an existing
+   *  one being edited. */
+  ssPayment: SSPaymentTarget | null
   updateReady: boolean
   applyUpdate: (() => void) | null
   sidebarCollapsed: boolean
@@ -66,6 +80,7 @@ interface UIState {
   openSettlement: (p: EgresoPrefill) => void
   openAccount: (id: string) => void
   setUpdateReady: (apply: () => void) => void
+  openSSPayment: (t: SSPaymentTarget) => void
   toggleSidebar: () => void
 }
 
@@ -96,6 +111,7 @@ export const useUIStore = create<UIState>()(persist((set) => ({
   newAccountType: null,
   egresoPrefill: null,
   detailAccountId: null,
+  ssPayment: null,
   updateReady: false,
   applyUpdate: null,
   sidebarCollapsed: false,
@@ -113,6 +129,7 @@ export const useUIStore = create<UIState>()(persist((set) => ({
     editingTransferId: null,
     newAccountType: null,
     egresoPrefill: null,
+    ssPayment: null,
   }),
 
   setPendingDelete: (id) => set({ pendingDeleteId: id }),
@@ -134,6 +151,8 @@ export const useUIStore = create<UIState>()(persist((set) => ({
   openAccount: (id) => set(s => ({ detailAccountId: id, prevView: s.view, view: 'cuenta' })),
 
   setUpdateReady: (apply) => set({ updateReady: true, applyUpdate: apply }),
+
+  openSSPayment: (t) => set({ ssPayment: t, activeSheet: 'ss-payment' }),
   toggleSidebar: () => set(s => ({ sidebarCollapsed: !s.sidebarCollapsed })),
 }), {
   name: 'neto-ui',
