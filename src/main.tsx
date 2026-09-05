@@ -27,6 +27,22 @@ const updateSW = registerSW({
   onNeedRefresh() {
     useUIStore.getState().setUpdateReady(() => updateSW(true))
   },
+  onRegisteredSW(_url, registration) {
+    if (!registration) return
+    // A browser only looks for a new worker on navigation. This app is a PWA people leave
+    // open for days, so without asking, a build could sit installed and unoffered for the
+    // whole session — which is most of how the previous gap felt from the outside.
+    //
+    // Same three signals the cloud sync already uses: coming back to the app, and coming
+    // back online. Plus an hourly floor for a session that simply stays open.
+    const check = () => { if (navigator.onLine) void registration.update() }
+    setInterval(check, 60 * 60 * 1000)
+    window.addEventListener('focus', check)
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') check()
+    })
+    window.addEventListener('online', check)
+  },
   onRegisterError(error) {
     // Non-fatal: only offline caching is unavailable this session. Don't rethrow.
     console.warn('Service worker registration failed', error)
