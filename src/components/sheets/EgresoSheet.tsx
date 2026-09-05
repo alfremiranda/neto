@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react'
 import { SheetBase } from '@/components/ui/SheetBase'
-import { MoneyInput } from '@/components/ui/MoneyInput'
 import { useMoneyInput } from '@/hooks/useMoneyInput'
 import { useFinanceStore } from '@/store/financeStore'
 import { useUIStore } from '@/store/uiStore'
 import { EGRESO_CATEGORIAS } from '@/data/defaults'
 import { localToday, COP } from '@/lib/format'
 import { useFormDirty } from '@/hooks/useFormDirty'
+import { calcSSFromIBC } from '@/lib/calc'
+import { useSettingsStore } from '@/store/settingsStore'
+import { SegmentedControl } from '@/components/ui/SegmentedControl'
+import { MoneyInput } from '@/components/ui/MoneyInput'
 import { DELETED_ACCOUNT_LABEL } from '@/lib/accountLabel'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
@@ -17,6 +20,8 @@ import { DatePicker } from '@/components/ui/DatePicker'
 export function EgresoSheet() {
   const { addEgreso, updateEgreso, removeEgreso, getCurrentMonth, getAccounts } = useFinanceStore()
   const { closeSheet, showToast, editingEgresoId, setEditingEgreso, activeSheet, egresoPrefill } = useUIStore()
+  const deductions = useSettingsStore(st => st.deductions)
+  const { getSMMLV } = useFinanceStore()
 
   const isEditing = editingEgresoId !== null
   const accounts  = getAccounts()
@@ -28,11 +33,28 @@ export function EgresoSheet() {
   const [recurring, setRecurring] = useState(false)
   const [account, setAccount]     = useState('')
   const [settles, setSettles]     = useState<Settles | undefined>(undefined)
+  // Which base this payment was computed on. The derived IBC is a suggestion; the base
+  // actually invoiced can differ, and the user is the one who knows.
+  const [ibcMode, setIbcMode]     = useState<'suggested' | 'other'>('suggested')
   const isSettlement = !!settles
   const [confirmingDelete, setConfirmingDelete] = useState(false)
 
   const decimals = currency === 'USD' ? 2 : 0
   const amt = useMoneyInput({ decimals })
+  const ibcAmt = useMoneyInput({ decimals: 0 })
+
+  const suggestedIbc = egresoPrefill?.suggestedIbc
+  // Only SS is computed off an IBC; retención is a percentage of gross.
+  const asksForIbc = isSettlement && settles?.kind === 'ss' && suggestedIbc != null
+  // What the payment would be on the base the user chose. Recomputed live so the figure
+  // and the base can never disagree on screen.
+  const ssOnChosenIbc = asksForIbc
+    ? calcSSFromIBC(
+        ibcMode === 'other' ? ibcAmt.numericValue : suggestedIbc,
+        deductions,
+        getSMMLV(Number((settles!.period || '').slice(0, 4)) || new Date().getFullYear()),
+      )
+    : 0
 
   // Unsaved work: what is on screen differs from what the sheet opened with.
   const dirty = useFormDirty(activeSheet === 'egreso', {
@@ -60,7 +82,11 @@ export function EgresoSheet() {
       setDesc(egresoPrefill.desc)
       setCategory(egresoPrefill.category)
       setCurrency(egresoPrefill.currency)
-      setSettles(egresoPrefill.settles)
+      // Freeze what the obligation stood at, so a later TRM or income correction cannot
+      // reopen the period this payment closes.
+      setSettles({ ...egresoPrefill.settles, accrued: egresoPrefill.accrued })
+      setIbcMode('suggested')
+      ibcAmt.setValue(egresoPrefill.suggestedIbc ?? 0)
       setDate(localToday())
       setRecurring(false)
       setAccount('')
@@ -90,7 +116,10 @@ export function EgresoSheet() {
   function handleSubmit() {
     if (!desc.trim()) { showToast('Escribe una descripción'); return }
     if (!amt.numericValue && !isEditing) { showToast('Ingresa el valor'); return }
-    const payload = { desc: desc.trim(), category, amount: amt.numericValue, currency, date, recurring, account: account || undefined, settles }
+    const payload = { desc: desc.trim(), category, amount: amt.numericValue, currency, date, recurring, account: account || undefined,
+      settles: settles && ibcMode === 'other' && suggestedIbc != null
+        ? { ...settles, ibc: ibcAmt.numericValue, accrued: ssOnChosenIbc }
+        : settles }
     if (isEditing) {
       updateEgreso(editingEgresoId!, payload)
       showToast('Egreso actualizado')
@@ -147,6 +176,49 @@ export function EgresoSheet() {
             <div className="ts-body-small text-muted-foreground mt-1">
               Sale de la cuenta, pero no se suma a los gastos del mes.
             </div>
+          </div>
+        )}
+
+        {/* Which base the payment was computed on.
+            The IBC the app derives is a SUGGESTION: the base actually invoiced can differ
+            — the rate on the day the money landed, cross-border and transaction costs, a
+            correction on the planilla. A figure the user cannot contradict is one they
+            stop trusting, so this asks instead of asserting, and records the answer. */}
+        {asksForIbc && (
+          <div className="space-y-2">
+            <span className="field-label ts-label-base">IBC de este pago</span>
+            <SegmentedControl
+              ariaLabel="Base del pago"
+              value={ibcMode}
+              onChange={v => {
+                setIbcMode(v)
+                if (v === 'suggested') ibcAmt.setValue(suggestedIbc!)
+              }}
+              options={[
+                { value: 'suggested', label: 'El sugerido' },
+                { value: 'other',     label: 'Otro' },
+              ] as const}
+            />
+            {ibcMode === 'other' ? (
+              <MoneyInput
+                id="eg-ibc"
+                label="IBC facturado"
+                currency="COP"
+                value={ibcAmt.display}
+                onChange={ibcAmt.handleChange}
+              />
+            ) : (
+              <div className="ts-body-small text-muted-foreground">
+                {COP(suggestedIbc!)} · 40% de los ingresos por servicios, o el piso SMMLV
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => amt.setValue(Math.round(ssOnChosenIbc))}
+              className="ts-body-small text-[var(--primary)] underline-offset-2 hover:underline text-left"
+            >
+              Sobre esa base la SS da {COP(ssOnChosenIbc)} — usar este valor
+            </button>
           </div>
         )}
 

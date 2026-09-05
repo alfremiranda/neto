@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
-  nextMonthKey, accruedIn, shiftSettlesPeriod, settledFor, reservedFor, pendingSS, retencionReserve,
+  nextMonthKey, accruedIn, shiftSettlesPeriod, frozenAccrual, settledFor, reservedFor, pendingSS, retencionReserve,
 } from '@/lib/obligations'
 import { calcGastos, calcAllDeductions, calcTotales, calcIBC, calcProvisionBase } from '@/lib/calc'
 import { DEFAULT_DEDUCTIONS } from '@/data/deductions'
@@ -39,8 +39,9 @@ describe('accruedIn', () => {
   it('accrues NOTHING for a month with no incomes', () => {
     // calcIBC floors at the SMMLV even with nothing registered, so an unguarded
     // accrual would invent a debt for every empty month in the db.
-    expect(accruedIn(month(), 7, DEFAULT_DEDUCTIONS, SMMLV)).toEqual({ ss: 0, retencion: 0 })
-    expect(accruedIn(undefined, 7, DEFAULT_DEDUCTIONS, SMMLV)).toEqual({ ss: 0, retencion: 0 })
+    // ibc is 0 too, not the SMMLV floor: with no income there is no base to suggest.
+    expect(accruedIn(month(), 7, DEFAULT_DEDUCTIONS, SMMLV)).toEqual({ ss: 0, retencion: 0, ibc: 0 })
+    expect(accruedIn(undefined, 7, DEFAULT_DEDUCTIONS, SMMLV)).toEqual({ ss: 0, retencion: 0, ibc: 0 })
   })
 })
 
@@ -225,5 +226,55 @@ describe('shiftSettlesPeriod — a recurring settlement must not repay the same 
   it('advances a retención year only when the copy crosses into a new one', () => {
     expect(shiftSettlesPeriod({ kind: 'retencion', period: '2026' }, '2027-01'))
       .toEqual({ kind: 'retencion', period: '2027' })
+  })
+})
+
+describe('a paid period does not reopen when the TRM moves', () => {
+  // The reported bug: the accrual is derived live from the period's income and its TRM, so
+  // correcting the TRM afterwards — which is normal, it is entered by hand — moved the
+  // figure under a payment already made and the app reported a shortfall that never was.
+  const usdIncome = (): Income =>
+    ({ id: 1, desc: 'Contrato', amount: 5000, currency: 'USD', account: 'ARQ', tipo: 'servicios' })
+
+  const dbAt = (trm: number, paid?: number, frozen?: number): FinanceDB => ({
+    '2026-07': { trm, incomes: [usdIncome()], egresos: [], transfers: [] },
+    '2026-08': month({
+      egresos: paid == null ? [] : [egreso({
+        id: 9, amount: paid,
+        settles: { kind: 'ss', period: '2026-07', ...(frozen != null ? { accrued: frozen } : {}) },
+      })],
+    }),
+  })
+
+  it('reopens without the frozen figure — the behaviour being fixed', () => {
+    const owed = accruedIn(dbAt(4000)['2026-07'] as MonthData, 7, DEFAULT_DEDUCTIONS, SMMLV).ss
+    // Paid in full at the rate of the day, then the TRM is corrected upward.
+    const after = dbAt(4300, owed)
+    expect(pendingSS(after, DEFAULT_DEDUCTIONS, smmlvFn, '2026-08')).toHaveLength(1)
+  })
+
+  it('stays settled with it, whichever way the rate moves', () => {
+    const owed = accruedIn(dbAt(4000)['2026-07'] as MonthData, 7, DEFAULT_DEDUCTIONS, SMMLV).ss
+    for (const laterTrm of [4300, 3700]) {
+      const after = dbAt(laterTrm, owed, owed)
+      expect(pendingSS(after, DEFAULT_DEDUCTIONS, smmlvFn, '2026-08')).toEqual([])
+    }
+  })
+
+  it('still reports a genuine partial payment against the frozen figure', () => {
+    const owed = accruedIn(dbAt(4000)['2026-07'] as MonthData, 7, DEFAULT_DEDUCTIONS, SMMLV).ss
+    const [p] = pendingSS(dbAt(4300, owed - 500_000, owed), DEFAULT_DEDUCTIONS, smmlvFn, '2026-08')
+    expect(p.pending).toBeCloseTo(500_000, 0)
+  })
+
+  it('frozenAccrual reads the LAST payment, which saw the truer figure', () => {
+    const db: FinanceDB = {
+      '2026-08': month({ egresos: [
+        egreso({ id: 1, amount: 1, settles: { kind: 'ss', period: '2026-07', accrued: 100 } }),
+        egreso({ id: 2, amount: 1, settles: { kind: 'ss', period: '2026-07', accrued: 200 } }),
+      ] }),
+    }
+    expect(frozenAccrual(db, 'ss', '2026-07')).toBe(200)
+    expect(frozenAccrual(db, 'ss', '2026-06')).toBeNull()
   })
 })

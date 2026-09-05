@@ -11,6 +11,9 @@ export interface EgresoPrefill {
    *  rounds and the IBC gets adjusted, so what is owed is a starting point, not the
    *  number that left the account. */
   accrued?:  number
+  /** The IBC the accrual was derived from, so the sheet can offer it as the suggestion
+   *  and recompute if the user says a different base was invoiced. SS only. */
+  suggestedIbc?: number
 }
 
 interface UIState {

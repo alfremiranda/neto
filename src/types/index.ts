@@ -18,6 +18,29 @@ export interface Settles {
    *  retención (annual). Recording WHICH period a payment covers is what makes
    *  "mes vencido" a fact the app knows instead of one the user remembers. */
   period: string
+  /**
+   * What the obligation stood at when this payment was recorded, in COP.
+   *
+   * Without it a settled period silently reopens. The accrual is derived live from the
+   * period's income and its TRM, so correcting either one afterwards — which is normal,
+   * the TRM is entered by hand and gets fixed when the transfer lands — moved the figure
+   * under a payment that was already made, and the app reported a shortfall that never
+   * existed.
+   *
+   * A payment is a fact with a date. What it settled has to be frozen at that date, or
+   * "paid" is a claim the app can withdraw on its own.
+   */
+  accrued?: number
+  /**
+   * The IBC this payment was actually computed on, when it differs from the one the app
+   * suggested. Present only for `kind: 'ss'`.
+   *
+   * The derived IBC is a SUGGESTION. The base actually invoiced can differ — the rate on
+   * the day the money landed, cross-border and transaction costs, a correction on the
+   * planilla — and a number the user cannot contradict is a number they stop trusting.
+   * Recording which base was used is also what makes the payment explain itself later.
+   */
+  ibc?: number
 }
 
 export interface Income {
@@ -144,7 +167,7 @@ export type FinanceDB = { _settings?: Settings } & Record<string, MonthData>
 // No 'ahorros': savings and CDTs are accounts like any other and live on the accounts
 // page. A separate page for one account type made the type the organising idea, when the
 // account is.
-export type ViewType = 'mes' | 'dashboard' | 'cuentas' | 'cuenta' | 'config' | 'profile'
+export type ViewType = 'mes' | 'dashboard' | 'cuentas' | 'cuenta' | 'tributarias' | 'config' | 'profile'
 
 export type SheetId = 'income' | 'egreso' | 'transfer' | 'account-edit' | 'notifications' | null
 

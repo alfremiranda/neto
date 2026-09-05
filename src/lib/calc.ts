@@ -36,6 +36,28 @@ export function calcProvisionBase(incomes: Income[], trm: number): number {
     .reduce((a, i) => a + (i.currency === 'USD' ? i.amount * trm : i.amount), 0)
 }
 
+/**
+ * Social security on a GIVEN IBC.
+ *
+ * The IBC the app derives is a suggestion, not a fact: the base actually invoiced can
+ * differ — the rate on the day the money landed, cross-border and transaction costs, a
+ * correction on the planilla. So the figure has to be computable from whatever base the
+ * user says they used, not only from the one the month implies.
+ *
+ * Includes FSS on the same base, because the fund is a bracket of the IBC too — computing
+ * it off the suggested one while the rest moved would be a different, quieter wrong answer.
+ */
+export function calcSSFromIBC(
+  ibc: number,
+  deductions: DeductionConfig[],
+  smmlv: number,
+): number {
+  const ss = deductions
+    .filter(d => d.enabled && d.group === 'ss' && d.base === 'ibc')
+    .reduce((a, d) => a + ibc * (d.pct / 100), 0)
+  return ss + calcFSS(ibc, smmlv).amount
+}
+
 export function calcFSS(ibc: number, smmlv: number): { amount: number; pct: number } {
   const x = ibc / smmlv
   let pct = 0

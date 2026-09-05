@@ -61,9 +61,9 @@ export function accruedIn(
   monthNum:   number,
   deductions: DeductionConfig[],
   smmlv:      number,
-): Record<ObligationKind, number> {
+): Record<ObligationKind, number> & { ibc: number } {
   const incomes = month?.incomes || []
-  if (!month || incomes.length === 0) return { ss: 0, retencion: 0 }
+  if (!month || incomes.length === 0) return { ss: 0, retencion: 0, ibc: 0 }
 
   const trm      = month.trm || DEFAULTS.trm
   const { bruto } = calcTotales(incomes, trm)
@@ -75,6 +75,7 @@ export function accruedIn(
   return {
     ss:        res.ssTotal,
     retencion: res.provItems.find(i => i.id === 'retencion' && i.applies)?.amount ?? 0,
+    ibc,
   }
 }
 
@@ -120,6 +121,25 @@ export function reservedFor(db: FinanceDB, kind: ObligationKind, period: string)
   )
 }
 
+/**
+ * What a period's settlements say it was worth when they were made.
+ *
+ * `null` when nothing has been paid, or when the payments predate this field. The most
+ * recent one wins: if a period is paid twice, the second payment saw the truer figure.
+ */
+export function frozenAccrual(db: FinanceDB, kind: ObligationKind, period: string): number | null {
+  let frozen: number | null = null
+  for (const key of monthKeys(db)) {
+    const month = db[key] as MonthData
+    if (!month) continue
+    for (const e of month.egresos || []) {
+      if (e.settles?.kind !== kind || e.settles.period !== period) continue
+      if (e.settles.accrued != null) frozen = e.settles.accrued
+    }
+  }
+  return frozen
+}
+
 export interface PendingObligation {
   kind:    ObligationKind
   period:  string   // the month that accrued it, 'YYYY-MM'
@@ -127,6 +147,8 @@ export interface PendingObligation {
   accrued: number
   settled: number
   pending: number
+  /** The IBC the accrual came from, so the payment sheet can offer it as the suggestion. */
+  ibc:     number
 }
 
 /**
@@ -146,7 +168,11 @@ export function pendingSS(
     if (dueKey > asOfKey) continue          // not payable yet
 
     const [y, m]  = period.split('-').map(Number)
-    const accrued = accruedIn(db[period] as MonthData, m, deductions, getSMMLV(y)).ss
+    // The frozen figure wins over the live one. The live accrual moves whenever the
+    // period's TRM or income is corrected, and a period that has been paid must not
+    // reopen because the dollar moved afterwards.
+    const derived = accruedIn(db[period] as MonthData, m, deductions, getSMMLV(y))
+    const accrued = frozenAccrual(db, 'ss', period) ?? derived.ss
     if (accrued <= 0) continue
 
     const settled = settledFor(db, 'ss', period)
@@ -156,7 +182,7 @@ export function pendingSS(
     // and the strip never clears.
     if (pending <= 1000) continue
 
-    out.push({ kind: 'ss', period, dueKey, accrued, settled, pending })
+    out.push({ kind: 'ss', period, dueKey, accrued, settled, pending, ibc: derived.ibc })
   }
 
   return out

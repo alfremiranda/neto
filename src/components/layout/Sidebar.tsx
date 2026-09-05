@@ -1,4 +1,4 @@
-import { CalendarDays, LayoutDashboard, WalletCards } from 'lucide-react'
+import { CalendarDays, LayoutDashboard, WalletCards, Landmark } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useUIStore, isSectionActive } from '@/store/uiStore'
 import {
@@ -12,6 +12,7 @@ import type { ViewType } from '@/types'
 const NAV_ITEMS: Array<{ id: ViewType; label: string; mobileLabel: string; Icon: typeof CalendarDays }> = [
   { id: 'dashboard', label: 'Resumen',       mobileLabel: 'Resumen',       Icon: LayoutDashboard },
   { id: 'mes',     label: 'Mes',           mobileLabel: 'Mes',           Icon: CalendarDays },
+  { id: 'tributarias', label: 'Obligaciones', mobileLabel: 'Oblig.', Icon: Landmark },
   { id: 'cuentas', label: 'Cuentas',       mobileLabel: 'Cuentas',       Icon: WalletCards },
 ]
 

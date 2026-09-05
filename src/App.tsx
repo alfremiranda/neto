@@ -9,6 +9,7 @@ import { DashboardView } from '@/components/views/DashboardView'
 import { ConfigView } from '@/components/views/ConfigView'
 import { ProfileView } from '@/components/views/ProfileView'
 import { CuentasView, CuentaView } from '@/components/views/CuentasView'
+import { TributariasView } from '@/components/views/TributariasView'
 import { Toast } from '@/components/ui/Toast'
 import { AccountEditSheet } from '@/components/sheets/AccountEditSheet'
 import { TransferSheet } from '@/components/sheets/TransferSheet'
@@ -190,6 +191,7 @@ export default function App() {
                 {view === 'dashboard' && <DashboardView />}
                 {view === 'cuentas'   && <CuentasView />}
                 {view === 'cuenta'    && <CuentaView />}
+                {view === 'tributarias' && <TributariasView />}
                 {view === 'config'    && <ConfigView />}
                 {view === 'profile'   && <ProfileView />}
               </div>

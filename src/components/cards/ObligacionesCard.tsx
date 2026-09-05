@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/Badge'
 import { useUIStore } from '@/store/uiStore'
 import { settledFor, retencionReserve, pendingSS, type PendingObligation } from '@/lib/obligations'
-import type { Settles } from '@/types'
+import type { Settles, FinanceDB, MonthData } from '@/types'
 
 const MONTH_LONG = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
                     'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
@@ -270,6 +270,22 @@ function GroupBox({ label, children, action, badge, trmNote, ibcRow }: { label: 
  */
 
 /**
+ * The settling movement for a period, wherever month it was filed in — a payment for July
+ * lives in August. Returns the most recent one when a period was paid more than once.
+ */
+function findSettlement(db: FinanceDB, kind: 'ss' | 'retencion', period: string):
+  { id: number; monthKey: string } | null {
+  let found: { id: number; monthKey: string } | null = null
+  for (const key of Object.keys(db).filter(k => k !== '_settings').sort()) {
+    const month = db[key] as MonthData | undefined
+    for (const e of month?.egresos || []) {
+      if (e.settles?.kind === kind && e.settles.period === period) found = { id: e.id, monthKey: key }
+    }
+  }
+  return found
+}
+
+/**
  * SS accrued in earlier months and still unpaid.
  *
  * It is a ROW, not a chip. The whole action-chip family means "narrow this list" — a chip
@@ -328,6 +344,7 @@ function OverdueBlock({ pending, trm, showUSD }: {
                 onClick={() => openSettlement({
                   desc: label, category: 'impuestos', currency: 'COP',
                   settles: { kind: 'ss', period: p.period }, accrued: p.pending,
+                  suggestedIbc: p.ibc,
                 })}
               >
                 Pagar
@@ -352,15 +369,26 @@ export function isOutstanding(accrued: number, paid: number): boolean {
  * `fg/provision`, so a green badge sitting beside money reads as an amount set aside
  * rather than as a state. That green is already spent on one meaning in this app.
  */
-function StateBadge({ accrued, paid }: { accrued: number; paid: number }) {
+function StateBadge({ accrued, paid, onOpen }: {
+  accrued: number; paid: number; onOpen?: () => void
+}) {
   if (accrued <= 0) return null
-  return isOutstanding(accrued, paid)
-    ? <Badge tone="warning">Pendiente</Badge>
+  if (isOutstanding(accrued, paid)) return <Badge tone="warning">Pendiente</Badge>
+
+  // Paid is a way IN, not just a label. Until now a settled payment was reachable only
+  // through the account ledger, and only if an account had been chosen — which is
+  // optional, so a payment recorded without one existed nowhere the user could see it.
+  return onOpen
+    ? (
+      <button type="button" onClick={onOpen} className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]">
+        <Badge tone="neutral">Pagado · ver</Badge>
+      </button>
+    )
     : <Badge tone="neutral">Pagado</Badge>
 }
 
-function SettleRow({ label, settles, accrued, paid }: {
-  label: string; settles: Settles; accrued: number; paid: number
+function SettleRow({ label, settles, accrued, paid, suggestedIbc }: {
+  label: string; settles: Settles; accrued: number; paid: number; suggestedIbc?: number
 }) {
   const openSettlement = useUIStore(s => s.openSettlement)
   // Settled groups show no row at all: the header's badge already says so, and a row
@@ -374,7 +402,9 @@ function SettleRow({ label, settles, accrued, paid }: {
         variant="outline"
         className="w-full"
         onClick={() => openSettlement({
-          desc: label, category: 'impuestos', currency: 'COP', settles, accrued: accrued - paid,
+          desc: label, category: 'impuestos', currency: 'COP', settles,
+          accrued: accrued - paid,
+          suggestedIbc: settles.kind === 'ss' ? suggestedIbc : undefined,
         })}
       >
         Registrar pago
@@ -386,7 +416,8 @@ function SettleRow({ label, settles, accrued, paid }: {
 // ─── Main card ────────────────────────────────────────────────────────────────
 
 export function ObligacionesCard() {
-  const { getCurrentMonth, getSMMLV, curKey, db } = useFinanceStore()
+  const { getCurrentMonth, getSMMLV, curKey, db, setCurKey } = useFinanceStore()
+  const { openSheet, setEditingEgreso } = useUIStore()
   const deductions = useSettingsStore(s => s.deductions)
   const { trm: liveTRM } = useLiveTRM()
   const month = getCurrentMonth()
@@ -407,6 +438,18 @@ export function ObligacionesCard() {
   const retencionYearAccrued = retencionReserve(db, y, deductions, getSMMLV).accrued
   // Earlier months, oldest first — a skipped month has to surface ABOVE the recent one.
   const overdue = pendingSS(db, deductions, getSMMLV, curKey).filter(p => p.period !== curKey)
+  /**
+   * Open the payment that settled a period, in the month it was filed in — which is not
+   * the month being looked at. Moving there first is what makes the edit sheet find it.
+   */
+  function openPayment(kind: 'ss' | 'retencion', period: string) {
+    const hit = findSettlement(db, kind, period)
+    if (!hit) return
+    if (hit.monthKey !== curKey) setCurKey(hit.monthKey)
+    setEditingEgreso(hit.id)
+    openSheet('egreso')
+  }
+
   const ssPaid        = settledFor(db, 'ss', curKey)
   const retencionPaid = settledFor(db, 'retencion', String(y))
   const totalOblig = res.ssTotal + retefuente.reduce((a, i) => a + i.amount, 0)
@@ -443,7 +486,7 @@ export function ObligacionesCard() {
           <GroupBox
             label="Seguridad Social"
             action={<SSScheduleDialog year={y} month={m} />}
-            badge={<StateBadge accrued={res.ssTotal} paid={ssPaid} />}
+            badge={<StateBadge accrued={res.ssTotal} paid={ssPaid} onOpen={() => openPayment('ss', curKey)} />}
             trmNote={showUSD ? trmNote : undefined}
             ibcRow={
               <div className="border border-[var(--border)] rounded-xl px-2 py-1 flex items-center gap-1.5">
@@ -485,6 +528,7 @@ export function ObligacionesCard() {
               settles={{ kind: 'ss', period: curKey }}
               accrued={res.ssTotal}
               paid={ssPaid}
+              suggestedIbc={ibc}
             />
           </GroupBox>
         )}
@@ -493,7 +537,7 @@ export function ObligacionesCard() {
         {retefuente.length > 0 && (
           <GroupBox
             label="Retenciones"
-            badge={<StateBadge accrued={retencionYearAccrued} paid={retencionPaid} />}
+            badge={<StateBadge accrued={retencionYearAccrued} paid={retencionPaid} onOpen={() => openPayment('retencion', String(y))} />}
             trmNote={showUSD ? trmNote : undefined}
           >
             {retefuente.map(item => (

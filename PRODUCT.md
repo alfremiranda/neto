@@ -107,6 +107,17 @@ Cuatro tipos, cada uno con su semántica:
 - **FSS (Fondo de Solidaridad)** se inyecta automáticamente cuando el IBC ≥ 4 SMMLV, con su tabla de rangos y referencia legal (Ley 100 de 1993, art. 25).
 - **Calendario de pago de SS**: tabla de los 15 rangos de últimos dígitos de cédula/NIT con las **fechas hábiles calculadas** del mes de pago.
 
+**El IBC es un SUGERIDO.** La app lo deriva del 40% de los ingresos por servicios (o del piso
+SMMLV), pero la base realmente facturada puede diferir — la TRM del día en que aterrizó el
+dinero, costos transaccionales y transfronterizos, una corrección en la planilla. Al registrar
+el pago se confirma si fue sobre el sugerido o sobre otro, y si es otro se declara cuál: la SS
+se recalcula sobre esa base (FSS incluido) y el pago guarda con qué IBC se hizo.
+
+**Página de Obligaciones.** Vista propia con la relación anual: la seguridad social mes a mes
+—causada, pagada, sobre qué IBC, y su estado— y la retención del año como saldo corrido:
+causado, reservado, pagado y faltante. El mes responde "qué debo ahora"; esta página responde
+"estoy al día", que no se puede leer un mes a la vez.
+
 **Causación vs. pago.** Las obligaciones se **causan** en el mes que las genera y se **pagan**
 en otro: la SS de julio se paga en agosto (mes vencido), la retención se paga a la DIAN año
 vencido. El pago se registra con **"Registrar pago"** desde la propia tarjeta de Obligaciones
