@@ -43,6 +43,13 @@ interface UIState {
   egresoPrefill: EgresoPrefill | null
   /** Which account the 'cuenta' detail view is showing. */
   detailAccountId: string | null
+  /**
+   * A new build is installed and waiting. With `registerType: 'prompt'` the new worker
+   * never takes over on its own — something has to tell it to — so this is what turns a
+   * waiting worker into an offer the user can accept.
+   */
+  updateReady: boolean
+  applyUpdate: (() => void) | null
   sidebarCollapsed: boolean
 
   setView: (v: ViewType) => void
@@ -58,6 +65,7 @@ interface UIState {
   setNewAccountType: (t: 'savings' | null) => void
   openSettlement: (p: EgresoPrefill) => void
   openAccount: (id: string) => void
+  setUpdateReady: (apply: () => void) => void
   toggleSidebar: () => void
 }
 
@@ -88,6 +96,8 @@ export const useUIStore = create<UIState>()(persist((set) => ({
   newAccountType: null,
   egresoPrefill: null,
   detailAccountId: null,
+  updateReady: false,
+  applyUpdate: null,
   sidebarCollapsed: false,
 
   setView: (view) => set(s => ({ prevView: s.view, view })),
@@ -122,6 +132,8 @@ export const useUIStore = create<UIState>()(persist((set) => ({
   openSettlement: (p) => set({ egresoPrefill: p, editingEgresoId: null, activeSheet: 'egreso' }),
 
   openAccount: (id) => set(s => ({ detailAccountId: id, prevView: s.view, view: 'cuenta' })),
+
+  setUpdateReady: (apply) => set({ updateReady: true, applyUpdate: apply }),
   toggleSidebar: () => set(s => ({ sidebarCollapsed: !s.sidebarCollapsed })),
 }), {
   name: 'neto-ui',

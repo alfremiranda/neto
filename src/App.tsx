@@ -8,6 +8,7 @@ import { MonthNav } from '@/components/layout/MonthNav'
 import { DashboardView } from '@/components/views/DashboardView'
 import { ConfigView } from '@/components/views/ConfigView'
 import { ProfileView } from '@/components/views/ProfileView'
+import { UpdatePrompt } from '@/components/UpdatePrompt'
 import { CuentasView, CuentaView } from '@/components/views/CuentasView'
 import { TributariasView } from '@/components/views/TributariasView'
 import { Toast } from '@/components/ui/Toast'
@@ -209,6 +210,7 @@ export default function App() {
         <TransferSheet />
         <NotificationsSheet />
         <Toast />
+        <UpdatePrompt />
       </SidebarProvider>
     </TooltipProvider>
   )

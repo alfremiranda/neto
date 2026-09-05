@@ -107,6 +107,11 @@ Cuatro tipos, cada uno con su semántica:
 - **FSS (Fondo de Solidaridad)** se inyecta automáticamente cuando el IBC ≥ 4 SMMLV, con su tabla de rangos y referencia legal (Ley 100 de 1993, art. 25).
 - **Calendario de pago de SS**: tabla de los 15 rangos de últimos dígitos de cédula/NIT con las **fechas hábiles calculadas** del mes de pago.
 
+**Actualizaciones.** Una versión nueva no se aplica sola: se instala en segundo plano y la app
+ofrece **"Hay una versión nueva · Actualizar"**. La recarga ocurre solo cuando el usuario acepta,
+a propósito — una recarga automática competía con el callback de OAuth y rompía el login en
+móvil.
+
 **El IBC es un SUGERIDO.** La app lo deriva del 40% de los ingresos por servicios (o del piso
 SMMLV), pero la base realmente facturada puede diferir — la TRM del día en que aterrizó el
 dinero, costos transaccionales y transfronterizos, una corrección en la planilla. Al registrar
