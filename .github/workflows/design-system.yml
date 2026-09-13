@@ -9,12 +9,15 @@
 # and cannot run in CI at all (20-roadmap.md §0.4). Only R1-R4 live here.
 name: Design system
 
+# `public/calculadoras/**` is in the paths because landing-assets.mjs now hashes the assets
+# those pages reference, not only the landing's — so editing one of them can drift the check.
+# A trigger that cannot fire is the same as no check at all.
 on:
   push:
     branches: [main]
-    paths: ['src/**', 'design-system/**', '.storybook/**', 'public/landing/**', 'scripts/visual-regression.mjs', 'scripts/motion-rules.mjs', 'scripts/landing-assets.mjs', 'test/visual-baseline/**', '.github/workflows/design-system.yml']
+    paths: ['src/**', 'design-system/**', '.storybook/**', 'public/landing/**', 'public/calculadoras/**', 'scripts/visual-regression.mjs', 'scripts/motion-rules.mjs', 'scripts/landing-assets.mjs', 'test/visual-baseline/**', '.github/workflows/design-system.yml']
   pull_request:
-    paths: ['src/**', 'design-system/**', '.storybook/**', 'public/landing/**', 'scripts/visual-regression.mjs', 'scripts/motion-rules.mjs', 'scripts/landing-assets.mjs', 'test/visual-baseline/**', '.github/workflows/design-system.yml']
+    paths: ['src/**', 'design-system/**', '.storybook/**', 'public/landing/**', 'public/calculadoras/**', 'scripts/visual-regression.mjs', 'scripts/motion-rules.mjs', 'scripts/landing-assets.mjs', 'test/visual-baseline/**', '.github/workflows/design-system.yml']
   workflow_dispatch:
 
 permissions:
