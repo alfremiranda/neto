@@ -66,8 +66,10 @@ chequeo que lo resuelve es mirar el contenido.
 
 ## NEEDS
 
-**Para Alfredo, lo único abierto:** falta **GitHub** como proveedor en la prueba de login. Google
-quedó verificado sin querer —el parpadeo del consentimiento sólo es visible después de pasar el
-gate de login— en Chrome móvil, Safari móvil y la PWA instalada.
+~~**Para Alfredo, lo único abierto:** falta **GitHub** como proveedor en la prueba de login.~~
+**CERRADO el 13-sep:** Alfredo probó GitHub y funcionó. Google ya había quedado verificado sin
+querer —el parpadeo del consentimiento sólo es visible después de pasar el gate de login— en
+Chrome móvil, Safari móvil y la PWA instalada. **El `DONE WHEN` de la migración está completo:
+los dos proveedores, las tres superficies.**
 
 Y `neto-dev` sigue **pausado**: el login de desarrollo no funciona hoy.
