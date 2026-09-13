@@ -51,6 +51,7 @@ const BASE = `http://localhost:${PORT}/panel/?preview=demo`
  *            { tabs: true }  the Mes view's tab bar (so the tab that is open is in frame, and the
  *                            shot does not repeat the KPI strip the first one already shows),
  *            { card: name }  the card with this heading.
+ *  `account` — open this account's detail from the Cuentas grid before framing.
  *  `width` — viewport width for this shot (default 1280). A view with little content leaves the
  *            bottom half of a 3:2 frame empty at desktop width; a narrower window reflows it
  *            into more rows, so it fills the frame and its UI reads larger in the box.
@@ -65,10 +66,12 @@ const SHOTS = [
     label: 'obligaciones tributarias del mes' },
   { name: 'feature-obligaciones', view: 'tributarias', start: 'top',
     label: 'página de Obligaciones' },
-  // 960: three columns and three rows of accounts — 93% of the frame. At 1280 it was two rows in
-  // the top 46%.
-  { name: 'feature-cuentas', view: 'cuentas', start: 'top', width: 960,
-    label: 'cuentas' },
+  // One account opened, not the grid. The grid of six fills 46% of a 3:2 frame at 1280, and any
+  // window narrow enough to stack it more rows truncates the account names. The savings account's
+  // detail fills the frame and shows what the feature copy promises: its history month by month,
+  // and transfers (to the CDT, to the DIAN reserve, from dollars) that do not count as spending.
+  { name: 'feature-cuentas', view: 'cuentas', account: 'Cuenta de ahorros', start: 'top',
+    label: 'detalle de la cuenta de ahorros' },
   { name: 'feature-analitica', view: 'dashboard', start: { card: 'Resumen anual' },
     label: 'resumen anual' },
   // From the top at 1180: the month's figures, the tab bar and the transfers fill 96% of the frame.
@@ -128,6 +131,11 @@ for (const shot of SHOTS) {
     btn?.click()
   }, { mes: 'mes', dashboard: 'resumen', cuentas: 'cuentas', tributarias: 'obligaciones' }[shot.view])
   await page.waitForTimeout(500)
+
+  if (shot.account) {
+    await page.locator('main').getByText(shot.account).first().click()
+    await page.waitForTimeout(700)
+  }
 
   if (shot.tab) {
     await page.evaluate(t => {

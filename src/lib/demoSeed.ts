@@ -42,7 +42,10 @@ const ACCOUNTS: Account[] = [
     rate: 0, startingBalance: 1800, favorite: true, color: 'emerald' },
   { id: 'ahorros', label: 'Cuenta de ahorros', currency: 'COP', type: 'account', number: '8032',
     rate: 0, startingBalance: 3_200_000, favorite: true, color: 'blue' },
-  { id: 'efectivo', label: 'Efectivo', currency: 'COP', type: 'cash', number: '',
+  // The id must be the app's own system cash account, 'Efectivo' (TRANSFER_ACCOUNTS). The store
+  // backfills that locked account whenever it is missing, so a demo cash account under any other
+  // id (it was the lowercase one) showed up as a second "Efectivo" at $0 beside this one.
+  { id: 'Efectivo', label: 'Efectivo', currency: 'COP', type: 'cash', number: '',
     rate: 0, startingBalance: 240_000, locked: true, color: 'amber' },
   { id: 'tarjeta', label: 'Tarjeta de crédito', currency: 'COP', type: 'credit', number: '6621',
     rate: 0, startingBalance: 0, creditLimit: 4_500_000, cutoffDay: 15, dueDay: 5, color: 'rose' },
@@ -59,7 +62,7 @@ const FIXED: { desc: string; category: string; base: number; spread: number; acc
   { desc: 'Mercado',             category: 'alimentacion',    base: 760_000,   spread: 130_000, account: 'tarjeta',  recurring: false },
   { desc: 'Salud prepagada',     category: 'salud',           base: 318_000,   spread: 0,       account: 'ahorros',  recurring: true },
   { desc: 'Internet y celular',  category: 'tecnologia',      base: 168_000,   spread: 0,       account: 'ahorros',  recurring: true },
-  { desc: 'Transporte',          category: 'movilidad',       base: 275_000,   spread: 70_000,  account: 'efectivo', recurring: false },
+  { desc: 'Transporte',          category: 'movilidad',       base: 275_000,   spread: 70_000,  account: 'Efectivo', recurring: false },
   { desc: 'Streaming',           category: 'entretenimiento', base: 58_000,    spread: 0,       account: 'tarjeta',  recurring: true },
 ]
 
@@ -68,7 +71,7 @@ const OCCASIONAL: Record<number, { desc: string; category: string; amount: numbe
   2:  [{ desc: 'Silla de escritorio', category: 'trabajo',  amount: 1_190_000, account: 'tarjeta' }],
   3:  [{ desc: 'Seguro de vida',      category: 'seguros',  amount: 486_000,   account: 'ahorros' }],
   5:  [{ desc: 'Viaje a Cartagena',   category: 'viajes',   amount: 1_840_000, account: 'tarjeta' }],
-  6:  [{ desc: 'Regalo de grado',     category: 'familia',  amount: 420_000,   account: 'efectivo' }],
+  6:  [{ desc: 'Regalo de grado',     category: 'familia',  amount: 420_000,   account: 'Efectivo' }],
   7:  [{ desc: 'Monitor y teclado',   category: 'trabajo',  amount: 2_240_000, account: 'tarjeta' }],
   8:  [{ desc: 'Curso de motion',     category: 'trabajo',  amount: 690_000,   account: 'ahorros' }],
 }
@@ -85,6 +88,7 @@ export function demoDB(now = new Date()): FinanceDB {
   const lastMonth = now.getMonth() + 1
   const db: FinanceDB = {}
   let entryId = 1000
+  let cardSpendLastMonth = 0
 
   for (let m = 1; m <= lastMonth; m++) {
     const key = `${year}-${String(m).padStart(2, '0')}`
@@ -140,7 +144,25 @@ export function demoDB(now = new Date()): FinanceDB {
       })
     }
 
+    // Cash out of savings to cover what the month spends in cash, rounded up to the next 50.000.
+    // Without it the cash account only ever paid — transport every month, a gift in June — and
+    // closed the year at −$2.083.000, a negative wallet on the Cuentas capture.
+    const cashSpend = egresos.filter(e => e.account === 'Efectivo').reduce((sum, e) => sum + e.amount, 0)
+    const cashOut = Math.ceil((cashSpend + 20_000) / 50_000) * 50_000
+
+    // The card is paid in full on its due day (the 5th) for what it charged the month before.
+    // Without it every purchase stayed owed: the card closed September at −$12.927.000, 287% of
+    // its $4.500.000 limit, on the account detail a landing capture shows.
+    const cardPayment = cardSpendLastMonth
+    cardSpendLastMonth = egresos.filter(e => e.account === 'tarjeta').reduce((sum, e) => sum + e.amount, 0)
+
     const transfers: Transfer[] = [
+      { id: entryId++, date: day(4), from: 'ahorros', to: 'Efectivo', amount: cashOut,
+        fromCurrency: 'COP', toCurrency: 'COP', trm: null, toAmount: cashOut, updatedAt: ts },
+      ...(cardPayment > 0
+        ? [{ id: entryId++, date: day(5), from: 'ahorros', to: 'tarjeta', amount: cardPayment,
+            fromCurrency: 'COP' as const, toCurrency: 'COP' as const, trm: null, toAmount: cardPayment, updatedAt: ts }]
+        : []),
       // Bringing dollars home. A PROPORTION of what came in that month, not a flat figure:
       // with a fixed 3.000 the surplus piled up and the account closed the year at USD
       // 24.400, which nobody leaves sitting in an operating account. The declared
