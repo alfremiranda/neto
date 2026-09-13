@@ -66,6 +66,18 @@ política de privacidad (`/privacidad.html`), las calculadoras SEO (`/calculador
 **sistema de diseño en vivo** (`/storybook/`) — cada componente con todos sus estados, en claro
 y oscuro, en móvil y escritorio. Se puede abrir desde cualquier dispositivo sin tener el repo.
 
+**SEO y GEO de las páginas públicas** (2026-09-12):
+- **Datos estructurados:** la home declara `Organization`, `WebSite` y `SoftwareApplication`
+  (app financiera web, gratis, es-CO); la calculadora, `WebApplication`.
+- **FAQ:** el schema `FAQPage` de cada página lo genera `scripts/landing-assets.mjs` a partir de las
+  preguntas visibles, y `--check` falla si no coinciden.
+- **Imágenes para compartir:** 1200×630 (`/landing/og/`), generadas por `scripts/landing-og.mjs`
+  con las tarjetas reales del landing.
+- **`/llms.txt`:** resume para modelos de lenguaje qué es Neto, las reglas de 2026 que aplica y las
+  páginas clave. Se actualiza cuando cambien las cifras legales, junto con la calculadora.
+- **Contenido indexable:** el H1 nombra la categoría y el país. Las respuestas por perfil y los seis
+  tabs de funciones están como texto en el HTML, aunque la interfaz muestre uno a la vez.
+
 **Navegación:** sidebar colapsable (desktop) / bottom tab bar (mobile). Header con chip de TRM en vivo, campana de notificaciones, toggle de tema y menú de cuenta. Navegador de mes sticky en la vista Mes. FAB con speed-dial en mobile; popover “Agregar” en desktop.
 
 ---

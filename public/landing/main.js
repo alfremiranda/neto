@@ -324,7 +324,10 @@
       Array.prototype.forEach.call(options, function (o) {
         o.setAttribute('aria-pressed', String(o === btn))
       })
-      answer.textContent = btn.getAttribute('data-answer')
+      // The answer's text lives in the page (see [data-router-answers]) so crawlers and language
+      // models read all three; the live paragraph shows the chosen one.
+      var source = document.querySelector('[data-answer-for="' + btn.getAttribute('data-profile') + '"] span')
+      if (source) answer.textContent = source.textContent
 
       // The pill stack shows what the profile actually does: which tabs of the Mes view
       // exist for you (PRODUCT.md §3 — Tributarias and Provisiones are conditional). Three

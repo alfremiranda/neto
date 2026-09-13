@@ -331,6 +331,13 @@ html.dark [data-icon='moon'] { display: none; }
 }
 .hero__copy { display: flex; flex-direction: column; gap: var(--spacing-24); align-items: flex-start; }
 .hero__copy .lead { max-width: 54ch; }
+/* The eyebrow sits inside the h1 (for what the h1 says, not how it looks): a block of its own
+   above the headline, the 24px the column gap used to give it, and its own type — letter-spacing,
+   weight and size all come from .ts-label-micro, so the headline's -1px tracking does not leak in. */
+.hero__title .eyebrow { display: block; margin-bottom: var(--spacing-24); }
+/* Inline, not a flex item: when the line wraps on a phone the dot stays with the first word
+   instead of hanging on its own at the left of a centred two-line block. */
+.hero__title .eyebrow svg { display: inline-block; vertical-align: middle; margin-inline-end: var(--spacing-6); }
 
 /* The hero bloom. --marketing-accent-glow was coined to go with blur-lg/blur-xl, and this
    is the pair in use: a decorative cyan that is explicitly allowed on marketing surfaces
@@ -584,6 +591,12 @@ html.dark [data-icon='moon'] { display: none; }
 
   .router__media { margin-top: var(--spacing-24); }
 }
+
+/* Three static answers for readers without JS (and for crawlers); with JS they hide and the live
+   paragraph shows the chosen one. The head script removes .no-js before first paint. */
+html:not(.no-js) .router__answers { display: none; }
+.no-js [data-router-answer] { display: none; }
+.router__answers { display: grid; gap: var(--spacing-12); }
 
 .router__answer {
   border-inline-start: var(--border-width-strong) solid var(--marketing-accent-line);
@@ -1240,6 +1253,8 @@ html.dark [data-icon='moon'] { display: none; }
 }
 .faq details[open] summary svg { transform: rotate(45deg); }
 .faq p { padding-bottom: var(--spacing-20); color: var(--fg-subtle); max-width: 68ch; }
+.faq p a { color: var(--fg-brand); text-decoration: underline; text-underline-offset: 2px; }
+.faq p a:hover { color: var(--fg-default); }
 
 /* ── §11bis. Final CTA — photograph under an overlay ───────────────────────────────────
    The overlay is the contract, not the decoration: it is what lets display-sized text sit on

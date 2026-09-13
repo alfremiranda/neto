@@ -10,27 +10,30 @@
     <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#020617" media="(prefers-color-scheme: dark)" />
 
-    <title>Neto — De lo que facturé este mes, ¿cuánto es realmente mío?</title>
+    <title>Neto — Planeador financiero para independientes en Colombia</title>
     <meta
       name="description"
-      content="Planeador financiero para independientes colombianos que facturan en dólares. Calcula tu IBC, seguridad social, retención y provisiones, y te dice cuánto de lo que entró es realmente tuyo. Gratis y funciona sin conexión."
+      content="Planeador financiero para independientes en Colombia: calcula tu seguridad social, tu reserva para la DIAN y tus prestaciones, en pesos. Gratis."
     />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Neto" />
     <meta property="og:locale" content="es_CO" />
-    <meta property="og:title" content="Neto — ¿cuánto de lo que facturaste es realmente tuyo?" />
-    <meta property="og:description" content="IBC, seguridad social, retención y provisiones calculadas cada mes. Para independientes que facturan en USD y deben en COP." />
+    <meta property="og:title" content="Neto — De lo que facturé este mes, ¿cuánto es realmente mío?" />
+    <meta property="og:description" content="Planeador financiero para independientes en Colombia: seguridad social, reserva para la DIAN y prestaciones, en pesos aunque factures en dólares." />
     <meta property="og:url" content="https://netofinanzas.app/" />
-    <meta property="og:image" content="https://netofinanzas.app/icon-512.png" />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content="https://netofinanzas.app/landing/og/neto.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Neto: de lo que facturé este mes, ¿cuánto es realmente mío? Un mes de ejemplo repartido entre obligaciones, provisiones, gastos y neto libre." />
+    <meta name="twitter:card" content="summary_large_image" />
 
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
     <link rel="preload" as="font" type="font/woff2" href="/landing/fonts/rethink-sans-latin-wght-normal.woff2" crossorigin />
     <link rel="stylesheet" href="/landing/tokens.css?v=28ddf654" />
-    <link rel="stylesheet" href="/landing/styles.css?v=3939c5f1" />
+    <link rel="stylesheet" href="/landing/styles.css?v=37585180" />
 
     <!-- With JS off there is no observer to widen the bar, so it stays at the width: 0 the
          animation needs. A <noscript> stylesheet is the only rule that fires in exactly
@@ -100,12 +103,14 @@
       <section class="wrap hero">
         <div class="hero__grid">
           <div class="hero__copy">
-            <p class="eyebrow ts-label-micro" data-reveal>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="6" /></svg>
-              Para independientes en Colombia
-            </p>
-
-            <h1 class="display-xl" data-reveal>
+            <!-- The eyebrow lives INSIDE the h1. The headline is a hook with no category and no
+                 country in it, and the h1 is the strongest on-page signal a search engine and a
+                 language model read for "what is this page". Same look as before. -->
+            <h1 class="display-xl hero__title" data-reveal>
+              <span class="eyebrow ts-label-micro">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="6" /></svg>
+                Planeador financiero para independientes en Colombia
+              </span>
               De lo que facturé este mes, <em style="font-style: normal; color: var(--fg-net)">¿cuánto es realmente mío?</em>
             </h1>
 
@@ -197,8 +202,7 @@
               <span id="router-label" class="ts-label-micro" hidden>Perfil de trabajo</span>
 
               <button class="router__opt" type="button" aria-pressed="false" data-profile="independiente"
-                data-tabs="ingresos,gastos,movimientos,tributarias,provisiones"
-                data-answer="Todo activo. Neto calcula tu IBC cada mes (40% de tus ingresos por servicios, con el piso del SMMLV y el tope de 25), liquida salud, pensión, ARL y el Fondo de Solidaridad, y provisiona primas, cesantías y vacaciones. La página de Obligaciones te dice si estás al día.">
+                data-tabs="ingresos,gastos,movimientos,tributarias,provisiones">
                 <span class="card__icon router__icon" aria-hidden="true">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="12" x="3" y="4" rx="2" /><path d="M2 20h20" /></svg>
                 </span>
@@ -210,8 +214,7 @@
               </button>
 
               <button class="router__opt" type="button" aria-pressed="false" data-profile="empleado"
-                data-tabs="ingresos,gastos,movimientos"
-                data-answer="Neto se vuelve un gestor de ingresos, gastos y cuentas, y nada más. Sin pestañas de tributarias ni provisiones, sin esos KPIs, sin barra de distribución. Tu empleador ya aporta por ti; la app no te va a mostrar una cuenta que no te toca.">
+                data-tabs="ingresos,gastos,movimientos">
                 <span class="card__icon router__icon" aria-hidden="true">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></svg>
                 </span>
@@ -223,8 +226,7 @@
               </button>
 
               <button class="router__opt" type="button" aria-pressed="false" data-profile="ambos"
-                data-tabs="ingresos,gastos,movimientos,tributarias,provisiones"
-                data-answer="Todo activo, y marcas tu salario como ingreso de tipo «otro» para que no entre a la base de aportes. Así lo que facturas aparte sí liquida seguridad social, y lo que ya te descuentan en nómina no se cuenta dos veces.">
+                data-tabs="ingresos,gastos,movimientos,tributarias,provisiones">
                 <span class="card__icon router__icon" aria-hidden="true">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" /><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65" /><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65" /></svg>
                 </span>
@@ -240,6 +242,15 @@
             <p class="router__answer ts-body-base" data-router-answer aria-live="polite">
               Elige un perfil y te muestro qué cambia.
             </p>
+            <!-- The three answers as real text. They used to live only in data-answer attributes,
+                 which no crawler and no language model reads as content. With JS the page hides
+                 these and shows the chosen one in the live paragraph above; without JS all three
+                 are simply there, and the "choose a profile" prompt is what hides. -->
+            <div class="router__answers" data-router-answers>
+              <p class="router__answer ts-body-base" data-answer-for="independiente"><strong>Independiente.</strong> <span>Todo activo. Neto calcula tu IBC cada mes (40% de tus ingresos por servicios, con el piso del SMMLV y el tope de 25), liquida salud, pensión, ARL y el Fondo de Solidaridad, y provisiona primas, cesantías y vacaciones. La página de Obligaciones te dice si estás al día.</span></p>
+              <p class="router__answer ts-body-base" data-answer-for="empleado"><strong>Empleado.</strong> <span>Neto se vuelve un gestor de ingresos, gastos y cuentas, y nada más. Sin pestañas de tributarias ni provisiones, sin esos KPIs, sin barra de distribución. Tu empleador ya aporta por ti; la app no te va a mostrar una cuenta que no te toca.</span></p>
+              <p class="router__answer ts-body-base" data-answer-for="ambos"><strong>Ambos.</strong> <span>Todo activo, y marcas tu salario como ingreso de tipo «otro» para que no entre a la base de aportes. Así lo que facturas aparte sí liquida seguridad social, y lo que ya te descuentan en nómina no se cuenta dos veces.</span></p>
+            </div>
 
             <!-- The media. An <img> drops in here the day there is a real capture; until
                  then the stack IS the visual, and it carries the actual answer rather than
@@ -592,6 +603,26 @@
 
           <div class="faq" data-reveal>
             <details>
+              <summary class="ts-body-base-emphasis">¿Qué es Neto?<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg></summary>
+              <p class="ts-body-small">
+                Neto es un planeador financiero para trabajadores independientes en Colombia. Con lo
+                que facturas cada mes calcula tu IBC, tu seguridad social (salud, pensión y ARL), la
+                reserva para la retención de la DIAN y tus prestaciones, y te dice cuánto de lo que
+                entró es realmente tuyo. Funciona en pesos aunque factures en dólares, sin conexión, y
+                hoy es gratis.
+              </p>
+            </details>
+            <details>
+              <summary class="ts-body-base-emphasis">¿Cuánto paga de seguridad social un independiente en Colombia?<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg></summary>
+              <p class="ts-body-small">
+                En 2026 cotizas sobre un IBC igual al 40% de lo que facturas por prestación de
+                servicios, nunca menor a un salario mínimo ($1.750.905) ni mayor a 25. Sobre ese IBC
+                pagas salud 12,5%, pensión 16% y ARL según tu nivel de riesgo (0,522% en riesgo I), y
+                desde 4 salarios mínimos también el Fondo de Solidaridad Pensional. Si facturas
+                $5.000.000 al mes con riesgo I, son $580.440. Calcula el tuyo en la <a href="/calculadoras/seguridad-social-independientes/">calculadora de seguridad social</a>.
+              </p>
+            </details>
+            <details>
               <summary class="ts-body-base-emphasis">¿Cuánto cuesta?<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg></summary>
               <p class="ts-body-small">
                 Hoy nada. Neto es gratis mientras construimos Pro, y para empezar no pide tarjeta.
@@ -723,16 +754,89 @@
       </div>
     </footer>
 
-    <script src="/landing/main.js?v=fbfac43e" defer></script>
+    <script src="/landing/main.js?v=18080e8d" defer></script>
 
-    <script type="application/ld+json">
+    <script type="application/ld+json" data-schema="entity">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://netofinanzas.app/#organization",
+            "name": "Neto",
+            "url": "https://netofinanzas.app/",
+            "logo": "https://netofinanzas.app/icon-512.png",
+            "email": "privacidad@netofinanzas.app",
+            "areaServed": {
+              "@type": "Country",
+              "name": "Colombia"
+            }
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://netofinanzas.app/#website",
+            "name": "Neto",
+            "url": "https://netofinanzas.app/",
+            "inLanguage": "es-CO",
+            "publisher": {
+              "@id": "https://netofinanzas.app/#organization"
+            }
+          },
+          {
+            "@type": "SoftwareApplication",
+            "@id": "https://netofinanzas.app/#app",
+            "name": "Neto",
+            "url": "https://netofinanzas.app/",
+            "description": "Planeador financiero para trabajadores independientes en Colombia: calcula cada mes el IBC, la seguridad social (salud, pensión y ARL), la reserva para la retención de la DIAN y las prestaciones, en pesos aunque se facture en dólares.",
+            "applicationCategory": "FinanceApplication",
+            "operatingSystem": "Web (aplicación instalable)",
+            "inLanguage": "es-CO",
+            "isAccessibleForFree": true,
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "COP"
+            },
+            "featureList": [
+              "Cálculo del IBC y de la seguridad social de independientes",
+              "Reserva para la retención en la fuente de la DIAN",
+              "Provisión de primas, cesantías y vacaciones",
+              "Ingresos en dólares y pesos con TRM",
+              "Cuentas, tarjetas de crédito y CDT",
+              "Funciona sin conexión"
+            ],
+            "publisher": {
+              "@id": "https://netofinanzas.app/#organization"
+            },
+            "dateModified": "2026-09-12"
+          }
+        ]
+      }
+    </script>
+    <script type="application/ld+json" data-schema="faq">
       {
         "@context": "https://schema.org",
         "@type": "FAQPage",
         "mainEntity": [
           {
             "@type": "Question",
-            "name": "¿Cuánto cuesta Neto?",
+            "name": "¿Qué es Neto?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Neto es un planeador financiero para trabajadores independientes en Colombia. Con lo que facturas cada mes calcula tu IBC, tu seguridad social (salud, pensión y ARL), la reserva para la retención de la DIAN y tus prestaciones, y te dice cuánto de lo que entró es realmente tuyo. Funciona en pesos aunque factures en dólares, sin conexión, y hoy es gratis."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Cuánto paga de seguridad social un independiente en Colombia?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "En 2026 cotizas sobre un IBC igual al 40% de lo que facturas por prestación de servicios, nunca menor a un salario mínimo ($1.750.905) ni mayor a 25. Sobre ese IBC pagas salud 12,5%, pensión 16% y ARL según tu nivel de riesgo (0,522% en riesgo I), y desde 4 salarios mínimos también el Fondo de Solidaridad Pensional. Si facturas $5.000.000 al mes con riesgo I, son $580.440. Calcula el tuyo en la calculadora de seguridad social."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Cuánto cuesta?",
             "acceptedAnswer": {
               "@type": "Answer",
               "text": "Hoy nada. Neto es gratis mientras construimos Pro, y para empezar no pide tarjeta."
@@ -743,39 +847,39 @@
             "name": "¿Neto reemplaza a mi contador?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "No. Neto es una herramienta de planeación: indica qué se está causando y qué deberías estar reservando, con las fórmulas y referencias legales a la vista. No constituye asesoría tributaria ni contable y no presenta nada ante la DIAN."
+              "text": "No. Neto es una herramienta de planeación: te dice qué se está causando y qué deberías estar reservando, con las fórmulas y las referencias legales a la vista. No constituye asesoría tributaria ni contable, y no presenta nada ante la DIAN por ti."
             }
           },
           {
             "@type": "Question",
-            "name": "Soy empleado, ¿me sirve Neto?",
+            "name": "Soy empleado, ¿me sirve?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Sí, como gestor de ingresos, gastos y cuentas. Con el perfil «empleado» la capa tributaria desaparece de la interfaz."
+              "text": "Sí, como gestor de ingresos, gastos y cuentas. Al elegir el perfil «empleado» toda la capa tributaria desaparece de la interfaz: si no te toca, no la ves."
             }
           },
           {
             "@type": "Question",
-            "name": "¿Neto funciona sin internet?",
+            "name": "¿Qué pasa si no tengo internet?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Sí. Neto es una aplicación instalable que funciona completa sin conexión; los datos viven en el dispositivo y se sincronizan fusionando entrada por entrada cuando vuelve la red."
+              "text": "Nada. Neto funciona completo sin conexión — es una aplicación instalable y tus datos viven en tu dispositivo. Cuando vuelves a tener red, sincroniza y fusiona entrada por entrada, sin perder lo que hiciste en ninguno de tus equipos."
             }
           },
           {
             "@type": "Question",
-            "name": "¿Necesito crear una contraseña para usar Neto?",
+            "name": "¿Cómo entro? ¿Necesito crear una contraseña?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "No. El ingreso es con cuenta de Google o de GitHub; Neto nunca ve tu contraseña."
+              "text": "No. Entras con tu cuenta de Google o de GitHub. No hay contraseñas que recordar y Neto nunca ve la tuya."
             }
           },
           {
             "@type": "Question",
-            "name": "¿Puedo borrar mi cuenta y mis datos de Neto?",
+            "name": "¿Puedo borrar mi cuenta y mis datos?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Sí. Se solicita escribiendo a privacidad@netofinanzas.app y se elimina con todo lo asociado."
+              "text": "Sí. Hoy se solicita escribiendo a privacidad@netofinanzas.app y se elimina con todo lo asociado; el botón de autoservicio dentro de la app está en camino."
             }
           },
           {
@@ -783,7 +887,7 @@
             "name": "¿Sirve si facturo en pesos y no en dólares?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Sí. La doble moneda es opcional: se elige moneda principal y secundaria en el onboarding, y el motor de IBC, seguridad social y provisiones funciona igual solo con pesos."
+              "text": "Sí. La doble moneda es opcional: eliges tu moneda principal y la secundaria en el onboarding. Todo el motor de IBC, seguridad social y provisiones funciona igual si solo manejas pesos."
             }
           }
         ]

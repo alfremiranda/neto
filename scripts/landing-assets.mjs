@@ -106,6 +106,47 @@ for (const [rel, files] of Object.entries(PAGES)) {
   }
 }
 
+// ── FAQ structured data, generated from the visible FAQ ───────────────────────────────────
+// Google reads FAQPage markup only when it matches what the page shows. The landing's schema was
+// hand-written and drifted the day its questions were rewritten (4 of 7 answers no longer on the
+// page). So the schema is not written by hand any more: every page with a
+// <script type="application/ld+json" data-schema="faq"> gets it rebuilt from its own <details>
+// inside .faq, and `--check` fails when the two disagree.
+const strip = (html) => html
+  .replace(/<svg[\s\S]*?<\/svg>/g, '')
+  .replace(/<[^>]+>/g, '')
+  .replace(/&nbsp;/g, ' ')
+  .replace(/\s+/g, ' ')
+  .trim()
+
+for (const rel of Object.keys(PAGES)) {
+  const path = join(root, rel)
+  const page = readFileSync(path, 'utf8')
+  const block = page.match(/( *)<script type="application\/ld\+json" data-schema="faq">[\s\S]*?<\/script>/)
+  if (!block) continue
+  const faq = page.match(/<div class="faq"[^>]*>([\s\S]*?)\n {10}<\/div>/)
+  if (!faq) {
+    console.error(`${rel}: has a FAQ schema block but no visible .faq to build it from`)
+    process.exit(1)
+  }
+  const entities = [...faq[1].matchAll(/<details>([\s\S]*?)<\/details>/g)].map(([, d]) => ({
+    '@type': 'Question',
+    name: strip(d.match(/<summary[^>]*>([\s\S]*?)<\/summary>/)[1]),
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: [...d.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/g)].map(([, p]) => strip(p)).join(' '),
+    },
+  }))
+  const indent = block[1]
+  const json = JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: entities }, null, 2)
+    .split('\n').map((l) => `${indent}  ${l}`).join('\n')
+  const rebuilt = `${indent}<script type="application/ld+json" data-schema="faq">\n${json}\n${indent}</script>`
+  if (rebuilt !== block[0]) {
+    if (check) drifted.push(`${rel} (FAQ schema no longer matches the visible FAQ)`)
+    else writeFileSync(path, page.replace(block[0], rebuilt))
+  }
+}
+
 if (check) {
   if (drifted.length) {
     console.error('landing assets have drifted from their source:')

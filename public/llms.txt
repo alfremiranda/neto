@@ -1,0 +1,30 @@
+# Neto
+
+> Neto es un planeador financiero para trabajadores independientes en Colombia. Con lo que la persona factura cada mes calcula su IBC, su seguridad social (salud, pensión y ARL), la reserva para la retención en la fuente de la DIAN y sus prestaciones (primas, cesantías y vacaciones), y le dice cuánto de lo que entró es realmente suyo. Funciona en pesos aunque se facture en dólares, sin conexión, en español. Hoy es gratis.
+
+Neto es una herramienta de planeación: no constituye asesoría tributaria ni contable y no presenta nada ante la DIAN.
+
+## Reglas que aplica (Colombia, 2026)
+
+- IBC de un independiente por prestación de servicios: 40% del ingreso mensual, nunca menor a 1 SMMLV ($1.750.905 en 2026) ni mayor a 25 SMMLV.
+- Sobre el IBC: salud 12,5%, pensión 16% y ARL según el nivel de riesgo (I: 0,522% · II: 1,044% · III: 2,436% · IV: 4,35% · V: 6,96%).
+- Fondo de Solidaridad Pensional desde 4 SMMLV de IBC: 1%, subiendo por tramos hasta 2% desde 20 SMMLV.
+- Ejemplo: $5.000.000 facturados al mes con riesgo I → IBC $2.000.000 → aporte mensual de $580.440.
+- La seguridad social de independientes se paga mes vencido por la PILA.
+
+## Perfiles
+
+- Independiente: todo el motor tributario activo (IBC, seguridad social, retención, provisiones y el calendario de obligaciones).
+- Empleado: gestor de ingresos, gastos y cuentas, sin la capa tributaria.
+- Ambos: sueldo y facturación aparte; el salario se marca para que no entre a la base de aportes.
+
+## Páginas
+
+- [Neto — inicio](https://netofinanzas.app/): qué hace Neto, sus funciones, privacidad y preguntas frecuentes.
+- [Calculadora de seguridad social para independientes 2026](https://netofinanzas.app/calculadoras/seguridad-social-independientes/): gratuita, sin registro, con las fórmulas y las referencias legales.
+- [Calculadoras](https://netofinanzas.app/calculadoras/): índice de calculadoras para independientes.
+- [Política de privacidad](https://netofinanzas.app/privacidad.html): tratamiento de datos bajo la Ley 1581 de 2012.
+
+## Privacidad
+
+Los datos viven en el dispositivo del usuario y la nube funciona como respaldo; nada se sube sin autorización previa (Ley 1581). Neto no muestra anuncios ni vende datos. Contacto: privacidad@netofinanzas.app.
