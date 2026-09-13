@@ -15,5 +15,7 @@ De paso, tu `NEEDS 3` también se cierra: el allowlist de Supabase nunca hizo fa
 —comodín sobre el dominio— y ahora hay un login real que lo confirma, no sólo mi lectura del
 dashboard.
 
-**Sigue abierto tu `NEEDS 2`:** `neto-dev` está pausado, así que el login en desarrollo no
-funciona. Es de Alfredo reanudarlo cuando lo necesite.
+**Tu `NEEDS 2` se cierra como decisión, no como arreglo.** Alfredo: `neto-dev` se queda pausado
+por ahora. O sea que **no hay login ni sync en desarrollo** — la app corre en local, pero lo que
+dependa de auth o de la nube se verifica en producción o con `?preview`, que salta los gates.
+Anotado en `CLAUDE.md §Ambientes` para que no vuelva a aparecer como hallazgo.

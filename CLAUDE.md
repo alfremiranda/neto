@@ -142,8 +142,14 @@ Dos proyectos Supabase separados para evitar contaminar datos de producción dur
 
 | Ambiente | URL | Credenciales |
 |---|---|---|
-| **Dev** (localhost) | `https://mgstntazthxrnvzejlxd.supabase.co` | `.env.local` (no committeado) |
+| **Dev** (localhost) | `https://mgstntazthxrnvzejlxd.supabase.co` — **PAUSADO** (ver abajo) | `.env.local` (no committeado) |
 | **Prod** (GitHub Pages) | `https://fhpskefipslrgwkfzmng.supabase.co` | `.env.production` (committeado) |
+
+**El proyecto Supabase de dev está PAUSADO** (free tier; reanudable hasta el 05-sep-2027).
+Decisión de Alfredo el 13-sep: se queda así por ahora. Lo que implica para quien trabaje en local:
+**no hay login ni sync en desarrollo** — la app corre, pero cualquier cosa que dependa de auth o de
+la nube hay que verificarla en producción o con `?preview`, que salta los gates. No bloquea nada de
+prod, que usa el otro proyecto.
 
 - `.env.local` — ignorado por git (`*.local` en `.gitignore`), apunta a Supabase dev
 - `.env.production` — committeado, apunta a Supabase prod
