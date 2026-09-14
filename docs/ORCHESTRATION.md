@@ -13,7 +13,7 @@
 > Design session died mid-queue and only its handoff saved the continuity. **v3.7 (2026-09-12): the
 > orchestrator commits what it writes, same run; an audit belongs to the leg that can observe what
 > it audits. v3.8 (2026-09-12): a fifth role, Web, with its own
-> territory and mailbox.**
+> territory and mailbox. v3.9 (2026-09-14): a commit adds only its own territory's paths.**
 
 ## The system
 
@@ -112,6 +112,14 @@ Git rules for a shared tree:
    You and Design share the same working tree, so you see its commits even before any push.
 2. Don't leave uncommitted changes at session close. If two sessions must run at the same
    time, Alfredo makes sure only one has dirty state.
+2b. **A commit adds only the paths of its own territory. Never `git add -A`, and never a broad
+   directory add, on a shared tree** (v3.9 — proposed by Web after an orchestrator commit swept
+   its uncommitted work). Rule 2 covers *close* and leans on a human gate; this covers *mid-session*,
+   when two agents are writing at once and no gate fires. The territories already say who owns what
+   — making `git add` respect them turns the boundary from courtesy into mechanics.
+   **`docs/` is not one territory:** `docs/DIRECTION.md`, `docs/ORCHESTRATION.md` and
+   `docs/inbox/**` are the orchestrator's; `docs/reports/` and `docs/handoff/` belong to whoever
+   wrote them. Add the files, not the folder.
 3. Commit messages keep their owner obvious: Design uses the `design-system:` prefix.
 
 ## Your session protocol
