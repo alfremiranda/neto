@@ -13,7 +13,8 @@
 > Design session died mid-queue and only its handoff saved the continuity. **v3.7 (2026-09-12): the
 > orchestrator commits what it writes, same run; an audit belongs to the leg that can observe what
 > it audits. v3.8 (2026-09-12): a fifth role, Web, with its own
-> territory and mailbox. v3.9 (2026-09-14): a commit adds only its own territory's paths.**
+> territory and mailbox. v3.9 (2026-09-14): a commit adds only its own territory's paths.
+> v3.10 (2026-09-14): Web's territory extended to the calculators, with the legal block carved out.**
 
 ## The system
 
@@ -88,10 +89,20 @@ Two agents share this working tree. The boundary that keeps that sane:
 
 - **Design owns:** `design-system/**` and `design.md`. Generated artifacts (tokens.css,
   previews) are regenerated, not hand-edited, by either agent.
-- **Web owns (v3.8):** `public/index.html`, `public/landing/**`, and the mailbox
-  `docs/inbox/web/`. Nothing else — **the route migration (app moves to `/app`) is Dev's**,
-  because it touches auth, the service worker and the manifest, and the service worker has
-  already produced one silent production bug this month.
+- **Web owns (v3.8, extended v3.10):** `public/index.html`, `public/landing/**`,
+  `public/calculadoras/**`, `public/llms.txt`, `scripts/landing-*.mjs`, and the mailbox
+  `docs/inbox/web/`. **The route migration (app moves to `/app`) is Dev's**, because it touches
+  auth, the service worker and the manifest, and the service worker has already produced one
+  silent production bug this month. `public/sitemap.xml` and `vite.config.ts` stay Dev's.
+- **The one carve-out inside Web's territory (v3.10):** in `public/calculadoras/**`, the
+  `legal-constants` block, the `compute()` logic and the statutory references are **not Web's to
+  change on its own**. They are the only public surface that shows tax formulas with their legal
+  basis, and they are already routed to the lawyer (`claude/neto-legal-checklist-abogado.md` §7b).
+  Presentation is Web's; the numbers and the citations move by `Q-`. Ownership of a file is not
+  ownership of every line in it.
+- **`src/lib/calculadoraSS.test.ts` stays Dev's** — it is the seam that checks the calculator's
+  legal constants against the app engine, and the party that edits the page should not control the
+  test that proves the page still agrees with the app. Web proposed this exclusion itself.
 - **Dev owns:** everything else — `src/**`, the rest of `public/**`, configs, docs. This includes
   `src/index.css`: when Design's token work requires changes there, Design reports the
   finding and **Dev applies it** (the favourite-star / radius findings flow was the model).
